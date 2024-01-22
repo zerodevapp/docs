@@ -41,6 +41,10 @@ export default defineConfig({
         "collapsed": false,
         "items": [
           {
+            "text": "Introduction",
+            "link": "/kerneljs/core-api/intro"
+          },
+          {
             "text": "Create a Smart Account",
             "link": "/kerneljs/core-api/create-account"
           },
