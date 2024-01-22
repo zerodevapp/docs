@@ -6,6 +6,20 @@ export default defineConfig({
     light: '/logo-black.svg'
   },
   title: 'ZeroDev',
+  topNav: [
+    { text: 'SDK', link: '/kerneljs/getting-started/intro', match: '/kerneljs' },
+    { text: 'Infra', link: '/meta-infra/intro', match: '/meta-infra' },
+    { text: 'Recovery Flow', link: '/recovery-flow/intro', match: '/recovery-flow' },
+    {
+      link: 'https://docs-v4.zerodev.app/',
+      text: 'Old Docs (v4)',
+    },
+    {
+      link: 'https://dashboard.zerodev.app/',
+      text: 'Dashboard',
+    },
+    { text: 'Blog', link: '/blog', match: '/blog' },
+  ],
   sidebar: {
     "/kerneljs": [
       {
