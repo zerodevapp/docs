@@ -1,0 +1,92 @@
+# Use Lit Protocol with kernel.js
+
+[Lit Protocol](https://www.litprotocol.com/) is distributed cryptography for signing, encryption, and compute. A generalizable key management network, Lit provides you with a set of tools for managing sovereign identities on the open Web.
+
+## Set up
+
+To use Lit with kernel.js, first create an application that integrates with Lit.
+
+- Refer to the [Lit documentation site](https://developer.litprotocol.com/v3/) for instructions on setting up an application with the Lit.
+- For a quick start, Lit provides examples, available [here](https://docs.Lit.com/getting-started/examples).
+
+## Integration
+Integrating kernel.js with Lit is straightforward after setting up the project. Lit provides an Externally Owned Account (EOA) wallet to use as a signer with Kernel.
+
+### Create the pkpWallet 
+After following the Lit documentation, you will have access to a `pkpWallet`. An example is shown below:
+
+```typescript
+import { LitAbility, LitActionResource } from "@lit-protocol/auth-helpers";
+import { LitNodeClient } from "@lit-protocol/lit-node-client";
+import { PKPEthersWallet } from "@lit-protocol/pkp-ethers";
+import { AuthCallbackParams } from "@lit-protocol/types";
+
+const POLYGON_MUMBAI_RPC_URL = "<YOUR RPC URL HERE>";
+const PKP_PUBLIC_KEY = "<YOUR PKP PUBLIC KEY>";
+
+const litNodeClient = new LitNodeClient({
+  litNetwork: "cayenne",
+  debug: false,
+});
+await litNodeClient.connect();
+
+const resourceAbilities = [
+  {
+    resource: new LitActionResource("*"),
+    ability: LitAbility.PKPSigning,
+  },
+];
+
+/**
+ * For provisioning keys and setting up authentication methods see documentation below
+ * https://developer.litprotocol.com/v2/pkp/minting
+ */
+const authNeededCallback = async (params: AuthCallbackParams) => {
+  const response = await litNodeClient.signSessionKey({
+    sessionKey: params.sessionKeyPair,
+    statement: params.statement,
+    authMethods: [],
+    pkpPublicKey: PKP_PUBLIC_KEY,
+    expiration: params.expiration,
+    resources: params.resources,
+    chainId: 1,
+  });
+  return response.authSig;
+};
+
+const sessionSigs = await litNodeClient
+  .getSessionSigs({
+    chain: "ethereum",
+    expiration: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7).toISOString(),
+    resourceAbilityRequests: resourceAbilities,
+    authNeededCallback,
+  })
+  .catch((err) => {
+    console.log("error while attempting to access session signatures: ", err);
+    throw err;
+  });
+
+const pkpWallet = new PKPEthersWallet({
+  pkpPubKey: PKP_PUBLIC_KEY,
+  rpc: POLYGON_MUMBAI_RPC_URL,
+  controllerSessionSigs: sessionSigs,
+});
+```
+
+### Use with kernel.js
+
+```typescript
+import { createEcdsaKernelAccountClient } from '@kerneljs/presets/zerodev';
+import { polygonMumbai } from 'viem/chains';
+
+const smartAccountSigner = providerToSmartAccountSigner(pkpWallet);
+
+// Set up your Kernel client
+const kernelClient = await createEcdsaKernelAccountClient({
+  chain: polygonMumbai,
+  projectId: process.env.ZERODEV_PROJECT_ID,
+  signer: smartAccountSigner,
+});
+
+const kernelAddress = kernelClient.account.address;
+```

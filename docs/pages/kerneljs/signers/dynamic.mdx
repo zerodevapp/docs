@@ -1,0 +1,53 @@
+# Use Dynamic with kernel.js
+
+[Dynamic](https://www.dynamic.xyz/) is an embedded wallet provider that enables users to generate wallets within your application using Social Logins, Email OTP, or Webauthn.
+
+## Set up
+
+To use Dynamic with ZeroDev, you have two options: Dynamic's native integration that utilizes ZeroDev, or a custom integration using Dynamic's Externally Owned Account (EOA) as a signer. Choose the approach that best fits your needs.
+
+### Native Integration
+Dynamic natively supports account abstraction using ZeroDev. This integration allows you to sponsor gas fees, bundle transactions, recover and transfer accounts, utilize session keys.
+- For more information and how to get started, visit the [Dynamic Account Abstraction documentation](https://docs.dynamic.xyz/embedded-wallets/add-account-abstraction).
+
+### Custom Integration
+If you would like to use kernel.js directly with a Dynamic project, you can set up a custom integration using Dynamics's EOA as a signer.
+- Begin by setting up your application with Dynamic, as detailed in the [Dynamic documentation](https://docs.dynamic.xyz/introduction/welcome).
+- Dynamic also offers a quick start guide and sample apps, available [here](https://docs.dynamic.xyz/quickstart).
+
+## Implementing Custom Integration
+Integrating kernel.js with Dynamic is straightforward once your application is set up. Dynamic provides an EOA wallet to use as a signer with Kernel.
+
+### Get the Dynamic wallet's Provider
+To begin, ensure your application is integrated with Dynamic. Detailed guidance is available in the [Dynamic documentation](https://docs.dynamic.xyz/). 
+
+The following example demonstrates the use of Dynamic's React Core SDK. Ensure your React app is already configured with Dynamic; for setup instructions, refer to the [tutorial](https://docs.dynamic.xyz/react-sdk/tutorial).
+```typescript
+import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
+
+// Use the `useDynamicContext` hook to get the primary wallet
+const { primaryWallet } = useDynamicContext();
+
+// Get the dynamicProvider, we will use in the next section
+const dynamicProvider = await primaryWallet?.connector?.getWalletClient();
+```
+
+### Use with kernel.js
+
+```typescript
+import { createEcdsaKernelAccountClient } from '@kerneljs/presets/zerodev';
+import { polygonMumbai } from 'viem/chains';
+// TODO import providerToSmartAccountSigner helper function
+
+// Use the Provider from Dynamic to create a SmartAccountSigner
+const smartAccountSigner = providerToSmartAccountSigner(dynamicProvider);
+
+// Set up your Kernel client
+const kernelClient = await createEcdsaKernelAccountClient({
+  chain: polygonMumbai,
+  projectId: process.env.ZERODEV_PROJECT_ID,
+  signer: smartAccountSigner,
+});
+
+const kernelAddress = kernelClient.account.address;
+```

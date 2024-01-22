@@ -1,0 +1,49 @@
+# Use Web3Auth with kernel.js
+
+[Web3Auth](https://web3auth.io/) is an embedded wallet provider that enables users to generate wallets within your application using Social Logins, Email OTP, or Webauthn.
+
+## Set up
+
+To use Web3Auth with kernel.js, first create an application that integrates with Web3Auth.
+
+- Refer to the [Web3Auth documentation site](https://web3auth.io/docs/index.html) for instructions on setting up an application with the Web3Auth.
+- For a quick start, Web3Auth provides example starter projects, available [here](https://web3auth.io/docs/examples?product=Plug+and+Play&sdk=Plug+and+Play+Web+Modal+SDK).
+
+## Integration
+Integrating kernel.js with Web3Auth is straightforward after setting up the project. Web3Auth provides an Externally Owned Account (EOA) wallet to use as a signer with Kernel.
+
+### Create the Web3Auth object
+After following the Web3Auth documentation, you will have access to a `web3auth` object as shown below:
+
+```typescript
+import { Web3Auth } from "@web3auth/modal";
+
+// Config options here will be specific to your project.  See the Web3Auth docs for more info.
+const web3auth = new Web3Auth({
+  clientId,
+  chainConfig: {},
+  uiConfig: {},
+  web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET,
+});
+```
+
+### Use with kernel.js
+
+```typescript
+import { createEcdsaKernelAccountClient } from '@kerneljs/presets/zerodev';
+import { polygonMumbai } from 'viem/chains';
+// TODO import providerToSmartAccountSigner helper function
+
+// Get the Provider from Web3Auth and convert it to a SmartAccountSigner
+const web3authProvider = await web3auth.provider;
+const smartAccountSigner = providerToSmartAccountSigner(web3authProvider);
+
+// Set up your Kernel client
+const kernelClient = await createEcdsaKernelAccountClient({
+  chain: polygonMumbai,
+  projectId: process.env.ZERODEV_PROJECT_ID,
+  signer: smartAccountSigner,
+});
+
+const kernelAddress = kernelClient.account.address;
+```

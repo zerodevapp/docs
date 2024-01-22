@@ -1,0 +1,53 @@
+# Use Turnkey with kernel.js
+
+[Turnkey](https://turnkey.com/) provides a secure, non-custodial wallet infrastructure enabling users to create application-specific wallets through Email or WebAuthn. Utilizing secure enclaves and a unique policy engine, Turnkey ensures key material decryption occurs exclusively within an enclave, and all signing activities adhere to your application's policies. This approach not only secures user experience but also enriches it through Account Abstraction features like gas sponsorship and transaction batching.
+
+## Set up
+
+To use Turnkey with kernel.js, first create an application that integrates with Turnkey.
+
+- Refer to the [Turnkey documentation site](https://docs.turnkey.com/) for instructions on setting up an application with the Turnkey.
+- For a quick start, Turnkey provides examples, available [here](https://docs.turnkey.com/getting-started/examples).
+
+## Integration
+Integrating kernel.js with Turnkey is straightforward after setting up the project. Turnkey provides an Externally Owned Account (EOA) wallet to use as a signer with Kernel.
+
+### Create the TurnkeyClient and a Turnkey viem account
+After following the Turnkey documentation, you will have access to a `TurnkeyClient`. An example is shown below:
+
+```typescript
+import { TurnkeyClient } from "@turnkey/http";
+
+// Param options here will be specific to your project.  See the Turnkey docs for more info.
+const turnkeyClient = new TurnkeyClient({ baseUrl: '' }, stamper);
+
+const turnkeyAccount = createAccount ({
+  client: turnkeyClient,
+  organizationId: subOrganizationId, // Your subOrganization id
+  signWith: signWith, // Your suborganization `signWith` param.
+})
+```
+
+### Use with kernel.js
+
+```typescript
+import { createEcdsaKernelAccountClient } from '@kerneljs/presets/zerodev';
+import { polygonMumbai } from 'viem/chains';
+import { walletClientToCustomSigner } from 'permissionless';
+
+// Create a SmartAccountSigner from the turnkeyAccount
+const walletClient = createWalletClient({
+  account: turnkeyAccount,
+  transport: http('https://polygon-mumbai.g.alchemy.com/v2/ALCHEMY_API_KEY'),
+})
+const smartAccountSigner = walletClientToCustomSigner(walletClient);
+
+// Set up your Kernel client
+const kernelClient = await createEcdsaKernelAccountClient({
+  chain: polygonMumbai,
+  projectId: process.env.ZERODEV_PROJECT_ID,
+  signer: smartAccountSigner,
+});
+
+const kernelAddress = kernelClient.account.address;
+```

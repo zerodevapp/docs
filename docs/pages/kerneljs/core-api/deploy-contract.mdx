@@ -1,0 +1,14 @@
+# Deploy Contract
+
+:::info
+Impatient?  Check out [complete examples here](https://github.com/zerodevapp/kernel.js-examples/blob/main/deploy-contract/main.ts).
+:::
+
+To deploy smart contracts from your smart account, use the `deployContract` function:
+
+```typescript
+const txnHash = await kernelClient.deployContract({
+  abi,
+  bytecode,
+})
+```

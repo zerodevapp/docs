@@ -1,0 +1,49 @@
+# Use Magic with kernel.js
+
+[Magic](https://magic.link/) is an embedded wallet provider that enables users to generate wallets within your application using Social Logins, Email OTP, or Webauthn.
+
+## Set up
+
+To use Magic with kernel.js, first create an application that integrates with Magic.
+
+- Refer to the [Magic documentation site](https://magic.link/docs/home/welcome) for instructions on setting up an application with the Magic SDK.
+- For a quick start, Magic provides a CLI to create a starter project, available [here](https://magic.link/posts/magic-vue#cli-quickstart-tool).
+
+## Integration
+Integrating kernel.js with Magic is straightforward after setting up the Magic SDK. Magic provides an Externally Owned Account (EOA) wallet to use as a signer with Kernel.
+
+### Create the Magic object
+After following the Magic documentation, you will have access to a MagicBase object as shown below:
+
+```typescript
+import { Magic as MagicBase } from 'magic-sdk';
+
+const magic = new MagicBase(process.env.MAGIC_API_KEY as string, {
+  network: {
+    rpcUrl: getNetworkUrl(),
+    chainId: getChainId(),
+  },
+  extensions: [new AuthExtension(), new OAuthExtension()],
+});
+```
+
+### Use with kernel.js
+
+```typescript
+import { createEcdsaKernelAccountClient } from '@kerneljs/presets/zerodev';
+import { polygonMumbai } from 'viem/chains';
+// TODO import providerToSmartAccountSigner helper function
+
+// Get the Provider from Magic and convert it to a SmartAccountSigner
+const magicProvider = await magic.wallet.getProvider();
+const smartAccountSigner = providerToSmartAccountSigner(magicProvider);
+
+// Set up your Kernel client
+const kernelClient = await createEcdsaKernelAccountClient({
+  chain: polygonMumbai,
+  projectId: process.env.ZERODEV_PROJECT_ID,
+  signer: smartAccountSigner,
+});
+
+const kernelAddress = kernelClient.account.address;
+```

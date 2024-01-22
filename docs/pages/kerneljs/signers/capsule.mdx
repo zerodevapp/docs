@@ -1,0 +1,49 @@
+# Use Capsule with kernel.js
+
+[Capsule](https://usecapsule.com/) offers a signing solution enabling the creation of secure, embedded MPC wallets accessible via email or social login. These wallets, compatible across different applications, offer portability, recoverability, and programmability, eliminating the need for users to establish separate signers or contract accounts for each application.
+
+## Set up
+
+To use Capsule with kernel.js, first create an application that integrates with Capsule.
+
+- Refer to the [Capsule documentation site](https://docs.usecapsule.com/) for instructions on setting up an application with the Capsule.
+- For a quick start, Capsule provides an example hub, available [here](https://docs.usecapsule.com/getting-started/examples).
+
+## Integration
+Integrating kernel.js with Capsule is straightforward after setting up the project. Capsule provides an Externally Owned Account (EOA) wallet to use as a signer with Kernel.
+
+### Create the Capsule object
+After following the Capsule documentation, you will have access to a `CapsuleWeb3Provider` object as shown below:
+
+```typescript
+import Capsule from "@usecapsule/web-sdk";
+
+// Param options here will be specific to your project.  See the Capsule docs for more info.
+const capsule = new Capsule(env, apiKey, opts);
+```
+
+### Use with kernel.js
+
+```typescript
+import { createCapsuleViemClient } from "@usecapsule/web-sdk";
+import { createEcdsaKernelAccountClient } from '@kerneljs/presets/zerodev';
+import { polygonMumbai } from 'viem/chains';
+// TODO import providerToSmartAccountSigner helper function
+
+// Convert a Capsule viem client to a SmartAccountSigner
+// Follow the Capsule docs for more instructions on creating the Viem client https://docs.usecapsule.com/integration-guide/signing-transactions
+const viemClient = createCapsuleViemClient(capsule, {
+  chain: CHAIN,
+  transport: http(CHAIN_PROVIDER),
+});
+const smartAccountSigner = providerToSmartAccountSigner(viemClient);
+
+// Set up your Kernel client
+const kernelClient = await createEcdsaKernelAccountClient({
+  chain: polygonMumbai,
+  projectId: process.env.ZERODEV_PROJECT_ID,
+  signer: smartAccountSigner,
+});
+
+const kernelAddress = kernelClient.account.address;
+```

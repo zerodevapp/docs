@@ -1,0 +1,60 @@
+# Gas Policies
+
+You can configure **gas policies** for ZeroDev paymaster to have fine-grained control over what you sponsor, and how much.
+
+Paymaster policies can be configured through either [the dashboard](https://dashboard.zerodev.app/paymasters) or [the API](/meta-infra/api).
+
+## Policy Types
+
+There are three types of policies on ZeroDev:
+
+- Project policies: policies that apply to the entire project. 
+- Contract policies: policies that apply to specific contracts.
+- Wallet policies: policies that apply to specific wallet addresses.
+
+## Rate Limit Types
+
+When you create a new policy, you set up one or more *rate limits*.
+
+There are four types of rate limits:
+
+- Amount: limit by the amount of gas
+- Request: limit by the number of requests
+- Gas Price: limit by the current gas price
+- Amount per txn: limit by the amount of gas per transaction
+
+## Policy examples
+
+The policies and rate limits are hopefully intuitive, but here are some common examples in case they are helpful.  We will be using Polygon (MATIC) in these examples.
+
+### Sponsor up to 1 MATIC every hour for the entire project
+
+Here we create a project policy:
+
+<p align="center">
+  <img src="/img/gas_policy_example_1.png" width="80%" />
+</p>
+
+### Sponsor 100 transactions per minute for a specific contract
+
+Here we create a contract policy:
+
+<p align="center">
+  <img src="/img/gas_policy_example_2.png" width="80%" />
+</p>
+
+### Sponsor transactions for a specific function when gas price is below 50 GWEI
+
+Here we create a contract policy:
+
+<p align="center">
+  <img src="/img/gas_policy_example_3.png" width="80%" />
+</p>
+
+### Sponsor 100 transactions per hour for a specific address
+
+Here we create a wallet policy:
+
+<p align="center">
+  <img src="/img/gas_policy_example_4.png" width="80%" />
+</p>

@@ -1,0 +1,137 @@
+# Creating a Smart Account
+
+:::info
+Impatient?  Check out [complete examples here](https://github.com/zerodevapp/kernel.js-examples/tree/main/create-account).
+:::
+
+At the core of account abstraction is the *smart account* -- an [account](https://ethereum.org/en/developers/docs/accounts/) powered by a smart contract.  The fact that smart accounts are smart contracts is what allows us to *abstract* their logic, from authentication to gas payments and more.
+
+Kernel is a *modular smart account* that can be customized with plugins.  When you create a Kernel account, you need to decide on a [*default validator*](/kerneljs/plugins/intro), which is a plugin that determines how UserOps are validated by default.
+
+The most popular default validator is the ECDSA validator, which mimics the behavior of normal [EOAs](https://ethereum.org/en/glossary/#eoa) (the type of accounts that wallets like MetaMask manage).  It validates UserOps and messages by checking if they are signed by a specific ECDSA private key known as the "signer" or "owner."  We will be using ECDSA validator for this tutorial, but you can see [all default validators here](/kerneljs/plugins/intro).
+
+## Helper API
+
+The easiest way to create a Kernel account is through [**presets**](/kerneljs/presets/intro) -- helper functions that create Kernel accounts based on common configurations.  For example, to create a ECDSA Kernel account using ZeroDev infra:
+
+```typescript
+import { createEcdsaKernelAccountClient } from "@kerneljs/presets/zerodev"
+import { privateKeyToAccount } from "viem/accounts"
+import { polygonMumbai } from "viem/chains"
+import { Hex } from "viem"
+
+// Create a signer
+const signer = privateKeyToAccount(process.env.PRIVATE_KEY as Hex)
+
+// Create a Kernel client
+const kernelClient = await createEcdsaKernelAccountClient({
+    chain: polygonMumbai,
+    projectId: process.env.ZERODEV_PROJECT_ID,
+    signer,
+})
+```
+
+For a more flexible API, read on to learn the core API.
+
+## Core API
+
+The core API is for people who want complete control over their Kernel accounts's settings.  Follow the following steps.
+
+### Creating a public client
+
+In Viem, a [public client](https://viem.sh/docs/clients/public.html) is an interface to a JSON-RPC API such as Infura or Alchemy.  [Most bundlers](/meta-infra/intro) today implement the standard JSON-RPC on top of the bundler RPC, so you can create a public client with your bundler:
+
+```typescript
+import { createPublicClient, http } from "viem"
+
+const publicClient = createPublicClient({
+  transport: http("BUNDLER_RPC"),  // replace this with bundler URL
+})
+```
+
+### Creating a signer
+
+As aforementioned, a Kernel account using a ECDSA validator is "owned" by a signer, which is anything that can sign messages with a private key.
+
+Since Kernel is built on top of Viem, we can use any [Viem account](https://viem.sh/docs/accounts/privateKey.html) as the signer.  In this example, we create a signer from a private key:
+
+```typescript
+import { Hex } from "viem"
+import { privateKeyToAccount } from "viem/accounts"
+
+const signer = privateKeyToAccount("PRIVATE_KEY" as Hex)
+```
+
+Replace `PRIVATE_KEY` with an actual private key.  You can [generate a random one here](https://privatekeys.pw/keys/ethereum/random).
+
+### Creating a ECDSA validator
+
+Then create a ECDSA validator from the signer:
+
+```typescript
+import { signerToEcdsaValidator } from "@kerneljs/ecdsa-validator"
+
+const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
+  signer,
+})
+```
+
+### Create a Kernel account
+
+Next, create a Kernel account with the ECDSA validator:
+
+```typescript
+import { createKernelAccount } from "@kerneljs/core"
+
+const account = await createKernelAccount(publicClient, {
+  plugins: {
+    validator: ecdsaValidator,
+  },
+})
+```
+
+### Create an account client
+
+Now that we have an account, we can finally construct an "account client," which is the equivalent of a [wallet client in Viem](https://viem.sh/docs/clients/wallet.html) that allows you to send UserOps to bundlers.
+
+```typescript
+import { createKernelAccountClient } from "@kerneljs/core"
+import { http } from "viem"
+import { polygonMumbai } from 'viem/chains'
+
+const kernelClient = createKernelAccountClient({
+  account,
+  chain: polygonMumbai,
+  transport: http('BUNDLER_RPC'),
+  sponsorUserOperation,  // optional -- only if you want to use a paymaster
+})
+```
+
+Note that:
+
+- You need to replace the `BUNDLER_RPC` with an [actual bundler RPC](/meta-infra/intro).
+- `sponsorUserOperation` only needs to be specified if you want to [use a paymaster](/kerneljs/core-api/sponsor-gas).
+
+## FAQs
+
+### When I create an account, is it deployed on-chain?
+
+No.  If your account hasn't been deployed yet, we simply use [`CREATE2`](https://eips.ethereum.org/EIPS/eip-1014) to compute the address that the account *would* be deployed to.  Your account is deployed automatically with the first UserOp it sends.
+
+In other words, "creating" accounts with the SDK is free -- you can create an infinite number of such account objects without paying any gas.  It's only when you send the first UserOp that the account is deployed automatically.
+
+### Can I create multiple accounts from the same EOA signer?
+
+Yes, you can do so by providing an `index` when you create the account object.
+
+```typescript
+import { createKernelAccount } from "@kerneljs/core"
+
+const account = createKernelAccount(publicClient, {
+  plugins: {
+    validator: ecdsaValidator,
+  },
+  // optionally specify the index; different indexes will yield different accounts
+  index: 1,
+})
+```

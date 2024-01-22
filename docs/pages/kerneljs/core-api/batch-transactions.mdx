@@ -1,0 +1,63 @@
+# Batching Transactions
+
+:::info
+Impatient?  Check out [complete examples here](https://github.com/zerodevapp/kernel.js-examples/tree/main/batch-transactions).
+:::
+
+Smart accounts like Kernel support *batching* transactions -- rolling multiple transactions into one.  This is very useful for simplifying Web3 interactions for your users.  For instance, instead of doing `approve()` followed by `transfer()`, your user can do both in one transaction.
+
+Batching transactions has a number of important benefits:
+
+- Your user waits for only 1 transaction instead of multiple.
+- Your user pays less gas.
+- If any transaction in the batch reverts, the entire batch reverts. This ensures that your user won't be stuck in an inconsistent state.
+  - This is known as "atomicity."
+
+## API
+
+There are two ways to send batched transactions.  `sendTransactions` is a simple API that's good enough for most use cases.  If you need fine-grained control over your UserOp, you can use `sendUserOperation`.
+
+### `sendTransactions`
+
+```typescript
+const txHash = await kernelClient.sendTransactions({
+  transactions: [
+    {
+      to: "0xADDRESS",
+      value: value,
+      data: "0xDATA",
+    },
+    {
+      to: "0xADDRESS",
+      value: value,
+      data: "0xDATA",
+    },
+  ],
+})
+```
+
+### `sendUserOperation`
+
+You can learn more about the `sendUserOperation` API [here](/kerneljs/core-api/send-transactions#sending-raw-userops).
+
+To send a UserOp with batching, simply pass an array of calls into `encodeCallData`.
+
+```typescript
+const userOpHash = await kernelClient.sendUserOperation({
+    userOperation: {
+        callData: account.encodeCallData([
+          {
+            to,
+            value,
+            data,
+          },
+          {
+            to,
+            value,
+            data,
+          },
+        ]),
+        // other UserOp params
+    },
+})
+```

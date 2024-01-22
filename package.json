@@ -1,0 +1,19 @@
+{
+  "name": "zerodev-docs",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "bun-types": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "vocs": "^1.0.0-alpha.25"
+  },
+  "scripts": { 
+    "dev": "vocs dev", 
+    "build": "vocs build", 
+    "preview": "vocs preview"
+  } 
+}

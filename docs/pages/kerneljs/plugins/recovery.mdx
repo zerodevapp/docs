@@ -1,0 +1,21 @@
+# Recovery
+
+One of the biggest challenges with Web3 UX is securing your account.  With a traditional EOA wallet, you must either take great care to safely backup your seed phrase in case you ever lose it, or trust a centralized key infrastructure to manage your key for you. 
+
+With Kernel, it's possible to set up "**guardians**" for your account.  Guardians are entities that are authorized to update the signer of your account.  In other words, if you lose your key, you can generate a new key and ask your guardians to set it as the new signer for your account, thus *recovering* the account.
+
+There are two typical use cases for recovery:
+
+- **Self-recovery**: your user can set up recovery for their account with another auth factor they own, such as a passkey or another wallet they own.
+
+- **DApp-assisted recovery**: your user might set you (the DApp) as their guardian.  When they lose their account, they would contact you and you would recover the account for them.
+
+There are two ways to use recovery: through a pre-built recovery flow or build a totally custom flow using the Kernel recovery plugin.
+
+## Pre-built Recovery Flow
+
+[Check out the recovery flow docs.](/recovery-flow/intro)
+
+## Recovery Plugin
+
+The recovery plugin is currently being ported to Kernel.js from the old ZeroDev SDK.  You can find [recovery docs for the old SDK here](https://docs-v4.zerodev.app/use-wallets/recovery).

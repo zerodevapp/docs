@@ -1,0 +1,34 @@
+# Bundler & Paymaster RPCs
+
+ZeroDev proxies traffic to AA infra providers including Alchemy, Gelato, Pimlico, and Stackup.  Our RPCs support all standard methods defined in the [ERC-4337 spec](https://eips.ethereum.org/EIPS/eip-4337).
+
+By default, ZeroDev proxies traffic to a provider that's known to work well on the given network.  However, you can configure which specific provider to proxy traffic to, as described below.
+
+:::info
+While you can in principle use a paymaster from one provider with a bundler from another provider, in practice different providers are sometimes incompatible, so we recommend that if you want to use a specific provider, you use it for both the bundler and the paymaster.
+:::
+
+## Bundler RPC
+
+- Bundler RPC: `https://rpc.zerodev.app/api/v2/bundler/<PROJECT_ID>`
+
+You can append the following query params (i.e. `?param=value`) to the RPC:
+
+- `bundlerProvider`, which specifies the underlying bundler to use.  Possible values include:
+  - `ALCHEMY`
+  - `GELATO`
+  - `PIMLICO`
+  - `STACKUP`
+
+## Paymaster RPC
+
+- Paymaster RPC: `https://rpc.zerodev.app/api/v2/paymaster/<PROJECT_ID>`
+
+You can append the following query params (i.e. `?param=value`) to the RPC:
+
+- `paymasterProvider`, which specifies the underlying paymaster to use.  Possible values include:
+  - `ALCHEMY`
+  - `GELATO`
+  - `PIMLICO`
+  - `STACKUP`
+

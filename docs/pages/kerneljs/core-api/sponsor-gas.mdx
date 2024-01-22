@@ -1,0 +1,49 @@
+# Sponsoring Gas
+
+With account abstraction, you can pay gas for users so they don't have to acquire native tokens in order to interact with your DApp.
+
+The first step for sponsoring gas is [choosing a paymaster provider](/meta-infra/intro).  Then, you can connect with the paymaster through either a preset or the core API.
+
+## Using presets
+
+[Presets](/kerneljs/presets/intro) are the easiest way to use paymasters.  For example, if you are using the ZeroDev preset:
+
+```typescript
+import { createEcdsaKernelAccountClient } from "@kerneljs/presets/zerodev"
+
+const kernelClient = await createEcdsaKernelAccountClient({
+  usePaymaster: true, // defaults to true
+
+  // other options...
+})
+```
+
+Check out [the presets docs](/kerneljs/presets/intro) for details.
+
+## Using core API
+
+If you are [setting up an account using the core API](/kerneljs/core-api/create-account#core-api), you can specify a `sponsorUserOperation` function when you [create the account client](/kerneljs/core-api/create-account#create-an-account-client).
+
+The `sponsorUserOperation` function essentially takes a UserOp and then returns a UserOp with the `paymasterAndData` field set.  Since every paymaster works a bit differently, you need to consult the documentation of the paymaster you are using to figure out how to get the `paymasterAndData`.  For example, if you are using the ZeroDev paymaster:
+
+```typescript
+import { createSmartAccountClient } from "permissionless"
+import { http } from "viem"
+import { polygonMumbai } from 'viem/chains'
+import { createZeroDevPaymasterClient } from "@kerneljs/core"
+
+const kernelClient = createSmartAccountClient({
+  account,
+  chain: polygonMumbai,
+  transport: http('BUNDLER_RPC'),
+  sponsorUserOperation: async ({ userOperation }) => {
+    const zerodevPaymaster = createZeroDevPaymasterClient({
+      chain: chain,
+      transport: http('PAYMASTER_RPC'),
+    })
+    return zerodevPaymaster.sponsorUserOperation({
+      userOperation
+    })
+  }
+})
+```

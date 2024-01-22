@@ -1,0 +1,47 @@
+# Use Arcana Auth with kernel.js
+
+[Arcana Auth](https://www.arcana.network/) offers a self-custodial Web3 wallet embedded within applications, utilizing asynchronous distributed key generation algorithms for enhanced security and privacy. This wallet, accessible without the need for a browser extension, allows authenticated users to instantly access and sign blockchain transactions within the app environment.
+
+## Set up
+
+To use Arcana Auth with kernel.js, first create an application that integrates with Arcana Auth.
+
+- Refer to the [Arcana Auth documentation site](https://docs.arcana.network/) for instructions on setting up an application with the Arcana Auth.
+- For a quick start, Arcana Auth provides a web app guide, available [here](https://docs.arcana.network/quick-start/web/).
+
+## Integration
+Integrating kernel.js with Arcana Auth is straightforward after setting up the project. Arcana Auth provides an Externally Owned Account (EOA) wallet to use as a signer with Kernel.
+
+### Create the authProvider object
+After following the Arcana Auth documentation, you will have access to a `authProvider` object as shown below:
+
+```typescript
+import {
+  AuthProvider,
+  type ConstructorParams,
+} from "@arcana/auth";
+
+// Param options here will be specific to your project.  See the Arcana Auth docs for more info.
+const params: ConstructorParams = {};
+const authProvider = new AuthProvider(clientId, params);
+```
+
+### Use with kernel.js
+
+```typescript
+import { createEcdsaKernelAccountClient } from '@kerneljs/presets/zerodev';
+import { polygonMumbai } from 'viem/chains';
+// TODO import providerToSmartAccountSigner helper function
+
+// Convert the authProvider to a SmartAccountSigner
+const smartAccountSigner = providerToSmartAccountSigner(authProvider.provider);
+
+// Set up your Kernel client
+const kernelClient = await createEcdsaKernelAccountClient({
+  chain: polygonMumbai,
+  projectId: process.env.ZERODEV_PROJECT_ID,
+  signer: smartAccountSigner,
+});
+
+const kernelAddress = kernelClient.account.address;
+```
