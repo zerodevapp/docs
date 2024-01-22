@@ -27,8 +27,8 @@ const fireblocksWeb3Provider = new FireblocksWeb3Provider(fireblocksProviderConf
 
 ```typescript
 import { createEcdsaKernelAccountClient } from '@kerneljs/presets/zerodev';
+import { providerToSmartAccountSigner } from '@kerneljs/core';
 import { polygonMumbai } from 'viem/chains';
-// TODO import providerToSmartAccountSigner helper function
 
 // Convert the FireblocksWeb3Provider to a SmartAccountSigner
 const smartAccountSigner = providerToSmartAccountSigner(fireblocksWeb3Provider);

@@ -31,8 +31,8 @@ const web3auth = new Web3Auth({
 
 ```typescript
 import { createEcdsaKernelAccountClient } from '@kerneljs/presets/zerodev';
+import { providerToSmartAccountSigner } from '@kerneljs/core';
 import { polygonMumbai } from 'viem/chains';
-// TODO import providerToSmartAccountSigner helper function
 
 // Get the Provider from Web3Auth and convert it to a SmartAccountSigner
 const web3authProvider = await web3auth.provider;

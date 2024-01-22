@@ -25,10 +25,10 @@ const capsule = new Capsule(env, apiKey, opts);
 ### Use with kernel.js
 
 ```typescript
-import { createCapsuleViemClient } from "@usecapsule/web-sdk";
 import { createEcdsaKernelAccountClient } from '@kerneljs/presets/zerodev';
+import { walletClientToSmartAccountSigner } from '@kerneljs/core'
+import { createCapsuleViemClient } from '@usecapsule/web-sdk';
 import { polygonMumbai } from 'viem/chains';
-// TODO import providerToSmartAccountSigner helper function
 
 // Convert a Capsule viem client to a SmartAccountSigner
 // Follow the Capsule docs for more instructions on creating the Viem client https://docs.usecapsule.com/integration-guide/signing-transactions
@@ -36,7 +36,7 @@ const viemClient = createCapsuleViemClient(capsule, {
   chain: CHAIN,
   transport: http(CHAIN_PROVIDER),
 });
-const smartAccountSigner = providerToSmartAccountSigner(viemClient);
+const smartAccountSigner = walletClientToSmartAccountSigner(viemClient);
 
 // Set up your Kernel client
 const kernelClient = await createEcdsaKernelAccountClient({
