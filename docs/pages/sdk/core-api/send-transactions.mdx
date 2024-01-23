@@ -13,7 +13,7 @@ There are two ways to send UserOps:
 
 The former enables the highest degree of flexibility, whereas the latter is more interoperable with existing libraries like Viem that deal only with transactions and not UserOps.
 
-We will now describe both approaches.  We assume that you have already [created a Kernel account](/kerneljs/core-api/create-account).
+We will now describe both approaches.  We assume that you have already [created a Kernel account](/sdk/core-api/create-account).
 
 ## Using the Viem API
 
@@ -139,7 +139,7 @@ const receipt = await bundlerClient.waitForUserOperationReceipt({
 })
 ```
 
-Note that if you had constructed your `kernelClient` with a [preset](/kerneljs/presets/intro), you may not have access to a bundler client.  Instead, you can extend your `kernelClient` with bundler actions:
+Note that if you had constructed your `kernelClient` with a [preset](/sdk/presets/intro), you may not have access to a bundler client.  Instead, you can extend your `kernelClient` with bundler actions:
 
 ```typescript
 import { bundlerActions } from "permissionless"

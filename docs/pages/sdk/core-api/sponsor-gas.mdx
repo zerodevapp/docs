@@ -6,7 +6,7 @@ The first step for sponsoring gas is [choosing a paymaster provider](/meta-infra
 
 ## Using presets
 
-[Presets](/kerneljs/presets/intro) are the easiest way to use paymasters.  For example, if you are using the ZeroDev preset:
+[Presets](/sdk/presets/intro) are the easiest way to use paymasters.  For example, if you are using the ZeroDev preset:
 
 ```typescript
 import { createEcdsaKernelAccountClient } from "@zerodev/presets/zerodev"
@@ -18,11 +18,11 @@ const kernelClient = await createEcdsaKernelAccountClient({
 })
 ```
 
-Check out [the presets docs](/kerneljs/presets/intro) for details.
+Check out [the presets docs](/sdk/presets/intro) for details.
 
 ## Using core API
 
-If you are [setting up an account using the core API](/kerneljs/core-api/create-account#core-api), you can specify a `sponsorUserOperation` function when you [create the account client](/kerneljs/core-api/create-account#create-an-account-client).
+If you are [setting up an account using the core API](/sdk/core-api/create-account#core-api), you can specify a `sponsorUserOperation` function when you [create the account client](/sdk/core-api/create-account#create-an-account-client).
 
 The `sponsorUserOperation` function essentially takes a UserOp and then returns a UserOp with the `paymasterAndData` field set.  Since every paymaster works a bit differently, you need to consult the documentation of the paymaster you are using to figure out how to get the `paymasterAndData`.  For example, if you are using the ZeroDev paymaster:
 

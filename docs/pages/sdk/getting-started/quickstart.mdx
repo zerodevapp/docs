@@ -4,7 +4,7 @@
 Impatient?  Check out [the complete example here](https://github.com/zerodevapp/kernel.js-examples/tree/main/quickstart/completed.ts).
 :::
 
-In this tutorial, we will mint an NFT without paying gas.  We assume that you have a high-level understandng of AA concepts such as bundlers, paymasters, and UserOp; if not, read [the introduction](/kerneljs/getting-started/intro) first.
+In this tutorial, we will mint an NFT without paying gas.  We assume that you have a high-level understandng of AA concepts such as bundlers, paymasters, and UserOp; if not, read [the introduction](/) first.
 
 ## Create a ZeroDev Project
 
@@ -62,7 +62,7 @@ Now open the [`quickstart/template.ts`](https://github.com/zerodevapp/kernel.js-
 
 Before you can send UserOps, you need to construct an "account client."  An account client is an object that interacts with a bundler on behalf of a specific account.  In the case of ZeroDev, all account clients are of the type `KernelAccountClient`.
 
-There are several types of Kernel account clients, each for a different type of [validation methods](/kerneljs/plugins/intro).  For this tutorial, we will be using the most common validation method -- ECDSA, which is the same algorithm used by normal Ethereum accounts (EOAs).
+There are several types of Kernel account clients, each for a different type of [validation methods](/sdk/plugins/intro).  For this tutorial, we will be using the most common validation method -- ECDSA, which is the same algorithm used by normal Ethereum accounts (EOAs).
 
 ECDSA accounts are controlled by a private key.  For this tutorial, we will use a random private key.  Add the following import and code:
 

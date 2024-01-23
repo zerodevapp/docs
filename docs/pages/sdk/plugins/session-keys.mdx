@@ -45,7 +45,7 @@ Let's walk through how each flow works.
 Check out [the code example](https://github.com/zerodevapp/kernel.js-examples/blob/main/session-keys/owner-created.ts) for the owner-created pattern.
 :::
 
-We assume that you have [created a Kernel account](/kerneljs/core-api/create-account#create-a-kernel-account).  If you only have a `kernelClient`, the Kernel account can be accessed as `kernelClient.account`.
+We assume that you have [created a Kernel account](/sdk/core-api/create-account#create-a-kernel-account).  If you only have a `kernelClient`, the Kernel account can be accessed as `kernelClient.account`.
 
 First, create a signer for the session key:
 
@@ -86,7 +86,7 @@ const sessionKeyAccount = await createKernelAccount(publicClient, {
 
 In this example, the default validator is `ecdsaValidator`.
 
-If you want to use the session key on the same node, you can already [construct a Kernel client from this Kernel account](/kerneljs/core-api/create-account#create-an-account-client) and start using it.  If you want to share the session key with an agent or store it for use later, you can serialize the session key:
+If you want to use the session key on the same node, you can already [construct a Kernel client from this Kernel account](/sdk/core-api/create-account#create-an-account-client) and start using it.  If you want to share the session key with an agent or store it for use later, you can serialize the session key:
 
 ```typescript
 import { serializeSessionKeyAccount } from "@zerodev/session-key"
@@ -100,7 +100,7 @@ Now, when the agent needs to use the session key (or when you want to use your s
 const sessionKeyAccount = await deserializeSessionKeyAccount(publicClient, serializedSessionKey)
 ```
 
-Now you can [create a Kernel client](/kerneljs/core-api/create-account#create-an-account-client) using the `sessionKeyAccount` as you normally would.
+Now you can [create a Kernel client](/sdk/core-api/create-account#create-an-account-client) using the `sessionKeyAccount` as you normally would.
 
 ### Agent-created
 
@@ -169,7 +169,7 @@ const sessionKeyAccount = await deserializeSessionKeyAccount(publicClient, seria
 
 Note how we pass `sessionKeySigner` to `deserializeSessionKeyAccount`.  This is the private part of the session key that only the agent knows about.
 
-Now you can [create a Kernel client](/kerneljs/core-api/create-account#create-an-account-client) using the `sessionKeyAccount` as you normally would.
+Now you can [create a Kernel client](/sdk/core-api/create-account#create-an-account-client) using the `sessionKeyAccount` as you normally would.
 
 ## Session Key Parameters
 

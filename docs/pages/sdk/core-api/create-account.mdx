@@ -6,13 +6,13 @@ Impatient?  Check out [complete examples here](https://github.com/zerodevapp/ker
 
 At the core of account abstraction is the *smart account* -- an [account](https://ethereum.org/en/developers/docs/accounts/) powered by a smart contract.  The fact that smart accounts are smart contracts is what allows us to *abstract* their logic, from authentication to gas payments and more.
 
-Kernel is a *modular smart account* that can be customized with plugins.  When you create a Kernel account, you need to decide on a [*default validator*](/kerneljs/plugins/intro), which is a plugin that determines how UserOps are validated by default.
+Kernel is a *modular smart account* that can be customized with plugins.  When you create a Kernel account, you need to decide on a [*default validator*](/sdk/plugins/intro), which is a plugin that determines how UserOps are validated by default.
 
-The most popular default validator is the ECDSA validator, which mimics the behavior of normal [EOAs](https://ethereum.org/en/glossary/#eoa) (the type of accounts that wallets like MetaMask manage).  It validates UserOps and messages by checking if they are signed by a specific ECDSA private key known as the "signer" or "owner."  We will be using ECDSA validator for this tutorial, but you can see [all default validators here](/kerneljs/plugins/intro).
+The most popular default validator is the ECDSA validator, which mimics the behavior of normal [EOAs](https://ethereum.org/en/glossary/#eoa) (the type of accounts that wallets like MetaMask manage).  It validates UserOps and messages by checking if they are signed by a specific ECDSA private key known as the "signer" or "owner."  We will be using ECDSA validator for this tutorial, but you can see [all default validators here](/sdk/plugins/intro).
 
 ## Helper API
 
-The easiest way to create a Kernel account is through [**presets**](/kerneljs/presets/intro) -- helper functions that create Kernel accounts based on common configurations.  For example, to create a ECDSA Kernel account using ZeroDev infra:
+The easiest way to create a Kernel account is through [**presets**](/sdk/presets/intro) -- helper functions that create Kernel accounts based on common configurations.  For example, to create a ECDSA Kernel account using ZeroDev infra:
 
 ```typescript
 import { createEcdsaKernelAccountClient } from "@zerodev/presets/zerodev"
@@ -110,7 +110,7 @@ const kernelClient = createKernelAccountClient({
 Note that:
 
 - You need to replace the `BUNDLER_RPC` with an [actual bundler RPC](/meta-infra/intro).
-- `sponsorUserOperation` only needs to be specified if you want to [use a paymaster](/kerneljs/core-api/sponsor-gas).
+- `sponsorUserOperation` only needs to be specified if you want to [use a paymaster](/sdk/core-api/sponsor-gas).
 
 ## FAQs
 
