@@ -7,7 +7,7 @@ export default defineConfig({
   },
   title: 'ZeroDev',
   topNav: [
-    { text: 'SDK', link: '/kerneljs/getting-started/intro', match: '/kerneljs' },
+    { text: 'SDK', link: '/', match: '/kerneljs' },
     { text: 'Infra', link: '/meta-infra/intro', match: '/meta-infra' },
     { text: 'Recovery Flow', link: '/recovery-flow/intro', match: '/recovery-flow' },
     {
@@ -21,14 +21,14 @@ export default defineConfig({
     { text: 'Blog', link: '/blog', match: '/blog' },
   ],
   sidebar: {
-    "/kerneljs": [
+    "/": [
       {
         "text": "Getting Started",
         "collapsed": false,
         "items": [
           {
             "text": "Introduction",
-            "link": "/kerneljs/getting-started/intro"
+            "link": "/"
           },
           {
             "text": "Quickstart",

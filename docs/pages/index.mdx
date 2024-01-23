@@ -1,3 +1,36 @@
-# ZeroDev Documentation
- 
-TODO
+# Kernel.js Introduction
+
+**Kernel.js** is an SDK for developing [account abstraction](https://www.erc4337.io) wallets and DApps using [Kernel](https://github.com/zerodevapp/kernel), a smart contract account (or "smart account" for short) that is:
+
+- **Modular**: Kernel accounts can be customized with Solidity plugins.  Features such as multisig, recovery, and session keys are all implemented as plugins.
+- **Optimized**: Kernel is [heavily optimized](https://github.com/zerodevapp/aa-benchmark) -- it saves gas for you and your users.
+- **Widely used**: Kernel is [the most widely deployed](https://www.bundlebear.com/factories/all) ERC-4337 smart account.
+
+## Why Kernel.js
+
+Kernel.js is the most powerful and flexible account abstraction SDK.
+
+- **Powerful**: Kernel.js supports all major AA features such as sponsoring gas and batching transactions, but it also supports powerful plugins such as session keys, recovery, passkeys, and more.
+
+- **Flexible**: Kernel.js is built on top of [Viem](https://viem.sh/) and [Permissionless](https://docs.pimlico.io/permissionless/reference), which means:
+  - You can interact with smart accounts through standard Viem APIs.
+  - You can use Kernel.js with any AA infra providers.
+
+
+## Kernel.js Components
+
+There are four major components of Kernel.js.
+
+- [Core API](/kerneljs/core-api/intro): the main things you want to do with a smart account, such as sponsoring gas, batching UserOps, etc.
+
+- [Plugins](/kerneljs/plugins/intro): Kernel plugins that change the validation logic of the account, including passkeys, session keys, recovery, etc.
+
+- [Signers](/kerneljs/signers/intro): integrations with popular WaaS services such as Privy and Dynamic, allowing you to use these services while using AA.
+
+- [Presets](/kerneljs/presets/intro): integrations with popular infra providers such as Pimlico, StackUp, Alchemy, and of course ZeroDev itself.
+
+Use the left sidebar to read more about these components.
+
+## Getting Started
+
+To start coding with Kernel.js, [check out the tutorial](/kerneljs/getting-started/quickstart).
