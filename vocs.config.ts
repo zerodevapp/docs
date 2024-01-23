@@ -5,7 +5,9 @@ export default defineConfig({
     dark: '/logo-white.svg',
     light: '/logo-black.svg'
   },
+  ogImageUrl: '/logo-black.svg',
   title: 'ZeroDev',
+  description: "Build a Web3 experience that feels like Web2, using account abstraction through ZeroDev.\nSay goodbye to gas, seed phrases, signing prompts, and more.",
   topNav: [
     { text: 'SDK', link: '/', match: '/sdk' },
     { text: 'Infra', link: '/meta-infra/intro', match: '/meta-infra' },
