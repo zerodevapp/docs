@@ -33,8 +33,8 @@ import { polygonMumbai } from 'viem/chains';
 // Convert a Capsule viem client to a SmartAccountSigner
 // Follow the Capsule docs for more instructions on creating the Viem client https://docs.usecapsule.com/integration-guide/signing-transactions
 const viemClient = createCapsuleViemClient(capsule, {
-  chain: CHAIN,
-  transport: http(CHAIN_PROVIDER),
+  chain: polygonMumbai,
+  transport: http('https://polygon-mumbai.g.alchemy.com/v2/ALCHEMY_API_KEY'),
 });
 const smartAccountSigner = walletClientToSmartAccountSigner(viemClient);
 
