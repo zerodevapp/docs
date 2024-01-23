@@ -1,0 +1,67 @@
+# Use an EOA with kernel.js
+
+An Externally Owned Account (EOA) is a standard Ethereum account operated via a private key. It's commonly used in wallets like MetaMask. Kernel.js is compatible with EOAs as signers, and the method of integrating an EOA varies based on your dApp's connection approach.
+
+## Integration Methods
+We'll explore three methods to integrate a signer with kernel.js: using an EIP-1193 provider, using a viem WalletClient, and employing a Local Account. A Local Account refers to an EOA where the private key is directly accessible on the client.
+
+### EIP-1193 Provider Integration
+EIP-1193 is a standard interface for Ethereum providers, such as MetaMask or hardware wallets, where the key material is hosted externally rather than on the local client. Kernel.js supports creating a signer from any provider that implements this interface.
+
+```typescript
+import { createEcdsaKernelAccountClient } from '@kerneljs/presets/zerodev';
+import { providerToSmartAccountSigner } from '@kerneljs/core';
+import { polygonMumbai } from "viem/chains";
+
+// `window.ethereum` is the provider object that is injected into the browser by a wallet, like metamask, that enables JSON RPC communication with the walelt.
+const smartAccountSigner = await providerToSmartAccountSigner(window.ethereum);
+
+// Set up your Kernel client
+const kernelClient = await createEcdsaKernelAccountClient({
+  chain: polygonMumbai,
+  projectId: process.env.ZERODEV_PROJECT_ID,
+  signer: smartAccountSigner,
+});
+
+const kernelAddress = kernelClient.account.address;
+```
+
+### Viem Wallet Client Integration
+A [Wallet Client](https://viem.sh/docs/clients/wallet.html) is an interface to interact with Ethereum Account(s) and provides the ability to retrieve accounts, execute transactions, sign messages, etc through Wallet Actions.
+
+In this example, we assume that you have access to a WalletClient object.
+```typescript
+import { createEcdsaKernelAccountClient } from '@kerneljs/presets/zerodev';
+import { walletClientToSmartAccountSigner } from '@kerneljs/core';
+
+const smartAccountSigner = walletClientToSmartAccountSigner(walletClient);
+
+// Set up your Kernel client
+const kernelClient = await createEcdsaKernelAccountClient({
+  chain: polygonMumbai,
+  projectId: process.env.ZERODEV_PROJECT_ID,
+  signer: smartAccountSigner,
+});
+
+const kernelAddress = kernelClient.account.address;
+```
+
+### Local Account
+In this example we assume you have access to the private key locally.
+
+```typescript
+import { createEcdsaKernelAccountClient } from "@kerneljs/presets/zerodev"
+import { privateKeyToAccount } from "viem/accounts"
+import { polygonMumbai } from "viem/chains"
+import { Hex } from "viem"
+
+// Create a signer
+const signer = privateKeyToAccount(process.env.PRIVATE_KEY as Hex)
+
+// Create a Kernel client
+const kernelClient = await createEcdsaKernelAccountClient({
+  chain: polygonMumbai,
+  projectId: process.env.ZERODEV_PROJECT_ID,
+  signer,
+})
+```

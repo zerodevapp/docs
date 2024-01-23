@@ -178,6 +178,10 @@ export default defineConfig({
             link: '/kerneljs/signers/turnkey',
             text: 'Turnkey',
           },
+          {
+            link: '/kerneljs/signers/eoa',
+            text: 'Externally Owned Account (EOA)',
+          },
         ],
       },
       {
