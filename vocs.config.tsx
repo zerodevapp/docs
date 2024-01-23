@@ -1,3 +1,4 @@
+import * as React from 'react'
 import { defineConfig } from 'vocs'
 
 export default defineConfig({
@@ -5,9 +6,14 @@ export default defineConfig({
     dark: '/logo-white.svg',
     light: '/logo-black.svg'
   },
-  ogImageUrl: '/logo-black.svg',
-  title: 'ZeroDev',
-  description: "Build a Web3 experience that feels like Web2, using account abstraction through ZeroDev.\nSay goodbye to gas, seed phrases, signing prompts, and more.",
+  head: (
+    <>
+      <meta property="og:type" content="website" />
+      <meta property="og:title" content="ZeroDev -- Simple & Powerful Account Abstraction" />
+      <meta property="og:url" content="https://zerodev.app" />
+      <meta property="og:description" content="Build a Web3 experience that feels like Web2, using account abstraction through ZeroDev.  Say goodbye to gas, seed phrases, transaction prompts, and more." />
+    </>
+  ),
   topNav: [
     { text: 'SDK', link: '/', match: '/sdk' },
     { text: 'Infra', link: '/meta-infra/intro', match: '/meta-infra' },
