@@ -182,6 +182,10 @@ export default defineConfig({
             link: '/kerneljs/signers/eoa',
             text: 'Externally Owned Account (EOA)',
           },
+          {
+            link: '/kerneljs/signers/custom-signer',
+            text: 'Custom Signer Integration',
+          }
         ],
       },
       {
