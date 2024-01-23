@@ -29,8 +29,8 @@ const authProvider = new AuthProvider(clientId, params);
 ### Use with kernel.js
 
 ```typescript
-import { createEcdsaKernelAccountClient } from '@kerneljs/presets/zerodev';
-import { providerToSmartAccountSigner } from '@kerneljs/core'
+import { createEcdsaKernelAccountClient } from '@zerodev/presets/zerodev';
+import { providerToSmartAccountSigner } from '@zerodev/sdk'
 import { polygonMumbai } from 'viem/chains';
 
 // Convert the authProvider to a SmartAccountSigner

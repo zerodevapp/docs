@@ -7,7 +7,7 @@ export default defineConfig({
   },
   title: 'ZeroDev',
   topNav: [
-    { text: 'SDK', link: '/', match: '/kerneljs' },
+    { text: 'SDK', link: '/', match: '/sdk' },
     { text: 'Infra', link: '/meta-infra/intro', match: '/meta-infra' },
     { text: 'Recovery Flow', link: '/recovery-flow/intro', match: '/recovery-flow' },
     {
@@ -32,7 +32,7 @@ export default defineConfig({
           },
           {
             "text": "Quickstart",
-            "link": "/kerneljs/getting-started/quickstart"
+            "link": "/sdk/getting-started/quickstart"
           }
         ],
       },
@@ -42,39 +42,39 @@ export default defineConfig({
         "items": [
           {
             "text": "Introduction",
-            "link": "/kerneljs/core-api/intro"
+            "link": "/sdk/core-api/intro"
           },
           {
             "text": "Create a Smart Account",
-            "link": "/kerneljs/core-api/create-account"
+            "link": "/sdk/core-api/create-account"
           },
           {
             "text": "Send Transactions",
-            "link": "/kerneljs/core-api/send-transactions"
+            "link": "/sdk/core-api/send-transactions"
           },
           {
             "text": "Sponsor Gas",
-            "link": "/kerneljs/core-api/sponsor-gas"
+            "link": "/sdk/core-api/sponsor-gas"
           },
           {
             "text": "Pay Gas in ERC20s",
-            "link": "/kerneljs/core-api/pay-gas-in-erc20s"
+            "link": "/sdk/core-api/pay-gas-in-erc20s"
           },
           {
             "text": "Batch Transactions",
-            "link": "/kerneljs/core-api/batch-transactions"
+            "link": "/sdk/core-api/batch-transactions"
           },
           {
             "text": "Deploy Contracts",
-            "link": "/kerneljs/core-api/deploy-contract"
+            "link": "/sdk/core-api/deploy-contract"
           },
           {
             "text": "Sign & Validate Messages",
-            "link": "/kerneljs/core-api/sign-and-validate-messages"
+            "link": "/sdk/core-api/sign-and-validate-messages"
           },
           {
             "text": "Delegatecall",
-            "link": "/kerneljs/core-api/delegatecall"
+            "link": "/sdk/core-api/delegatecall"
           }
         ],
       },
@@ -84,27 +84,27 @@ export default defineConfig({
         "items": [
           {
             "text": "Introduction",
-            "link": "/kerneljs/plugins/intro"
+            "link": "/sdk/plugins/intro"
           },
           {
             "text": "ECDSA",
-            "link": "/kerneljs/plugins/ecdsa"
+            "link": "/sdk/plugins/ecdsa"
           },
           {
             "text": "Passkey",
-            "link": "/kerneljs/plugins/passkey"
+            "link": "/sdk/plugins/passkey"
           },
           {
             "text": "Multisig",
-            "link": "/kerneljs/plugins/multisig"
+            "link": "/sdk/plugins/multisig"
           },
           {
             "text": "Session Keys",
-            "link": "/kerneljs/plugins/session-keys"
+            "link": "/sdk/plugins/session-keys"
           },
           {
             "text": "Recovery",
-            "link": "/kerneljs/plugins/recovery"
+            "link": "/sdk/plugins/recovery"
           }
         ],
       },
@@ -114,11 +114,11 @@ export default defineConfig({
         "items": [
           {
             "text": "How to debug a UserOp?",
-            "link": "/kerneljs/getting-started/intro"
+            "link": "/sdk/getting-started/intro"
           },
           {
             "text": "Can I use Ethers.js?",
-            "link": "/kerneljs/getting-started/intro"
+            "link": "/sdk/getting-started/intro"
           }
         ],
       },
@@ -128,62 +128,62 @@ export default defineConfig({
         "items": [
           {
             "text": "Introduction",
-            "link": "/kerneljs/signers/intro"
+            "link": "/sdk/signers/intro"
           },
           {
-            link: '/kerneljs/signers/dynamic',
+            link: '/sdk/signers/dynamic',
             text: 'Dynamic',
           },
           {
-            link: '/kerneljs/signers/privy',
+            link: '/sdk/signers/privy',
             text: 'Privy',
           },
           {
-            link: '/kerneljs/signers/magic',
+            link: '/sdk/signers/magic',
             text: 'Magic',
           },
           {
-            link: '/kerneljs/signers/web3auth',
+            link: '/sdk/signers/web3auth',
             text: 'Web3Auth',
           },
           {
-            link: '/kerneljs/signers/fireblocks',
+            link: '/sdk/signers/fireblocks',
             text: 'Fireblocks',
           },
           {
-            link: '/kerneljs/signers/portal',
+            link: '/sdk/signers/portal',
             text: 'Portal',
           },
           {
-            link: '/kerneljs/signers/capsule',
+            link: '/sdk/signers/capsule',
             text: 'Capsule',
           },
           {
-            link: '/kerneljs/signers/particle',
+            link: '/sdk/signers/particle',
             text: 'Particle Network',
           },
           {
-            link: '/kerneljs/signers/arcana',
+            link: '/sdk/signers/arcana',
             text: 'Arcana Auth',
           },
           {
-            link: '/kerneljs/signers/dfns',
+            link: '/sdk/signers/dfns',
             text: 'Dfns',
           },
           {
-            link: '/kerneljs/signers/lit-protocol',
+            link: '/sdk/signers/lit-protocol',
             text: 'Lit Protocol',
           },
           {
-            link: '/kerneljs/signers/turnkey',
+            link: '/sdk/signers/turnkey',
             text: 'Turnkey',
           },
           {
-            link: '/kerneljs/signers/eoa',
+            link: '/sdk/signers/eoa',
             text: 'Externally Owned Account (EOA)',
           },
           {
-            link: '/kerneljs/signers/custom-signer',
+            link: '/sdk/signers/custom-signer',
             text: 'Custom Signer Integration',
           }
         ],
@@ -194,11 +194,11 @@ export default defineConfig({
         "items": [
           {
             "text": "Introduction",
-            "link": "/kerneljs/presets/intro"
+            "link": "/sdk/presets/intro"
           },
           {
             "text": "ZeroDev",
-            "link": "/kerneljs/presets/zerodev"
+            "link": "/sdk/presets/zerodev"
           }
         ],
       }

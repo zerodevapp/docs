@@ -21,7 +21,7 @@ Integrating kernel.js with Privy is straightforward once your application is set
 ### Get the Privy wallet's Provider
 To begin, ensure your application is integrated with Privy. Detailed guidance is available in the [Privy documentation](https://docs.privy.io/guide/quickstart). You should also configure your PrivyProvider to create embedded wallets for your users when they login.
 
-The following example demonstrates the use of Privy's react auth SDK to get the embedded wallet and use it as a signer for Kernel.js.
+The following example demonstrates the use of Privy's react auth SDK to get the embedded wallet and use it as a signer for ZeroDev.
 
 ```typescript
 import { useWallets } from "@privy-io/react-auth";
@@ -41,8 +41,8 @@ const privyProvider = await embeddedWallet.getEthereumProvider();
 ### Use with kernel.js
 
 ```typescript
-import { createEcdsaKernelAccountClient } from '@kerneljs/presets/zerodev';
-import { providerToSmartAccountSigner } from '@kerneljs/core';
+import { createEcdsaKernelAccountClient } from '@zerodev/presets/zerodev';
+import { providerToSmartAccountSigner } from '@zerodev/sdk';
 import { polygonMumbai } from 'viem/chains';
 
 // Use the Provider from Privy to create a SmartAccountSigner

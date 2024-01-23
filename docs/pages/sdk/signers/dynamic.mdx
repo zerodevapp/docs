@@ -35,8 +35,8 @@ const dynamicProvider = await primaryWallet?.connector?.getWalletClient();
 ### Use with kernel.js
 
 ```typescript
-import { createEcdsaKernelAccountClient } from '@kerneljs/presets/zerodev';
-import { providerToSmartAccountSigner } from '@kerneljs/core';
+import { createEcdsaKernelAccountClient } from '@zerodev/presets/zerodev';
+import { providerToSmartAccountSigner } from '@zerodev/sdk';
 import { polygonMumbai } from 'viem/chains';
 
 // Use the Provider from Dynamic to create a SmartAccountSigner

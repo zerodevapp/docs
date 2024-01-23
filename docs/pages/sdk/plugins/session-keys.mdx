@@ -89,7 +89,7 @@ In this example, the default validator is `ecdsaValidator`.
 If you want to use the session key on the same node, you can already [construct a Kernel client from this Kernel account](/kerneljs/core-api/create-account#create-an-account-client) and start using it.  If you want to share the session key with an agent or store it for use later, you can serialize the session key:
 
 ```typescript
-import { serializeSessionKeyAccount } from "@kerneljs/session-key"
+import { serializeSessionKeyAccount } from "@zerodev/session-key"
 
 const serializedSessionKey = await serializeSessionKeyAccount(sessionKeyAccount, sessionPrivateKey)
 ```
@@ -156,7 +156,7 @@ const sessionKeyAccount = await createKernelAccount(publicClient, {
 Finally, the owner can serialize the session key and share it with the agent.
 
 ```typescript
-import { serializeSessionKeyAccount } from "@kerneljs/session-key"
+import { serializeSessionKeyAccount } from "@zerodev/session-key"
 
 const serializedSessionKey = await serializeSessionKeyAccount(sessionKeyAccount)
 ```
@@ -209,7 +209,7 @@ By setting the `paymaster` flag to a non-zero value, you ensure that the session
 
 If not set or set to `address(0)` (you can use `zeroAddress` from `viem`), the session key will work with or without paymaster.
 
-If set to `address(1)` (you can use `oneAddress` from `@kerneljs/session-key`), the session key will only work with a paymaster, but it can be any paymaster.
+If set to `address(1)` (you can use `oneAddress` from `@zerodev/session-key`), the session key will only work with a paymaster, but it can be any paymaster.
 
 If set to a specific paymaster address, then the session key can only be used with that paymaster.
 
@@ -220,7 +220,7 @@ Permissions are at the core of session keys.  By specifying permissions, you lim
 Permissions look like this:
 
 ```typescript
-import { ParamOperator } from "@kerneljs/session-key"
+import { ParamOperator } from "@zerodev/session-key"
 
 const sessionKeyValidator = await signerToSessionKeyValidator(publicClient, {
   signer: sessionKeySigner,

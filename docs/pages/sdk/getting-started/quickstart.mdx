@@ -1,4 +1,4 @@
-# Quickstart with Kernel.js
+# Quickstart with ZeroDev
 
 :::info
 Impatient?  Check out [the complete example here](https://github.com/zerodevapp/kernel.js-examples/tree/main/quickstart/completed.ts).
@@ -8,7 +8,7 @@ In this tutorial, we will mint an NFT without paying gas.  We assume that you ha
 
 ## Create a ZeroDev Project
 
-Kernel.js works with any bundlers and paymasters.  For this tutorial, we will use ZeroDev's [meta AA infra](/meta-infra/intro).
+ZeroDev works with any bundlers and paymasters.  For this tutorial, we will use ZeroDev's [meta AA infra](/meta-infra/intro).
 
 Go to the [ZeroDev dashboard](https://dashboard.zerodev.app/) and create a project for Polygon Mumbai.
 
@@ -36,7 +36,7 @@ From now on, when you use the paymaster RPC from the previous step, the paymaste
 
 ## Write the code
 
-Clone the [Kernel.js examples repo](https://github.com/zerodevapp/kernel.js-examples).  Then, inside the directory, install all dependencies:
+Clone the [ZeroDev examples repo](https://github.com/zerodevapp/kernel.js-examples).  Then, inside the directory, install all dependencies:
 
 ```bash
 npm install
@@ -60,7 +60,7 @@ Now open the [`quickstart/template.ts`](https://github.com/zerodevapp/kernel.js-
 
 ### Creating a Kernel client
 
-Before you can send UserOps, you need to construct an "account client."  An account client is an object that interacts with a bundler on behalf of a specific account.  In the case of Kernel.js, all account clients are of the type `KernelAccountClient`.
+Before you can send UserOps, you need to construct an "account client."  An account client is an object that interacts with a bundler on behalf of a specific account.  In the case of ZeroDev, all account clients are of the type `KernelAccountClient`.
 
 There are several types of Kernel account clients, each for a different type of [validation methods](/kerneljs/plugins/intro).  For this tutorial, we will be using the most common validation method -- ECDSA, which is the same algorithm used by normal Ethereum accounts (EOAs).
 
@@ -78,7 +78,7 @@ const main = async () => {
 Since we are using ZeroDev for bundlers & paymasters, we can construct the Kernel client via the ZeroDev "preset."  Presets are helper functions for specific infra providers.  Add the following import and code:
 
 ```typescript
-import { createEcdsaKernelAccountClient } from "@kerneljs/presets/zerodev"
+import { createEcdsaKernelAccountClient } from "@zerodev/presets/zerodev"
 import { polygonMumbai } from "viem/chains"
 
 const main = async () => {

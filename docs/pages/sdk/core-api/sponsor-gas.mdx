@@ -9,7 +9,7 @@ The first step for sponsoring gas is [choosing a paymaster provider](/meta-infra
 [Presets](/kerneljs/presets/intro) are the easiest way to use paymasters.  For example, if you are using the ZeroDev preset:
 
 ```typescript
-import { createEcdsaKernelAccountClient } from "@kerneljs/presets/zerodev"
+import { createEcdsaKernelAccountClient } from "@zerodev/presets/zerodev"
 
 const kernelClient = await createEcdsaKernelAccountClient({
   usePaymaster: true, // defaults to true
@@ -30,7 +30,7 @@ The `sponsorUserOperation` function essentially takes a UserOp and then returns 
 import { createSmartAccountClient } from "permissionless"
 import { http } from "viem"
 import { polygonMumbai } from 'viem/chains'
-import { createZeroDevPaymasterClient } from "@kerneljs/core"
+import { createZeroDevPaymasterClient } from "@zerodev/sdk"
 
 const kernelClient = createSmartAccountClient({
   account,

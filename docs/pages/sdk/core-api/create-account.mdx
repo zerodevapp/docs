@@ -15,7 +15,7 @@ The most popular default validator is the ECDSA validator, which mimics the beha
 The easiest way to create a Kernel account is through [**presets**](/kerneljs/presets/intro) -- helper functions that create Kernel accounts based on common configurations.  For example, to create a ECDSA Kernel account using ZeroDev infra:
 
 ```typescript
-import { createEcdsaKernelAccountClient } from "@kerneljs/presets/zerodev"
+import { createEcdsaKernelAccountClient } from "@zerodev/presets/zerodev"
 import { privateKeyToAccount } from "viem/accounts"
 import { polygonMumbai } from "viem/chains"
 import { Hex } from "viem"
@@ -69,7 +69,7 @@ Replace `PRIVATE_KEY` with an actual private key.  You can [generate a random on
 Then create a ECDSA validator from the signer:
 
 ```typescript
-import { signerToEcdsaValidator } from "@kerneljs/ecdsa-validator"
+import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
 
 const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
   signer,
@@ -81,7 +81,7 @@ const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
 Next, create a Kernel account with the ECDSA validator:
 
 ```typescript
-import { createKernelAccount } from "@kerneljs/core"
+import { createKernelAccount } from "@zerodev/sdk"
 
 const account = await createKernelAccount(publicClient, {
   plugins: {
@@ -95,7 +95,7 @@ const account = await createKernelAccount(publicClient, {
 Now that we have an account, we can finally construct an "account client," which is the equivalent of a [wallet client in Viem](https://viem.sh/docs/clients/wallet.html) that allows you to send UserOps to bundlers.
 
 ```typescript
-import { createKernelAccountClient } from "@kerneljs/core"
+import { createKernelAccountClient } from "@zerodev/sdk"
 import { http } from "viem"
 import { polygonMumbai } from 'viem/chains'
 
@@ -125,7 +125,7 @@ In other words, "creating" accounts with the SDK is free -- you can create an in
 Yes, you can do so by providing an `index` when you create the account object.
 
 ```typescript
-import { createKernelAccount } from "@kerneljs/core"
+import { createKernelAccount } from "@zerodev/sdk"
 
 const account = createKernelAccount(publicClient, {
   plugins: {
