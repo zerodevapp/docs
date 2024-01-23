@@ -77,6 +77,7 @@ const pkpWallet = new PKPEthersWallet({
 
 ```typescript
 import { createEcdsaKernelAccountClient } from '@kerneljs/presets/zerodev';
+import { providerToSmartAccountSigner } from '@kerneljs/core';
 import { polygonMumbai } from 'viem/chains';
 
 const smartAccountSigner = providerToSmartAccountSigner(pkpWallet);

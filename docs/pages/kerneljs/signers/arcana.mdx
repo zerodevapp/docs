@@ -30,8 +30,8 @@ const authProvider = new AuthProvider(clientId, params);
 
 ```typescript
 import { createEcdsaKernelAccountClient } from '@kerneljs/presets/zerodev';
+import { providerToSmartAccountSigner } from '@kerneljs/core'
 import { polygonMumbai } from 'viem/chains';
-// TODO import providerToSmartAccountSigner helper function
 
 // Convert the authProvider to a SmartAccountSigner
 const smartAccountSigner = providerToSmartAccountSigner(authProvider.provider);

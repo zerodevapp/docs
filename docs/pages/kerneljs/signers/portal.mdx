@@ -33,8 +33,8 @@ const portal = new Portal(portalOptions);
 
 ```typescript
 import { createEcdsaKernelAccountClient } from '@kerneljs/presets/zerodev';
+import { providerToSmartAccountSigner } from '@kerneljs/core';
 import { polygonMumbai } from 'viem/chains';
-// TODO import providerToSmartAccountSigner helper function
 
 // Get the Provider from Portal and convert it to a SmartAccountSigner
 const portalProvider = portal.provider;
