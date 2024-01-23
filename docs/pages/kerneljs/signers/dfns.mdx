@@ -56,9 +56,12 @@ const initDfnsWallet = (walletId: string) => {
 import { createEcdsaKernelAccountClient } from '@kerneljs/presets/zerodev';
 import { walletClientToSmartAccountSigner } from '@kerneljs/core';
 import { polygonMumbai } from 'viem/chains';
+import { toAccount } from 'viem/accounts';
+import { createWalletClient } from 'viem';
 
 // Convert the dfns wallet to a SmartAccountSigner
 const mumbaiWallet = await initDfnsWallet(MUMBAI_WALLET_ID!);
+const account = toAccount(mumbaiWallet)
 const walletClient = createWalletClient({
     account,
     transport: http('https://polygon-mumbai.g.alchemy.com/v2/ALCHEMY_API_KEY'),

@@ -36,7 +36,7 @@ import { polygonMumbai } from 'viem/chains';
 
 // Get the Provider from Web3Auth and convert it to a SmartAccountSigner
 const web3authProvider = await web3auth.provider;
-const smartAccountSigner = providerToSmartAccountSigner(web3authProvider);
+const smartAccountSigner = await providerToSmartAccountSigner(web3authProvider);
 
 // Set up your Kernel client
 const kernelClient = await createEcdsaKernelAccountClient({

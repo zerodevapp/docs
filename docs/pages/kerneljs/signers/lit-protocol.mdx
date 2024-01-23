@@ -80,7 +80,7 @@ import { createEcdsaKernelAccountClient } from '@kerneljs/presets/zerodev';
 import { providerToSmartAccountSigner } from '@kerneljs/core';
 import { polygonMumbai } from 'viem/chains';
 
-const smartAccountSigner = providerToSmartAccountSigner(pkpWallet);
+const smartAccountSigner = await providerToSmartAccountSigner(pkpWallet);
 
 // Set up your Kernel client
 const kernelClient = await createEcdsaKernelAccountClient({

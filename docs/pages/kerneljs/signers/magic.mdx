@@ -36,7 +36,7 @@ import { polygonMumbai } from 'viem/chains';
 
 // Get the Provider from Magic and convert it to a SmartAccountSigner
 const magicProvider = await magic.wallet.getProvider();
-const smartAccountSigner = providerToSmartAccountSigner(magicProvider);
+const smartAccountSigner = await providerToSmartAccountSigner(magicProvider);
 
 // Set up your Kernel client
 const kernelClient = await createEcdsaKernelAccountClient({

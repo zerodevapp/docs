@@ -17,11 +17,12 @@ After following the Turnkey documentation, you will have access to a `TurnkeyCli
 
 ```typescript
 import { TurnkeyClient } from "@turnkey/http";
+import { createAccount } from "@turnkey/viem";
 
 // Param options here will be specific to your project.  See the Turnkey docs for more info.
 const turnkeyClient = new TurnkeyClient({ baseUrl: '' }, stamper);
 
-const turnkeyAccount = createAccount ({
+const turnkeyAccount = createAccount({
   client: turnkeyClient,
   organizationId: subOrganizationId, // Your subOrganization id
   signWith: signWith, // Your suborganization `signWith` param.
@@ -34,6 +35,7 @@ const turnkeyAccount = createAccount ({
 import { createEcdsaKernelAccountClient } from '@kerneljs/presets/zerodev';
 import { walletClientToSmartAccountSigner } from '@kerneljs/core';
 import { polygonMumbai } from 'viem/chains';
+import { createWalletClient } from "viem";
 
 // Create a SmartAccountSigner from the turnkeyAccount
 const walletClient = createWalletClient({

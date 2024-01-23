@@ -38,7 +38,7 @@ import { polygonMumbai } from 'viem/chains';
 
 // Get the Provider from Portal and convert it to a SmartAccountSigner
 const portalProvider = portal.provider;
-const smartAccountSigner = providerToSmartAccountSigner(portalProvider);
+const smartAccountSigner = await providerToSmartAccountSigner(portalProvider);
 
 // Set up your Kernel client
 const kernelClient = await createEcdsaKernelAccountClient({
