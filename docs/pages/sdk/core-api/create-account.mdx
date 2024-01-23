@@ -4,11 +4,13 @@
 Impatient?  Check out [complete examples here](https://github.com/zerodevapp/kernel.js-examples/tree/main/create-account).
 :::
 
-At the core of account abstraction is the *smart account* -- an [account](https://ethereum.org/en/developers/docs/accounts/) powered by a smart contract.  The fact that smart accounts are smart contracts is what allows us to *abstract* their logic, from authentication to gas payments and more.
+At the core of account abstraction is the *smart account* -- an account powered by a smart contract.  The fact that smart accounts are smart contracts is what allows us to *abstract* their logic, from authentication to gas payments and more.
 
-Kernel is a *modular smart account* that can be customized with plugins.  When you create a Kernel account, you need to decide on a [*default validator*](/sdk/plugins/intro), which is a plugin that determines how UserOps are validated by default.
+[Kernel](https://github.com/zerodevapp/kernel) is a *modular smart account* that can be customized with plugins.  When you create a Kernel account, you set it up with a [*validator*](/sdk/plugins/intro), which determines how the account will validate UserOps.
 
-The most popular default validator is the ECDSA validator, which mimics the behavior of normal [EOAs](https://ethereum.org/en/glossary/#eoa) (the type of accounts that wallets like MetaMask manage).  It validates UserOps and messages by checking if they are signed by a specific ECDSA private key known as the "signer" or "owner."  We will be using ECDSA validator for this tutorial, but you can see [all default validators here](/sdk/plugins/intro).
+The most popular validator is the ECDSA validator, which mimics the behavior of normal [EOAs](https://ethereum.org/en/glossary/#eoa) (the type of accounts that wallets like MetaMask use).  It validates UserOps and messages by checking if they are signed by a specific ECDSA private key known as the "signer" or "owner."
+
+In this doc, we will be using the ECDSA validator with a local private key as a signer, but you can see a full list of [validators here]((/sdk/plugins/intro)) and [signers here](/sdk/signers/intro).
 
 ## Helper API
 
@@ -31,11 +33,11 @@ const kernelClient = await createEcdsaKernelAccountClient({
 })
 ```
 
-For a more flexible API, read on to learn the core API.
+For a more flexible API, read on to learn the standard API.
 
-## Core API
+## Standard API
 
-The core API is for people who want complete control over their Kernel accounts's settings.  Follow the following steps.
+The standard API is for people who want complete control over their Kernel accounts's settings.  Follow the following steps.
 
 ### Creating a public client
 

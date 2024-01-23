@@ -49,10 +49,6 @@ export default defineConfig({
         "collapsed": false,
         "items": [
           {
-            "text": "Introduction",
-            "link": "/sdk/core-api/intro"
-          },
-          {
             "text": "Create a Smart Account",
             "link": "/sdk/core-api/create-account"
           },
