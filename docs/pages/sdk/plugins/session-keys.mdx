@@ -171,6 +171,18 @@ Note how we pass `sessionKeySigner` to `deserializeSessionKeyAccount`.  This is 
 
 Now you can [create a Kernel client](/sdk/core-api/create-account#create-an-account-client) using the `sessionKeyAccount` as you normally would.
 
+### Revoking Session Keys
+
+```typescript
+import { revokeSessionKey } from "@zerodev/session-key"
+
+// Revoke all session keys
+const userOpHash = await revokeSessionKey(kernelClient)
+
+// Revoke a specific session key
+const userOpHash = await revokeSessionKey(kernelClient, sessionKeySigner.address)
+```
+
 ## Session Key Parameters
 
 When creating a session key validator, you specify parameters under the `validatorData` flag:
