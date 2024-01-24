@@ -12,9 +12,56 @@ The most popular validator is the ECDSA validator, which mimics the behavior of 
 
 In this doc, we will be using the ECDSA validator with a local private key as a signer, but you can see a full list of [validators here]((/sdk/plugins/intro)) and [signers here](/sdk/signers/intro).
 
+## Installation
+
+To install the ZeroDev SDK and its peer dependencies:
+
+:::code-group
+
+```bash [npm]
+npm i @zerodev/sdk viem permissionless
+```
+
+```bash [yarn]
+yarn add @zerodev/sdk viem permissionless
+```
+
+```bash [pnpm]
+pnpm i @zerodev/sdk viem permissionless
+```
+
+```bash [bun]
+bun i @zerodev/sdk viem permissionless
+```
+
+:::
+
 ## Helper API
 
-The easiest way to create a Kernel account is through [**presets**](/sdk/presets/intro) -- helper functions that create Kernel accounts based on common configurations.  For example, to create a ECDSA Kernel account using ZeroDev infra:
+The easiest way to create a Kernel account is through [**presets**](/sdk/presets/intro) -- helper functions that create Kernel accounts based on common configurations.  To install presets: 
+
+
+:::code-group
+
+```bash [npm]
+npm i @zerodev/presets
+```
+
+```bash [yarn]
+yarn add @zerodev/presets
+```
+
+```bash [pnpm]
+pnpm i @zerodev/presets
+```
+
+```bash [bun]
+bun i @zerodev/presets
+```
+
+:::
+
+For example, to create a ECDSA Kernel account using ZeroDev infra:
 
 ```typescript
 import { createEcdsaKernelAccountClient } from "@zerodev/presets/zerodev"
@@ -37,7 +84,30 @@ For a more flexible API, read on to learn the standard API.
 
 ## Standard API
 
-The standard API is for people who want complete control over their Kernel accounts's settings.  Follow the following steps.
+The standard API is for people who want complete control over their Kernel accounts's settings.  First install the ECDSA validator:
+
+
+:::code-group
+
+```bash [npm]
+npm i @zerodev/ecdsa-validator
+```
+
+```bash [yarn]
+yarn add @zerodev/ecdsa-validator
+```
+
+```bash [pnpm]
+pnpm i @zerodev/ecdsa-validator
+```
+
+```bash [bun]
+bun i @zerodev/ecdsa-validator
+```
+
+:::
+
+Then follow these steps:
 
 ### Creating a public client
 
