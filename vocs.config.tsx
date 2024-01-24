@@ -133,36 +133,36 @@ export default defineConfig({
             text: 'Web3Auth',
           },
           {
-            link: '/sdk/signers/fireblocks',
-            text: 'Fireblocks',
-          },
-          {
             link: '/sdk/signers/portal',
             text: 'Portal',
+          },
+          {
+            link: '/sdk/signers/turnkey',
+            text: 'Turnkey',
+          },
+          {
+            link: '/sdk/signers/fireblocks',
+            text: 'Fireblocks',
           },
           {
             link: '/sdk/signers/capsule',
             text: 'Capsule',
           },
           {
-            link: '/sdk/signers/particle',
-            text: 'Particle Network',
+            link: '/sdk/signers/lit-protocol',
+            text: 'Lit Protocol',
           },
           {
-            link: '/sdk/signers/arcana',
-            text: 'Arcana Auth',
+            link: '/sdk/signers/particle',
+            text: 'Particle Network',
           },
           {
             link: '/sdk/signers/dfns',
             text: 'Dfns',
           },
           {
-            link: '/sdk/signers/lit-protocol',
-            text: 'Lit Protocol',
-          },
-          {
-            link: '/sdk/signers/turnkey',
-            text: 'Turnkey',
+            link: '/sdk/signers/arcana',
+            text: 'Arcana Auth',
           },
           {
             link: '/sdk/signers/eoa',

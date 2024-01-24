@@ -6,3 +6,5 @@ Most commonly used signers are Externally Owned Accounts (EOAs). If you're using
 
 ## Implementing Custom Signers
 If your requirements extend beyond standard EOAs, ZeroDev supports the integration of custom signers. Our signers conform to the `SmartAccountSigner` interface defined in permissionless.js. For developers looking to implement a custom solution, you can reference the `SmartAccountSigner` interface on their [GitHub repository](https://github.com/pimlicolabs/permissionless.js/blob/0b1cf0086b3fa131415a6a9bf398852c159fc181/packages/permissionless/accounts/types.ts#L60). This interface provides the necessary structure and guidelines to ensure compatibility with ZeroDev.
+
+Once you've implemented a signer of the `SmartAccountSigner` type, you should be able to [use it with a validator](/sdk/core-api/create-account#creating-a-ecdsa-validator).
