@@ -1,7 +1,10 @@
 import * as React from 'react'
-import { defineConfig } from 'vocs'
+import { defineConfig, Config } from 'vocs'
 
-export default defineConfig({
+const config: Config = defineConfig({
+  theme: {
+    accentColor: '#24A1F2',
+  },
   logoUrl: {
     dark: '/logo-white.svg',
     light: '/logo-black.svg'
@@ -245,3 +248,5 @@ export default defineConfig({
     ],
   },
 })
+
+export default config;
