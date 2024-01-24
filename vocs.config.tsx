@@ -73,10 +73,6 @@ export default defineConfig({
             "link": "/sdk/core-api/deploy-contract"
           },
           {
-            "text": "Sign & Validate Messages",
-            "link": "/sdk/core-api/sign-and-validate-messages"
-          },
-          {
             "text": "Delegatecall",
             "link": "/sdk/core-api/delegatecall"
           }
