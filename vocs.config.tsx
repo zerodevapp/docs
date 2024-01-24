@@ -23,7 +23,7 @@ export default defineConfig({
   topNav: [
     { text: 'SDK', link: '/', match: '/sdk' },
     { text: 'Infra', link: '/meta-infra/intro', match: '/meta-infra' },
-    { text: 'Recovery Flow', link: '/recovery-flow/intro', match: '/recovery-flow' },
+    { text: 'Recovery', link: '/recovery-flow/intro', match: '/recovery-flow' },
     {
       link: 'https://docs-v4.zerodev.app/',
       text: 'Old Docs (v4)',
@@ -33,6 +33,20 @@ export default defineConfig({
       text: 'Dashboard',
     },
     { text: 'Blog', link: '/blog', match: '/blog' },
+  ],
+  socials: [
+    {
+      icon: 'github',
+      link: 'https://github.com/zerodevapp',
+    },
+    {
+      icon: "discord",
+      link: "https://discord.gg/KS9MRaTSjx"
+    },
+    {
+      icon: 'x',
+      link: 'https://twitter.com/zerodev_app',
+    }
   ],
   sidebar: {
     "/": [
