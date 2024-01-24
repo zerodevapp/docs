@@ -6,6 +6,12 @@ export default defineConfig({
     dark: '/logo-white.svg',
     light: '/logo-black.svg'
   },
+  editLink: {
+    pattern: 'https://github.com/zerodevapp/docs/edit/main/docs/pages/:path',
+    text: 'Edit on GitHub',
+  },
+  titleTemplate: '%s – ZeroDev',
+  description: "Build amazing Web3 UX with ZeroDev's smart account platform.",
   head: (
     <>
       <meta property="og:type" content="website" />
