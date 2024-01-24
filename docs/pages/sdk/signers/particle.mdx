@@ -1,16 +1,16 @@
-# Use Particle Network with kernel.js
+# Use Particle Network with ZeroDev
 
 [Particle Network](https://particle.network/) serves as an intent-centric, modular access layer for Web3. It provides a Smart Wallet-as-a-Service, enabling developers to enhance user experiences with customizable, embedded wallet modules. Leveraging MPC-TSS for key management, Particle simplifies user onboarding by integrating familiar Web2 accounts, including Google accounts, email addresses, phone numbers, and more.
 
 ## Set up
 
-To use Particle Network with kernel.js, first create an application that integrates with Particle Network.
+To use Particle Network with ZeroDev, first create an application that integrates with Particle Network.
 
 - Refer to the [Particle Network documentation site](https://docs.particle.network/) for instructions on setting up an application with the Particle Network.
 - For a quick start, Particle Network provides a guide, available [here](https://docs.particle.network/getting-started/get-started).
 
 ## Integration
-Integrating kernel.js with Particle Network is straightforward after setting up the project. Particle Network provides an Externally Owned Account (EOA) wallet to use as a signer with Kernel.
+Integrating ZeroDev with Particle Network is straightforward after setting up the project. Particle Network provides an Externally Owned Account (EOA) wallet to use as a signer with Kernel.
 
 ### Create the Particle Network object
 After following the Particle Network documentation, you will have access to a `ParticleProvider` object as shown below:
@@ -30,7 +30,7 @@ const particle = new ParticleNetwork({
 const particleProvider = new ParticleProvider(particle.auth)
 ```
 
-### Use with kernel.js
+### Use with ZeroDev
 
 ```typescript
 import { createEcdsaKernelAccountClient } from '@zerodev/presets/zerodev';

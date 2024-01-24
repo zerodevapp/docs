@@ -1,9 +1,9 @@
-# Use an EOA with kernel.js
+# Use an EOA with ZeroDev
 
 An Externally Owned Account (EOA) is a standard Ethereum account operated via a private key. It's commonly used in wallets like MetaMask. ZeroDev is compatible with EOAs as signers, and the method of integrating an EOA varies based on your dApp's connection approach.
 
 ## Integration Methods
-We'll explore three methods to integrate a signer with kernel.js: using an EIP-1193 provider, using a viem WalletClient, and employing a Local Account.
+We'll explore three methods to integrate a signer with ZeroDev: using an EIP-1193 provider, using a viem WalletClient, and employing a Local Account.
 
 ### EIP-1193 Provider Integration
 EIP-1193 is a standard interface for Ethereum providers, such as MetaMask or hardware wallets, where the key material is hosted externally rather than on the local client. ZeroDev supports creating a signer from any provider that implements this interface.

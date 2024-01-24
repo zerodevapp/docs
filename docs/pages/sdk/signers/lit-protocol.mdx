@@ -1,16 +1,16 @@
-# Use Lit Protocol with kernel.js
+# Use Lit Protocol with ZeroDev
 
 [Lit Protocol](https://www.litprotocol.com/) is distributed cryptography for signing, encryption, and compute. A generalizable key management network, Lit provides you with a set of tools for managing sovereign identities on the open Web.
 
 ## Set up
 
-To use Lit with kernel.js, first create an application that integrates with Lit.
+To use Lit with ZeroDev, first create an application that integrates with Lit.
 
 - Refer to the [Lit documentation site](https://developer.litprotocol.com/v3/) for instructions on setting up an application with the Lit.
 - For a quick start, Lit provides examples, available [here](https://docs.Lit.com/getting-started/examples).
 
 ## Integration
-Integrating kernel.js with Lit is straightforward after setting up the project. Lit provides an Externally Owned Account (EOA) wallet to use as a signer with Kernel.
+Integrating ZeroDev with Lit is straightforward after setting up the project. Lit provides an Externally Owned Account (EOA) wallet to use as a signer with Kernel.
 
 ### Create the pkpWallet 
 After following the Lit documentation, you will have access to a `pkpWallet`. An example is shown below:
@@ -73,7 +73,7 @@ const pkpWallet = new PKPEthersWallet({
 });
 ```
 
-### Use with kernel.js
+### Use with ZeroDev
 
 ```typescript
 import { createEcdsaKernelAccountClient } from '@zerodev/presets/zerodev';

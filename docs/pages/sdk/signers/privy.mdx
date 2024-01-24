@@ -1,4 +1,4 @@
-# Use Privy with kernel.js
+# Use Privy with ZeroDev
 
 [Privy](https://privy.io/) offers a seamless user onboarding experience for both mobile and desktop platforms, accommodating users with or without existing wallets. It simplifies the process of setting up self-custodial wallets for users logging in via email, SMS, or social media accounts. Additionally, it provides flexibility for web3-savvy users to continue using their existing wallets with your application, offering them a choice based on their preference.
 
@@ -11,12 +11,12 @@ Privy natively supports account abstraction using ZeroDev. This integration allo
 - For more information and how to get started, visit the Privy's [Account Abstraction with ZeroDev documentation](https://docs.Privy.xyz/embedded-wallets/add-account-abstraction).
 
 ### Custom Integration
-If you would like to use kernel.js directly with a Privy project, you can set up a custom integration using Privys's EOA as a signer.
+If you would like to use ZeroDev directly with a Privy project, you can set up a custom integration using Privys's EOA as a signer.
 - Begin by setting up your application with Privy, as detailed in the [Privy documentation](https://docs.privy.io/).
 - Privy also offers a quick start guide, available [here](https://docs.privy.io/guide/quickstart).
 
 ## Implementing Custom Integration
-Integrating kernel.js with Privy is straightforward once your application is set up. Privy provides an EOA wallet to use as a signer with Kernel.
+Integrating ZeroDev with Privy is straightforward once your application is set up. Privy provides an EOA wallet to use as a signer with Kernel.
 
 ### Get the Privy wallet's Provider
 To begin, ensure your application is integrated with Privy. Detailed guidance is available in the [Privy documentation](https://docs.privy.io/guide/quickstart). You should also configure your PrivyProvider to create embedded wallets for your users when they login.
@@ -38,7 +38,7 @@ if (!embeddedWallet) throw new Error("User does not have an embedded wallet");
 const privyProvider = await embeddedWallet.getEthereumProvider();
 ```
 
-### Use with kernel.js
+### Use with ZeroDev
 
 ```typescript
 import { createEcdsaKernelAccountClient } from '@zerodev/presets/zerodev';

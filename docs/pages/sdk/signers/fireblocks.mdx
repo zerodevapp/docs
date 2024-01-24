@@ -1,16 +1,16 @@
-# Use Fireblocks with kernel.js
+# Use Fireblocks with ZeroDev
 
 [Fireblocks](https://www.fireblocks.com/) is a user-friendly platform designed for building blockchain-based products and managing digital asset operations. It uses a direct custody approach, combining high performance with zero counterparty risk and multi-layered security. The platform includes secure MPC-based digital asset wallets, a policy engine for governance and transaction rules, and comprehensive treasury management. Fireblocks' security framework features multiple layers, including MPC-CMP technology, secure enclaves, and a robust policy engine, ensuring protection against cyberattacks, internal threats, and human errors. It's widely used for various operations like treasury, trading, and managing NFTs, smart contracts, and user wallets.
 
 ## Set up
 
-To use Fireblocks with kernel.js, first create an application that integrates with Fireblocks.
+To use Fireblocks with ZeroDev, first create an application that integrates with Fireblocks.
 
 - Refer to the [Fireblocks documentation site](https://developers.fireblocks.com/) for instructions on setting up an application with the Fireblocks.
 - For a quick start, Fireblocks provides a guide, available [here](https://developers.fireblocks.com/docs/quickstart).
 
 ## Integration
-Integrating kernel.js with Fireblocks is straightforward after setting up the project. Fireblocks provides an Externally Owned Account (EOA) wallet to use as a signer with Kernel.
+Integrating ZeroDev with Fireblocks is straightforward after setting up the project. Fireblocks provides an Externally Owned Account (EOA) wallet to use as a signer with Kernel.
 
 ### Create the Fireblocks object
 After following the Fireblocks documentation, you will have access to a `FireblocksWeb3Provider` object as shown below:
@@ -23,7 +23,7 @@ const fireblocksProviderConfig: FireblocksProviderConfig = { ... };
 const fireblocksWeb3Provider = new FireblocksWeb3Provider(fireblocksProviderConfig);
 ```
 
-### Use with kernel.js
+### Use with ZeroDev
 
 ```typescript
 import { createEcdsaKernelAccountClient } from '@zerodev/presets/zerodev';

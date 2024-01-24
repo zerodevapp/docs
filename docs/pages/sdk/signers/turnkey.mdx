@@ -1,16 +1,16 @@
-# Use Turnkey with kernel.js
+# Use Turnkey with ZeroDev
 
 [Turnkey](https://turnkey.com/) provides a secure, non-custodial wallet infrastructure enabling users to create application-specific wallets through Email or WebAuthn. Utilizing secure enclaves and a unique policy engine, Turnkey ensures key material decryption occurs exclusively within an enclave, and all signing activities adhere to your application's policies. This approach not only secures user experience but also enriches it through Account Abstraction features like gas sponsorship and transaction batching.
 
 ## Set up
 
-To use Turnkey with kernel.js, first create an application that integrates with Turnkey.
+To use Turnkey with ZeroDev, first create an application that integrates with Turnkey.
 
 - Refer to the [Turnkey documentation site](https://docs.turnkey.com/) for instructions on setting up an application with the Turnkey.
 - For a quick start, Turnkey provides examples, available [here](https://docs.turnkey.com/getting-started/examples).
 
 ## Integration
-Integrating kernel.js with Turnkey is straightforward after setting up the project. Turnkey provides an Externally Owned Account (EOA) wallet to use as a signer with Kernel.
+Integrating ZeroDev with Turnkey is straightforward after setting up the project. Turnkey provides an Externally Owned Account (EOA) wallet to use as a signer with Kernel.
 
 ### Create the TurnkeyClient and a Turnkey viem account
 After following the Turnkey documentation, you will have access to a `TurnkeyClient`. An example is shown below:
@@ -29,7 +29,7 @@ const turnkeyAccount = createAccount({
 })
 ```
 
-### Use with kernel.js
+### Use with ZeroDev
 
 ```typescript
 import { createEcdsaKernelAccountClient } from '@zerodev/presets/zerodev';

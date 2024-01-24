@@ -1,16 +1,16 @@
-# Use Magic with kernel.js
+# Use Magic with ZeroDev
 
 [Magic](https://magic.link/) is an embedded wallet provider that enables users to generate wallets within your application using Social Logins, Email OTP, or Webauthn.
 
 ## Set up
 
-To use Magic with kernel.js, first create an application that integrates with Magic.
+To use Magic with ZeroDev, first create an application that integrates with Magic.
 
 - Refer to the [Magic documentation site](https://magic.link/docs/home/welcome) for instructions on setting up an application with the Magic SDK.
 - For a quick start, Magic provides a CLI to create a starter project, available [here](https://magic.link/posts/magic-vue#cli-quickstart-tool).
 
 ## Integration
-Integrating kernel.js with Magic is straightforward after setting up the Magic SDK. Magic provides an Externally Owned Account (EOA) wallet to use as a signer with Kernel.
+Integrating ZeroDev with Magic is straightforward after setting up the Magic SDK. Magic provides an Externally Owned Account (EOA) wallet to use as a signer with Kernel.
 
 ### Create the Magic object
 After following the Magic documentation, you will have access to a MagicBase object as shown below:
@@ -27,7 +27,7 @@ const magic = new MagicBase(process.env.MAGIC_API_KEY as string, {
 });
 ```
 
-### Use with kernel.js
+### Use with ZeroDev
 
 ```typescript
 import { createEcdsaKernelAccountClient } from '@zerodev/presets/zerodev';

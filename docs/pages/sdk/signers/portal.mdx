@@ -1,22 +1,22 @@
-# Use Portal with kernel.js
+# Use Portal with ZeroDev
 
 [Portal](https://www.portalhq.io/) is an embedded wallet provider that enables users to generate wallets within your application using Social Logins, Email OTP, or Webauthn.
 
 ## Set up
 
-To use Portal with ZeroDev, you have two options: Portal's native integration using ZeroDev, or a custom integration using Portal's Externally Owned Account (EOA) as a signer for kernel.js. Choose the approach that best fits your needs.
+To use Portal with ZeroDev, you have two options: Portal's native integration using ZeroDev, or a custom integration using Portal's Externally Owned Account (EOA) as a signer for ZeroDev. Choose the approach that best fits your needs.
 
 ### Native Integration
 Portal natively supports account abstraction using ZeroDev. This integration allows your organization to sponsor gas fees for your clients using specific policies and chains, with additional features coming soon.
 - For more information, visit the [Portal Account Abstraction documentation](https://docs.portalhq.io/resources/account-abstraction-alpha)
 
 ### Custom Integration
-If you require kernel.js functionality not yet supported natively by Portal, a custom integration using Portal's EOA as a signer might be preferable.
+If you require ZeroDev functionality not yet supported natively by Portal, a custom integration using Portal's EOA as a signer might be preferable.
 - Begin by setting up your application with Portal, as detailed in the [Portal documentation](https://docs.portalhq.io/).
 - Portal also offers a quick start guide for their web SDK, available [here](https://docs.portalhq.io/sdk/web).
 
 ## Implementing Custom Integration
-Integrating kernel.js with Portal is straightforward once your application is set up. Portal provides an EOA wallet to use as a signer with Kernel.
+Integrating ZeroDev with Portal is straightforward once your application is set up. Portal provides an EOA wallet to use as a signer with Kernel.
 
 ### Create the Portal object
 After following the Portal documentation, you will have access to a `Portal` object as shown below:
@@ -29,7 +29,7 @@ const portalOptions: PortalOptions = { ... };
 const portal = new Portal(portalOptions);
 ```
 
-### Use with kernel.js
+### Use with ZeroDev
 
 ```typescript
 import { createEcdsaKernelAccountClient } from '@zerodev/presets/zerodev';

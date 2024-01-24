@@ -1,4 +1,4 @@
-# Use Dynamic with kernel.js
+# Use Dynamic with ZeroDev
 
 [Dynamic](https://www.dynamic.xyz/) is an embedded wallet provider that enables users to generate wallets within your application using Social Logins, Email OTP, or Webauthn.
 
@@ -11,12 +11,12 @@ Dynamic natively supports account abstraction using ZeroDev. This integration al
 - For more information and how to get started, visit the [Dynamic Account Abstraction documentation](https://docs.dynamic.xyz/embedded-wallets/add-account-abstraction).
 
 ### Custom Integration
-If you would like to use kernel.js directly with a Dynamic project, you can set up a custom integration using Dynamics's EOA as a signer.
+If you would like to use ZeroDev directly with a Dynamic project, you can set up a custom integration using Dynamics's EOA as a signer.
 - Begin by setting up your application with Dynamic, as detailed in the [Dynamic documentation](https://docs.dynamic.xyz/introduction/welcome).
 - Dynamic also offers a quick start guide and sample apps, available [here](https://docs.dynamic.xyz/quickstart).
 
 ## Implementing Custom Integration
-Integrating kernel.js with Dynamic is straightforward once your application is set up. Dynamic provides an EOA wallet to use as a signer with Kernel.
+Integrating ZeroDev with Dynamic is straightforward once your application is set up. Dynamic provides an EOA wallet to use as a signer with Kernel.
 
 ### Get the Dynamic wallet's Provider
 To begin, ensure your application is integrated with Dynamic. Detailed guidance is available in the [Dynamic documentation](https://docs.dynamic.xyz/). 
@@ -32,7 +32,7 @@ const { primaryWallet } = useDynamicContext();
 const dynamicProvider = await primaryWallet?.connector?.getWalletClient();
 ```
 
-### Use with kernel.js
+### Use with ZeroDev
 
 ```typescript
 import { createEcdsaKernelAccountClient } from '@zerodev/presets/zerodev';

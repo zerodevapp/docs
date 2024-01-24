@@ -1,16 +1,16 @@
-# Use Capsule with kernel.js
+# Use Capsule with ZeroDev
 
 [Capsule](https://usecapsule.com/) offers a signing solution enabling the creation of secure, embedded MPC wallets accessible via email or social login. These wallets, compatible across different applications, offer portability, recoverability, and programmability, eliminating the need for users to establish separate signers or contract accounts for each application.
 
 ## Set up
 
-To use Capsule with kernel.js, first create an application that integrates with Capsule.
+To use Capsule with ZeroDev, first create an application that integrates with Capsule.
 
 - Refer to the [Capsule documentation site](https://docs.usecapsule.com/) for instructions on setting up an application with the Capsule.
 - For a quick start, Capsule provides an example hub, available [here](https://docs.usecapsule.com/getting-started/examples).
 
 ## Integration
-Integrating kernel.js with Capsule is straightforward after setting up the project. Capsule provides an Externally Owned Account (EOA) wallet to use as a signer with Kernel.
+Integrating ZeroDev with Capsule is straightforward after setting up the project. Capsule provides an Externally Owned Account (EOA) wallet to use as a signer with Kernel.
 
 ### Create the Capsule object
 After following the Capsule documentation, you will have access to a `CapsuleWeb3Provider` object as shown below:
@@ -22,7 +22,7 @@ import Capsule from "@usecapsule/web-sdk";
 const capsule = new Capsule(env, apiKey, opts);
 ```
 
-### Use with kernel.js
+### Use with ZeroDev
 
 ```typescript
 import { createEcdsaKernelAccountClient } from '@zerodev/presets/zerodev';

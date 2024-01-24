@@ -1,16 +1,16 @@
-# Use Web3Auth with kernel.js
+# Use Web3Auth with ZeroDev
 
 [Web3Auth](https://web3auth.io/) is an embedded wallet provider that enables users to generate wallets within your application using Social Logins, Email OTP, or Webauthn.
 
 ## Set up
 
-To use Web3Auth with kernel.js, first create an application that integrates with Web3Auth.
+To use Web3Auth with ZeroDev, first create an application that integrates with Web3Auth.
 
 - Refer to the [Web3Auth documentation site](https://web3auth.io/docs/index.html) for instructions on setting up an application with the Web3Auth.
 - For a quick start, Web3Auth provides example starter projects, available [here](https://web3auth.io/docs/examples?product=Plug+and+Play&sdk=Plug+and+Play+Web+Modal+SDK).
 
 ## Integration
-Integrating kernel.js with Web3Auth is straightforward after setting up the project. Web3Auth provides an Externally Owned Account (EOA) wallet to use as a signer with Kernel.
+Integrating ZeroDev with Web3Auth is straightforward after setting up the project. Web3Auth provides an Externally Owned Account (EOA) wallet to use as a signer with Kernel.
 
 ### Create the Web3Auth object
 After following the Web3Auth documentation, you will have access to a `web3auth` object as shown below:
@@ -27,7 +27,7 @@ const web3auth = new Web3Auth({
 });
 ```
 
-### Use with kernel.js
+### Use with ZeroDev
 
 ```typescript
 import { createEcdsaKernelAccountClient } from '@zerodev/presets/zerodev';
