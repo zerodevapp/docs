@@ -1,7 +1,7 @@
 # Session Keys
 
 :::info
-Impatient?  Check out [complete examples here](https://github.com/zerodevapp/kernel.js-examples/blob/main/session-keys).
+Impatient?  Check out [complete examples here](https://github.com/zerodevapp/zerodev-examples/blob/main/session-keys).
 :::
 
 Session keys are keys assigned with specific permissions.  Some examples are:
@@ -42,7 +42,7 @@ Let's walk through how each flow works.
 ### Owner-created
 
 :::info
-Check out [the code example](https://github.com/zerodevapp/kernel.js-examples/blob/main/session-keys/owner-created.ts) for the owner-created pattern.
+Check out [the code example](https://github.com/zerodevapp/zerodev-examples/blob/main/session-keys/owner-created.ts) for the owner-created pattern.
 :::
 
 We assume that you have [created a Kernel account](/sdk/core-api/create-account#create-a-kernel-account).  If you only have a `kernelClient`, the Kernel account can be accessed as `kernelClient.account`.
@@ -105,7 +105,7 @@ Now you can [create a Kernel client](/sdk/core-api/create-account#create-an-acco
 ### Agent-created
 
 :::info
-Check out [the code example](https://github.com/zerodevapp/kernel.js-examples/blob/main/session-keys/agent-created.ts) for the agent-created pattern.
+Check out [the code example](https://github.com/zerodevapp/zerodev-examples/blob/main/session-keys/agent-created.ts) for the agent-created pattern.
 :::
 
 In the agent-created pattern, the agent creates a public-private key pair and shares the public key with the owner.  The owner authorizes the public key (by signing it), and shares the signed data with the agent.  Finally, the agent creates the full session key by combining the signed data with the private key.  This pattern is powerful because **the agent never had to share the private part of the session key with anyone**.

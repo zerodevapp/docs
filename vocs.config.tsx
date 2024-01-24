@@ -184,7 +184,7 @@ export default defineConfig({
           },
           {
             link: '/sdk/signers/eoa',
-            text: 'Externally Owned Account (EOA)',
+            text: 'EOA Wallets (e.g. MetaMask)',
           },
           {
             link: '/sdk/signers/custom-signer',
