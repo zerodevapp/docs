@@ -113,20 +113,6 @@ export default defineConfig({
         ],
       },
       {
-        "text": "FAQs",
-        "collapsed": false,
-        "items": [
-          {
-            "text": "How to debug a UserOp?",
-            "link": "/sdk/getting-started/intro"
-          },
-          {
-            "text": "Can I use Ethers.js?",
-            "link": "/sdk/getting-started/intro"
-          }
-        ],
-      },
-      {
         "text": "Signers",
         "collapsed": false,
         "items": [
@@ -205,7 +191,17 @@ export default defineConfig({
             "link": "/sdk/presets/zerodev"
           }
         ],
-      }
+      },
+      {
+        "text": "FAQs",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "How to debug a UserOp?",
+            "link": "/sdk/faqs/debug-userop"
+          },
+        ],
+      },
     ],
     "/meta-infra": [
       {

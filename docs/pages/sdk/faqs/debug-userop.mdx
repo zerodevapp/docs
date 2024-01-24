@@ -1,0 +1,14 @@
+# Debugging a UserOp
+
+Generally there are two types of errors with UserOps:
+
+- Validation errors: these are errors during the validation phase.  This means that the transactions are invalid, due to e.g. bad signatures, bad nonce, etc.
+  - Validation errors typically look like `AA23: XXXX`, where the `AA23` is an "EntryPoint error code."
+
+- Execution errors: these are errors during the execution phase.  This means that the transactions are valid, but the contract you are interacting with is reverting.
+  - Execution errors typically look like `execution reverted`.
+
+We recommend that you use the following excellent tools to debug UserOps:
+
+- StackUp's UserOp debugger: https://userop.dev/
+- Pimlico's docs for AA error codes: https://docs.pimlico.io/bundler/reference/entrypoint-errors/aa10
