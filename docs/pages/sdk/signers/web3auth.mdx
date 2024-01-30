@@ -1,6 +1,8 @@
 # Use Web3Auth with ZeroDev
 
-[Web3Auth](https://web3auth.io/) is an embedded wallet provider that enables users to generate wallets within your application using Social Logins, Email OTP, or Webauthn.
+[Web3Auth](https://web3auth.io/) is a popular embedded wallet provider that supports social logins. While social logins are great, your users still need to onramp in order to pay for gas, which introduces significant friction.
+
+By combining ZeroDev with Web3Auth, you can use Web3Auth to enable a smooth social login experience, while using ZeroDev as the smart wallet to sponsor gas for users, batch transactions, and more.
 
 ## Set up
 
@@ -33,10 +35,16 @@ const web3auth = new Web3Auth({
 import { createEcdsaKernelAccountClient } from '@zerodev/presets/zerodev';
 import { providerToSmartAccountSigner } from '@zerodev/sdk';
 import { polygonMumbai } from 'viem/chains';
+import Web3 from "web3";
+import { type Hex } from "viem"
 
-// Get the Provider from Web3Auth and convert it to a SmartAccountSigner
+// Get the Provider and EOA address (this will be the address of the signer) from Web3Auth
 const web3authProvider = await web3auth.provider;
-const smartAccountSigner = await providerToSmartAccountSigner(web3authProvider);
+const web3 = new Web3(provider as any);
+const [address] = await web3.eth.getAccounts();
+
+// Create the smart account signer from the provider and signer address
+const smartAccountSigner = await providerToSmartAccountSigner(web3authProvider, address as Hex);
 
 // Set up your Kernel client
 const kernelClient = await createEcdsaKernelAccountClient({
