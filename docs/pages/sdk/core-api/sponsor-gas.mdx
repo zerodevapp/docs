@@ -4,7 +4,7 @@ With account abstraction, you can pay gas for users so they don't have to acquir
 
 The first step for sponsoring gas is [choosing a paymaster provider](/meta-infra/intro).  Then, you can connect with the paymaster through either a preset or the core API.
 
-## Using presets
+## Preset API
 
 [Presets](/sdk/presets/intro) are the easiest way to use paymasters.  For example, if you are using the ZeroDev preset:
 
@@ -12,15 +12,17 @@ The first step for sponsoring gas is [choosing a paymaster provider](/meta-infra
 import { createEcdsaKernelAccountClient } from "@zerodev/presets/zerodev"
 
 const kernelClient = await createEcdsaKernelAccountClient({
-  usePaymaster: true, // defaults to true
+  paymaster: 'SPONSOR', // already defaults to SPONSOR
 
   // other options...
 })
 ```
 
+Note that if you don't want to sponsor, you can set `paymaster` to `'NONE'`.
+
 Check out [the presets docs](/sdk/presets/intro) for details.
 
-## Using core API
+## Standard API
 
 If you are [setting up an account using the core API](/sdk/core-api/create-account#core-api), you can specify a `sponsorUserOperation` function when you [create the account client](/sdk/core-api/create-account#create-an-account-client).
 

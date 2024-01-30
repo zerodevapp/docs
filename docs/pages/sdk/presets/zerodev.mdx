@@ -17,7 +17,7 @@ const kernelClient = await createEcdsaKernelAccountClient({
     // optional
     provider: "STACKUP", // defaults to a recommended provider
     index: BigInt(1), // defaults to 0
-    usePaymaster: true // defaults to true
+    paymaster: 'SPONSOR', // defaults to SPONSOR
 })
 ```
 
@@ -26,4 +26,9 @@ const kernelClient = await createEcdsaKernelAccountClient({
 - `signer` is a [Viem account](https://viem.sh/docs/accounts/local.html).
 - (optional) `provider` can be [any provider that ZeroDev supports](/meta-infra/intro).
 - (optional) `index` can be any positive integer.  Different indexes will yield different accounts.
-- (optional) `usePaymaster` is a boolean flag that determines whether ZeroDev will use [the sponsoring paymaster](/meta-infra/intro).
+- (optional) `paymaster` can be:
+    - `'NONE'`: not using any paymaster (the user pays their own gas).
+    - `'SPONSOR'` (default): sponsor gas for users according to [gas policies](/meta-infra/gas-policies).
+    - A ERC20 token address: use the specified ERC20 token as gas tokens.  See the [ERC20 gas token docs](/sdk/core-api/pay-gas-with-erc20s) for details.
+
+is a boolean flag that determines whether ZeroDev will use [the sponsoring paymaster](/meta-infra/intro).

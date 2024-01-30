@@ -1,0 +1,111 @@
+# Pay Gas with ERC20s
+
+:::info
+Impatient?  Check out [complete examples here](https://github.com/zerodevapp/zerodev-examples/tree/main/pay-gas-with-erc20).
+:::
+
+A smart account can pay gas with ERC20 tokens.  As a result, your users don't have to own any native gas tokens (e.g. ETH) in order to use Web3.  Instead, they can just use stablecoins or even your project's own tokens.
+
+:::warning
+Using your project's own tokens to pay for gas is a beta feature.  If you are interested, please reach out.
+:::
+
+On a high level, you need to do two things to enable a smart account to pay gas in a particular ERC20 token:
+
+- Set up the Kernel client with the ERC20 paymaster.
+- Ensure that enough ERC20 tokens have been approved for the ERC20 paymaster.
+  - This step is necessary because the ERC20 paymaster needs to withdraw ERC20 tokens from the smart account.
+
+Let's go through these two steps next.  We will be using mainnet USDC in the following examples, but you can use any of [these supported tokens](https://docs.stackup.sh/docs/supported-erc-20-tokens) thanks to our integration with StackUp.
+
+## Set up Kernel Client
+
+### Preset API
+
+Using presets, you can simply set the `paymaster` flag to the gas token:
+
+```typescript
+import { createEcdsaKernelAccountClient } from "@zerodev/presets/zerodev"
+import { mainnet } from "viem/chains"
+
+const kernelClient = await createEcdsaKernelAccountClient({
+  // ...other options
+
+  paymaster: gasTokenAddresses[mainnet.id]['USDC'],
+})
+```
+
+### Standard API
+
+Follow the [standard API for creating accounts](http://localhost:5173/sdk/core-api/create-account#standard-api).  Then, at the last step when you construct the Kernel client, do this:
+
+```typescript
+import {
+  createZeroDevPaymasterClient,
+  createKernelAccountClient,
+  gasTokenAddresses,
+} from "@zerodev/sdk"
+import { UserOperation } from "permissionless"
+import { mainnet } from "viem/chains"
+
+const paymasterClient = createZeroDevPaymasterClient({
+  transport: http('ZERODEV_PAYMASTER_RPC'), // get the RPC on ZeroDev dashboard
+})
+
+const kernelClient = createKernelAccountClient({
+  // other options...
+
+  sponsorUserOperation: async ({ userOperation }): Promise<UserOperation> => {
+    return paymasterClient.sponsorUserOperation({
+      userOperation,
+      gasToken: gasTokenAddresses[mainnet.id]['USDC'],
+    })
+  },
+})
+```
+
+## Approve ERC20 tokens for paymaster
+
+Use the `getERC20PaymasterApproveCall` to construct a call that approves the paymaster with the ERC20 tokens:
+
+```typescript
+const userOpHash = await kernelClient.sendUserOperation({
+  userOperation: {
+    callData: await kernelClient.account.encodeCallData(
+      await getERC20PaymasterApproveCall(paymasterClient, {
+        gasToken: gasTokenAddresses[mainnet.id]['USDC'],
+        approveAmount: parseEther('0.1'),
+      }),
+    ),
+  },
+})
+```
+
+
+Thanks to [batching](/sdk/core-api/batch-transactions), it's possible to batch the approval with the UserOp you want to send:
+
+```typescript
+const userOpHash = await kernelClient.sendUserOperation({
+  userOperation: {
+    callData: await account.encodeCallData([
+      // The approval
+      await getERC20PaymasterApproveCall(paymasterClient, {
+        gasToken: gasTokenAddresses[mainnet.id]['USDC'],
+        approveAmount: parseEther('0.1'),
+      }),
+      // The actual call
+      {
+        to: '0x...'
+        data: "0x...",
+        value: BigInt(0),
+      },
+    ]),
+  },
+})
+```
+
+Note that you only have to approve once, as long as the approval amount is sufficient for many UserOps.  The [paymaster contract by StackUp](https://github.com/stackup-wallet/contracts/blob/662e96c6165d5a2b267bcd2799f93715fbea7f35/contracts/VerifyingPaymaster.sol) has not been audited but it's widely used and generally considered safe.
+
+## Supported Tokens
+
+We support [these tokens](https://docs.stackup.sh/docs/supported-erc-20-tokens) thanks to our integration with StackUp.

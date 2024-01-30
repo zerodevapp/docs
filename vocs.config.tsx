@@ -81,8 +81,8 @@ export default defineConfig({
             "link": "/sdk/core-api/sponsor-gas"
           },
           {
-            "text": "Pay Gas in ERC20s",
-            "link": "/sdk/core-api/pay-gas-in-erc20s"
+            "text": "Pay Gas with ERC20s",
+            "link": "/sdk/core-api/pay-gas-with-erc20s"
           },
           {
             "text": "Batch Transactions",
