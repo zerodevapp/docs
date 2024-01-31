@@ -213,6 +213,10 @@ export default defineConfig({
         "collapsed": false,
         "items": [
           {
+            "text": "What networks do you support?",
+            "link": "/sdk/faqs/chains"
+          },
+          {
             "text": "How to debug a UserOp?",
             "link": "/sdk/faqs/debug-userop"
           },
