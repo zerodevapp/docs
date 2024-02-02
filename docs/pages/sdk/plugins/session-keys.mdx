@@ -206,6 +206,40 @@ const userOpHash = await revokeSessionKey(kernelClient)
 const userOpHash = await revokeSessionKey(kernelClient, sessionKeySigner.address)
 ```
 
+Note that `kernelClient` in this case must be using the master signer (instead of the session key signer).  If you want to revoke session keys using the session key signer itself, you must explicitly set up the session key permissions so that it's allowed to revoke itself.  You can do so by including this permission:
+
+```ts
+import { SESSION_KEY_VALIDATOR_ADDRESS } from "@zerodev/session-key"
+import { parseAbi } from "viem"
+
+const sessionKeyValidator = await signerToSessionKeyValidator(publicClient, {
+  // other options...
+
+  validatorData: {
+    // other options...
+
+    permissions: [
+      // other permissions...
+
+      // Allow the session key to revoke itself
+      {
+        target: SESSION_KEY_VALIDATOR_ADDRESS,
+        abi: parseAbi([
+          'function disable(bytes calldata _data)',
+        ]),
+        functionName: 'disable',
+        args: [
+          {
+            operator: ParamOperator.EQUAL,
+            value: sessionKeySigner.address,
+          },
+        ],
+      },
+    ],
+  },
+})
+```
+
 ## Session Key Parameters
 
 When creating a session key validator, you specify parameters under the `validatorData` flag:
