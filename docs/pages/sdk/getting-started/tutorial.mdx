@@ -1,7 +1,7 @@
 # ZeroDev Tutorial
 
 :::info
-Impatient?  Check out [the complete example here](https://github.com/zerodevapp/zerodev-examples/tree/main/quickstart/completed.ts).
+Impatient?  Check out [the complete example here](https://github.com/zerodevapp/zerodev-examples/tree/main/tutorial/completed.ts).
 :::
 
 In this tutorial, we will mint an NFT without paying gas.  We assume that you have a high-level understandng of AA concepts such as bundlers, paymasters, and UserOp; if not, read [the introduction](/) first.
@@ -53,10 +53,10 @@ Replacing `<YOUR_PROJECT_ID>` with your actual project ID from the dashboard, an
 If all goes well, you should be able to run:
 
 ```bash
-npx ts-node quickstart/completed.ts
+npx ts-node tutorial/completed.ts
 ```
 
-Now open the [`quickstart/template.ts`](https://github.com/zerodevapp/zerodev-examples/blob/main/quickstart/template.ts) file in your editor.  This will be the template where you will write your code.  You can always refer to [`quickstart/completed.ts`](https://github.com/zerodevapp/zerodev-examples/blob/main/quickstart/completed.ts) to see the completed tutorial code.
+Now open the [`tutorial/template.ts`](https://github.com/zerodevapp/zerodev-examples/blob/main/tutorial/template.ts) file in your editor.  This will be the template where you will write your code.  You can always refer to [`tutorial/completed.ts`](https://github.com/zerodevapp/zerodev-examples/blob/main/tutorial/completed.ts) to see the completed tutorial code.
 
 ### Creating a Kernel client
 
@@ -95,7 +95,7 @@ const main = async () => {
 }
 ```
 
-Run this script with `npx ts-node quickstart/template.ts` and confirm that it prints an address.
+Run this script with `npx ts-node tutorial/template.ts` and confirm that it prints an address.
 
 ### Send a UserOp
 
@@ -133,7 +133,7 @@ There's quite a bit of code going on, so let's go through it.
 - Since we want to call the `mint(address)` function on the NFT contract, we use Viem's helper function `encodeFunctionData` and give it the ABI, function name, and function argument.
 - `kernelClient.sendUserOperation` returns a "UserOperation hash."  This is the equivalent of a transaction hash but for a UserOp.
 
-Run the script again with `npx ts-node quickstart/template.ts` and confirm that it prints the UserOp hash.  At this point, you can go to a UserOp explorer such as [JiffyScan](https://jiffyscan.xyz/) and find your UserOp with the hash!
+Run the script again with `npx ts-node tutorial/template.ts` and confirm that it prints the UserOp hash.  At this point, you can go to a UserOp explorer such as [JiffyScan](https://jiffyscan.xyz/) and find your UserOp with the hash!
 
 ### Waiting for the UserOp
 
