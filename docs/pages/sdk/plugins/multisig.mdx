@@ -8,7 +8,7 @@ With Kernel, it's possible to configure multiple signers for your smart account.
 
 ## How it works
 
-Each signer is set up with a **weight**, and for any given signature, there must be enough combined weight to reach or surpass the threshold for the signature to be considered valid.
+Each signer is set up with a **weight**, and for any given signature, there must be enough combined weight to reach or surpass the **threshold** for the signature to be considered valid.
 
 For example, let's say we have:
 
@@ -18,7 +18,7 @@ For example, let's say we have:
   - Signer B: 50
   - Signer C: 50
 
-Then we are setting up a multisig where either signer A alone, or signer B and C together can provide a valid signature.
+In this case, we are setting up a multisig where either signer A alone (100 = 100), or signer B and C together (50 + 50 = 100) can provide a valid signature.
 
 ## API
 
@@ -50,7 +50,7 @@ After creating the validator, you can [create a Kernel account using the validat
 
 ### Using an existing multisig account
 
-If a multisig account has already been created, you can skip the multisig config but specify the deployed multisig address when you create the account:
+If a multisig account has already been deployed, you can skip the multisig config but specify the deployed multisig address when you create the account:
 
 ```ts
 const multisigValidator = await createWeightedECDSAValidator(publicClient, {
@@ -58,7 +58,7 @@ const multisigValidator = await createWeightedECDSAValidator(publicClient, {
 })
 
 const account = await createKernelAccount(publicClient, {
-  deployedAccountAddress: multisigAddress,
+  deployedAccountAddress: '<your multisig address>',
   plugins: {
     validator: multisigValidator,
   }
