@@ -1,0 +1,111 @@
+# Weighted ECDSA
+
+The **Weighted ECDSA** plugin allows you to associate multiple signers with your Kernel account, each having a different *weight*.  On a high level, there are two primary use cases:
+
+- Set up your account as a **multisig**.
+- Set up one or more **guardians** for your account.  The guardians can be set up with specific "actions" they are allowed to perform, such as:
+  - Recovery
+  - Pausing (kill switch)
+  - Anything you can think of.
+
+## Installation
+
+:::code-group
+
+```bash [npm]
+npm i @zerodev/weighted-ecdsa-validator
+```
+
+```bash [yarn]
+yarn add @zerodev/weighted-ecdsa-validator
+```
+
+```bash [pnpm]
+pnpm i @zerodev/weighted-ecdsa-validator
+```
+
+```bash [bun]
+bun i @zerodev/weighted-ecdsa-validator
+```
+
+:::
+
+## Creating a weighted ECDSA validator
+
+With Weighted ECDSA, each signer is set up with a **weight**, and for any given signature, there must be enough combined weight to reach or surpass the **threshold** for the signature to be considered valid.
+
+For example, let's say we have:
+
+- Threshold: 100
+- Weights:
+  - Signer A: 100
+  - Signer B: 50
+  - Signer C: 50
+
+In this case, we are setting up a multisig where either signer A alone (100 = 100), or signer B and C together (50 + 50 = 100) can provide a valid signature.
+
+To create a validator with the above configuration in code:
+
+```ts
+import { createWeightedECDSAValidator } from "@zerodev/weighted-ecdsa-validator"
+
+const weightedECDSAValidator = await createWeightedECDSAValidator(publicClient, {
+  config: {
+    threshold: 100,
+    signers: [
+      { address: signerA.address, weight: 100 },
+      { address: signerB.address, weight: 50 },
+      { address: signerC.address, weight: 50 },
+    ]
+  },
+  signers: [signerB, signerC],
+})
+```
+
+## Using Weighted ECDSA as a sudo validator
+
+You can use Weighted ECDSA as the sudo validator, in which case it basically turns your Kernel account into a multisig.
+
+```ts
+import { createWeightedECDSAValidator } from "@zerodev/weighted-ecdsa-validator"
+import { createKernelAccount } from "@zerodev/sdk"
+
+const multisigValidator = await createWeightedECDSAValidator(publicClient, {
+  config: {
+    // your config
+  },
+  signers: [ /* your signers */ ],
+})
+
+const account = await createKernelAccount(publicClient, {
+  plugins: {
+    sudo: multisigValidator,
+  }
+})
+```
+
+Please refer to the [multisig documentation](/sdk/plugins/multisig) for detailed instructions.
+
+## Using Weighted ECDSA as a regular validator
+
+When you use weighted ECDSA as a regular validator, you are effectively setting up a group of guardians that can perform specific functions.  This has many use cases, such as recovery, kill switch, automating transactions for users, etc.
+
+```ts
+import { createWeightedECDSAValidator } from "@zerodev/weighted-ecdsa-validator"
+import { createKernelAccount } from "@zerodev/sdk"
+
+const guardiansValidator = await createWeightedECDSAValidator(publicClient, {
+  config: {
+    // your config
+  },
+  signers: [ /* your signers */ ],
+})
+
+const account = await createKernelAccount(publicClient, {
+  plugins: {
+    regular: guardiansValidator,
+  }
+})
+```
+
+Please refer to the [guardians documentation](/sdk/plugins/guardians) for detailed instructions.

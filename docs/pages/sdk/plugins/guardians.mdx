@@ -1,0 +1,92 @@
+# Guardians
+
+:::info
+Impatient?  Check out [complete examples here](https://github.com/zerodevapp/zerodev-examples/tree/main/guardians/recovery.ts).
+:::
+
+A common use case of smart accounts is to set up **guardians** which can perform only specific actions for the account.  Some examples are:
+
+- Recovery -- if the user loses their signer, the guardian(s) can set a new owner for the user.
+
+- Kill switch -- if the guardian(s) detect suspicious activities on the user's account, they can "pause" the account while the owner takes action.
+
+- Liquidation protection -- if the guardian(s) detect that the account is at risk of having its DeFi position liquidated, they can pay the debt back automatically.
+
+Guardians are a special case of using the Weighted ECDSA validator, which you can [read more about here](/sdk/plugins/weighted-ecdsa).
+
+## Installation
+
+:::code-group
+```bash [npm]
+npm i @zerodev/weighted-ecdsa-validator
+```
+
+```bash [yarn]
+yarn add @zerodev/weighted-ecdsa-validator
+```
+
+```bash [pnpm]
+pnpm i @zerodev/weighted-ecdsa-validator
+```
+
+```bash [bun]
+bun i @zerodev/weighted-ecdsa-validator
+```
+
+:::
+
+## Creating a guardian validator
+
+To set up guardian(s) for your account, first create a Weighted ECDSA validator:
+
+```ts
+import { createWeightedECDSAValidator } from "@zerodev/weighted-ecdsa-validator"
+
+const guardianValidator = await createWeightedECDSAValidator(publicClient, {
+  config: {
+    threshold: 100,
+    signers: [
+      { address: guardian1.address, weight: 100 },
+      { address: guardian2.address, weight: 100 },
+    ],
+  },
+  signers: [guardian1]
+})
+```
+
+In this example, we are setting up two guardians, each of which has enough weight to carry out the action alone.
+
+## Executing the guardian action
+
+Now, to execute the action, create an account with the guardian validator and executor data:
+
+```ts
+const account = await createKernelAccount(publicClient, {
+  plugins: {
+    sudo: ecdsaValidator,
+    regular: guardianValidator,
+    executorData: {
+      executor: recoveryExecutorAddress,
+      selector: recoveryExecutorSelector,
+    },
+  }
+})
+```
+
+Here we pass our sudo validator, which is only necessary if the guardian validator had not previous been enabled (i.e. that it's the first time you use the guardian).  We then pass the guardian validator and [the executor](/sdk/plugins/intro#executors).
+
+After you [construct the account client with the account](/sdk/core-api/create-account#create-an-account-client), you can then send UserOps with the specific executor function, and the guardian validator will be used to validate that action.
+
+```ts
+const userOpHash = await kernelClient.sendUserOperation({
+  userOperation: {
+    callData: encodeFunctionData({
+      abi: yourABI,
+      functionName: executionFunctionName,
+      args: [/* execution function args */],
+    })
+  },
+})
+```
+
+For a specific example of using guardians, read the [recovery documentation](/sdk/plugins/recovery#recovery-plugin).

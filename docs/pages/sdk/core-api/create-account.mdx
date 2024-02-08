@@ -154,7 +154,7 @@ import { createKernelAccount } from "@zerodev/sdk"
 
 const account = await createKernelAccount(publicClient, {
   plugins: {
-    validator: ecdsaValidator,
+    sudo: ecdsaValidator,
   },
 })
 ```
@@ -200,7 +200,7 @@ import { createKernelAccount } from "@zerodev/sdk"
 
 const account = createKernelAccount(publicClient, {
   plugins: {
-    validator: ecdsaValidator,
+    sudo: ecdsaValidator,
   },
   // optionally specify the index; different indexes will yield different accounts
   index: 1,

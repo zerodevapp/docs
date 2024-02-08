@@ -96,18 +96,18 @@ const sessionKeyValidator = await signerToSessionKeyValidator(publicClient, {
 Refer to [the session key params section](#session-key-parameters) to learn about session key params.
 :::
 
-Now, construct a Kernel account using your default validator as the `defaultValidator` and the session key validator as the `validator`:
+Now, construct a Kernel account using your sudo validator and the session key validator:
 
 ```typescript
 const sessionKeyAccount = await createKernelAccount(publicClient, {
   plugins: {
-    defaultValidator: ecdsaValidator,
-    validator: sessionKeyValidator,
+    sudo: ecdsaValidator,
+    regular: sessionKeyValidator,
   },
 })
 ```
 
-In this example, the default validator is `ecdsaValidator`.
+In this example, the sudo validator is `ecdsaValidator`.
 
 If you want to use the session key on the same node, you can already [construct a Kernel client from this Kernel account](/sdk/core-api/create-account#create-an-account-client) and start using it.  If you want to share the session key with an agent or store it for use later, you can serialize the session key:
 
@@ -165,13 +165,13 @@ const sessionKeyValidator = await signerToSessionKeyValidator(publicClient, {
 Refer to [the session key params section](#session-key-parameters) to learn about session key params.
 :::
 
-Now, the owner can construct a Kernel account using the default validator as `defaultValidator` and the session key validator as the `validator`:
+Now, the owner can construct a Kernel account using the sudo validator and the session key validator:
 
 ```typescript
 const sessionKeyAccount = await createKernelAccount(publicClient, {
   plugins: {
-    defaultValidator: ecdsaValidator,
-    validator: sessionKeyValidator,
+    sudo: ecdsaValidator,
+    regular: sessionKeyValidator,
   },
 })
 ```

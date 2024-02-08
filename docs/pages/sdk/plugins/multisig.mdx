@@ -4,7 +4,7 @@
 Impatient?  Check out [complete examples here](https://github.com/zerodevapp/zerodev-examples/tree/main/multisig).
 :::
 
-With Kernel, it's possible to configure multiple signers for your smart account.  The plugin that supports this functionality is technically named `WeightedECDSAValidator`, for the fact that it supports multiple ECDSA signers, each having a specific "weight."  More colloquially, you can think of this as a multisig plugin.
+With Kernel, it's possible to configure multiple signers for your smart account.  The plugin that supports this functionality is named `WeightedECDSAValidator`, for the fact that it supports multiple ECDSA signers, each having a specific "weight."  [You can read more about it here.](/sdk/plugins/weighted-ecdsa)
 
 ## How it works
 
@@ -20,13 +20,34 @@ For example, let's say we have:
 
 In this case, we are setting up a multisig where either signer A alone (100 = 100), or signer B and C together (50 + 50 = 100) can provide a valid signature.
 
-## API
+## Installation
 
-### Setting up a new multisig account
+:::code-group
+```bash [npm]
+npm i @zerodev/weighted-ecdsa-validator
+```
+
+```bash [yarn]
+yarn add @zerodev/weighted-ecdsa-validator
+```
+
+```bash [pnpm]
+pnpm i @zerodev/weighted-ecdsa-validator
+```
+
+```bash [bun]
+bun i @zerodev/weighted-ecdsa-validator
+```
+
+:::
+
+## Setting up a new multisig account
 
 To set up a new multisig account, start by creating a validator:
 
 ```ts
+import { createWeightedECDSAValidator } from "@zerodev/weighted-ecdsa-validator"
+
 const multisigValidator = await createWeightedECDSAValidator(publicClient, {
   config: {
     threshold: 100,
@@ -48,7 +69,7 @@ After creating the validator, you can [create a Kernel account using the validat
 
 **Note that [just like any Kernel account](/sdk/core-api/create-account#when-i-create-an-account-is-it-deployed-on-chain), the account is not actually deployed until you send the first UserOp with the account.**
 
-### Using an existing multisig account
+## Using an existing multisig account
 
 If a multisig account has already been deployed, you can skip the multisig config but specify the deployed multisig address when you create the account:
 
@@ -60,12 +81,12 @@ const multisigValidator = await createWeightedECDSAValidator(publicClient, {
 const account = await createKernelAccount(publicClient, {
   deployedAccountAddress: '<your multisig address>',
   plugins: {
-    validator: multisigValidator,
+    sudo: multisigValidator,
   }
 })
 ```
 
-### Updating multisig config
+## Updating multisig config
 
 In many use cases, you may need to add and remove signers over time.  To do so, send a UserOp that updates the config:
 

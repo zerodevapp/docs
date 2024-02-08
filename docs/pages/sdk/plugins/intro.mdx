@@ -1,39 +1,102 @@
 # Plugins Introduction
 
-[Kernel](https://github.com/zerodevapp/kernel) is a *modular smart account*, which means it's a smart account that can be extended with *plugins*.
+[Kernel](https://github.com/zerodevapp/kernel) is a *modular smart account*, which means it's a smart account that can be extended with *plugins* (sometimes also called *modules*).
 
 In Kernel parlance, there are two types of plugins:
 
 - **Validators**: plugins that change how the account validates UserOps.
 - **Executors**: plugins that give the account new functions to execute with.
 
-Most commonly, the plugin you need is a validator, since Kernel already natively supports powerful execution functions that cover the majority of use cases.  In the remaining of the docs, when we refer to "plugins" we will be referring to validators.
+## Validators
 
 There are two types of validators:
 
-- **Default validators** determine how UserOps and signatures are validated by default.  Default validators are also known as "sudo validators" because they can enable and disable other validators.  Examples here include ECDSA, passkeys, and multisig.
+- **Sudo validators** determine how UserOps and signatures are validated by default.  **Each account has one and only one sudo validator.**  By default, only sudo validators can enable/disable other validators.  In other words, to add or remove a validator, the sudo validator for your account must *approve*.
 
-- **Non-default validators** determine how UserOps are validated under certain conditions.  Examples here include session keys, recovery, and kill switch.
+- **Regular validators** are validators that are invoked when specific execution functions are called.  For example, you might associate a multisig validator with a `recoverAccount()` function, in which case a multisig would be used when you try to recover the account.
 
-When you create a Kernel account, you create it by specifying a `validator`.  For example:
+When you create a validator and use it to [construct an account](/sdk/core-api/create-account#create-a-kernel-account), you can set it as either `sudo` or `regular` validator:
 
-```typescript
+```ts
+// sudo
 const account = await createKernelAccount(publicClient, {
   plugins: {
-    validator: ecdsaValidator,
+    sudo: someValidator,   // [!code focus]
+  },
+})
+
+// regular
+const account = await createKernelAccount(publicClient, {
+  plugins: {
+    regular: someValidator,   // [!code focus]
   },
 })
 ```
 
-Or, if the validator is to be used as a non-default validator that needs to be enabled by the default validator, you specify both.  For example:
+### Enabling a regular validator
 
-```typescript
+To enable a regular validator, the sudo validator must approve.  If it's the first time you are using a validator, you must pass the sudo validator when you construct the account object:
+
+```ts
 const account = await createKernelAccount(publicClient, {
   plugins: {
-    defaultValidator: ecdsaValidator,
-    validator: sessionKeyValidator,
+    sudo: sudoValidator,
+    regular: regularValidator,
   },
 })
 ```
 
-If it's not making much sense, don't worry about it.  We are working on dedicated docs for Kernel & plugins.  For now, just use the left sidebar to check out the specific plugins you want to use.
+## Executors
+
+### Building an executor
+
+Executors are smart contracts that define functions for Kernel accounts to execute via [delegatecall](https://solidity-by-example.org/delegatecall/).  When combined with validators, this allows you to use specific validation logic for specific execution functions.
+
+As an example, let's say that you want to set up a multisig that can recover your Kernel account.  And let's say your recovery contract looks like this:
+
+```solidity
+contract RecoveryExecutor {
+  function recover(address newOwner) public {
+    // do some recovery stuff
+  }
+}
+```
+
+**Keep in mind that the smart account will call the executor with `delegatecall`, meaning that the executor will execute in the storage context of the account itself.**  It's therefore crucial that you are fully confident in the executor's logic, as a poorly (or maliciously) implemented executor can brick your account.
+
+You can deploy executors however you want, but we've found [Orchestra](https://github.com/zerodevapp/orchestra) helpful for deploying an executor on multiple networks.
+
+### Using the executor
+
+Once you have deployed an executor, you can use it by setting up the account object like this:
+
+```ts
+const account = await createKernelAccount(publicClient, {
+  plugins: {
+    sudo: ecdsaValidator,  // sudo is only needed if enabling the validator
+    regular: multisigValidator,
+    executorData: {
+      executor: recoveryExecutorAddress,
+      selector: toFunctionSelector('recover(address newOwner)'),
+    },
+  }
+})
+```
+
+In this example, we are saying that, when the `recover(address newOwner)` function is called on this Kernel account, the `multisigValidator` will be used to validate the UserOp.  In other words, a multisig must approve for the recovery to go through.  And we use the ECDSA sudo validator to enable the multisig to perform recovery in the first place.
+
+To actually execute the executor, simple send a UserOp with a `callData` that invokes the executor function:
+
+```ts
+const userOpHash = await kernelClient.sendUserOperation({
+  userOperation: {
+    callData: encodeFunctionData({
+      abi: executorABI,
+      functionName: 'recover',
+      args: [newOwnerAddress],
+    })
+  },
+})
+```
+
+See the [recovery documentation](/sdk/plugins/recovery#recovery-plugin) for a complete example of using executors.

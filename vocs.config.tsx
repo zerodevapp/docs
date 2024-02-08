@@ -115,6 +115,14 @@ export default defineConfig({
             "link": "/sdk/plugins/ecdsa"
           },
           {
+            "text": "Weighted ECDSA",
+            "link": "/sdk/plugins/weighted-ecdsa"
+          },
+          {
+            "text": "Session Keys",
+            "link": "/sdk/plugins/session-keys"
+          },
+          {
             "text": "Passkey",
             "link": "/sdk/plugins/passkey"
           },
@@ -123,13 +131,13 @@ export default defineConfig({
             "link": "/sdk/plugins/multisig"
           },
           {
-            "text": "Session Keys",
-            "link": "/sdk/plugins/session-keys"
+            "text": "Guardians",
+            "link": "/sdk/plugins/guardians"
           },
           {
             "text": "Recovery",
             "link": "/sdk/plugins/recovery"
-          }
+          },
         ],
       },
       {
