@@ -29,12 +29,11 @@ If you are [setting up an account using the core API](/sdk/core-api/create-accou
 The `sponsorUserOperation` function essentially takes a UserOp and then returns a UserOp with the `paymasterAndData` field set.  Since every paymaster works a bit differently, you need to consult the documentation of the paymaster you are using to figure out how to get the `paymasterAndData`.  For example, if you are using the ZeroDev paymaster:
 
 ```typescript
-import { createSmartAccountClient } from "permissionless"
 import { http } from "viem"
 import { polygonMumbai } from 'viem/chains'
-import { createZeroDevPaymasterClient } from "@zerodev/sdk"
+import { createZeroDevPaymasterClient, createKernelAccountClient } from "@zerodev/sdk"
 
-const kernelClient = createSmartAccountClient({
+const kernelClient = createKernelAccountClient({
   account,
   chain: polygonMumbai,
   transport: http('BUNDLER_RPC'),
