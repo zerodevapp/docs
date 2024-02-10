@@ -39,7 +39,7 @@ const kernelClient = createKernelAccountClient({
   transport: http('BUNDLER_RPC'),
   sponsorUserOperation: async ({ userOperation }) => {
     const zerodevPaymaster = createZeroDevPaymasterClient({
-      chain: chain,
+      chain: polygonMumbai,
       transport: http('PAYMASTER_RPC'),
     })
     return zerodevPaymaster.sponsorUserOperation({
