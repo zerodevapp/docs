@@ -66,6 +66,10 @@ export default defineConfig({
             "text": "Tutorial",
             "link": "/sdk/getting-started/tutorial"
           },
+          {
+            "text": "Code Examples",
+            "link": "https://github.com/zerodevapp/zerodev-examples"
+          },
         ],
       },
       {
