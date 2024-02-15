@@ -253,6 +253,10 @@ export default defineConfig({
             "link": "/meta-infra/gas-policies"
           },
           {
+            "text": "Custom Gas Policies",
+            "link": "/meta-infra/custom-gas-policies"
+          },
+          {
             "text": "Bundler & Paymaster RPCs",
             "link": "/meta-infra/rpcs"
           },
