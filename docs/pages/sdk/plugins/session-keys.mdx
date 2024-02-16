@@ -346,3 +346,22 @@ No.  Creating a session key entails simply signing a message, which is done off-
 ### Is it possible to use session keys with a not-yet-deployed account?
 
 Yes.  If you do so, the first UserOp sent with the session key will deploy the account.
+
+### Can you use `delegatecall` with session keys?
+
+Yes.  When you initialize the session key account, pass an additional `executorData` flag:
+
+```ts
+import { zeroAddress, toFunctionSelector } from "viem"
+
+const sessionKeyAccount = await createKernelAccount(publicClient, {
+  plugins: {
+    sudo: ecdsaValidator,
+    regular: sessionKeyValidator,
+    executorData: { // [!code focus]
+      executor: zeroAddress, // [!code focus]
+      selector: toFunctionSelector("executeDelegateCall(address, bytes)"), // [!code focus]
+    }, // [!code focus]
+  },
+})
+```
