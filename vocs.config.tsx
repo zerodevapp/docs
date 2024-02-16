@@ -103,7 +103,11 @@ export default defineConfig({
           {
             "text": "Delegatecall",
             "link": "/sdk/core-api/delegatecall"
-          }
+          },
+          {
+            "text": "Sign and Verify Messages",
+            "link": "/sdk/core-api/sign-and-verify"
+          },
         ],
       },
       {
