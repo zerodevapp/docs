@@ -119,6 +119,10 @@ export default defineConfig({
             "link": "/sdk/plugins/intro"
           },
           {
+            "text": "Passkeys",
+            "link": "/sdk/plugins/passkeys"
+          },
+          {
             "text": "ECDSA",
             "link": "/sdk/plugins/ecdsa"
           },
@@ -129,10 +133,6 @@ export default defineConfig({
           {
             "text": "Session Keys",
             "link": "/sdk/plugins/session-keys"
-          },
-          {
-            "text": "Passkey",
-            "link": "/sdk/plugins/passkey"
           },
           {
             "text": "Multisig",
