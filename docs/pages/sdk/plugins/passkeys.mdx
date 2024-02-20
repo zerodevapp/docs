@@ -70,7 +70,7 @@ import { createPasskeyValidator } from '@zerodev/passkey-validator'
 
 const passkeyValidator = await createPasskeyValidator(publicClient, {
   passkeyName: 'passkey name',
-  serverUrl: 'your passkey server URL',
+  passkeyServerUrl: 'your passkey server URL',
 })
 ```
 
@@ -82,7 +82,7 @@ const passkeyValidator = await createPasskeyValidator(publicClient, {
 import { getPasskeyValidator } from '@zerodev/passkey-validator'
 
 const passkeyValidator = await getPasskeyValidator(publicClient, {
-  serverUrl: 'your passkey server URL',
+  passkeyServerUrl: 'your passkey server URL',
 })
 ```
 
@@ -114,39 +114,18 @@ You can optionally implement your own passkey server.  To do that, make sure tha
 - `/sign-initiate`: TODO
 - `/sign-verify`: TODO
 
-Then, you can pass your server URL as `serverUrl`.
+Then, you can pass your server URL as `passkeyServerUrl`.
 
 ```ts
 // creating a new passkey
 const passkeyValidator = await createPasskeyValidator(publicClient, {
   passkeyName: 'passkey name',
-  serverUrl: 'your passkey server URL',
+  passkeyServerUrl: 'your passkey server URL',
 })
 
 // using an existing passkey
 const passkeyValidator = await getPasskeyValidator(publicClient, {
-  serverUrl: 'your passkey server URL',
-})
-```
-
-Alternatively, you can customize the URL paths as such:
-
-```ts
-// creating a new passkey
-const passkeyValidator = await createPasskeyValidator(publicClient, {
-  passkeyName: 'passkey name',
-  registerOptionUrl: `${PASSKEY_SERVER_URL}/register/options`,
-  registerVerifyUrl: `${PASSKEY_SERVER_URL}/register/verify`,
-  signInitiateUrl: `${PASSKEY_SERVER_URL}/sign-initiate`,
-  signVerifyUrl: `${PASSKEY_SERVER_URL}/sign-verify`
-})
-
-// using an existing passkey
-const passkeyValidator = await getPasskeyValidator(publicClient, {
-  loginOptionUrl: `${PASSKEY_SERVER_URL}/login/options`,
-  loginVerifyUrl: `${PASSKEY_SERVER_URL}/login/verify`,
-  signInitiateUrl: `${PASSKEY_SERVER_URL}/sign-initiate`,
-  signVerifyUrl: `${PASSKEY_SERVER_URL}/sign-verify`
+  passkeyServerUrl: 'your passkey server URL',
 })
 ```
 
