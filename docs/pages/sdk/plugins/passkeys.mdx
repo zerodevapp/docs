@@ -12,7 +12,10 @@ The biggest value-add of passkeys, in the context of Web3, is **saving users fro
 
 ## Demo
 
-We highly recommend that you check out [the passkey demo]() to understand how the end-user experience could look like with passkeys.
+- [Demo](https://passkey-session-key-demo.zerodev.app)
+- [Source code](https://github.com/zerodevapp/passkey-session-key-example)
+
+In this demo, we showcase using passkeys as the master signer (which is expensive but secure), while using session keys for sending UserOps cheaply.  [Read more about this architecture here.](#using-passkeys-with-session-keys)
 
 ## How ZeroDev supports passkeys
 
@@ -84,6 +87,10 @@ const passkeyValidator = await getPasskeyValidator(publicClient, {
 ```
 
 `getPasskeyValidator` will prompt the user to select an existing passkey.
+
+### Using Passkeys with Session Keys
+
+TODO
 
 ## Why do we need a passkeys server?
 
