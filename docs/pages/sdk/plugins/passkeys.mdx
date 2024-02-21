@@ -12,10 +12,14 @@ The biggest value-add of passkeys, in the context of Web3, is **saving users fro
 
 ## Demo
 
-- [Demo](https://passkey-session-key-demo.zerodev.app)
-- [Source code](https://github.com/zerodevapp/passkey-session-key-example)
+- Passkeys
+  - [Demo](https://passkey-demo.zerodev.app)
+  - [Source code](https://github.com/zerodevapp/passkey-tutorial/tree/deployed)
 
-In this demo, we showcase using passkeys as the master signer (which is expensive but secure), while using session keys for sending UserOps cheaply.  [Read more about this architecture here.](#using-passkeys-with-session-keys)
+- Passkeys + Session Keys
+  - [Demo](https://passkey-session-key-demo.zerodev.app)
+  - [Source code](https://github.com/zerodevapp/passkey-session-key-example)
+  - [Read here](#can-i-use-passkeys-with-session-keys) for why you want to use passkeys with session keys.
 
 ## How ZeroDev supports passkeys
 
@@ -88,11 +92,19 @@ const passkeyValidator = await getPasskeyValidator(publicClient, {
 
 `getPasskeyValidator` will prompt the user to select an existing passkey.
 
-### Using Passkeys with Session Keys
+## FAQs
 
-TODO
+### Can I use passkeys with session keys?
 
-## Why do we need a passkeys server?
+Yes!  Check out [this demo](https://passkey-session-key-demo.zerodev.app/) and [the source code](https://github.com/zerodevapp/passkey-session-key-example).
+
+Using passkeys with ECDSA session keys has multiple benefits:
+
+- If ERC-7212 hasn't been deployed on your network, passkeys can be expensive.  With session keys, UserOps can be sent through ECDSA keys very cheaply.  You only need to pay for the passkey validation cost once when you create a session key.
+
+- Your users don't have to deal with passkey signing prompts for every UserOp.
+
+### Why do we need a passkeys server?
 
 A passkey is generated from a client-server handshake.  In theory, we could simulate the handshake on the frontend, then store the public key on-chain.  However, storing the public key on-chain involves sending a transaction, so you would want to do that as a part of deploying the account.  However, if you must deploy a passkey account before you can use it, that breaks one of the core optimizations of AA which is counterfactual deployment -- the ability to use the address of a smart account without first deploying it.
 
@@ -103,7 +115,7 @@ We are working on ways to remove the dependency on a passkey server.  In the mea
 
 If the passkey server is lost, only users who have not yet deployed their accounts (i.e. users who have been using accounts counterfactually) will be unable to recover their accounts.  Users who have deployed their accounts will have their authentication data stored on-chain, so their accounts will be safe even if the passkey server is lost.
 
-## How do I use my own passkeys server?
+### How do I use my own passkeys server?
 
 You can optionally implement your own passkey server.  To do that, make sure that your server implements the following URLs:
 
@@ -129,7 +141,7 @@ const passkeyValidator = await getPasskeyValidator(publicClient, {
 })
 ```
 
-## How are passkeys sync-ed and recovered?
+### How are passkeys sync-ed and recovered?
 
 Synchronization and recovery are both supported natively by Apple and Google:
 
