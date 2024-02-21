@@ -67,6 +67,10 @@ export default defineConfig({
             "link": "/sdk/getting-started/tutorial"
           },
           {
+            "text": "Tutorial — Passkeys",
+            "link": "/sdk/getting-started/tutorial-passkeys"
+          },
+          {
             "text": "Code Examples",
             "link": "https://github.com/zerodevapp/zerodev-examples"
           },
