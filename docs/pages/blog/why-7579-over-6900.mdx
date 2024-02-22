@@ -1,0 +1,89 @@
+---
+authors:
+    - "[derek](https://twitter.com/decentrek)"
+    - "[taek](https://twitter.com/leekt216)"
+date: 2024-02-22
+layout: minimal
+---
+
+# Why we are building Kernel on ERC-7579 (and not ERC-6900)
+
+::authors
+
+Account abstraction as a space has largely embraced the idea of "modular smart accounts" -- smart accounts whose logic can be customized dynamically using plugins.  To date, [more than 90% of all smart accounts ever deployed are modular](https://www.bundlebear.com/factories/all), with Kernel being the most popular choice.
+
+However, the fact that different modular smart accounts are not compatible poses a great challenge for developers.  For example, if you are building a DApp and wants to use [session keys](https://docs.zerodev.app/blog/session-keys-are-the-jwts-of-web3), you need to choose a *specific* session key implementation that works only with a *specific* smart account implementation.  If you use, say, OpenFort's session keys, your DApp won't work with Kernel-based wallets, and vice-versa.  This is a big reason why AA so far has mostly only found PMF within the context of embedded wallets, where the DApp can tightly control what account implementation their users use.
+
+To meet this challenge, Alchemy proposed [ERC-6900](https://eips.ethereum.org/EIPS/eip-6900) as a modular account standard back in April 2023.  We were initially very enthusiastic about this effort and [intended to support it](https://twitter.com/zerodev_app/status/1650936175396552704).  However, over time we have become pessimistic about the direction 6900 is headed, so we coauthored [ERC-7579](https://eips.ethereum.org/EIPS/eip-7579) with [Rhinestone](https://twitter.com/rhinestonewtf), [Biconomy](https://twitter.com/biconomy), and [OKX](https://twitter.com/okx), a standard that we believe better exemplifies the spirit of openness, interoperability, and innovation that we've come to associate with Web3.
+
+In this post, we describe the issues we had with ERC-6900 and why we decided to build on ERC-7579 instead.
+
+## TLDR
+
+If you don't have time, here's the takeaway:
+
+**ERC-6900 is an implementation pretending to be a standard.**  Adopting ERC-6900 means adopting a number of *implementation decisions* made by Alchemy that are way beyond the scope of ensuring module compatibility.
+
+On the other hand, **ERC-7579 is a minimal *interface* that solves one problem only: modules should be compatible across smart accounts.**  Beyond that, smart accounts are free to make their own design decisions.
+
+If you don't believe us, simply compare the lengths of both [ERC-6900](https://eips.ethereum.org/EIPS/eip-6900) and [ERC-7579](https://eips.ethereum.org/EIPS/eip-7579).
+
+A good analogy may be Mac OS vs Linux.  While Mac OS is a great OS, it shouldn't be a standard.  A standard should be minimal like Linux, so people can build different OS-es on top of it (including Mac OS), while remaining compatible with each other.
+
+Now let's look at the issues we had with ERC-6900.
+
+## Technical Issues
+
+### Module Composability
+
+One key goal with Kernel is to make it simple to develop modules *securely*.  In other words, it should be as hard as possible for the module developer to screw up.
+
+That's why Kernel is designed with module composability in mind.  Module composability is the idea that a UserOp should be able to invoke multiple modules.  As a result, module developers can keep their modules very simple, and achieve complex validation logic by putting simple modules together.
+
+This is not possible with ERC-6900, however, due to the fact that each execution function has to be tied to a single validation module.  Therefore, whereas with Kernel you can develop plugin A and plugin B, and to achieve A+B you just need to use A and B together, with ERC-6900 you have to develop a new plugin that combines the logic of A and B.  This results in redundant code and complex, monolithic modules that are hard to audit.
+
+### Enabling modules off-chain
+
+One “killer feature” of Kernel is the ability to enable modules off-chain.  For example, you can create a session key by just signing a message.  No gas cost is actually paid to enable the session key until and unless the session key is actually used.  This is critical for use cases like limit orders.  For example, when I create a session key for a protocol to execute a limit order for me, it’s not clear that the order will ever be executed (e.g. if the price never hits my desired number).  Therefore, the ability to NOT pay gas upfront, but only pay gas when the order is executed, is critical to the user experience.
+
+To enable modules off-chain, ZeroDev packs both the “approval” for the module and the signature data for the module itself inside the `signature` field of the first UserOp used by the module.  However, this is not possible with ERC-6900, since it stipulates that the UserOp must be passed as is to the module.  As a result, unless the module is explicitly programmed to ignore a part of the signature, it will fail to parse it.  But doing so would introduce a dependency between the module and the smart account implementation, which is precisely the thing that a modular account standard is supposed to avoid.
+
+That’s why session keys in ERC-6900 must be enabled explicitly on-chain, thus invalidating a large number of use cases that require session keys be created without guarantees of transaction execution.
+
+### Aggregators
+
+"Aggregators" is a lesser-known feature in ERC-4337 for validating aggregate signatures, such as BLS.  Generally, it's useful for any validation process that involves global storage; for example, we've been working on a ZK-based recovery process that leverages aggregators, where validating the ZK proofs involves accessing some global storage.
+
+ERC-6900 however bans aggregators outright.  The reasoning is not clear to us, but in any case if someone had issues with aggregators, you would think that the more reasonable approach is to propose a spec change to ERC-4337 itself, as opposed to proposing an account standard that bans a part of ERC-4337.
+
+## Non-technical Issues
+
+### ERC-7579 was driven by real experience; ERC-6900 is not
+
+It shouldn't be a surprise that ERC-7579 is a more well-designed standard than ERC-6900, if we examine how these two standards came about.
+
+ERC-6900 was the brainchild of the Alchemy team, who are great engineers that we have a lot of respect for.  Nevertheless, it was conceived at a time when there was minimal traction for AA in general and modular smart accounts specifically.  And while Alchemy has been engaging other people for the design of 6900, the overall architecture remains consistent with the initial design set by the Alchemy team.
+
+On the other hand, ERC-7579 was conceived almost 8 months after ERC-6900.  At that time, over two million modular smart accounts have been deployed, so the authors of ERC-7579 were able to draw from the actual experience of both module developers and smart account developers.
+
+Importantly, the authors of ERC-7579 include authors of Kernel (ZeroDev), Biconomy, and OKX, which are three of the most widely-used modular accounts today.  As a result, the standard incorporates a diverse set of opinions.
+
+### Decisions regarding ERC-6900 are dominated by Alchemy
+
+If we had so many issues with ERC-6900, you might ask, why didn't we try to contribute to the standard instead of making a new one?
+
+In fact, we have.  We provided a lot of feedback to Alchemy in the early days of the standard, and the response we got tended to be in the form of "that's a good point -- we will discuss it internally."  In other words, it was clear that Alchemy sees themselves as the ultimate arbitrator of the account standard.
+
+Now, we totally respect other teams for having different opinions for how smart accounts should be built.  And that's precisely the point of a standard -- it should enable interoperability while respecting different design decisions.  And yet, we felt that our opinions were simple overruled, while the standard evolved in a direction that incorporated a specific set of design decisions made by a specific team.  We don't think that's the right way to build a standard.
+
+As much as it pains us to say it, it's unfortunately a common practice in Web3 to push a "standard" that really just enshrines a particular product.  While we are inclined to think that that's not the intention of ERC-6900, what we have seen doesn't give us strong confidence.
+
+## The future for ERC-6900
+
+Again, we respect ERC-6900 as an implementation -- it makes a set of design decisions that, while we don't agree with all of them, are generally sound and logical.  It just shouldn't be a standard.
+
+If ERC-6900 is to stay as a standard, we hope to see it become an extension on top of ERC-7579 (note how this is possible, but not vice versa).  That way, developers aligned with ERC-6900's specific design decisions can adopt it, but to achieve module compatibility it would be enough to adopt ERC-7579.
+
+## Last words
+
+Standardization is a balancing act — one must seek to improve interoperability between different products, while allowing products to differentiate and innovate.  The latter is particularly important because, all things considered, it’s still just the very early days of account abstraction.  That’s why we are building our product on a minimal interoperability standard that is ERC-7579, so that we can continue shipping awesome products to the end users, which, ultimately, is all that matters.
