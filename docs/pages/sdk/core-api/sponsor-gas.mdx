@@ -24,9 +24,9 @@ Check out [the presets docs](/sdk/presets/intro) for details.
 
 ## Standard API
 
-If you are [setting up an account using the core API](/sdk/core-api/create-account#core-api), you can specify a `sponsorUserOperation` function when you [create the account client](/sdk/core-api/create-account#create-an-account-client).
+If you are [setting up an account using the standard API](/sdk/core-api/create-account#standard-api), you can specify a `sponsorUserOperation` function when you [create the account client](/sdk/core-api/create-account#create-an-account-client).
 
-The `sponsorUserOperation` function essentially takes a UserOp and then returns a UserOp with the `paymasterAndData` field set.  Since every paymaster works a bit differently, you need to consult the documentation of the paymaster you are using to figure out how to get the `paymasterAndData`.  For example, if you are using the ZeroDev paymaster:
+The `sponsorUserOperation` function essentially takes a UserOp and then returns a UserOp with the `paymasterAndData` field set.  For example, if you are using the ZeroDev paymaster, use the `createZeroDevPaymasterClient` helper function:
 
 ```typescript
 import { http } from "viem"
@@ -48,3 +48,12 @@ const kernelClient = createKernelAccountClient({
   }
 })
 ```
+
+If you want to user Pimlic or StackUp paymasters, you can use these helper functions:
+
+```ts
+import { createPimlicoPaymasterClient } from "permissionless/clients/pimlico"
+import { createStackupPaymasterClient } from "permissionless/clients/stackup"
+```
+
+Then, simple replace `createZeroDevPaymasterClient` with one of these functions.
