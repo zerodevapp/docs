@@ -49,11 +49,11 @@ const kernelClient = createKernelAccountClient({
 })
 ```
 
-If you want to user Pimlic or StackUp paymasters, you can use these helper functions:
+If you want to user Pimlic or Stackup paymasters, you can use these helper functions:
 
 ```ts
 import { createPimlicoPaymasterClient } from "permissionless/clients/pimlico"
 import { createStackupPaymasterClient } from "permissionless/clients/stackup"
 ```
 
-Then, simple replace `createZeroDevPaymasterClient` with one of these functions.
+Then, simply replace `createZeroDevPaymasterClient` with one of these functions, and make sure to use the corresponding paymaster RPC for these infra providers.
