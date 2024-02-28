@@ -244,6 +244,10 @@ export default defineConfig({
             "text": "How to debug a UserOp?",
             "link": "/sdk/faqs/debug-userop"
           },
+          {
+            "text": "Can I use a KernelClient with ethers.js?",
+            "link": "/sdk/faqs/use-with-ethers"
+          }
         ],
       },
     ],

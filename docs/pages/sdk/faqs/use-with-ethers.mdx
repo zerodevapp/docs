@@ -1,0 +1,20 @@
+# Can I Use a KernelClient with Ethers?
+
+Our KernelClient implements the Viem WalletClient interface. Although it is not directly compatible with Ethers.js, we have developed an EIP1193Provider that accepts a KernelClient as a constructor parameter. This provider enables the use of KernelClient with Ethers.js in a similar manner to how window.ethereum is utilized with Ethers.js.
+
+Below is an example demonstrating how to use a KernelClient with the EIP1193Provider. This example assumes you are familiar with the creating of a KernelClient. For detailed instructions on creating a KernelClient, please refer to our [tutorial page](/sdk/getting-started/tutorial#creating-a-kernel-client).
+
+```typescript
+import { KernelEIP1193Provider } from 'zerodev/sdk/providers';
+import { ethers } from 'ethers';
+
+// Ensure to initialize your KernelClient here
+const kernelClient = …;
+
+// Initialize the KernelEIP1193Provider with your KernelClient
+const kernelProvider = new KernelEIP1193Provider(kernelClient);
+
+// Use the KernelProvider with ethers
+const ethersProvider = new ethers.BrowserProvider(kernelProvider);
+const signer = await ethersProvider.getSigner();
+```
