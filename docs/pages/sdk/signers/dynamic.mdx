@@ -28,19 +28,19 @@ import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 // Use the `useDynamicContext` hook to get the primary wallet
 const { primaryWallet } = useDynamicContext();
 
-// Get the dynamicProvider, we will use in the next section
-const dynamicProvider = await primaryWallet?.connector?.getWalletClient();
+// Get the dynamicWalletClient, we will use in the next section
+const dynamicWalletClient = await primaryWallet?.connector?.getWalletClient();
 ```
 
 ### Use with ZeroDev
 
 ```typescript
 import { createEcdsaKernelAccountClient } from '@zerodev/presets/zerodev';
-import { providerToSmartAccountSigner } from 'permissionless';
+import { walletClientToSmartAccountSigner } from 'permissionless';
 import { polygonMumbai } from 'viem/chains';
 
-// Use the Provider from Dynamic to create a SmartAccountSigner
-const smartAccountSigner = await providerToSmartAccountSigner(dynamicProvider);
+// Use the WalletClient from Dynamic to create a SmartAccountSigner
+const smartAccountSigner = await walletClientToSmartAccountSigner(dynamicWalletClient);
 
 // Set up your Kernel client
 const kernelClient = await createEcdsaKernelAccountClient({
