@@ -56,6 +56,10 @@ bun i @zerodev/passkey-validator
 
 ## API
 
+:::info
+Due to a bug, you currently need to [set `paymasterProvider` to `PIMLICO`](/meta-infra/rpcs#paymaster-rpc) in order to send UserOps using passkeys.
+:::
+
 ### Setting up passkey server
 
 In this tutorial, we will be using ZeroDev's passkey server. If you want to use your own passkey server, [read this](#how-do-i-use-my-own-passkeys-server). If you wonder why a passkey server is needed at all, [read this](#why-do-we-need-a-passkeys-server).
