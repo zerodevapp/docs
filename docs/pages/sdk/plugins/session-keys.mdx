@@ -329,7 +329,7 @@ const sessionKeyValidator = await signerToSessionKeyValidator(publicClient, {
 
 Here's what each flag means:
 
-- `target`: the target contract to call.  If this is `zeroAddress`, then the target can be any contract as long as the ABI matches.
+- `target`: the target contract to call or address to send ETH to.  If this is `zeroAddress`, then the target can be any contract as long as the ABI matches (or it can be any address if no ABI is specified).
 - `valueLimit`: the maximum [value](https://coinmarketcap.com/alexandria/glossary/ethereum-transaction#:~:text=The%20value%20is%20the%20amount%20of%20Ether%20to%20transfer%20from%20the%20sender%20to%20the%20recipient%2C%20and%20this%20can%20even%20be%20zero.) that can be transmitted.
 - `abi`: the contract ABI
 - `functionName`: the function name
