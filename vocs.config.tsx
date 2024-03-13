@@ -219,17 +219,25 @@ export default defineConfig({
         ],
       },
       {
-        "text": "Presets",
+        "text": "Infra",
         "collapsed": false,
         "items": [
           {
             "text": "Introduction",
-            "link": "/sdk/presets/intro"
+            "link": "/sdk/infra/intro"
           },
           {
             "text": "ZeroDev",
-            "link": "/sdk/presets/zerodev"
-          }
+            "link": "/meta-infra/intro"
+          },
+          {
+            "text": "Pimlico",
+            "link": "/sdk/infra/pimlico"
+          },
+          {
+            "text": "StackUp",
+            "link": "/sdk/infra/stackup"
+          },
         ],
       },
       {

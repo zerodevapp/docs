@@ -1,8 +1,18 @@
 # ZeroDev Introduction
 
-**ZeroDev** is an SDK for developing account abstraction (AA) wallets and DApps using [Kernel](https://github.com/zerodevapp/kernel), a smart contract account (or "smart account" for short) that is:
+**ZeroDev** is a modular SDK for developing DApps and wallets using smart accounts (account abstraction).
 
-- **Modular**: Kernel accounts can be customized with Solidity plugins.  Features such as multisig, recovery, and session keys are all implemented as plugins.
+ZeroDev is modular in three ways:
+
+- [**Modular smart accounts**](/sdk/plugins/intro) -- you can configure the smart account with plugins to enable features like multisig, session keys, account recovery, etc.
+
+- [**Modular signers**](/sdk/signers/intro) -- your users can manage keys with a variety of methods ranging from passkeys to third-party WaaS such as Privy, Dynamic, Magic, etc.
+
+- [**Modular infra**](/sdk/infra/intro) -- you can use any account abstraction infra provider such as Pimlico, StackUp, Alchemy, etc.
+
+ZeroDev is built on top of [Kernel](https://github.com/zerodevapp/kernel), an open-source smart account that is:
+
+- **Developer-friendly**: Kernel accounts can be customized with [ERC-7579](https://eips.ethereum.org/EIPS/eip-7579) plugins.
 - **Optimized**: Kernel is [heavily optimized](https://github.com/zerodevapp/aa-benchmark) -- it saves gas for you and your users.
 - **Widely used**: Kernel is [the most widely deployed](https://www.bundlebear.com/factories/all) ERC-4337 smart account.
 
@@ -40,7 +50,7 @@ There are four major components of the ZeroDev SDK.
 
 - [Signers](/sdk/signers/intro): integrations with popular WaaS services such as Privy and Dynamic, allowing you to use these services with account abstraction.
 
-- [Presets](/sdk/presets/intro): helper functions for integrating with popular infra providers such as Pimlico, StackUp, Alchemy, and of course ZeroDev itself.
+- [Infra](/sdk/infra/intro): helper functions for integrating with popular infra providers such as Pimlico, StackUp, Alchemy, and of course ZeroDev itself.
 
 ## Getting Started
 
