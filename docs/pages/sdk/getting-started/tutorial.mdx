@@ -8,7 +8,7 @@ In this tutorial, we will mint an NFT without paying gas. We assume that you hav
 
 ## Create a ZeroDev Project
 
-ZeroDev works with any bundlers and paymasters.  For this tutorial, we will use ZeroDev's [meta AA infra](/meta-infra/intro).
+For this tutorial, we will use [ZeroDev's AA infra](/meta-infra/intro), but you can use ZeroDev with any AA infra provider.
 
 Go to the [ZeroDev dashboard](https://dashboard.zerodev.app/) and create a project for Polygon Mumbai.
 
@@ -58,36 +58,84 @@ npx ts-node tutorial/completed.ts
 
 Now open the [`tutorial/template.ts`](https://github.com/zerodevapp/zerodev-examples/blob/main/tutorial/template.ts) file in your editor.  This will be the template where you will write your code.  You can always refer to [`tutorial/completed.ts`](https://github.com/zerodevapp/zerodev-examples/blob/main/tutorial/completed.ts) to see the completed tutorial code.
 
-### Creating a Kernel client
+### Create a signer
 
-Before you can send UserOps, you need to construct an "account client."  An account client is an object that interacts with a bundler on behalf of a specific account.  In the case of ZeroDev, all account clients are of the type `KernelAccountClient`.
+Kernel accounts support many different signing methods, including ECDSA keys and passkeys.  In this tutorial, we will use ECDSA keys which are the same type of keys that MetaMask and other Ethereum wallets use.
 
-There are several types of Kernel account clients, each for a different type of [validation methods](/sdk/plugins/intro).  For this tutorial, we will be using the most common validation method -- ECDSA, which is the same algorithm used by normal Ethereum accounts (EOAs).
-
-ECDSA accounts are controlled by a private key.  For this tutorial, we will use a random private key.  Add the following import and code:
+Let's start by generating a random key.  Add the following code to the `main` function:
 
 ```typescript
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts"
 
 const main = async () => {
-  const privateKey = generatePrivateKey()
-  const signer = privateKeyToAccount(privateKey)
+  const privateKey = generatePrivateKey()  // [!code focus]
+  const signer = privateKeyToAccount(privateKey)  // [!code focus]
 }
 ```
 
-Since we are using ZeroDev for bundlers & paymasters, we can construct the Kernel client via the ZeroDev "preset."  Presets are helper functions for specific infra providers.  Add the following import and code:
+### Create a validator
+
+Each Kernel account handles validation through a smart contract known as a "validator."  In this case, we will be using the ECDSA validator.
+
+Add the following code to create the ECDSA validator:
 
 ```typescript
-import { createEcdsaKernelAccountClient } from "@zerodev/presets/zerodev"
-import { polygonMumbai } from "viem/chains"
+import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
+
+const main = async () => {
+  // other code...
+
+  const ecdsaValidator = await signerToEcdsaValidator(publicClient, { // [!code focus]
+    signer,  // [!code focus]
+  })  // [!code focus]
+}
+```
+
+### Create an account
+
+We are now ready to create an account.  Add the following code:
+
+```typescript
+import { createKernelAccount } from "@zerodev/sdk"
+ 
+const main = async () => {
+  // other code...
+
+  const account = await createKernelAccount(publicClient, {  // [!code focus]
+    plugins: {  // [!code focus]
+      sudo: ecdsaValidator,  // [!code focus]
+    },  // [!code focus]
+  })  // [!code focus]
+}
+```
+
+### Creating a Kernel client
+
+Finally, we are going to create an "account client" which serves as the connection between your account and some AA infra (i.e. bundlers and paymasters).  The connection is necessary for you to actually send UserOps.
+
+Add the following code:
+
+```typescript
+import { createKernelAccountClient, createZeroDevPaymasterClient } from "@zerodev/sdk"
+import { http } from "viem"
+import { polygonMumbai } from 'viem/chains'
 
 const main = async () => {
   // ... other code
 
-  const kernelClient = await createEcdsaKernelAccountClient({
+  const kernelClient = createKernelAccountClient({
+    account,
     chain: polygonMumbai,
-    projectId: process.env.ZERODEV_PROJECT_ID!,
-    signer,
+    transport: http(BUNDLER_RPC),
+    sponsorUserOperation: async ({ userOperation }) => {
+      const zerodevPaymaster = createZeroDevPaymasterClient({
+        chain: polygonMumbai,
+        transport: http(PAYMASTER_RPC),
+      })
+      return zerodevPaymaster.sponsorUserOperation({
+        userOperation
+      })
+    }
   })
 
   const accountAddress = kernelClient.account.address

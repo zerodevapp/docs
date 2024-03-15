@@ -11,9 +11,8 @@ npm init -y
 Install the ZeroDev SDK and presets:
 
 ```bash
-npm i @zerodev/sdk @zerodev/presets
+npm i @zerodev/sdk @zerodev/ecdsa-validator
 ```
-
 
 Install dev packages for TypeScript:
 
@@ -40,8 +39,9 @@ Create the following `tsconfig.json` (TypeScript config):
 Create a script `index.ts` with the following code:
 
 ```ts
-import { createEcdsaKernelAccountClient } from "@zerodev/presets/zerodev"
-import { encodeFunctionData, parseAbi } from "viem"
+import { createKernelAccount, createKernelAccountClient, createZeroDevPaymasterClient } from "@zerodev/sdk"
+import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
+import { http, encodeFunctionData, parseAbi, createPublicClient } from "viem"
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts"
 import { polygonMumbai } from "viem/chains"
 
@@ -52,16 +52,46 @@ const contractABI = parseAbi([
   'function balanceOf(address owner) external view returns (uint256 balance)'
 ])
 
+const PROJECT_ID = 'b5486fa4-e3d9-450b-8428-646e757c10f6'
+const BUNDLER_RPC = `https://rpc.zerodev.app/api/v2/bundler/${PROJECT_ID}`
+const PAYMASTER_RPC = `https://rpc.zerodev.app/api/v2/paymaster/${PROJECT_ID}`
+
 const main = async () => {
   // Construct a signer
   const privateKey = generatePrivateKey()
   const signer = privateKeyToAccount(privateKey)
 
-  // Construct a Kernel account client
-  const kernelClient = await createEcdsaKernelAccountClient({
-    chain: polygonMumbai,
-    projectId: 'b5486fa4-e3d9-450b-8428-646e757c10f6',
+  // Construct a public client
+  const publicClient = createPublicClient({
+    transport: http(BUNDLER_RPC),
+  })
+
+  // Construct a validator
+  const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
     signer,
+  })
+
+  // Construct a Kernel account
+  const account = await createKernelAccount(publicClient, {
+    plugins: {
+      sudo: ecdsaValidator,
+    },
+  })
+
+  // Construct a Kernel account client
+  const kernelClient = createKernelAccountClient({
+    account,
+    chain: polygonMumbai,
+    transport: http(BUNDLER_RPC),
+    sponsorUserOperation: async ({ userOperation }) => {
+      const zerodevPaymaster = createZeroDevPaymasterClient({
+        chain: polygonMumbai,
+        transport: http(PAYMASTER_RPC),
+      })
+      return zerodevPaymaster.sponsorUserOperation({
+        userOperation
+      })
+    }
   })
 
   const accountAddress = kernelClient.account.address
