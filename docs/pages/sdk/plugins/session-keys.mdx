@@ -318,6 +318,9 @@ const sessionKeyValidator = await signerToSessionKeyValidator(publicClient, {
             value: argumentValue,
           }
         ],
+
+        // (optional) whether this is a call or a delegatecall.  Defaults to call
+        operation: Operation.Call,
       },
       {
         // another permission...
@@ -334,22 +337,11 @@ Here's what each flag means:
 - `abi`: the contract ABI
 - `functionName`: the function name
 - `args`: an array of conditions, each corresponding to an argument, in the order that the arguments are laid out.  use `null` to skip an argument.
-  - `operator`: This can be `EQUAL`, `GREATER_THAN`, `LESS_THAN`, `GREATER_THAN_OR_EQUAL`, `LESS_THAN_OR_EQUAL`, `NOT_EQUAL`.
+  - `operator`: this can be `EQUAL`, `GREATER_THAN`, `LESS_THAN`, `GREATER_THAN_OR_EQUAL`, `LESS_THAN_OR_EQUAL`, `NOT_EQUAL`.
   - `value`: the value of the argument to use with the operator.  For instance, `operator = EQUAL` and `value = 2` would mean "the value must be equal to 2".
+- `operation`: (optional) whether this is a call or a delegatecall.  Defaults to call.
 
-## FAQs
-
-### Does creating session keys cost gas?
-
-No.  Creating a session key entails simply signing a message, which is done off-chain and doesn't involve any gas cost.
-
-### Is it possible to use session keys with a not-yet-deployed account?
-
-Yes.  If you do so, the first UserOp sent with the session key will deploy the account.
-
-### Can you use `delegatecall` with session keys?
-
-Yes.  When you initialize the session key account, pass an additional `executorData` flag:
+Note that if you are going to use `delegatecall`, you also need to set up the session key account with an additional `executorData` flag:
 
 ```ts
 import { zeroAddress, toFunctionSelector } from "viem"
@@ -365,3 +357,13 @@ const sessionKeyAccount = await createKernelAccount(publicClient, {
   },
 })
 ```
+
+## FAQs
+
+### Does creating session keys cost gas?
+
+No.  Creating a session key entails simply signing a message, which is done off-chain and doesn't involve any gas cost.
+
+### Is it possible to use session keys with a not-yet-deployed account?
+
+Yes.  If you do so, the first UserOp sent with the session key will deploy the account.
