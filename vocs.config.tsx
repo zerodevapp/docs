@@ -255,6 +255,10 @@ export default defineConfig({
           {
             "text": "Can I use a KernelClient with ethers.js?",
             "link": "/sdk/faqs/use-with-ethers"
+          },
+          {
+            "text": "Is ZeroDev Audited?",
+            "link": "/sdk/faqs/audits"
           }
         ],
       },
