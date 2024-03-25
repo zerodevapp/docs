@@ -211,8 +211,9 @@ const account = createKernelAccount(publicClient, {
 
 Sometimes you only know the address of the EOA signer but you don't have the signer itself.  In that case, you can still compute the address of the smart account with this helper function:
 
-```
-import { getKernelAddressFromECDSA } "@zerodev/ecdsa-validator"
+```ts
+import { getKernelAddressFromECDSA } from "@zerodev/ecdsa-validator"
 
-const smartAccountAddress = getKernelAddressFromECDSA(publicClient, eoaAddress, index)
+// index is 0 by default
+const smartAccountAddress = await getKernelAddressFromECDSA(publicClient, eoaAddress, index)
 ```
