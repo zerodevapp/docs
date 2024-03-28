@@ -259,6 +259,10 @@ export default defineConfig({
           {
             "text": "Is ZeroDev Audited?",
             "link": "/sdk/faqs/audits"
+          },
+          {
+            "text": "How to use ZeroDev with Gelato",
+            "link": "/sdk/faqs/use-with-gelato"
           }
         ],
       },
