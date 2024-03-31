@@ -7,6 +7,7 @@
 To use Dynamic with ZeroDev, you have two options: Dynamic's native integration that utilizes ZeroDev, or a custom integration using Dynamic's Externally Owned Account (EOA) as a signer. Choose the approach that best fits your needs.
 
 ### Native Integration
+
 Dynamic natively supports account abstraction using ZeroDev. This integration allows you to sponsor gas fees, bundle transactions, recover and transfer accounts, utilize session keys.
 - For more information and how to get started, visit the [Dynamic Account Abstraction documentation](https://docs.dynamic.xyz/aa-providers/zerodev).
 
@@ -51,3 +52,7 @@ const kernelClient = await createEcdsaKernelAccountClient({
 
 const kernelAddress = kernelClient.account.address;
 ```
+
+## Starter Template
+
+A user has helpfully created a [starter template for Dynamic + ZeroDev](https://github.com/tantodefi/se2-dynamic-zerodev).
