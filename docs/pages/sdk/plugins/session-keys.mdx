@@ -343,7 +343,7 @@ Here's what each flag means:
 
 ### Batching and Delegatecall
 
-To use session keys with batching, specify the following `executorData` when constructing the account:
+To use session keys with [batching](/sdk/core-api/batch-transactions), specify the following `executorData` when constructing the account:
 
 ```ts
 import { zeroAddress, toFunctionSelector } from "viem"
@@ -360,6 +360,8 @@ const sessionKeyAccount = await createKernelAccount(publicClient, {
   },
 })
 ```
+
+Then you can send batched UserOps with `sendUserOperation([userops])` as usual.
 
 To use session keys with `delegatecall`:
 
