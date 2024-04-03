@@ -74,6 +74,10 @@ export default defineConfig({
             "text": "Code Examples",
             "link": "https://github.com/zerodevapp/zerodev-examples"
           },
+          {
+            "text": "Wallet Connect",
+            "link": "/sdk/getting-started/wallet-connect"
+          }
         ],
       },
       {
