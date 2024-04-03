@@ -114,7 +114,7 @@ export default defineConfig({
           },
           {
             "text": "Wallet Connect",
-            "link": "/sdk/getting-started/wallet-connect"
+            "link": "/sdk/core-api/wallet-connect"
           },
         ],
       },
