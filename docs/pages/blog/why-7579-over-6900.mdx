@@ -10,6 +10,10 @@ layout: minimal
 
 ::authors
 
+*Update: Noam from Alchemy has published [a response here](https://mirror.xyz/probablynoam.eth/ZM8k-YoVbC-ih13zPMPZ5q4iZ7wEHuWEcRbQNrRiURU).*
+
+*Update 2: we published [a follow-up blog post here](https://docs.zerodev.app/blog/who-when-what).*
+
 Account abstraction as a space has largely embraced the idea of "modular smart accounts" -- smart accounts whose logic can be customized dynamically using plugins.  To date, [more than 90% of all smart accounts ever deployed are modular](https://www.bundlebear.com/factories/all), with Kernel being the most popular choice.
 
 However, the fact that different modular smart accounts are not compatible poses a great challenge for developers.  For example, if you are building a DApp and wants to use [session keys](https://docs.zerodev.app/blog/session-keys-are-the-jwts-of-web3), you need to choose a *specific* session key implementation that works only with a *specific* smart account implementation.  If you use, say, OpenFort's session keys, your DApp won't work with Kernel-based wallets, and vice-versa.  This is a big reason why AA so far has mostly only found PMF within the context of embedded wallets, where the DApp can tightly control what account implementation their users use.
@@ -87,5 +91,3 @@ If ERC-6900 is to stay as a standard, we hope to see it become an extension on t
 ## Last words
 
 Standardization is a balancing act — one must seek to improve interoperability between different products, while allowing products to differentiate and innovate.  The latter is particularly important because, all things considered, it’s still just the very early days of account abstraction.  That’s why we are building our product on a minimal interoperability standard that is ERC-7579, so that we can continue shipping awesome products to the end users, which, ultimately, is all that matters.
-
-(Update: Noam from Alchemy has [published a response here](https://mirror.xyz/probablynoam.eth/ZM8k-YoVbC-ih13zPMPZ5q4iZ7wEHuWEcRbQNrRiURU).)
