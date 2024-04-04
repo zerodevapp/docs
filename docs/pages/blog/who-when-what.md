@@ -22,7 +22,7 @@ To begin, let’s examine the most fundamental question: what does a smart accou
 Every use case of smart account plugins must answer three questions: who, when, and what.
 
 - *Who* is authorized to perform this action?
-- *When* (i.e. under what condition) **can they perform this action?
+- *When* (i.e. under what condition) can they perform this action?
 - *What* exactly is this action?
 
 Here are some examples of viewing use cases through this lens:

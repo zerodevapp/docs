@@ -341,7 +341,29 @@ Here's what each flag means:
   - `value`: the value of the argument to use with the operator.  For instance, `operator = EQUAL` and `value = 2` would mean "the value must be equal to 2".
 - `operation`: (optional) whether this is a call or a delegatecall.  Defaults to call.
 
-Note that if you are going to use `delegatecall`, you also need to set up the session key account with an additional `executorData` flag:
+### Batching and Delegatecall
+
+To use session keys with [batching](/sdk/core-api/batch-transactions), specify the following `executorData` when constructing the account:
+
+```ts
+import { zeroAddress, toFunctionSelector } from "viem"
+import { KernelAccountAbi } from "@zerodev/sdk"
+
+const sessionKeyAccount = await createKernelAccount(publicClient, {
+  plugins: {
+    sudo: ecdsaValidator,
+    regular: sessionKeyValidator,
+    executorData: {  // [!code focus]
+      executor: zeroAddress,  // [!code focus]
+      selector: toFunctionSelector(getAbiItem({ abi: KernelAccountAbi, name: "executeBatch" })),  // [!code focus]
+    },  // [!code focus]
+  },
+})
+```
+
+Then you can send batched UserOps with `sendUserOperation([userops])` as usual.
+
+To use session keys with `delegatecall`:
 
 ```ts
 import { zeroAddress, toFunctionSelector } from "viem"

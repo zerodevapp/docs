@@ -7,7 +7,7 @@ In this tutorial, we will be building a Next.js app where your users can create 
 We have prepared a [Next.js template](https://github.com/zerodevapp/passkey-tutorial) for you:
 
 ```bash
-git clone https://github.com/zerodevapp/passkey-tutorial.git
+git clone git@github.com:zerodevapp/passkey-tutorial.git
 ```
 
 If you ever want to check out the completed code, you can checkout the `completed` branch.  You can also see a deployed demo [here](https://passkey-demo.zerodev.app/).
@@ -88,8 +88,8 @@ const createAccountAndClient = async (passkeyValidator: any) => {
     } // [!code focus]
   }) // [!code focus]
 
-  setIsKernelClientReady(true)
-  setAccountAddress(kernelAccount.address)
+  setIsKernelClientReady(true) // [!code focus]
+  setAccountAddress(kernelAccount.address) // [!code focus]
 }
 ```
 

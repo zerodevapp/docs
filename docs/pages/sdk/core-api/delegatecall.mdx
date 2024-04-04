@@ -22,6 +22,7 @@ const userOpHash = await kernelClient.sendUserOperation({
     callData: await kernelClient.account.encodeCallData({
       to: targetAdress,
       data: callData,
+      value: 0n,
       callType: "delegatecall",
     }),
   },

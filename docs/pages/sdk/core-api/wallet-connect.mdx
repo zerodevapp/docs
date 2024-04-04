@@ -1,0 +1,79 @@
+# Wallet Connect
+
+The `useWalletConnect` hook from the `@zerodev/waas` package integrates WalletConnect functionality with a React application, providing an interface for connecting to WalletConnect, handling session proposals, requests, and managing connections.
+
+## Installation
+
+```bash
+npm install @zerodev/waas
+```
+
+## Props
+
+The hook accepts a single argument:
+
+- `kernelClient`: Instance of `KernelAccountClient` from `@zerodev/sdk`. This example assumes you are familiar with the creating of a KernelClient. For detailed instructions on creating a KernelClient, please refer to our [API docs](https://docs.zerodev.app/sdk/core-api/create-account).
+
+## Returns
+
+The hook returns an object containing the following properties and methods:
+
+- `connect(uri: string)`: Function to initiate a WalletConnect session.
+- `approveSessionProposal(proposalData?: Web3WalletTypes.SessionProposal)`: Function to approve a session proposal.
+- `rejectSessionProposal()`: Function to reject a session proposal.
+- `disconnect(session: SessionTypes.Struct)`: Function to disconnect an active session.
+- `approveSessionRequest()`: Function to approve a session request.
+- `rejectSessionRequest()`: Function to reject a session request.
+- `sessionProposal`: Stateful value containing the current session proposal, if any.
+- `sessionRequest`: Stateful value containing the current session request, if any.
+- `isLoading`: Enum for loading states including 'Approve', 'Reject', 'Connect', 'Disconnect'.
+- `sessions`: Array of active sessions.
+- `error`: Error object if an error occurred during any of the operations.
+
+## Usage
+
+Here's a basic example of using the `useWalletConnect` hook within a React component:
+
+```jsx
+import React, { useState, useEffect } from 'react';
+import { KernelAccountClient } from '@zerodev/sdk';
+import { useWalletConnect } from '@your-library-path'; // Adjust the import path according to your project structure
+
+const App = () => {
+  const [kernelClient, setKernelClient] = useState<KernelAccountClient>();
+
+  useEffect(() => {
+    // Initialize your KernelAccountClient here and set it using setKernelClient
+  }, []);
+
+  const {
+    connect,
+    sessionProposal,
+    approveSessionProposal,
+    rejectSessionProposal,
+    isLoading,
+    error,
+    disconnect,
+    sessions,
+    sessionRequest,
+    approveSessionRequest,
+    rejectSessionRequest,
+  } = useWalletConnect({ kernelClient });
+
+  // Use the returned properties and methods in your component
+};
+
+export default App;
+```
+
+## Examples
+
+For an example implementation of the `useWalletConnect` hook, refer to the following demo application:
+
+- [WalletConnect Demo Application](https://github.com/zerodevapp/waas-wallet-connect-demo)
+
+## Source Code
+
+The source code for the `useWalletConnect` hook is available on GitHub. For more details, contributions, or to report issues, please visit the package repository:
+
+- [ZeroDev WaaS SDK](https://github.com/zerodevapp/waas)

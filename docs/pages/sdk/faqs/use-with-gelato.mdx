@@ -1,0 +1,79 @@
+# Using ZeroDev with Gelato
+
+Gelato's has a unique approach to handling transaction fees without the need for an EntryPoint deposit or an on-chain paymaster. Instead, transaction fees are settled post-execution via [1Balance](https://docs.gelato.network/web3-services/relay/subscriptions-and-payments/1balance-and-relay) across all supported networks, ensuring accurate charging of gas consumed without necessitating per-chain user deposits. This method relies on setting `maxFeePerGas=0`, thereby eliminating the need for upfront fee payments (`requiredPrefund=0`).
+
+For a deeper understanding of Gelato's capabilities, refer to [their comprehensive documentation](https://docs.gelato.network/web3-services/account-abstraction/advantages-and-highlights).
+
+## ZeroDev SDK with Gelato
+
+Integrating Gelato with our SDK necessitates specific configurations, diverging from conventional bundler setups due to Gelato's distinct fee management mechanism.
+
+### Essentail Configurations
+- **Omit Paymaster**: Unlike other services, Gelato's transactions are sponsored without specifying a paymaster. Thus, your account will directly bear the gas fees incurred through Gelato's operations.
+
+Initialization with Preset Options
+```typescript
+const kernelClient = await createEcdsaKernelAccountClient({
+  // Mandatory fields
+  chain,
+  projectId,
+  signer,
+
+  // Gelato-specific optional fields
+  provider: "GELATO",
+  paymaster: 'NONE',  // Explicitly omit the use of a paymaster
+})
+```
+
+Manual Setup without Presets
+
+If opting for a manual configuration, ensure the sponsorUserOperation middleware is not used, as illustrated below (commented out for clarity):
+```typescript
+const kernelClient = createKernelAccountClient({
+  account,
+  chain,
+  transport: http(process.env.BUNDLER_RPC),
+  // The following is omitted for Gelato integration:
+  // sponsorUserOperation: async ({ userOperation }): Promise<UserOperation> => {
+  //   const paymasterClient = createZeroDevPaymasterClient({
+  //     chain,
+  //     transport: http(process.env.PAYMASTER_RPC),
+  //   })
+  //   return paymasterClient.sponsorUserOperation({
+  //     userOperation,
+  //  })
+  // },
+})
+```
+
+### Transaction Configuration
+
+When dispatching transactions or user operations through Gelato, it's crucial to set both `maxFeePerGas` and `maxPriorityFeePerGas` to `0x0`. This ensures compatibility with Gelato's fee settlement approach.
+
+- Sending a Transaction
+```typescript
+const txnHash = await kernelClient.sendTransaction({
+  to: zeroAddress,
+  value: BigInt(0),
+  data: "0x",
+  // Gelato-specific configurations (you may need to ignore typescript errors)
+  maxFeePerGas: "0x0",
+  maxPriorityFeePerGas: "0x0",
+})
+```
+
+- Dispatching a User Operation
+```typescript
+const userOpHash = await kernelClient.sendUserOperation({
+  userOperation: {
+    callData: await account.encodeCallData({
+      to: zeroAddress,
+      value: BigInt(0),
+      data: "0x",
+    }),
+    // Gelato-specific configurations (you may need to ignore typescript errors)
+    maxFeePerGas: "0x0",
+    maxPriorityFeePerGas: "0x0",
+  },
+})
+```
