@@ -21,13 +21,9 @@ export default defineConfig({
     </>
   ),
   topNav: [
-    { text: 'SDK', link: '/', match: '/sdk' },
-    { text: 'Infra', link: '/meta-infra/intro', match: '/meta-infra' },
-    { text: 'Recovery', link: '/recovery-flow/intro', match: '/recovery-flow' },
-    {
-      link: 'https://docs-v4.zerodev.app/',
-      text: 'Old Docs (v4)',
-    },
+    { text: 'Modules', link: '/', match: '/modules' },
+    { text: 'SDK', link: '/sdk/intro', match: '/sdk' },
+    { text: 'Kernel', link: '/', match: '/kernel' },
     {
       link: 'https://dashboard.zerodev.app/',
       text: 'Dashboard',
@@ -57,6 +53,140 @@ export default defineConfig({
           {
             "text": "Introduction",
             "link": "/"
+          },
+        ],
+      },
+      {
+        "text": "Onboarding",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Signin",
+            "link": "/modules/signin"
+          },
+          {
+            "text": "Importing Assets",
+            "link": "/modules/importing-assets"
+          },
+          {
+            "text": "Fiat Onramp",
+            "link": "/modules/onramp"
+          },
+        ],
+      },
+      {
+        "text": "Transacting",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Sponsoring Gas for Users",
+            "link": "/modules/gas"
+          },
+          {
+            "text": "Paying Gas in ERC20",
+            "link": "/modules/gas"
+          },
+          {
+            "text": "Batching Transactions",
+            "link": "/modules/batching"
+          },
+          {
+            "text": "One-click Trading",
+            "link": "/modules/one-click-trading"
+          },
+          {
+            "text": "Transaction Automation",
+            "link": "/modules/transaction-automation"
+          },
+          {
+            "text": "DeFi Integrations",
+            "link": "/modules/modules-integrations"
+          },
+          {
+            "text": "Intents",
+            "link": "/modules/transaction-automation"
+          },
+          {
+            "text": "Estimating Gas",
+            "link": "/modules/estimating-gas"
+          },
+          {
+            "text": "Delegatecall",
+            "link": "/modules/estimating-gas"
+          },
+          {
+            "text": "Send Transactions in Parallel",
+            "link": "/modules/parallel-transactions"
+          },
+        ],
+      },
+      {
+        "text": "Security",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Account Recovery",
+            "link": "/modules/account-recovery"
+          },
+          {
+            "text": "Multisig",
+            "link": "/modules/account-recovery"
+          },
+        ],
+      },
+      {
+        "text": "Offramp",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Exporting Assets",
+            "link": "/modules/offramp"
+          },
+          {
+            "text": "Fiat Offramp",
+            "link": "/modules/offramp"
+          },
+          {
+            "text": "Wallet Connect",
+            "link": "/modules/offramp"
+          },
+          {
+            "text": "MetaMask Snap",
+            "link": "/modules/offramp"
+          },
+        ],
+      },
+      {
+        "text": "Reliability",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Meta Bundler",
+          },
+          {
+            "text": "Fallback Bundlers & Paymasters",
+          },
+        ],
+      },
+      {
+        "text": "Customization",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Customize Styling",
+            "link": "/modules/customize"
+          },
+        ],
+      },
+    ],
+    "/sdk": [
+      {
+        "text": "Getting Started",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Introduction",
+            "link": "/sdk/intro"
           },
           {
             "text": "Quickstart",
@@ -111,6 +241,10 @@ export default defineConfig({
           {
             "text": "Sign and Verify Messages",
             "link": "/sdk/core-api/sign-and-verify"
+          },
+          {
+            "text": "Wallet Connect",
+            "link": "/sdk/core-api/wallet-connect"
           },
         ],
       },
@@ -255,57 +389,17 @@ export default defineConfig({
           {
             "text": "Can I use a KernelClient with ethers.js?",
             "link": "/sdk/faqs/use-with-ethers"
+          },
+          {
+            "text": "Is ZeroDev Audited?",
+            "link": "/sdk/faqs/audits"
+          },
+          {
+            "text": "How to use ZeroDev with Gelato",
+            "link": "/sdk/faqs/use-with-gelato"
           }
         ],
       },
-    ],
-    "/meta-infra": [
-      {
-        "text": "Getting Started",
-        "collapsed": false,
-        "items": [
-          {
-            "text": "Introduction",
-            "link": "/meta-infra/intro"
-          },
-          {
-            "text": "Gas Policies",
-            "link": "/meta-infra/gas-policies"
-          },
-          {
-            "text": "Custom Gas Policies",
-            "link": "/meta-infra/custom-gas-policies"
-          },
-          {
-            "text": "Bundler & Paymaster RPCs",
-            "link": "/meta-infra/rpcs"
-          },
-          {
-            "text": "Admin API",
-            "link": "/meta-infra/api"
-          }
-        ],
-      }
-    ],
-    "/recovery-flow": [
-      {
-        "text": "Getting Started",
-        "collapsed": false,
-        "items": [
-          {
-            "text": "Introduction",
-            "link": "/recovery-flow/intro"
-          },
-          {
-            "text": "Recovery Setup",
-            "link": "/recovery-flow/setup"
-          },
-          {
-            "text": "Recovery Portal",
-            "link": "/recovery-flow/portal"
-          }
-        ],
-      }
     ],
   },
 })

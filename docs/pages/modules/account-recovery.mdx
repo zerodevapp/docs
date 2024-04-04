@@ -1,0 +1,24 @@
+# Account Recovery
+
+## SDK
+
+So actually, we already support any recovery factor
+
+```ts
+const passkeyValidator = createPasskeyValidator()
+
+const kernelAccount = createKernelAccount({
+  rootValidator: root,
+  validator: passkeyValidator,
+  executor: resetValidator,
+})
+
+kernelAccount.sendUserOperation({
+})
+```
+
+## UI
+
+```ts
+const {} = useRecovery()
+```
