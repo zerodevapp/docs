@@ -1,0 +1,27 @@
+# useCreateKernelClientEOA [Hook for creating kernel client with EOA]
+
+## Import
+```tsx
+import { useCreateKernelClientEOA } from '@zerodev/waas'
+```
+
+## Usage
+```tsx
+import { useCreateKernelClientEOA } from '@zerodev/waas';
+import { useConnect } from 'wagmi';
+
+function App() {
+  const { connect } = useCreateKernelClientEOA({ version: 'v3' });
+  const { connectors } = useConnect();
+  
+  return (
+    <div>
+      {connectors.map((connector, idx) => (
+        <button key={idx} onClick={() => connect({connector: connector})}>
+          {connector.name}
+        </button>
+      ))}
+    </div>
+  )
+}
+```

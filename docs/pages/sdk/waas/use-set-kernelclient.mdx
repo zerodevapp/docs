@@ -1,0 +1,26 @@
+# useSetKernelClient [Hook for setting kernel account client]
+
+## Import
+```tsx
+import { useSetKernelClient } from '@zerodev/waas'
+```
+
+## Usage
+```tsx
+import { useSetKernelClient } from '@zerodev/waas';
+import { createKernelAccountClient } from '@zerodev/sdk';
+
+function App() {
+  const { setKernelClient } = useSetKernelClient();
+
+  const kernelClient = createKernelAccountClient({
+    // create kernel client...
+  })
+
+  return (
+    <button onClick={() => setKernelClient(kernelClient)}>
+      Set Kernel Client
+    </button>
+  )
+}
+```

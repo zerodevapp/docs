@@ -1,0 +1,35 @@
+# useSendUserOperation [Hook for sending user operation]
+
+## Import
+```tsx
+import { useSendUserOperation } from '@zerodev/waas'
+```
+
+## Usage
+```tsx
+import { useSendUserOperation } from '@zerodev/waas';
+import { parseAbi } from 'viem';
+
+function App() {
+  const { write } = useSendUserOperation();
+  const abi = parseAbi(["function mint(address _to) public"]);
+
+  return (
+    <button
+      onClick={() =>
+        write?.([
+          {
+            address: "0x34bE7f35132E97915633BC1fc020364EA5134863",
+            abi: abi,
+            functionName: "mint",
+            args: ["0xa15493d3aD7fa07b98c7782998E95aA39D2eb577"],
+            value: 0n,
+          },
+        ])
+      }
+    >
+      Send UserOp
+    </button>
+  )
+}
+```

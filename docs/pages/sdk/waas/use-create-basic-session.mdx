@@ -1,0 +1,42 @@
+# useCreateBasicSession [Hook for creating session for kernel v2 account]
+
+## Import
+```tsx
+import { useCreateBasicSession } from '@zerodev/waas'
+```
+
+## Usage
+
+```tsx
+import { useCreateBasicSession } from '@zerodev/waas';
+import { ParamOperator } from '@zerodev/session-keys';
+import { parseAbi } from 'viem';
+
+function App() {
+  const { write } = useCreateBasicSession();
+  const abi = parseAbi(["function mint(address _to) public"]);
+  
+  return (
+    <button onClick={() => {
+      write?.({
+        permissions: [
+          {
+            target: '0x34bE7f35132E97915633BC1fc020364EA5134863',
+            valueLimit: 0n,
+            abi: abi,
+            functionName: "mint",
+            args: [
+              {
+                operator: ParamOperator.EQUAL,
+                value: '0xa15493d3aD7fa07b98c7782998E95aA39D2eb577',
+              },
+            ],
+          }
+        ]
+      })
+    }}>
+      Create Session
+    </button>
+  )
+}
+```

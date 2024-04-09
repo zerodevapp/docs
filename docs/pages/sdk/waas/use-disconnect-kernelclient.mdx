@@ -1,0 +1,21 @@
+# useDisconnectKernelClient [Hook for disconnecting kernel account client]
+
+## Import
+```tsx
+import { useDisconnectKernelClient } from '@zerodev/waas'
+```
+
+## Usage
+```tsx
+import { useDisconnectKernelClient } from '@zerodev/waas';
+
+function App() {
+  const { disconnect } = useDisconnectKernelClient();
+
+  return (
+    <button onClick={() => disconnect()}>
+      Disconnect
+    </button>
+  )
+}
+```

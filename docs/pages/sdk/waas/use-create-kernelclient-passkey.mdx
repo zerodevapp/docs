@@ -1,0 +1,31 @@
+# useCreateKernelClientPasskey [Hook for creating kernel client with Passkey]
+
+## Import
+```tsx
+import { useCreateKernelClientPasskey } from '@zerodev/waas'
+```
+
+## Usage
+```tsx
+import { useCreateKernelClientPasskey } from '@zerodev/waas';
+
+function App() {
+  const { connectRegister, connectLogin } = 
+    useCreateKernelClientPasskey({ version: 'v3' });
+  
+  return (
+    <div>
+      <button onClick={() => {
+        connectRegister({ username: 'USER_NAME' })
+      }}>
+        Register
+      </button>
+      <button onClick={() => {
+        connectLogin()
+      }}>
+        Login
+      </button>
+    </div>
+  )
+}
+```

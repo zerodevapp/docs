@@ -1,0 +1,26 @@
+# useCreateSession [Hook for creating session for kernel v3 account]
+
+## Import
+```tsx
+import { useCreateSession } from '@zerodev/waas'
+```
+
+## Usage
+```tsx
+import { useCreateSession } from '@zerodev/waas';
+import { toGasPolicy } from '@zerodev/permissions/policies';
+
+function App() {
+  const { write } = useCreateSession();
+  
+  return (
+    <button onClick={() => {
+      write?.({
+        policies: [toGasPolicy({ allowed: 1000000000n })]
+      })
+    }}>
+      Create Session
+    </button>
+  )
+}
+```
