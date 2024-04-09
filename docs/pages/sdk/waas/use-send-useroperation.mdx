@@ -1,3 +1,5 @@
+import MutationResult from '../shared/mutation-result.mdx'
+
 # useSendUserOperation [Hook for sending user operation]
 
 ## Import
@@ -7,22 +9,23 @@ import { useSendUserOperation } from '@zerodev/waas'
 
 ## Usage
 ```tsx
-import { useSendUserOperation } from '@zerodev/waas';
+import { useSendUserOperation, useKernelClient } from '@zerodev/waas';
 import { parseAbi } from 'viem';
 
 function App() {
   const { write } = useSendUserOperation();
-  const abi = parseAbi(["function mint(address _to) public"]);
+  const { address } = useKernelClient();
+  const abi = parseAbi(['function mint(address _to) public']);
 
   return (
     <button
       onClick={() =>
-        write?.([
+        write([
           {
-            address: "0x34bE7f35132E97915633BC1fc020364EA5134863",
+            address: '0x34bE7f35132E97915633BC1fc020364EA5134863',
             abi: abi,
             functionName: "mint",
-            args: ["0xa15493d3aD7fa07b98c7782998E95aA39D2eb577"],
+            args: [address],
             value: 0n,
           },
         ])
@@ -33,3 +36,51 @@ function App() {
   )
 }
 ```
+
+## Parameters
+
+No parameter needed.
+
+## Return Types
+
+```tsx
+import { type UseSendUserOperationReturnType } from '@zerodev/waas'
+```
+
+<br />
+
+---
+
+[TanStack Query mutation docs](https://tanstack.com/query/v5/docs/react/reference/useMutation)
+
+### write
+`(variables: SendUserOperationVariables) => void`
+
+The mutation function to send useroperation.
+
+- #### variables 
+  - ##### address
+    `Address`
+    The contract's address.
+  - ##### abi
+    `Abi`
+    The contract's ABI.
+  - ##### functionName
+    `string`
+    - Function to call on the contract.
+    - Inferred from [`abi`](#abi)
+  - ##### args
+    `readonly unknown[] | undefined`
+    - Arguments to pass when calling the contract.
+    - Inferred from [`abi`](#abi) and [`functionName`](#functionname)
+  - ##### value
+    `bigint | undefined`
+    Value in wei sent with this transaction.
+
+### data
+`Hash | undefined`
+
+- Defaults to `undefined`
+- The last successfully resolved data for the mutation.
+
+<MutationResult />

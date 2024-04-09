@@ -1,3 +1,5 @@
+import QueryResult from "../shared/query-result.mdx"
+
 # useKernelClient [Hook for getting kernel account client]
 
 ## Import
@@ -13,3 +15,35 @@ function App() {
   const { kernelClient } = useKernelClient();	
 }
 ```
+
+## Parameters
+
+No parameter needed.
+
+## Return Types
+
+```tsx
+import { type UseKernelClientReturnType } from '@zerodev/waas'
+```
+
+### address
+`Address | undefined`
+
+The address of connected kernel account.
+
+### kernelAccount
+`KernelSmartAccount<EntryPoint> | undefined`
+
+The connected kernel account.
+
+### kernelClient
+`KernelAccountClient<EntryPoint> | undefined`
+
+The connected kernel account client.
+
+### isConnected
+`boolean`
+
+Will be `true` if the kernel client exists
+
+<QueryResult />

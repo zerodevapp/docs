@@ -1,3 +1,5 @@
+import QueryResult from "../shared/query-result.mdx"
+
 # useSessionKernelClient [Hook for getting kernel account client with session plugin]
 
 ## Import
@@ -13,3 +15,34 @@ function App() {
   const { kernelClient } = useSessionKernelClient();
 }
 ```
+
+## Parameters
+
+```tsx
+import { type UseSessionKernelClientParameters } from '@zerodev/waas';
+```
+
+### sessionId
+
+`0x${tring}`
+
+The sessionId of session used to send user operation
+
+
+## Return Types
+
+```tsx
+import { type UseSessionKernelClientReturnType } from '@zerodev/waas'
+```
+
+### kernelAccount
+`KernelSmartAccount<EntryPoint> | null`
+
+The current kernel account with session plugin.
+
+### kernelClient
+`KernelAccountClient<EntryPoint>`
+
+The current kernel account client with session plugin.
+
+<QueryResult />

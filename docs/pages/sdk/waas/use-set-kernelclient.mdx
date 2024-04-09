@@ -1,3 +1,5 @@
+import MutationResult from '../shared/mutation-result.mdx'
+
 # useSetKernelClient [Hook for setting kernel account client]
 
 ## Import
@@ -24,3 +26,33 @@ function App() {
   )
 }
 ```
+
+## Parameters
+
+No parameter needed.
+
+
+## Return Types
+
+```tsx
+import { type UseSetKernelClientReturnType } from '@zerodev/waas'
+```
+
+<br />
+
+---
+
+[TanStack Query mutation docs](https://tanstack.com/query/v5/docs/react/reference/useMutation)
+
+### setKernelClient
+`(kernelClient: KernelAccountClient<EntryPoint>) => void`
+
+The mutation function to set kernel client.
+
+### data
+`boolean | undefined`
+
+- Defaults to `undefined`
+- The last successfully resolved data for the mutation.
+
+<MutationResult />

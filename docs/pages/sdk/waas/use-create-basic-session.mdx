@@ -1,3 +1,5 @@
+import MutationResult from '../shared/mutation-result.mdx'
+
 # useCreateBasicSession [Hook for creating session for kernel v2 account]
 
 ## Import
@@ -8,17 +10,18 @@ import { useCreateBasicSession } from '@zerodev/waas'
 ## Usage
 
 ```tsx
-import { useCreateBasicSession } from '@zerodev/waas';
+import { useCreateBasicSession, useKernelClient } from '@zerodev/waas';
 import { ParamOperator } from '@zerodev/session-keys';
 import { parseAbi } from 'viem';
 
 function App() {
   const { write } = useCreateBasicSession();
-  const abi = parseAbi(["function mint(address _to) public"]);
+  const { address } = useKernelClient();
+  const abi = parseAbi(['function mint(address _to) public']);
   
   return (
     <button onClick={() => {
-      write?.({
+      write({
         permissions: [
           {
             target: '0x34bE7f35132E97915633BC1fc020364EA5134863',
@@ -28,7 +31,7 @@ function App() {
             args: [
               {
                 operator: ParamOperator.EQUAL,
-                value: '0xa15493d3aD7fa07b98c7782998E95aA39D2eb577',
+                value: address,
               },
             ],
           }
@@ -40,3 +43,44 @@ function App() {
   )
 }
 ```
+
+## Parameters
+
+No parameter needed.
+
+## Return Types
+
+```tsx
+import { type UseCreateBasicSessionReturnType } from '@zerodev/waas'
+```
+
+<br />
+
+---
+
+[TanStack Query mutation docs](https://tanstack.com/query/v5/docs/react/reference/useMutation)
+
+### write
+`(variables: CreateBasicSessionVariables) => void`
+
+The mutation function to create session for v2 kernel account.
+
+- #### variables 
+  - ##### permissions
+    `Permission<Abi>[]`
+    The permissions of the session.
+
+### data
+`CreateBasicSessionReturnType | undefined`
+  - ##### sessionKey
+    `0x${string}` The private key of the session.
+  - ##### sessionId
+    `0x${string}` The id of the session.
+  - ##### smartAccount
+    `0x${string}` The address of smart account.
+  - ##### enableSignature
+    `0x${string}` The signature to enable session.
+  - ##### permissions
+    `Permission<Abi>[]` The permissions of the session.
+
+<MutationResult />

@@ -1,3 +1,5 @@
+import MutationResult from '../shared/mutation-result.mdx'
+
 # useCreateKernelClientEOA [Hook for creating kernel client with EOA]
 
 ## Import
@@ -8,20 +10,66 @@ import { useCreateKernelClientEOA } from '@zerodev/waas'
 ## Usage
 ```tsx
 import { useCreateKernelClientEOA } from '@zerodev/waas';
-import { useConnect } from 'wagmi';
+import { injected } from 'wagmi/connectors';
 
 function App() {
   const { connect } = useCreateKernelClientEOA({ version: 'v3' });
-  const { connectors } = useConnect();
   
   return (
-    <div>
-      {connectors.map((connector, idx) => (
-        <button key={idx} onClick={() => connect({connector: connector})}>
-          {connector.name}
-        </button>
-      ))}
-    </div>
+    <button onClick={() => connect({connector: injected()})}>
+      Connect
+    </button>
   )
 }
 ```
+
+## Parameters
+```tsx
+import { type UseCreateKernelClientEOAParameters } from '@zerodev/waas';
+```
+
+### version
+
+`v2 | v3`
+
+The version of kernel account.
+```tsx
+import { useCreateKernelClientEOA } from '@zerodev/waas';
+
+function App() {
+  const { connect } = useCreateKernelClientEOA({ version: 'v3' }); // [!code focus]
+}
+```
+
+## Return Types
+
+```tsx
+import { type UseCreateKernelClientEOAReturnType } from '@zerodev/waas'
+```
+
+<br />
+
+---
+
+[TanStack Query mutation docs](https://tanstack.com/query/v5/docs/react/reference/useMutation)
+
+### connect
+`(variables: CreateKernelClientEOAVariables) => void`
+
+The mutation function to connect eoa and create the kernel smart account.
+
+- #### variables 
+  - ##### connector
+    `Connector | undefined`
+    The connectors.
+
+### data
+`CreateKernelClientEOAReturnType | undefined`
+  - ##### validator
+    `KernelValidator<EntryPoint>` The object of kernel validator.
+  - ##### kernelAccount
+    `KernelSmartAccount<EntryPoint>` The object of kernel account.
+  - ##### entryPoint
+    `EntryPoint` The entrypoint address of kernel account.
+
+<MutationResult />
