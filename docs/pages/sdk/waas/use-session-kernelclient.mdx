@@ -24,10 +24,26 @@ import { type UseSessionKernelClientParameters } from '@zerodev/waas';
 
 ### sessionId
 
-`0x${tring}`
+`0x${string}`
 
-The sessionId of session used to send user operation
+The sessionId of session used to send user operation.
 
+### paymaster
+`{type: "SPONSOR"} | {type: "ERC20", gasToken: string} | undefined`
+
+The paymaster type and gas token address.
+- #### type
+  `SPONSOR | ERC20`
+  The type of paymaster.
+- #### gasToken
+  `string | undefined`
+  The symbol of erc20 token used for erc20 paymaster.
+
+## Return Types
+
+```tsx
+import { type UseKernelClientReturnType } from '@zerodev/waas'
+```
 
 ## Return Types
 

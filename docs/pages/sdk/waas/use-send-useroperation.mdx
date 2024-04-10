@@ -39,7 +39,21 @@ function App() {
 
 ## Parameters
 
-No parameter needed.
+```tsx
+import { type UseSendUserOperationParameters } from '@zerodev/waas';
+```
+
+### paymaster
+`{type: "SPONSOR"} | {type: "ERC20", gasToken: string} | undefined`
+
+The paymaster type and gas token address.
+#### type
+  `SPONSOR | ERC20`
+  The type of paymaster.
+#### gasToken
+  `string | undefined`
+  The symbol of erc20 token used for erc20 paymaster.
+
 
 ## Return Types
 
