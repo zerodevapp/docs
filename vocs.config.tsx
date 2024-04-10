@@ -21,8 +21,8 @@ export default defineConfig({
     </>
   ),
   topNav: [
-    { text: 'Modules', link: '/', match: '/modules' },
-    { text: 'SDK', link: '/sdk/intro', match: '/sdk' },
+    { text: 'Smart Wallet', link: '/', match: '/modules' },
+    { text: 'Core SDK', link: '/sdk/intro', match: '/sdk' },
     { text: 'Kernel', link: '/', match: '/kernel' },
     {
       link: 'https://dashboard.zerodev.app/',
@@ -242,52 +242,124 @@ export default defineConfig({
             "text": "Sign and Verify Messages",
             "link": "/sdk/core-api/sign-and-verify"
           },
+        ],
+      },
+      {
+        "text": "Advanced",
+        "collapsed": false,
+        "items": [
           {
-            "text": "Wallet Connect",
-            "link": "/sdk/core-api/wallet-connect"
+            "text": "Passkeys",
+            "link": "/sdk/advanced/passkeys"
+          },
+          {
+            "text": "Session Keys",
+            "link": "/sdk/advanced/session-keys"
+          },
+          {
+            "text": "Multisig",
+            "link": "/sdk/advanced/multisig"
+          },
+          {
+            "text": "Recovery",
+            "link": "/sdk/advanced/recovery"
+          },
+          {
+            "text": "DeFi Integrations",
+            "link": "/sdk/advanced/defi-integrations"
+          },
+          {
+            "text": "Sending Parallel Orders",
+            "link": "/sdk/advanced/parallel-orders"
+          },
+          {
+            "text": "Connect Wallet with Other DApps",
+            "link": "/sdk/advanced/wallet-connect"
           },
         ],
       },
       {
-        "text": "Plugins",
+        "text": "Permissions",
         "collapsed": false,
         "items": [
           {
             "text": "Introduction",
-            "link": "/sdk/plugins/intro"
+            "link": "/sdk/permissions/intro"
           },
           {
-            "text": "Passkeys",
-            "link": "/sdk/plugins/passkeys"
+            "text": "Getting Started",
+            "link": "/sdk/permissions/getting-started"
           },
           {
-            "text": "ECDSA",
-            "link": "/sdk/plugins/ecdsa"
+            "text": "Signers",
+            "collapsed": false,
+            "items": [
+              {
+                "text": "ECDSA",
+                "link": "/sdk/permissions/signers/ecdsa"
+              },
+              {
+                "text": "Passkeys",
+                "link": "/sdk/permissions/signers/passkeys"
+              },
+              {
+                "text": "Multisig",
+                "link": "/sdk/permissions/signers/multisig"
+              },
+              {
+                "text": "Build your own signer",
+                "link": "/sdk/permissions/signers/build-your-own"
+              },
+            ],
           },
           {
-            "text": "Weighted ECDSA",
-            "link": "/sdk/plugins/weighted-ecdsa"
+            "text": "Policies",
+            "collapsed": false,
+            "items": [
+              {
+                "text": "Sudo policy",
+                "link": "/sdk/permissions/policies/sudo"
+              },
+              {
+                "text": "Contract policy",
+                "link": "/sdk/permissions/policies/contract"
+              },
+              {
+                "text": "Gas policy",
+                "link": "/sdk/permissions/policies/gas"
+              },
+              {
+                "text": "Signature policy",
+                "link": "/sdk/permissions/policies/signature"
+              },
+              {
+                "text": "Rate Limit policy",
+                "link": "/sdk/permissions/policies/rate-limit"
+              },
+              {
+                "text": "Timestamp policy",
+                "link": "/sdk/permissions/policies/timestamp"
+              },
+              {
+                "text": "Build your own policy",
+                "link": "/sdk/permissions/policies/build-your-own"
+              },
+            ],
           },
           {
-            "text": "Session Keys",
-            "link": "/sdk/plugins/session-keys"
-          },
-          {
-            "text": "Multisig",
-            "link": "/sdk/plugins/multisig"
-          },
-          {
-            "text": "Guardians",
-            "link": "/sdk/plugins/guardians"
-          },
-          {
-            "text": "Recovery",
-            "link": "/sdk/plugins/recovery"
+            "text": "Actions",
+            "collapsed": false,
+            "items": [
+              {
+                "text": "Build your own action",
+                "link": "/sdk/permissions/actions/build-your-own"
+              },
+            ],
           },
         ],
       },
       {
-        "text": "Signers",
+        "text": "Auth Providers",
         "collapsed": false,
         "items": [
           {

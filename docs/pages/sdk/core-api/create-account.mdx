@@ -4,117 +4,61 @@
 Impatient?  Check out [complete examples here](https://github.com/zerodevapp/zerodev-examples/tree/main/create-account).
 :::
 
-At the core of account abstraction is the *smart account* -- an account powered by a smart contract.  The fact that smart accounts are smart contracts is what allows us to *abstract* their logic, from authentication to gas payments and more.
+At the core of account abstraction is the *smart account* -- an account powered by a smart contract.  ZeroDev is built on [Kernel](https://github.com/zerodevapp/kernel), a *modular smart account* that can be customized with plugins.
 
-[Kernel](https://github.com/zerodevapp/kernel) is a *modular smart account* that can be customized with plugins.  When you create a Kernel account, you set it up with a [*validator*](/sdk/plugins/intro), which determines how the account will validate UserOps.
+When you create a Kernel account, you set it up with a *validator*, which is a type of plugin that handles how the account validates UserOps.  In this tutorial, we will be using the ECDSA validator, which works like a normal EOA by validating signatures from a ECDSA private key.  ZeroDev supports other validators such as [passkeys](/sdk/advanced/passkeys) and [multisig](/sdk/advanced/multisig).
 
-The most popular validator is the ECDSA validator, which mimics the behavior of normal [EOAs](https://ethereum.org/en/glossary/#eoa) (the type of accounts that wallets like MetaMask use).  It validates UserOps and messages by checking if they are signed by a specific ECDSA private key known as the "signer" or "owner."
-
-In this doc, we will be using the ECDSA validator with a local private key as a signer, but you can see a full list of [validators here](/sdk/plugins/intro) and [signers here](/sdk/signers/intro).
+We will be using a local private key, but the ECDSA validator also works with [third-party auth providers](/sdk/signers/intro).
 
 ## Installation
 
 :::code-group
 
 ```bash [npm]
-npm i @zerodev/sdk
+npm i @zerodev/sdk @zerodev/ecdsa-validator
 ```
 
 ```bash [yarn]
-yarn add @zerodev/sdk
+yarn add @zerodev/sdk @zerodev/ecdsa-validator
 ```
 
 ```bash [pnpm]
-pnpm i @zerodev/sdk
+pnpm i @zerodev/sdk @zerodev/ecdsa-validator
 ```
 
 ```bash [bun]
-bun i @zerodev/sdk
+bun add @zerodev/sdk @zerodev/ecdsa-validator
 ```
 
 :::
 
-## Preset API
+## API
 
-The easiest way to create a Kernel account is through [**presets**](/sdk/presets/intro) -- helper functions that create Kernel accounts based on common configurations.  To install presets: 
+### Picking an EntryPoint
 
-:::code-group
+Currently there are two versions of ERC-4337 that are used in production.  They are referred to as "EntryPoint 0.6" and "EntryPoint 0.7", where "EntryPoint" refers to the singleton ERC-4337 contract.
 
-```bash [npm]
-npm i @zerodev/presets
+If you are building a new application, we recommend using EntryPoint 0.7, which gives you the latest and greatest features and optimizations.  If you already have an application using EntryPoint 0.6, just stick with it -- it will be supported indefinitely.
+
+In this tutorial, we will use EntryPoint 0.7.  Start by setting this variable:
+
+```ts
+import { ENTRYPOINT_ADDRESS_V07 } from "permissionless"
+
+const entryPoint = ENTRYPOINT_ADDRESS_V07
 ```
-
-```bash [yarn]
-yarn add @zerodev/presets
-```
-
-```bash [pnpm]
-pnpm i @zerodev/presets
-```
-
-```bash [bun]
-bun i @zerodev/presets
-```
-
-:::
-
-For example, to create a ECDSA Kernel account using ZeroDev infra:
-
-```typescript
-import { createEcdsaKernelAccountClient } from "@zerodev/presets/zerodev"
-import { privateKeyToAccount } from "viem/accounts"
-import { polygonMumbai } from "viem/chains"
-import { Hex } from "viem"
-
-// Create a signer
-const signer = privateKeyToAccount(process.env.PRIVATE_KEY as Hex)
-
-// Create a Kernel client
-const kernelClient = await createEcdsaKernelAccountClient({
-    chain: polygonMumbai,
-    projectId: process.env.ZERODEV_PROJECT_ID,
-    signer,
-})
-```
-
-For a more flexible API, read on to learn the standard API.
-
-## Standard API
-
-The standard API is for people who want complete control over their Kernel accounts's settings.  First install the ECDSA validator:
-
-
-:::code-group
-
-```bash [npm]
-npm i @zerodev/ecdsa-validator
-```
-
-```bash [yarn]
-yarn add @zerodev/ecdsa-validator
-```
-
-```bash [pnpm]
-pnpm i @zerodev/ecdsa-validator
-```
-
-```bash [bun]
-bun i @zerodev/ecdsa-validator
-```
-
-:::
-
-Then follow these steps:
 
 ### Creating a public client
 
-In Viem, a [public client](https://viem.sh/docs/clients/public.html) is an interface to a JSON-RPC API such as Infura or Alchemy.  [Most bundlers](/meta-infra/intro) today implement the standard JSON-RPC in addition to bundler RPC, so you can also create a public client with your bundler.
+In Viem, a [public client](https://viem.sh/docs/clients/public.html) is an interface to a JSON-RPC API such as Infura or Alchemy.  Most bundlers today implement the standard JSON-RPC in addition to bundler RPC, so you can also create a public client with your bundler.
 
 ```typescript
 import { createPublicClient, http } from "viem"
 
 const publicClient = createPublicClient({
-  transport: http("RPC_URL"),  // use your RPC provider or bundler
+  // Use your RPC provider or bundler.
+  // You can get this RPC from the ZeroDev dashboard.
+  transport: http("RPC_URL"),
 })
 ```
 
@@ -142,6 +86,7 @@ import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
 
 const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
   signer,
+  entryPoint,
 })
 ```
 
@@ -156,6 +101,7 @@ const account = await createKernelAccount(publicClient, {
   plugins: {
     sudo: ecdsaValidator,
   },
+  entryPoint,
 })
 ```
 
@@ -170,15 +116,27 @@ import { polygonMumbai } from 'viem/chains'
 
 const kernelClient = createKernelAccountClient({
   account,
+  entryPoint,
+
+  // Replace with your chain
   chain: polygonMumbai,
-  transport: http('BUNDLER_RPC'),
-  sponsorUserOperation,  // optional -- only if you want to use a paymaster
+
+  // Replace with your bundler RPC.
+  // For ZeroDev, you can find the RPC on your dashboard.
+  bundlerTransport: http('BUNDLER_RPC'),
+
+  // Optional -- only if you want to use a paymaster
+  middleware: {
+    sponsorUserOperation,  
+  },
 })
 ```
 
 Note that:
 
-- You need to replace the `BUNDLER_RPC` with an [actual bundler RPC](/sdk/infra/intro).
+- You need to replace the `BUNDLER_RPC` with an actual bundler RPC.
+  - For ZeroDev, you can find the RPC on your dashboard.
+- You need to make sure to set the right `chain`.
 - `sponsorUserOperation` only needs to be specified if you want to [use a paymaster](/sdk/core-api/sponsor-gas).
 
 Now you are ready to do things with your smart account, like [sending UserOps](/sdk/core-api/send-transactions)!

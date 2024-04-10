@@ -1,0 +1,45 @@
+# Permissions
+
+Kernel, the smart account that ZeroDev is built on, has a unique **programmable permissions** system that allows you to:
+
+- Assign fine-grained **policies** to specific **signers**, so that each signer can only execute specific transactions, under specific conditions.
+
+- If the default policies and signers do not meet your needs, you can write your own policies and signers.
+
+Note that the signers are sometimes called "session keys," though with our permissions system the signers can be long-lived or short-lived, so session keys are just one of the possible use cases.
+
+## Examples of Plugins
+
+- NFT subscription: the DApp (who) can mint an NFT for me (what) once every month (when).
+- Limit orders: the DApp (who) can send a trade for me (what) when the price reaches a given point (when).
+- Social recovery: a set of guardians (who) can change the account signer for me (what) at any time (when).
+
+## What are permissions?
+
+The easiest way to think about permissions is in terms of three questions: who, when, and what:
+
+- Who is authorized to perform this action?
+- When (i.e. under what condition) can they perform this action?
+- What exactly is this action?
+
+These three questions correspond to the three main types of plugins used for permissions:
+
+- "Who" is the *signers*.
+- "When" is the *policies*.
+- "What" is the *actions*.
+
+### Signers
+
+Signer plugins are responsible for *authentication* -- verifying the key used to sign the UserOp.  This is typically done by checking that the `UserOp.signature` is a valid signature and that the signer has been authorized.
+
+### Policies
+
+Policies are responsible for *authorization* -- determining if the conditions for an action to be performed are met.  This involves evaluating the UserOp itself, such as its calldata, or the context of the UserOp, such as the time of the request, the state of the account, etc.
+
+### Actions
+
+Actions define the execution function that a UserOp is allowed to execute.  Note that the execution function is NOT the target -- it's the 
+
+## Validators
+
+For historical and compatibility reasons, we also support a plugin type called *validators*, which can be thought of as signers with sudo policy.  As such, validators are commonly used as root validation 

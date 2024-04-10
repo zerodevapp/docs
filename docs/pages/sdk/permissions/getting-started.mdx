@@ -1,0 +1,61 @@
+# Getting Started with Permissions
+
+In this tutorial, you will learn how to create composable validators.
+
+## Installation
+
+:::code-group
+
+```bash [npm]
+npm i @zerodev/permissions
+```
+
+```bash [yarn]
+yarn add @zerodev/permissions
+```
+
+```bash [pnpm]
+pnpm i @zerodev/permissions
+```
+
+```bash [bun]
+bun i @zerodev/permissions
+```
+
+:::
+
+## API
+
+With a permissions validator, you are putting together:
+
+- One signer: this is the signing key.
+- Any number of policies: these are the policies that 
+- (optionally) one action: this is the execution function that the keys will be called through.  You likely won't 
+
+Let's first look at an example:
+
+```typescript
+const account = await createKernelAccount(publicClient, {
+  plugins: {
+    sudo: ecdsaValidator,
+    regular: await toPermissionValidator(publicClient, {
+      entryPoint,
+      signer: ecdsaSigner,
+      policies: [toGasPolicy({
+        allowed: BigInt(0),
+        enforcePaymaster: true,
+      })],
+    }),
+    entryPoint,
+  },
+  entryPoint,
+})
+```
+
+Now let's break it down:
+
+### Creating a signer
+
+### Creating a number of policies
+
+### Setting an action
