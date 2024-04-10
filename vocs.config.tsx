@@ -21,9 +21,9 @@ export default defineConfig({
     </>
   ),
   topNav: [
-    { text: 'Smart Wallet', link: '/', match: '/modules' },
-    { text: 'Core SDK', link: '/sdk/intro', match: '/sdk' },
-    { text: 'Kernel', link: '/', match: '/kernel' },
+    // { text: 'Smart Wallet', link: '/', match: '/modules' },
+    { text: 'SDK', link: '/', match: '/sdk' },
+    // { text: 'Kernel', link: '/', match: '/kernel' },
     {
       link: 'https://dashboard.zerodev.app/',
       text: 'Dashboard',
@@ -45,7 +45,7 @@ export default defineConfig({
     }
   ],
   sidebar: {
-    "/": [
+    "/smart-wallet": [
       {
         "text": "Getting Started",
         "collapsed": false,
@@ -179,14 +179,14 @@ export default defineConfig({
         ],
       },
     ],
-    "/sdk": [
+    "/": [
       {
         "text": "Getting Started",
         "collapsed": false,
         "items": [
           {
             "text": "Introduction",
-            "link": "/sdk/intro"
+            "link": "/"
           },
           {
             "text": "Quickstart",

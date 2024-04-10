@@ -11,7 +11,7 @@ npm init -y
 Install the ZeroDev SDK and presets:
 
 ```bash
-npm i @zerodev/sdk @zerodev/ecdsa-validator
+npm i @zerodev/sdk @zerodev/ecdsa-validator permissionless
 ```
 
 Install dev packages for TypeScript:
@@ -44,6 +44,7 @@ import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
 import { http, encodeFunctionData, parseAbi, createPublicClient } from "viem"
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts"
 import { polygonMumbai } from "viem/chains"
+import { ENTRYPOINT_ADDRESS_V07 } from "permissionless"
 
 // The NFT contract we will be interacting with
 const contractAddress = '0x34bE7f35132E97915633BC1fc020364EA5134863'
@@ -55,6 +56,9 @@ const contractABI = parseAbi([
 const PROJECT_ID = 'b5486fa4-e3d9-450b-8428-646e757c10f6'
 const BUNDLER_RPC = `https://rpc.zerodev.app/api/v2/bundler/${PROJECT_ID}`
 const PAYMASTER_RPC = `https://rpc.zerodev.app/api/v2/paymaster/${PROJECT_ID}`
+
+const chain = polygonMumbai
+const entryPoint = ENTRYPOINT_ADDRESS_V07
 
 const main = async () => {
   // Construct a signer
@@ -69,6 +73,7 @@ const main = async () => {
   // Construct a validator
   const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
     signer,
+    entryPoint,
   })
 
   // Construct a Kernel account
@@ -76,22 +81,28 @@ const main = async () => {
     plugins: {
       sudo: ecdsaValidator,
     },
+    entryPoint,
   })
 
   // Construct a Kernel account client
   const kernelClient = createKernelAccountClient({
     account,
-    chain: polygonMumbai,
-    transport: http(BUNDLER_RPC),
-    sponsorUserOperation: async ({ userOperation }) => {
-      const zerodevPaymaster = createZeroDevPaymasterClient({
-        chain: polygonMumbai,
-        transport: http(PAYMASTER_RPC),
-      })
-      return zerodevPaymaster.sponsorUserOperation({
-        userOperation
-      })
-    }
+    chain,
+    entryPoint,
+    bundlerTransport: http(BUNDLER_RPC),
+    middleware: {
+      sponsorUserOperation: async ({ userOperation }) => {
+        const zerodevPaymaster = createZeroDevPaymasterClient({
+          chain,
+          entryPoint,
+          transport: http(PAYMASTER_RPC),
+        })
+        return zerodevPaymaster.sponsorUserOperation({
+          userOperation,
+          entryPoint,
+        })
+      },
+    },
   })
 
   const accountAddress = kernelClient.account.address

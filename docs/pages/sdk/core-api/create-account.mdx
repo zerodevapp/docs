@@ -157,9 +157,8 @@ Yes, you can do so by providing an `index` when you create the account object.
 import { createKernelAccount } from "@zerodev/sdk"
 
 const account = createKernelAccount(publicClient, {
-  plugins: {
-    sudo: ecdsaValidator,
-  },
+  // other options...
+
   // optionally specify the index; different indexes will yield different accounts
   index: 1,
 })
