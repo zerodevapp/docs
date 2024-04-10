@@ -87,6 +87,7 @@ const main = async () => {
 
   const ecdsaValidator = await signerToEcdsaValidator(publicClient, { // [!code focus]
     signer,  // [!code focus]
+    entryPoint,  // [!code focus]
   })  // [!code focus]
 }
 ```
@@ -105,6 +106,7 @@ const main = async () => {
     plugins: {  // [!code focus]
       sudo: ecdsaValidator,  // [!code focus]
     },  // [!code focus]
+    entryPoint,  // [!code focus]
   })  // [!code focus]
 }
 ```
@@ -116,25 +118,26 @@ Finally, we are going to create an "account client" which serves as the connecti
 Add the following code:
 
 ```typescript
-import { createKernelAccountClient, createZeroDevPaymasterClient } from "@zerodev/sdk"
-import { http } from "viem"
-import { polygonMumbai } from 'viem/chains'
-
 const main = async () => {
   // ... other code
 
   const kernelClient = createKernelAccountClient({
     account,
-    chain: polygonMumbai,
-    transport: http(BUNDLER_RPC),
-    sponsorUserOperation: async ({ userOperation }) => {
-      const zerodevPaymaster = createZeroDevPaymasterClient({
-        chain: polygonMumbai,
-        transport: http(PAYMASTER_RPC),
-      })
-      return zerodevPaymaster.sponsorUserOperation({
-        userOperation
-      })
+    chain,
+    entryPoint,
+    bundlerTransport: http(BUNDLER_RPC),
+    middleware: {
+      sponsorUserOperation: async ({ userOperation }) => {
+        const zerodevPaymaster = createZeroDevPaymasterClient({
+          chain,
+          entryPoint,
+          transport: http(PAYMASTER_RPC),
+        })
+        return zerodevPaymaster.sponsorUserOperation({
+          userOperation,
+          entryPoint,
+        })
+      }
     }
   })
 
@@ -193,7 +196,7 @@ import { bundlerActions } from "permissionless"
 const main = async () => {
   // ... other code
 
-  const bundlerClient = kernelClient.extend(bundlerActions)
+  const bundlerClient = kernelClient.extend(bundlerActions(entryPoint))
 
   const receipt = await bundlerClient.waitForUserOperationReceipt({
     hash: userOpHash,
@@ -216,8 +219,6 @@ import { publicActions } from "viem"
 
 const main = async () => {
   // ... other code
-
-  const publicClient = kernelClient.extend(publicActions)
 
   const nftBalance = await publicClient.readContract({
     address: contractAddress,
