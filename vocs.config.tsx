@@ -161,6 +161,10 @@ export default defineConfig({
         "collapsed": false,
         "items": [
           {
+            "text": "useBalance",
+            "link": "/sdk/waas/use-balance",
+          },
+          {
             "text": "useCreateBasicSession",
             "link": "/sdk/waas/use-create-basic-session",
           },
