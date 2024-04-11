@@ -35,6 +35,7 @@ const handleRegister = async () => {
   const passkeyValidator = await createPasskeyValidator(publicClient, {  // [!code focus]
     passkeyName: username,   // [!code focus]
     passkeyServerUrl: PASSKEY_SERVER_URL,   // [!code focus]
+    entryPoint: ENTRYPOINT_ADDRESS_V07,   // [!code focus]
   })   // [!code focus]
 
   await createAccountAndClient(passkeyValidator)  // [!code focus]
@@ -52,6 +53,7 @@ const handleLogin = async () => {
 
   const passkeyValidator = await getPasskeyValidator(publicClient, { // [!code focus]
     passkeyServerUrl: PASSKEY_SERVER_URL,  // [!code focus]
+    entryPoint: ENTRYPOINT_ADDRESS_V07, // [!code focus]
   })  // [!code focus]
 
   await createAccountAndClient(passkeyValidator)  // [!code focus]
@@ -68,6 +70,7 @@ Now modify `createAccountAndClient` to actually create the account using the `pa
 ```ts
 const createAccountAndClient = async (passkeyValidator: any) => {
   kernelAccount = await createKernelAccount(publicClient, { // [!code focus]
+  entryPoint: ENTRYPOINT_ADDRESS_V07, // [!code focus]
     plugins: { // [!code focus]
       sudo: passkeyValidator, // [!code focus]
     }, // [!code focus]
@@ -76,15 +79,20 @@ const createAccountAndClient = async (passkeyValidator: any) => {
   kernelClient = createKernelAccountClient({ // [!code focus]
     account: kernelAccount, // [!code focus]
     chain: CHAIN, // [!code focus]
-    transport: http(BUNDLER_URL), // [!code focus]
-    sponsorUserOperation: async ({ userOperation }) => { // [!code focus]
-      const zerodevPaymaster = createZeroDevPaymasterClient({ // [!code focus]
-        chain: CHAIN, // [!code focus]
-        transport: http(PAYMASTER_URL), // [!code focus]
-      }) // [!code focus]
-      return zerodevPaymaster.sponsorUserOperation({ // [!code focus]
-        userOperation // [!code focus]
-      }) // [!code focus]
+    bundlerTransport: http(BUNDLER_URL), // [!code focus]
+    entryPoint: ENTRYPOINT_ADDRESS_V07, // [!code focus]
+    middleware: { // [!code focus]
+      sponsorUserOperation: async ({ userOperation }) => { // [!code focus]
+        const zerodevPaymaster = createZeroDevPaymasterClient({ // [!code focus]
+          chain: CHAIN, // [!code focus]
+          transport: http(PAYMASTER_URL), // [!code focus]
+          entryPoint: ENTRYPOINT_ADDRESS_V07, // [!code focus]
+        }) // [!code focus]
+        return zerodevPaymaster.sponsorUserOperation({ // [!code focus]
+          userOperation, // [!code focus]
+          entryPoint: ENTRYPOINT_ADDRESS_V07, // [!code focus]
+        }) // [!code focus]
+      } // [!code focus]
     } // [!code focus]
   }) // [!code focus]
 
@@ -120,13 +128,15 @@ const handleSendUserOp = async () => {
 
   setUserOpHash(userOpHash)
 
-  const bundlerClient = kernelClient.extend(bundlerActions) // [!code focus]
+  const bundlerClient = kernelClient.extend( // [!code focus]
+    bundlerActions(ENTRYPOINT_ADDRESS_V07) // [!code focus]
+  ) // [!code focus]
   await bundlerClient.waitForUserOperationReceipt({ // [!code focus]
     hash: userOpHash, // [!code focus]
   }) // [!code focus]
 
   // Update the message based on the count of UserOps
-  const userOpMessage = `UserOp completed. <a href="https://jiffyscan.xyz/userOpHash/${userOpHash}?network=mumbai" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:text-blue-700">Click here to view.</a>`
+  const userOpMessage = `UserOp completed. <a href="https://jiffyscan.xyz/userOpHash/${userOpHash}?network=sepolia" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:text-blue-700">Click here to view.</a>`
 
   setUserOpStatus(userOpMessage)
   setIsSendingUserOp(false)
