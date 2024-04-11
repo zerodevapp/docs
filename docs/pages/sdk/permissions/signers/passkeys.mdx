@@ -1,0 +1,33 @@
+# WebAuthn Signer
+
+The WebAuthn (passkeys) signer signs with a single passkey.  Read [the passkeys doc](/sdk/plugins/passkeys) for a more detailed intro to passkeys.
+
+## API
+
+```typescript
+import { toWebAuthnSigner } from "@zerodev/permissions/signers"
+
+const passkeyName = "Key Name"  // any name you want
+const passkeyServerUrl = "..."  // get this from ZeroDev dashboard
+const mode = "register"  // can also be "login" if you are using an existing key
+
+const webAuthnSigner = await toWebAuthnSigner(publicClient, {
+  passkeyName,
+  passkeyServerUrl,
+  mode,
+})
+
+const validator = toPermissionValidator(publicClient, {
+  entryPoint,
+  signer: webAuthnSigner,
+  policies: [
+    // ...
+  ],
+})
+```
+
+For the params:
+
+- `passkeyName` can be any name
+- `passkeyServerUrl` is a [passkey server URL](/sdk/plugins/passkeys#setting-up-passkey-server).  You can get it from the ZeroDev dashboard.
+- `mode` is either `register` or `login`, depending on whether you are creating a new key or using an existing key.
