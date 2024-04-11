@@ -1,0 +1,314 @@
+# Passkeys
+
+Passkeys are cryptographic key pairs created on end-user devices. [Apple](https://developer.apple.com/passkeys) and [Google](https://developers.google.com/identity/passkeys) are two major industry players pushing for the passkeys standard, which means that passkeys are widely available on consumer devices such as:
+
+- iPhones / iPads / Macbooks
+- Android phones / tablets
+- Chrome (on Windows / Mac / Android)
+
+[See here for a full list of systems that support passkeys.](https://passkeys.dev/device-support/#matrix)
+
+The biggest value-add of passkeys, in the context of Web3, is **saving users from manually managing and securing their private keys.** Instead of writing down 12-word seed phrases, your user can simply use a passkey-enabled device to manage their wallet, and trust that the hardware will safely store the passkey, and the hardware vendor (e.g. Apple/Google) will [securely backup the keys](#how-are-passkeys-sync-ed-and-recovered).
+
+## Demo
+
+- Passkeys
+
+  - [Demo](https://passkey-demo.zerodev.app)
+  - [Source code](https://github.com/zerodevapp/passkey-tutorial/tree/deployed)
+
+- Passkeys + Session Keys
+  - [Demo](https://passkey-session-key-demo.zerodev.app)
+  - [Source code](https://github.com/zerodevapp/passkey-session-key-example)
+  - [Read here](#can-i-use-passkeys-with-session-keys) for why you want to use passkeys with session keys.
+
+## How ZeroDev supports passkeys
+
+ZeroDev/Kernel supports using passkeys as signers. The support comes in two flavors:
+
+- **Native passkeys** using the [ERC-7212 precompile](https://eips.ethereum.org/EIPS/eip-7212). Native passkeys are the best option when available, since it uses the least amount of gas (only 3450 gas for verifying a P256 signature). Currently only a small number of networks support ERC-7212, but it's expected that most networks will support it over time.
+
+- **Smart contract passkeys** using either the [Daimo](https://github.com/daimo-eth/p256-verifier) or [FCL](https://github.com/rdubois-crypto/FreshCryptoLib) implementation. Smart contract passkeys can work on all EVM networks, but they are expensive (300-400k gas for verifying a P256 signature).
+
+ZeroDev implements passkey supports through a **progressive passkey validator**, which uses native passkeys if ERC-7212 is available, and falls back to smart contract passkeys otherwise. Notably, this means that if you use passkeys on a network where ERC-7212 isn't available, and the network later adds support for ERC-7212, you don't need to upgrade your validator -- it will automatically start taking advantage of the ERC-7212 precompile.
+
+## Installation
+
+:::code-group
+
+```bash [npm]
+npm i @zerodev/passkey-validator
+```
+
+```bash [yarn]
+yarn add @zerodev/passkey-validator
+```
+
+```bash [pnpm]
+pnpm i @zerodev/passkey-validator
+```
+
+```bash [bun]
+bun i @zerodev/passkey-validator
+```
+
+:::
+
+## API
+
+### Setting up passkey server
+
+In this tutorial, we will be using ZeroDev's passkey server. If you want to use your own passkey server, [read this](#how-do-i-use-my-own-passkeys-server). If you wonder why a passkey server is needed at all, [read this](#why-do-we-need-a-passkeys-server).
+
+Head to the [ZeroDev dashboard](https://dashboard.zerodev.app), select a project, and copy the passkey server URL:
+
+<p align="center">
+  <img src="/img/passkey_server.png" width="60%" />
+</p>
+
+If you are testing on `localhost`, just leave the domain empty. If you are deploying to a domain, enter and save the domain.
+
+### Creating a new passkey
+
+```ts
+import { createPasskeyValidator } from "@zerodev/passkey-validator"
+import { ENTRYPOINT_ADDRESS_V07 } from "permissionless"
+
+const passkeyValidator = await createPasskeyValidator(publicClient, {
+  passkeyName: "passkey name",
+  passkeyServerUrl: "your passkey server URL",
+  entryPoint: ENTRYPOINT_ADDRESS_V07,
+})
+```
+
+`createPasskeyValidator` will prompt the user to create a passkey with the given name.
+
+### Using an existing passkey
+
+```ts
+import { getPasskeyValidator } from "@zerodev/passkey-validator"
+
+const passkeyValidator = await getPasskeyValidator(publicClient, {
+  passkeyServerUrl: "your passkey server URL",
+  entryPoint: ENTRYPOINT_ADDRESS_V07,
+})
+```
+
+`getPasskeyValidator` will prompt the user to select an existing passkey.
+
+### Creating Kernel accounts
+
+Now you can proceed to [create Kernel accounts](https://docs.zerodev.app/sdk/core-api/create-account#create-a-kernel-account) using the passkey validator as the sudo validator.
+
+## FAQs
+
+### Can I use passkeys with session keys?
+
+Yes! Check out [this demo](https://passkey-session-key-demo.zerodev.app/) and [the source code](https://github.com/zerodevapp/passkey-session-key-example).
+
+Using passkeys with ECDSA session keys has multiple benefits:
+
+- If ERC-7212 hasn't been deployed on your network, passkeys can be expensive. With session keys, UserOps can be sent through ECDSA keys very cheaply. You only need to pay for the passkey validation cost once when you create a session key.
+
+- Your users don't have to deal with passkey signing prompts for every UserOp.
+
+### Why do we need a passkeys server?
+
+A passkey is generated from a client-server handshake. In theory, we could simulate the handshake on the frontend, then store the public key on-chain. However, storing the public key on-chain involves sending a transaction, so you would want to do that as a part of deploying the account. However, if you must deploy a passkey account before you can use it, that breaks one of the core optimizations of AA which is counterfactual deployment -- the ability to use the address of a smart account without first deploying it.
+
+We are working on ways to remove the dependency on a passkey server. In the mean time, keep in mind that the centralization concern is mitigated by the following:
+
+- You can [use your own passkeys server](#how-do-i-use-my-own-passkeys-server).
+- The passkeys server only stores the public authentication data. Even if it's compromised, your users's keys are stored on their devices only.
+
+If the passkey server is lost, only users who have not yet deployed their accounts (i.e. users who have been using accounts counterfactually) will be unable to recover their accounts. Users who have deployed their accounts will have their authentication data stored on-chain, so their accounts will be safe even if the passkey server is lost.
+
+### How do I use my own passkeys server?
+
+You can optionally implement your own passkey server. To do that, make sure that your server implements the following URLs:
+
+- `/register/options`: Generate and return registration options to the client. The client will use these options to prompt the user to create a passkey. If you are utilizing the [@simplewebauthn/server](https://simplewebauthn.dev/) library, the `generateRegistrationOptions` function can be used for this purpose. During this process, consider generating and storing a unique userID for later database reference.
+
+```ts
+import { generateRegistrationOptions } from "@simplewebauthn/server"
+
+const options = await generateRegistrationOptions({
+  rpName, // your app name
+  rpID, // your app domain
+  userID, // a unique user ID
+  userName, // user name (passkey name)
+  userDisplayName,
+  authenticatorSelection: {
+    residentKey: "required",
+    userVerification: "required",
+    authenticatorAttachment: "platform",
+  },
+})
+
+return options
+```
+
+- `/register/verify`: Verify the registration response (cred) and return the results to the client. The `verifyRegistrationResponse` function is also available for this verification. Upon successful verification, store the user's credentials, such as pubKey and credentialId, in your database.
+
+```ts
+import { verifyRegistrationResponse } from "@simplewebauthn/server"
+
+// get credential from request
+const { cred } = await request.json<{
+  cred: RegistrationResponseJSON
+}>()
+
+const clientData = JSON.parse(atob(cred.response.clientDataJSON))
+
+const verification = await verifyRegistrationResponse({
+  response: cred,
+  expectedChallenge: clientData.challenge,
+  expectedRPID, // your app domain
+  expectedOrigin: c.req.header("origin")!, //! Allow from any origin
+  requireUserVerification: true,
+})
+
+if (verification.verified) {
+  // save the user credential like pubKey, credentialId to your database
+  // ...
+
+  // return the verification result
+  return { verification }
+}
+
+// return 401 error if the verification is failed
+```
+
+- `/login/options`: Generate login options, including a challenge for verification, and return them to the client. The `generateAuthenticationOptions` function will assist you in creating these options.
+
+```ts
+import { generateAuthenticationOptions } from "@simplewebauthn/server"
+
+const options = await generateAuthenticationOptions({
+  userVerification: "required",
+  rpID: domainName,
+})
+
+return options
+```
+
+- `/login/verify`: Verify the login response (cred) and report the outcome to the client. Use the `verifyAuthenticationResponse` for the verification process. In the event of successful verification, retrieve the new counter from authenticationInfo and update the user's credentials in your database. It's crucial to send both the verification result and the user's public key back to the client, as the public key is not known to the client during the login process.
+
+```ts
+import { verifyAuthenticationResponse } from "@simplewebauthn/server"
+
+const cred = await request.json<{
+  cred: AuthenticationResponseJSON
+}>()
+
+const clientData = JSON.parse(atob(cred.response.clientDataJSON))
+
+// get user credential from your database
+const user = await userRepo.get(userId)
+const credential = user.credentials[cred.id]
+
+const verification = await verifyAuthenticationResponse({
+  response: cred,
+  expectedChallenge: clientData.challenge,
+  expectedOrigin: c.req.header("origin")!, //! Allow from any origin
+  expectedRPID: domainName,
+  authenticator: credential,
+})
+
+if (verification.verified) {
+  // get new counter
+  const { newCounter } = verification.authenticationInfo
+
+  // update the user credential in your database
+  // ...
+
+  // return the verification result and the user's public key
+  return { verification, pubKey: credential.pubKey }
+}
+
+// return 401 error if the verification is failed
+```
+
+- `/sign-initiate`: To initiate a sign request, generate authentication options and return them to the client. Set `allowCredentials` to the user's credentialId using the `generateAuthenticationOptions` function.
+
+```ts
+import { generateAuthenticationOptions } from "@simplewebauthn/server"
+
+// get user credential from your database
+const user = await userRepo.get(userId)
+const credentials = user.credentials
+
+const options = await generateAuthenticationOptions({
+  challenge: dataUint8Array,
+  userVerification: "required",
+  rpID: domainName,
+  allowCredentials: credentials.map((cred) => ({
+    id: cred.credentialID,
+    type: "public-key",
+  })),
+})
+
+return options
+```
+
+- `/sign-verify`: For verifying the sign response cred, you should verify the sign response cred and return the result to the client. You can use `verifyAuthenticationResponse` to verify the sign response. If the verification is successful, return the verification result.
+
+```ts
+import { verifyAuthenticationResponse } from "@simplewebauthn/server"
+
+const cred = await request.json<{
+  cred: AuthenticationResponseJSON
+}>()
+
+const clientData = JSON.parse(atob(cred.response.clientDataJSON))
+
+// get user credential from your database
+const user = await userRepo.get(userId)
+const credential = user.credentials[cred.id]
+
+const verification = await verifyAuthenticationResponse({
+  response: cred,
+  expectedChallenge: clientData.challenge,
+  expectedOrigin: c.req.header("origin")!,
+  expectedRPID: domainName,
+  authenticator: credential,
+})
+
+if (verification.verified) {
+  // return the verification result
+  return c.json({
+    success: true,
+  })
+}
+
+// return 401 error if the verification is failed
+```
+
+---
+
+Then, you can pass your server URL as `passkeyServerUrl`.
+
+```ts
+// creating a new passkey
+const passkeyValidator = await createPasskeyValidator(publicClient, {
+  passkeyName: "passkey name",
+  passkeyServerUrl: "your passkey server URL",
+  entryPoint: ENTRYPOINT_ADDRESS_V07,
+})
+
+// using an existing passkey
+const passkeyValidator = await getPasskeyValidator(publicClient, {
+  passkeyServerUrl: "your passkey server URL",
+  entryPoint: ENTRYPOINT_ADDRESS_V07,
+})
+```
+
+If you want to refer to the ZeroDev passkey server implementation, you can find it [here](https://github.com/zerodevapp/passkey-server)
+
+### How are passkeys sync-ed and recovered?
+
+Synchronization and recovery are both supported natively by Apple and Google:
+
+- With Apple, Passkeys created on one device are synced through [iCloud Keychain](https://support.apple.com/en-us/109016) as long as the user is logged in with their Apple ID. Apple covers both syncing and recovery in ["About the security of passkeys"](https://support.apple.com/en-us/102195). For some additional detail, see [this Q&A with the passkey team](https://developer.apple.com/news/?id=21mnmxow). Apple's account recovery process is documented in [this support page](https://support.apple.com/en-us/HT204921).
+
+- With Google, [Google Password Manager](https://passwords.google/) syncs passkeys across devices seamlessly. Google has plans to support syncing more broadly across different operating systems, see [this support summary](https://developers.google.com/identity/passkeys/supported-environments#chrome-passkey-support-summary). Recovery is covered in [this FAQ ("What happens if a user loses their device?")](https://developers.google.com/identity/passkeys/faq#what_happens_if_a_user_loses_their_device): it relies on Google's overall [account recovery process](https://support.google.com/accounts/answer/7682439?hl=en) because passkeys are attached to Google accounts.
