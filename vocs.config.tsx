@@ -321,8 +321,8 @@ export default defineConfig({
                 "link": "/sdk/permissions/policies/sudo"
               },
               {
-                "text": "Contract policy",
-                "link": "/sdk/permissions/policies/contract"
+                "text": "Call policy",
+                "link": "/sdk/permissions/policies/call"
               },
               {
                 "text": "Gas policy",

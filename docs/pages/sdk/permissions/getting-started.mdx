@@ -1,8 +1,24 @@
 # Getting Started with Permissions
 
-In this tutorial, you will learn how to create composable validators.
+In this tutorial, you will learn how to create composable permissions.
+
+We will create what's commonly known as a "session key" -- a key that can only do specific things under specific conditions.  Here, we will create a key that can only mint an NFT, and only mint it once.
+
+## Setup
+
+Follow [these steps](https://github.com/zerodevapp/zerodev-examples?tab=readme-ov-file#setup-and-installation) to clone and set up the ZeroDev examples repo.
+
+If everything is set up correctly, you should be able to run one of the example scripts, like:
+
+```bash
+npx ts-node create-account/main.ts
+```
+
+Now, open `permissions/tutorial.ts` in an editor.
 
 ## Installation
+
+The examples repo already installed this, but normally you would install permissions with:
 
 :::code-group
 
@@ -28,9 +44,9 @@ bun i @zerodev/permissions
 
 With a permissions validator, you are putting together:
 
-- One signer: this is the signing key.
-- Any number of policies: these are the policies that 
-- (optionally) one action: this is the execution function that the keys will be called through.  You likely won't 
+- One signer
+- Any number of policies
+- (optionally) one action
 
 Let's first look at an example:
 
@@ -41,10 +57,21 @@ const account = await createKernelAccount(publicClient, {
     regular: await toPermissionValidator(publicClient, {
       entryPoint,
       signer: ecdsaSigner,
-      policies: [toGasPolicy({
-        allowed: BigInt(0),
-        enforcePaymaster: true,
-      })],
+      policies: [
+        toGasPolicy({
+          allowed: BigInt(0),
+          enforcePaymaster: true,
+        }),
+        toCallPolicy({
+          permissions: [
+            {
+              abi: contractABI,
+              target: contractAddress,
+              functionName: "mint",
+            },
+          ],
+        }),
+      ],
     }),
     entryPoint,
   },
@@ -55,6 +82,8 @@ const account = await createKernelAccount(publicClient, {
 Now let's break it down:
 
 ### Creating a signer
+
+
 
 ### Creating a number of policies
 
