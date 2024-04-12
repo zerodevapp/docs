@@ -9,8 +9,8 @@ import { toTimestampPolicy } from "@zerodev/permissions/policies"
 
 // In this example, the signer can send one UserOp per month
 const timestampPolicy = toTimestampPolicy({
-  validAfter: 16725392000,  // January 1, 2024 12:00 AM UTC
-  validUntil: 16751311999,  // January 31, 2024 11:59 PM UTC
+  validAfter: 1704085200,  // January 1, 2024 12:00 AM UTC
+  validUntil: 1735707599,  // December 31, 2024 11:59 PM UTC
 })
 
 const validator = toPermissionValidator(publicClient, {

@@ -1,16 +1,13 @@
 # Sudo Policy
 
-The sudo policy gives full permission to the signer.  The signer will be able to send any UserOp, or sign any messages, or both.
+The sudo policy gives full permission to the signer.  The signer will be able to send any UserOps and sign any messages.
 
 ## API
 
 ```ts
 import { toSudoPolicy } from "@zerodev/permissions/policies"
-import { PolicyFlags } from "@zerodev/permissions/constants"
 
-const sudoPolicy = toSudoPolicy({
-  policyFlag: PolicyFlags.VALIDATE_ALL,
-})
+const sudoPolicy = toSudoPolicy({})
 
 const validator = toPermissionValidator(publicClient, {
   entryPoint,
@@ -21,8 +18,3 @@ const validator = toPermissionValidator(publicClient, {
   ],
 })
 ```
-
-- `policyFlag` can be:
-  - `VALIDATE_ALL`: this is the default value.  Gives the signer full permission.
-  - `VALIDATE_ONLY_SIG`:  the signer can sign messages, but not userops.
-  - `VALIDATE_ONLY_USEROP`:  the signer can sign userops, but not messages.

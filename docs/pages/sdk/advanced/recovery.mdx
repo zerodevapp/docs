@@ -1,9 +1,5 @@
 # Recovery
 
-:::info
-Impatient?  Check out [complete examples here](https://github.com/zerodevapp/zerodev-examples/tree/main/multisig).
-:::
-
 With Kernel's [permissions system](/sdk/permissions/intro), it's possible to set up a guardian (or multiple guardians) for a smart account, so that if the owner loses their key, the guardian(s) can recover the key for the owner.
 
 There are two typical types of recovery:
@@ -24,7 +20,6 @@ There are two ways to use recovery: through a pre-built recovery flow or build a
 Impatient?  Check out [complete examples here](https://github.com/zerodevapp/zerodev-examples/tree/main/guardians/recovery.ts).
 :::
 
-
 Here we go through the process of using the recovery plugin:
 
 ### Setting up the guardian validator
@@ -32,9 +27,17 @@ Here we go through the process of using the recovery plugin:
 Start by creating a permissions validator.  Let's say you want a single key to be your guardian:
 
 ```ts
+const guardianSigner = privateKeyToAccount(GUARDIAN_KEY)
+
+const guardianValidator = await signerToEcdsaValidator(publicClient, {
+  signer: guardianSigner,
+  entryPoint,
+})
 ```
 
-### Setting up account with the recovery executor
+If you want multiple guardians, set up a [multisig validator](/sdk/advanced/multisig) instead.
+
+### Setting up account with the recovery action
 
 We have deployed a simple recovery executor that can recover any accounts using [the ECDSA validator](/sdk/plugins/ecdsa).  You can set it up with the following values:
 
