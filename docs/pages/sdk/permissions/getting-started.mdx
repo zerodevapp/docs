@@ -8,10 +8,9 @@ We will create what's commonly known as a "session key" -- a key that can only d
 
 Refer to these examples if you get lost in the tutorial:
 
-- Using permissions
-- Owner creates a session key
-- Register a session key with the owner
-
+- [Using permissions](https://github.com/zerodevapp/zerodev-examples/blob/main/permissions/main.ts)
+- [Owner creates a session key](https://github.com/zerodevapp/zerodev-examples/blob/main/session-keys/owner-created.ts)
+- [Register a session key with the owner](https://github.com/zerodevapp/zerodev-examples/blob/main/session-keys/agent-created.ts)
 
 ## Installation
 
@@ -124,3 +123,32 @@ const account = await createKernelAccount(publicClient, {
 Now you can [set up a Kernel client](/sdk/core-api/create-account#create-an-account-client) using this account, and start minting NFTs with this session key -- but only up to once a month!
 
 Try running [this script](https://github.com/zerodevapp/zerodev-examples/blob/main/permissions/main.ts) and see for yourself.
+
+## Storing Session Keys
+
+Session keys (and permission validators in general) can be stored, by serializing them and then deserializing them later.
+
+### Serializing a session key
+
+```ts
+const serializedSessionKey = await serializePermissionAccount(sessionKeyAccount, sessionPrivateKey)
+```
+
+Note that `sessionPrivateKey` is optional.  If the private key is not included, then you must provide the private key when you deserialize the session key.
+
+### De-serializing a session key
+
+```ts
+const sessionKeySigner = await toECDSASigner({
+  signer: privateKeyToAccount(sessionPrivateKey),
+})
+
+const sessionKeyAccount = await deserializePermissionAccount(
+  publicClient,
+  entryPoint,
+  serializedSessionKey,
+  sessionKeySigner,
+)
+```
+
+Note that `sessionKeySigner` is only needed if you did not include the private key in the serialized session key.
