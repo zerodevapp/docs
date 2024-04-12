@@ -1,0 +1,61 @@
+# Migration Guide
+
+## SDK 5.1.x => 5.2.x
+
+### Most functions now take an `entryPoint` param
+
+EntryPoint 0.7 is the most recent update to ERC-4337, but we will still be supporting EntryPoint 0.6.
+
+The SDK will automatically use Kernel v3 for EntryPoint 0.7, and Kernel v2 for EntryPoint 0.6.
+
+You will need to specify an `entryPoint` parameter to many functions, including:
+
+- Functions for creating validators, such as `signerToEcdsaValidator`
+- Functions for creating Kernel accounts, such as `createKernelAccount`
+- Function for creating Kernel client: `createKernelAccountClient`
+
+For example:
+
+```ts
+import { ENTRYPOINT_ADDRESS_V06, ENTRYPOINT_ADDRESS_V07 } from "permissionless"
+
+// If migrating a live app
+const entryPoint = ENTRYPOINT_ADDRESS_V06
+
+// If launching a new app
+const entryPoint = ENTRYPOINT_ADDRESS_V07
+
+const account = await createKernelAccount(publicClient, {
+  plugins: {
+    sudo: ecdsaValidator,
+  },
+  entryPoint,
+})
+```
+
+- If you are migrating a live app that is using EntryPoint 0.6 (Kernel v2), set `entryPoint` to `ENTRYPOINT_ADDRESS_V06`.
+- If you are launching a new app, set `entryPoint` to `ENTRYPOINT_ADDRESS_V07`.
+
+### Replaced `transport` with `bundlerTransport` inside `createKernelAccountClient`
+
+```ts
+const kernelClient = createKernelAccountClient({
+  transport: http(bundlerUrl), // [!code --]
+  bundlerTransport: http(bundlerUrl), // [!code ++]
+  // ...
+})
+```
+
+### Replaced `sponsorUserOperation` with `middleware.sponsorUserOperation`
+
+Instead of accepting just a `sponsorUserOperation` middleware, `createSmartAccountClient` now accepts a `middleware` function that can specify a `sponsorUserOperation` function internally, as well as a `gasPrice` function.
+
+```ts
+const kernelClient = createKernelAccountClient({
+  sponsorUserOperation: paymasterClient.sponsorUserOperation, // [!code --]
+  middleware: { // [!code ++]
+		sponsorUserOperation: paymasterClient.sponsorUserOperation, // [!code ++]
+	}, // [!code ++]
+  // ...
+})
+```
