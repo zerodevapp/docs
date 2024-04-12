@@ -29,11 +29,11 @@ In pseudo-code, this is what it looks like:
 
 ```ts
 const account = createKernelAccount({
-  signer,
+  signer: passkeySigner,
   policies: [
-    policy1,
-    policy2,
-    policy3,
+    onlyUSDC,
+    onlyUniswap,
+    onlyOncePerMonth,
   ],
   action,
 })

@@ -1,0 +1,52 @@
+# Parallel UserOps
+
+With a EOA, the nonce is sequential: 1, 2, 3, ...  This means that transactions must be ordered sequentially, and a transaction cannot be processed unless a previous transaction was completed.
+
+With smart accounts, the nonce can be two-dimensional, which allows for *parallel UserOps*.  Imagine that your user wants to place three trades:
+
+1. Swap 100 USDC to DAI
+2. Swap 100 DAI to USDT
+3. Swap 1WETH to USDT
+
+In this example, assuming the user did not have DAI to start with, the first two trades have dependencies, since the user needs to wait for the first trade to complete before they can do the second trade.  However, the third trade doesn't depend on either of the first two trades, so it ought to be able to be placed in parallel.
+
+## API
+
+To send parallel UserOps, use "nonce keys" to compute nonces:
+
+```ts
+const nonceKey = getCustomNonceKeyFromString(
+  "nonce key",
+  entryPoint,
+)
+
+const nonce = await account.getNonce(nonceKey)
+
+await kernelClient.sendUserOperation({
+  userOperation: {
+    callData,
+    nonce: nonce,
+  },
+})
+
+// This UserOp won't wait for the previous one, because it uses
+// a different nonce key.
+const nonceKey2 = getCustomNonceKeyFromString(
+  "nonce key 2",
+  entryPoint,
+)
+
+const nonce2 = await account.getNonce(nonceKey2)
+
+
+await kernelClient.sendUserOperation({
+  userOperation: {
+    callData,
+    nonce: nonce2,
+  },
+})
+```
+
+All UserOps using the same nonce key will be ordered sequentially.  UserOps using different nonce keys will be parallel to each other.
+
+For example, if you want to order all UserOps that interact with Uniswap, and order all UserOps that interact with AAVE, but you want the Uniswap UserOps and the AAVE UserOps to be parallel to each other, you can use the string "Uniswap" and "AAVE" as the nonce keys for their UserOps respectively.

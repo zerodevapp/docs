@@ -2,19 +2,7 @@
 
 In this tutorial, you will learn how to create composable permissions.
 
-We will create what's commonly known as a "session key" -- a key that can only do specific things under specific conditions.  Here, we will create a key that can only mint an NFT, and only mint it once.
-
-## Setup
-
-Follow [these steps](https://github.com/zerodevapp/zerodev-examples?tab=readme-ov-file#setup-and-installation) to clone and set up the ZeroDev examples repo.
-
-If everything is set up correctly, you should be able to run one of the example scripts, like:
-
-```bash
-npx ts-node create-account/main.ts
-```
-
-Now, open `permissions/tutorial.ts` in an editor.
+We will create what's commonly known as a "session key" -- a key that can only do specific things under specific conditions.  Here, we will create a key that can only mint an NFT, and can only mint once every month.
 
 ## Installation
 
@@ -42,49 +30,88 @@ bun i @zerodev/permissions
 
 ## API
 
+:::info
+You can reference this [complete code example](https://github.com/zerodevapp/zerodev-examples/blob/main/permissions/main.ts) as you go through the tutorial.
+:::
+
 With a permissions validator, you are putting together:
 
 - One signer
 - Any number of policies
 - (optionally) one action
 
-Let's first look at an example:
+### Creating a signer
 
-```typescript
+Start by creating a [ECDSA signer](/sdk/permissions/signers/ecdsa):
+
+```ts
+const sessionPrivateKey = generatePrivateKey()
+const sessionKeyAccount = privateKeyToAccount(sessionPrivateKey)
+
+const sessionKeySigner = await toECDSASigner({
+  signer: sessionKeyAccount,
+})
+```
+
+### Creating a number of policies
+
+Now, let's create two policies:
+
+- A "call policy" that checks that the user is minting an NFT.
+- A "rate limit policy" that checks that the user executes this action once per month.
+
+```ts
+const sessionPrivateKey = generatePrivateKey()
+const sessionKeyAccount = privateKeyToAccount(sessionPrivateKey)
+
+const callPolicy = toCallPolicy({
+  permissions: [
+    {
+      target: contractAddress,
+      valueLimit: BigInt(0),
+      abi: contractABI,
+      functionName: "mint",
+    },
+  ],
+})
+
+const rateLimitPolicy = toRateLimitPolicy({
+  count: 1,
+  interval: 60 * 60 * 24 * 30,  // month in seconds
+}),
+```
+
+### Composing signer and policies
+
+Here comes the fun part -- we "compose" the signer and policies together into a single validator:
+
+```ts
+const sessionKeyValidator = await toPermissionValidator(publicClient, {
+  entryPoint,
+  signer: sessionKeySigner,
+  policies: [
+    callPolicy,
+    rateLimitPolicy,
+  ],
+}),
+```
+
+Now, we have created a ECDSA session key that's subject to a call policy and a rate limit policy.  Just like that!
+
+### Using the session key
+
+Finally, we can set up the account with this session key as the signer.  Note that if this is the first time that the session key is used, we need to [enable the plugin](/sdk/core-api/using-plugins#enabling-a-regular-validator).
+
+```ts
 const account = await createKernelAccount(publicClient, {
   plugins: {
     sudo: ecdsaValidator,
-    regular: await toPermissionValidator(publicClient, {
-      entryPoint,
-      signer: ecdsaSigner,
-      policies: [
-        toGasPolicy({
-          allowed: BigInt(0),
-          enforcePaymaster: true,
-        }),
-        toCallPolicy({
-          permissions: [
-            {
-              abi: contractABI,
-              target: contractAddress,
-              functionName: "mint",
-            },
-          ],
-        }),
-      ],
-    }),
-    entryPoint,
+    regular: sessionKeyValidator,
   },
   entryPoint,
 })
 ```
 
-Now let's break it down:
+Now you can [set up a Kernel client](/sdk/core-api/create-account#create-an-account-client) using this account, and start minting NFTs with this session key -- but only up to once a month!
 
-### Creating a signer
-
-
-
-### Creating a number of policies
-
-### Setting an action
+Try running [this script](https://github.com/zerodevapp/zerodev-examples/blob/main/permissions/main.ts) and see for yourself.

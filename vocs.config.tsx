@@ -25,6 +25,10 @@ export default defineConfig({
     { text: 'SDK', link: '/', match: '/sdk' },
     // { text: 'Kernel', link: '/', match: '/kernel' },
     {
+      link: 'https://docs-v4.zerodev.app/',
+      text: 'Old Docs (v4)',
+    },
+    {
       link: 'https://dashboard.zerodev.app/',
       text: 'Dashboard',
     },
@@ -215,6 +219,10 @@ export default defineConfig({
             "link": "/sdk/core-api/create-account"
           },
           {
+            "text": "Using Plugins",
+            "link": "/sdk/core-api/using-plugins"
+          },
+          {
             "text": "Send Transactions",
             "link": "/sdk/core-api/send-transactions"
           },
@@ -266,7 +274,7 @@ export default defineConfig({
           },
           {
             "text": "DeFi Integrations",
-            "link": "/sdk/advanced/defi-integrations"
+            "link": "/sdk/advanced/defi"
           },
           {
             "text": "Sending Parallel Orders",
@@ -348,7 +356,7 @@ export default defineConfig({
           },
           {
             "text": "Actions",
-            "collapsed": false,
+            "collapsed": true,
             "items": [
               {
                 "text": "Build your own action",
