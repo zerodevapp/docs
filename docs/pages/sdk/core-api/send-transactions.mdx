@@ -98,7 +98,6 @@ const userOpHash = await kernelClient.sendUserOperation({
         paymasterAndData: "0xe93eca6595fe94091dc1af46aac2a8b5d79907700000000000000000000000000000000000000000000000000000000065133b6f0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005d3d07ae8973ba1b8a26d0d72d8882dfa97622942a63c4b655f4928385ce587f6aa2fa1ab347e615d5f39e1214d18f426375da8a01514fb126eb0bb29f0c319d1b",
         signature: "0xf1513a8537a079a4d728bb87099b2c901e2c9034e60c95a4d41ac1ed75d6ee90270d52b48af30aa036e9a205ea008e1c62b317e7b3f88b3f302d45fb1ba76a191b"
     },
-    entryPoint: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789" 
 })
 ```
 
@@ -111,7 +110,6 @@ Other than `callData`, every field has a sensible default:
 - `maxFeePerGas` and `maxPriorityFeePerGas` default to estimations provided by the public client.
 - `paymasterAndData` defaults to `0x` if no paymaster was specified when you created the Kernel account object, or it will use the value provided by the paymaster.
 - `signature` defaults to the signature provided by the signer.
-- `entryPoint` defaults to the current canonical EntryPoint.
 
 ### Encoding callData
 
@@ -142,9 +140,9 @@ const receipt = await bundlerClient.waitForUserOperationReceipt({
 Note that if you had constructed your `kernelClient` with a [preset](/sdk/presets/intro), you may not have access to a bundler client.  Instead, you can extend your `kernelClient` with bundler actions:
 
 ```typescript
-import { bundlerActions } from "permissionless"
+import { ENTRYPOINT_ADDRESS_V07, bundlerActions } from "permissionless"
 
-const bundlerClient = kernelClient.extend(bundlerActions)
+const bundlerClient = kernelClient.extend(bundlerActions(ENTRYPOINT_ADDRESS_V07))
 const receipt = await bundlerClient.waitForUserOperationReceipt({
   hash: userOpHash,
 })

@@ -1,0 +1,20 @@
+# Sudo Policy
+
+The sudo policy gives full permission to the signer.  The signer will be able to send any UserOps and sign any messages.
+
+## API
+
+```ts
+import { toSudoPolicy } from "@zerodev/permissions/policies"
+
+const sudoPolicy = toSudoPolicy({})
+
+const validator = toPermissionValidator(publicClient, {
+  entryPoint,
+  signer: someSigner,
+  policies: [
+    sudoPolicy,
+    // ...other policies
+  ],
+})
+```

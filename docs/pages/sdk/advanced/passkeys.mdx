@@ -13,7 +13,6 @@ The biggest value-add of passkeys, in the context of Web3, is **saving users fro
 ## Demo
 
 - Passkeys
-
   - [Demo](https://passkey-demo.zerodev.app)
   - [Source code](https://github.com/zerodevapp/passkey-tutorial/tree/deployed)
 
@@ -72,10 +71,12 @@ If you are testing on `localhost`, just leave the domain empty. If you are deplo
 
 ```ts
 import { createPasskeyValidator } from "@zerodev/passkey-validator"
+import { ENTRYPOINT_ADDRESS_V07 } from "permissionless"
 
 const passkeyValidator = await createPasskeyValidator(publicClient, {
   passkeyName: "passkey name",
   passkeyServerUrl: "your passkey server URL",
+  entryPoint: ENTRYPOINT_ADDRESS_V07,
 })
 ```
 
@@ -88,6 +89,7 @@ import { getPasskeyValidator } from "@zerodev/passkey-validator"
 
 const passkeyValidator = await getPasskeyValidator(publicClient, {
   passkeyServerUrl: "your passkey server URL",
+  entryPoint: ENTRYPOINT_ADDRESS_V07,
 })
 ```
 
@@ -290,11 +292,13 @@ Then, you can pass your server URL as `passkeyServerUrl`.
 const passkeyValidator = await createPasskeyValidator(publicClient, {
   passkeyName: "passkey name",
   passkeyServerUrl: "your passkey server URL",
+  entryPoint: ENTRYPOINT_ADDRESS_V07,
 })
 
 // using an existing passkey
 const passkeyValidator = await getPasskeyValidator(publicClient, {
   passkeyServerUrl: "your passkey server URL",
+  entryPoint: ENTRYPOINT_ADDRESS_V07,
 })
 ```
 

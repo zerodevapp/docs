@@ -4,51 +4,38 @@ With account abstraction, you can pay gas for users so they don't have to acquir
 
 The first step for sponsoring gas is [choosing a paymaster provider](/meta-infra/intro).  Then, you can connect with the paymaster through either a preset or the core API.
 
-## Preset API
-
-[Presets](/sdk/presets/intro) are the easiest way to use paymasters.  For example, if you are using the ZeroDev preset:
-
-```typescript
-import { createEcdsaKernelAccountClient } from "@zerodev/presets/zerodev"
-
-const kernelClient = await createEcdsaKernelAccountClient({
-  paymaster: 'SPONSOR', // already defaults to SPONSOR
-
-  // other options...
-})
-```
-
-Note that if you don't want to sponsor, you can set `paymaster` to `'NONE'`.
-
-Check out [the presets docs](/sdk/presets/intro) for details.
-
-## Standard API
+## API
 
 :::info
 Impatient?  Check out [complete examples here](https://github.com/zerodevapp/zerodev-examples/blob/main/create-account/without-preset.ts).
 :::
 
-If you are [setting up an account using the standard API](/sdk/core-api/create-account#standard-api), you can specify a `sponsorUserOperation` function when you [create the account client](/sdk/core-api/create-account#create-an-account-client).
+When [setting up an account](/sdk/core-api/create-account), you can specify a `sponsorUserOperation` function when you [create the account client](/sdk/core-api/create-account#create-an-account-client).
 
 The `sponsorUserOperation` function essentially takes a UserOp and then returns a UserOp with the `paymasterAndData` field set.  For example, if you are using the ZeroDev paymaster, use the `createZeroDevPaymasterClient` helper function:
 
 ```typescript
 import { http } from "viem"
-import { polygonMumbai } from 'viem/chains'
+import { ENTRYPOINT_ADDRESS_V07 } from "permissionless"
 import { createZeroDevPaymasterClient, createKernelAccountClient } from "@zerodev/sdk"
 
+const entryPoint = ENTRYPOINT_ADDRESS_V07
+
 const kernelClient = createKernelAccountClient({
-  account,
-  chain: polygonMumbai,
-  transport: http('BUNDLER_RPC'),
-  sponsorUserOperation: async ({ userOperation }) => {
-    const zerodevPaymaster = createZeroDevPaymasterClient({
-      chain: polygonMumbai,
-      transport: http('PAYMASTER_RPC'),
-    })
-    return zerodevPaymaster.sponsorUserOperation({
-      userOperation
-    })
+  // other options
+
+  middleware: {
+    sponsorUserOperation: async ({ userOperation }) => {
+      const zerodevPaymaster = createZeroDevPaymasterClient({
+        chain,
+        entryPoint,
+        transport: http(PAYMASTER_RPC),
+      })
+      return zerodevPaymaster.sponsorUserOperation({
+        userOperation,
+        entryPoint,
+      })
+    }
   }
 })
 ```

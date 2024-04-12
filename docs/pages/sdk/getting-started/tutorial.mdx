@@ -10,7 +10,7 @@ In this tutorial, we will mint an NFT without paying gas. We assume that you hav
 
 For this tutorial, we will use [ZeroDev's AA infra](/meta-infra/intro), but you can use ZeroDev with any AA infra provider.
 
-Go to the [ZeroDev dashboard](https://dashboard.zerodev.app/) and create a project for Polygon Mumbai.
+Go to the [ZeroDev dashboard](https://dashboard.zerodev.app/) and create a project for Sepolia.
 
 <p align="center">
   <img src="/img/dashboard_create_project.png" width="50%" />
@@ -48,7 +48,7 @@ Create a `.env` file with the following line:
 ZERODEV_PROJECT_ID=<YOUR_PROJECT_ID>
 ```
 
-Replacing `<YOUR_PROJECT_ID>` with your actual project ID from the dashboard, and make sure you are using a project ID for Polygon Mumbai.
+Replacing `<YOUR_PROJECT_ID>` with your actual project ID from the dashboard, and make sure you are using a project ID for Sepolia.
 
 If all goes well, you should be able to run:
 
@@ -87,6 +87,7 @@ const main = async () => {
 
   const ecdsaValidator = await signerToEcdsaValidator(publicClient, { // [!code focus]
     signer,  // [!code focus]
+    entryPoint,  // [!code focus]
   })  // [!code focus]
 }
 ```
@@ -105,6 +106,7 @@ const main = async () => {
     plugins: {  // [!code focus]
       sudo: ecdsaValidator,  // [!code focus]
     },  // [!code focus]
+    entryPoint,  // [!code focus]
   })  // [!code focus]
 }
 ```
@@ -116,25 +118,26 @@ Finally, we are going to create an "account client" which serves as the connecti
 Add the following code:
 
 ```typescript
-import { createKernelAccountClient, createZeroDevPaymasterClient } from "@zerodev/sdk"
-import { http } from "viem"
-import { polygonMumbai } from 'viem/chains'
-
 const main = async () => {
   // ... other code
 
   const kernelClient = createKernelAccountClient({
     account,
-    chain: polygonMumbai,
-    transport: http(BUNDLER_RPC),
-    sponsorUserOperation: async ({ userOperation }) => {
-      const zerodevPaymaster = createZeroDevPaymasterClient({
-        chain: polygonMumbai,
-        transport: http(PAYMASTER_RPC),
-      })
-      return zerodevPaymaster.sponsorUserOperation({
-        userOperation
-      })
+    chain,
+    entryPoint,
+    bundlerTransport: http(BUNDLER_RPC),
+    middleware: {
+      sponsorUserOperation: async ({ userOperation }) => {
+        const zerodevPaymaster = createZeroDevPaymasterClient({
+          chain,
+          entryPoint,
+          transport: http(PAYMASTER_RPC),
+        })
+        return zerodevPaymaster.sponsorUserOperation({
+          userOperation,
+          entryPoint,
+        })
+      }
     }
   })
 
@@ -147,7 +150,7 @@ Run this script with `npx ts-node tutorial/template.ts` and confirm that it prin
 
 ### Send a UserOp
 
-Now that you have an account client, it's time to send your first UserOp!  For this tutorial, we will mint an NFT from a contract deployed on Polygon Mumbai.
+Now that you have an account client, it's time to send your first UserOp!  For this tutorial, we will mint an NFT from a contract deployed on Sepolia.
 
 Add the following import and code:
 
@@ -193,7 +196,7 @@ import { bundlerActions } from "permissionless"
 const main = async () => {
   // ... other code
 
-  const bundlerClient = kernelClient.extend(bundlerActions)
+  const bundlerClient = kernelClient.extend(bundlerActions(entryPoint))
 
   const receipt = await bundlerClient.waitForUserOperationReceipt({
     hash: userOpHash,
@@ -216,8 +219,6 @@ import { publicActions } from "viem"
 
 const main = async () => {
   // ... other code
-
-  const publicClient = kernelClient.extend(publicActions)
 
   const nftBalance = await publicClient.readContract({
     address: contractAddress,

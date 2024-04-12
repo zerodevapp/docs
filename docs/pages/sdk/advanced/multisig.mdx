@@ -4,7 +4,7 @@
 Impatient?  Check out [complete examples here](https://github.com/zerodevapp/zerodev-examples/tree/main/multisig).
 :::
 
-With Kernel, it's possible to configure multiple signers for your smart account.  The plugin that supports this functionality is named `WeightedECDSAValidator`, for the fact that it supports multiple ECDSA signers, each having a specific "weight."  [You can read more about it here.](/sdk/plugins/weighted-ecdsa)
+With Kernel, it's possible to configure multiple signers for your smart account.  The plugin that supports this functionality is named `WeightedECDSAValidator`, for the fact that it supports multiple ECDSA signers, each having a specific "weight."
 
 ## How it works
 
@@ -49,6 +49,7 @@ To set up a new multisig account, start by creating a validator:
 import { createWeightedECDSAValidator } from "@zerodev/weighted-ecdsa-validator"
 
 const multisigValidator = await createWeightedECDSAValidator(publicClient, {
+  entryPoint,
   config: {
     threshold: 100,
     signers: [
@@ -65,9 +66,7 @@ In `config`, you specify the `threshold` and an list of signer addresses, as wel
 
 In `signers`, you specify the list of signers ([Viem accounts](https://viem.sh/docs/accounts/local)) that will be signing for this account.  The combined weight of these signers must reach the threshold.
 
-After creating the validator, you can [create a Kernel account using the validator](/sdk/core-api/create-account#create-a-kernel-account) as usual.
-
-**Note that [just like any Kernel account](/sdk/core-api/create-account#when-i-create-an-account-is-it-deployed-on-chain), the account is not actually deployed until you send the first UserOp with the account.**
+After creating the validator, you can [set up a Kernel account using the validator](/sdk/core-api/create-account#create-a-kernel-account) as usual.
 
 ## Using an existing multisig account
 
@@ -75,10 +74,12 @@ If a multisig account has already been deployed, you can skip the multisig confi
 
 ```ts
 const multisigValidator = await createWeightedECDSAValidator(publicClient, {
+  entryPoint,
   signers: [signerB, signerC],
 })
 
 const account = await createKernelAccount(publicClient, {
+  entryPoint,
   deployedAccountAddress: '<your multisig address>',
   plugins: {
     sudo: multisigValidator,

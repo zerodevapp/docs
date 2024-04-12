@@ -1,6 +1,6 @@
 # ZeroDev Tutorial -- Passkeys
 
-In this tutorial, we will be building a Next.js app where your users can create smart accounts and send UserOps with [passkeys](/sdk/plugins/passkeys).
+In this tutorial, we will be building a Next.js app where your users can create smart accounts and send UserOps with [passkeys](/sdk/advanced/passkeys).
 
 ## Clone the template
 
@@ -35,7 +35,7 @@ const handleRegister = async () => {
   const passkeyValidator = await createPasskeyValidator(publicClient, {  // [!code focus]
     passkeyName: username,   // [!code focus]
     passkeyServerUrl: PASSKEY_SERVER_URL,   // [!code focus]
-    entryPoint: ENTRYPOINT_ADDRESS_V07,   // [!code focus]
+    entryPoint,   // [!code focus]
   })   // [!code focus]
 
   await createAccountAndClient(passkeyValidator)  // [!code focus]
@@ -53,7 +53,7 @@ const handleLogin = async () => {
 
   const passkeyValidator = await getPasskeyValidator(publicClient, { // [!code focus]
     passkeyServerUrl: PASSKEY_SERVER_URL,  // [!code focus]
-    entryPoint: ENTRYPOINT_ADDRESS_V07, // [!code focus]
+    entryPoint, // [!code focus]
   })  // [!code focus]
 
   await createAccountAndClient(passkeyValidator)  // [!code focus]
@@ -70,27 +70,27 @@ Now modify `createAccountAndClient` to actually create the account using the `pa
 ```ts
 const createAccountAndClient = async (passkeyValidator: any) => {
   kernelAccount = await createKernelAccount(publicClient, { // [!code focus]
-  entryPoint: ENTRYPOINT_ADDRESS_V07, // [!code focus]
     plugins: { // [!code focus]
       sudo: passkeyValidator, // [!code focus]
     }, // [!code focus]
+    entryPoint, // [!code focus]
   }) // [!code focus]
 
   kernelClient = createKernelAccountClient({ // [!code focus]
     account: kernelAccount, // [!code focus]
     chain: CHAIN, // [!code focus]
     bundlerTransport: http(BUNDLER_URL), // [!code focus]
-    entryPoint: ENTRYPOINT_ADDRESS_V07, // [!code focus]
+    entryPoint, // [!code focus]
     middleware: { // [!code focus]
       sponsorUserOperation: async ({ userOperation }) => { // [!code focus]
         const zerodevPaymaster = createZeroDevPaymasterClient({ // [!code focus]
           chain: CHAIN, // [!code focus]
           transport: http(PAYMASTER_URL), // [!code focus]
-          entryPoint: ENTRYPOINT_ADDRESS_V07, // [!code focus]
+          entryPoint, // [!code focus]
         }) // [!code focus]
         return zerodevPaymaster.sponsorUserOperation({ // [!code focus]
           userOperation, // [!code focus]
-          entryPoint: ENTRYPOINT_ADDRESS_V07, // [!code focus]
+          entryPoint, // [!code focus]
         }) // [!code focus]
       } // [!code focus]
     } // [!code focus]
@@ -129,7 +129,7 @@ const handleSendUserOp = async () => {
   setUserOpHash(userOpHash)
 
   const bundlerClient = kernelClient.extend( // [!code focus]
-    bundlerActions(ENTRYPOINT_ADDRESS_V07) // [!code focus]
+    bundlerActions(entryPoint) // [!code focus]
   ) // [!code focus]
   await bundlerClient.waitForUserOperationReceipt({ // [!code focus]
     hash: userOpHash, // [!code focus]
@@ -154,5 +154,5 @@ In this tutorial, you were able to create smart accounts and send UserOps with p
 For next steps:
 
 - Check out [the core API](/sdk/core-api/create-account) to learn more about the SDK
-- Learn more about [passkeys](/sdk/plugins/passkeys)
+- Learn more about [passkeys](/sdk/advanced/passkeys)
 - Read some [code examples](https://github.com/zerodevapp/zerodev-examples) of using ZeroDev

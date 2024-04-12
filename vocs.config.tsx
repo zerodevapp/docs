@@ -21,9 +21,9 @@ export default defineConfig({
     </>
   ),
   topNav: [
+    // { text: 'Smart Wallet', link: '/', match: '/modules' },
     { text: 'SDK', link: '/', match: '/sdk' },
-    { text: 'Infra', link: '/meta-infra/intro', match: '/meta-infra' },
-    { text: 'Recovery', link: '/recovery-flow/intro', match: '/recovery-flow' },
+    // { text: 'Kernel', link: '/', match: '/kernel' },
     {
       link: 'https://docs-v4.zerodev.app/',
       text: 'Old Docs (v4)',
@@ -49,6 +49,140 @@ export default defineConfig({
     }
   ],
   sidebar: {
+    "/smart-wallet": [
+      {
+        "text": "Getting Started",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Introduction",
+            "link": "/"
+          },
+        ],
+      },
+      {
+        "text": "Onboarding",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Signin",
+            "link": "/modules/signin"
+          },
+          {
+            "text": "Importing Assets",
+            "link": "/modules/importing-assets"
+          },
+          {
+            "text": "Fiat Onramp",
+            "link": "/modules/onramp"
+          },
+        ],
+      },
+      {
+        "text": "Transacting",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Sponsoring Gas for Users",
+            "link": "/modules/gas"
+          },
+          {
+            "text": "Paying Gas in ERC20",
+            "link": "/modules/gas"
+          },
+          {
+            "text": "Batching Transactions",
+            "link": "/modules/batching"
+          },
+          {
+            "text": "One-click Trading",
+            "link": "/modules/one-click-trading"
+          },
+          {
+            "text": "Transaction Automation",
+            "link": "/modules/transaction-automation"
+          },
+          {
+            "text": "DeFi Integrations",
+            "link": "/modules/modules-integrations"
+          },
+          {
+            "text": "Intents",
+            "link": "/modules/transaction-automation"
+          },
+          {
+            "text": "Estimating Gas",
+            "link": "/modules/estimating-gas"
+          },
+          {
+            "text": "Delegatecall",
+            "link": "/modules/estimating-gas"
+          },
+          {
+            "text": "Send Transactions in Parallel",
+            "link": "/modules/parallel-transactions"
+          },
+        ],
+      },
+      {
+        "text": "Security",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Account Recovery",
+            "link": "/modules/account-recovery"
+          },
+          {
+            "text": "Multisig",
+            "link": "/modules/account-recovery"
+          },
+        ],
+      },
+      {
+        "text": "Offramp",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Exporting Assets",
+            "link": "/modules/offramp"
+          },
+          {
+            "text": "Fiat Offramp",
+            "link": "/modules/offramp"
+          },
+          {
+            "text": "Wallet Connect",
+            "link": "/modules/offramp"
+          },
+          {
+            "text": "MetaMask Snap",
+            "link": "/modules/offramp"
+          },
+        ],
+      },
+      {
+        "text": "Reliability",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Meta Bundler",
+          },
+          {
+            "text": "Fallback Bundlers & Paymasters",
+          },
+        ],
+      },
+      {
+        "text": "Customization",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Customize Styling",
+            "link": "/modules/customize"
+          },
+        ],
+      },
+    ],
     "/": [
       {
         "text": "Getting Started",
@@ -74,6 +208,10 @@ export default defineConfig({
             "text": "Code Examples",
             "link": "https://github.com/zerodevapp/zerodev-examples"
           },
+          {
+            "text": "Migration from 5.1.x",
+            "link": "/sdk/getting-started/migration"
+          },
         ],
       },
       {
@@ -83,6 +221,10 @@ export default defineConfig({
           {
             "text": "Create a Smart Account",
             "link": "/sdk/core-api/create-account"
+          },
+          {
+            "text": "Using Plugins",
+            "link": "/sdk/core-api/using-plugins"
           },
           {
             "text": "Send Transactions",
@@ -112,52 +254,124 @@ export default defineConfig({
             "text": "Sign and Verify Messages",
             "link": "/sdk/core-api/sign-and-verify"
           },
+        ],
+      },
+      {
+        "text": "Advanced",
+        "collapsed": false,
+        "items": [
           {
-            "text": "Wallet Connect",
-            "link": "/sdk/core-api/wallet-connect"
+            "text": "Passkeys",
+            "link": "/sdk/advanced/passkeys"
+          },
+          {
+            "text": "Session Keys",
+            "link": "/sdk/advanced/session-keys"
+          },
+          {
+            "text": "Multisig",
+            "link": "/sdk/advanced/multisig"
+          },
+          {
+            "text": "Recovery",
+            "link": "/sdk/advanced/recovery"
+          },
+          {
+            "text": "DeFi Integrations",
+            "link": "/sdk/advanced/defi"
+          },
+          {
+            "text": "Sending Parallel Orders",
+            "link": "/sdk/advanced/parallel-orders"
+          },
+          {
+            "text": "Connect Wallet with Other DApps",
+            "link": "/sdk/advanced/wallet-connect"
           },
         ],
       },
       {
-        "text": "Plugins",
+        "text": "Permissions",
         "collapsed": false,
         "items": [
           {
             "text": "Introduction",
-            "link": "/sdk/plugins/intro"
+            "link": "/sdk/permissions/intro"
           },
           {
-            "text": "Passkeys",
-            "link": "/sdk/plugins/passkeys"
+            "text": "Getting Started",
+            "link": "/sdk/permissions/getting-started"
           },
           {
-            "text": "ECDSA",
-            "link": "/sdk/plugins/ecdsa"
+            "text": "Signers",
+            "collapsed": false,
+            "items": [
+              {
+                "text": "ECDSA",
+                "link": "/sdk/permissions/signers/ecdsa"
+              },
+              {
+                "text": "Passkeys",
+                "link": "/sdk/permissions/signers/passkeys"
+              },
+              {
+                "text": "Multisig",
+                "link": "/sdk/permissions/signers/multisig"
+              },
+              {
+                "text": "Build your own signer",
+                "link": "/sdk/permissions/signers/build-your-own"
+              },
+            ],
           },
           {
-            "text": "Weighted ECDSA",
-            "link": "/sdk/plugins/weighted-ecdsa"
+            "text": "Policies",
+            "collapsed": false,
+            "items": [
+              {
+                "text": "Sudo policy",
+                "link": "/sdk/permissions/policies/sudo"
+              },
+              {
+                "text": "Call policy",
+                "link": "/sdk/permissions/policies/call"
+              },
+              {
+                "text": "Gas policy",
+                "link": "/sdk/permissions/policies/gas"
+              },
+              {
+                "text": "Signature policy",
+                "link": "/sdk/permissions/policies/signature"
+              },
+              {
+                "text": "Rate Limit policy",
+                "link": "/sdk/permissions/policies/rate-limit"
+              },
+              {
+                "text": "Timestamp policy",
+                "link": "/sdk/permissions/policies/timestamp"
+              },
+              {
+                "text": "Build your own policy",
+                "link": "/sdk/permissions/policies/build-your-own"
+              },
+            ],
           },
           {
-            "text": "Session Keys",
-            "link": "/sdk/plugins/session-keys"
-          },
-          {
-            "text": "Multisig",
-            "link": "/sdk/plugins/multisig"
-          },
-          {
-            "text": "Guardians",
-            "link": "/sdk/plugins/guardians"
-          },
-          {
-            "text": "Recovery",
-            "link": "/sdk/plugins/recovery"
+            "text": "Actions",
+            "collapsed": true,
+            "items": [
+              {
+                "text": "Build your own action",
+                "link": "/sdk/permissions/actions/build-your-own"
+              },
+            ],
           },
         ],
       },
       {
-        "text": "Signers",
+        "text": "Auth Providers",
         "collapsed": false,
         "items": [
           {
@@ -270,54 +484,6 @@ export default defineConfig({
           }
         ],
       },
-    ],
-    "/meta-infra": [
-      {
-        "text": "Getting Started",
-        "collapsed": false,
-        "items": [
-          {
-            "text": "Introduction",
-            "link": "/meta-infra/intro"
-          },
-          {
-            "text": "Gas Policies",
-            "link": "/meta-infra/gas-policies"
-          },
-          {
-            "text": "Custom Gas Policies",
-            "link": "/meta-infra/custom-gas-policies"
-          },
-          {
-            "text": "Bundler & Paymaster RPCs",
-            "link": "/meta-infra/rpcs"
-          },
-          {
-            "text": "Admin API",
-            "link": "/meta-infra/api"
-          }
-        ],
-      }
-    ],
-    "/recovery-flow": [
-      {
-        "text": "Getting Started",
-        "collapsed": false,
-        "items": [
-          {
-            "text": "Introduction",
-            "link": "/recovery-flow/intro"
-          },
-          {
-            "text": "Recovery Setup",
-            "link": "/recovery-flow/setup"
-          },
-          {
-            "text": "Recovery Portal",
-            "link": "/recovery-flow/portal"
-          }
-        ],
-      }
     ],
   },
 })
