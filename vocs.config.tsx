@@ -24,6 +24,7 @@ export default defineConfig({
     // { text: 'Smart Wallet', link: '/', match: '/modules' },
     { text: 'SDK', link: '/', match: '/sdk' },
     // { text: 'Kernel', link: '/', match: '/kernel' },
+    { text: 'Infra', link: '/meta-infra/intro', match: '/meta-infra' },
     {
       link: 'https://docs-v4.zerodev.app/',
       text: 'Old Docs (v4)',
@@ -484,6 +485,34 @@ export default defineConfig({
           }
         ],
       },
+    ],
+    "/meta-infra": [
+      {
+        "text": "Getting Started",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Introduction",
+            "link": "/meta-infra/intro"
+          },
+          {
+            "text": "Gas Policies",
+            "link": "/meta-infra/gas-policies"
+          },
+          {
+            "text": "Custom Gas Policies",
+            "link": "/meta-infra/custom-gas-policies"
+          },
+          {
+            "text": "Bundler & Paymaster RPCs",
+            "link": "/meta-infra/rpcs"
+          },
+          {
+            "text": "Admin API",
+            "link": "/meta-infra/api"
+          }
+        ],
+      }
     ],
   },
 })

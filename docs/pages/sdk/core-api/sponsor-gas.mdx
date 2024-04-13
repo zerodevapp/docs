@@ -2,7 +2,9 @@
 
 With account abstraction, you can pay gas for users so they don't have to acquire native tokens in order to interact with your DApp.
 
-The first step for sponsoring gas is [choosing a paymaster provider](/meta-infra/intro).  Then, you can connect with the paymaster through either a preset or the core API.
+## Setting up gas sponsoring policies
+
+To avoid over-spending gas on sponsoring, you must set up gas-sponsoring policies.  Sign up on the ZeroDev dashboard if you haven't already, then [set up gas policies](/meta-infra/gas-policies).
 
 ## API
 
@@ -40,6 +42,8 @@ const kernelClient = createKernelAccountClient({
   }
 })
 ```
+
+## Using other paymaster providers
 
 If you want to user Pimlico or Stackup paymasters, you can use these helper functions:
 
