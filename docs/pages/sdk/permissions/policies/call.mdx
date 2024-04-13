@@ -45,7 +45,8 @@ const validator = toPermissionValidator(publicClient, {
 - `valueLimit`: the maximum value. that can be transmitted.
 - `abi`: the contract ABI
 - `functionName`: the function name
+- `selector`: if you have multiple functions with the same name, you can distinguish them with `selector`.  For example: `selector: toFunctionSelector("transfer(uint256, uint256)")`.
 - `args`: an array of conditions, each corresponding to an argument, in the order that the arguments are laid out.  use `null` to skip an argument.
   - `operator`: this can be `EQUAL`, `GREATER_THAN`, `LESS_THAN`, `GREATER_THAN_OR_EQUAL`, `LESS_THAN_OR_EQUAL`, `NOT_EQUAL`.
   - `value`: the value of the argument to use with the operator.  For instance, `operator = EQUAL` and `value = 2` would mean "the argument must be equal to 2".
-- `operation`: (optional) whether this is a call or a delegatecall.  Defaults to call.
+- `operation`: whether this is a call or a delegatecall.  Defaults to call.
