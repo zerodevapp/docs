@@ -29,6 +29,7 @@ const kernelClient = createKernelAccountClient({
       const zerodevPaymaster = createZeroDevPaymasterClient({
         chain,
         entryPoint,
+        // Get this RPC from ZeroDev dashboard
         transport: http(PAYMASTER_RPC),
       })
       return zerodevPaymaster.sponsorUserOperation({
