@@ -174,3 +174,16 @@ import { getKernelAddressFromECDSA } from "@zerodev/ecdsa-validator"
 // index is 0 by default
 const smartAccountAddress = await getKernelAddressFromECDSA(publicClient, eoaAddress, index)
 ```
+
+### How do I create a Kernel account object with a specific address?
+
+Normally, you don't need to manually specify an address because the smart account address is computed from your signer data.  However, if you have changed the signer, then you may need to manually specify the smart account address.
+
+You can do it like this:
+
+```ts
+const account = await createKernelAccount(publicClient, {
+  deployedAccountAddress: "address",
+  // ...other args
+})
+```
