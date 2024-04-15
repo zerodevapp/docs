@@ -127,6 +127,24 @@ const userOpHash = await kernelClient.sendUserOperation({
 })
 ```
 
+You can use Viem's helper functions such as `encodeFunctionData` to encode function calls.  For example:
+
+```
+const userOpHash = await kernelClient.sendUserOperation({
+  userOperation: {
+    callData: await kernelClient.account.encodeCallData({
+      to: contractAddress,
+      value: BigInt(0),
+      data: encodeFunctionData({
+        abi: contractABI,
+        functionName: "functionName",
+        args: [args1, args2],
+      }),
+    }),
+  },
+})
+```
+
 ### Waiting for a UserOp to complete
 
 To wait for a UserOp to complete, call `waitForUserOperationReceipt` using a bundler client:
