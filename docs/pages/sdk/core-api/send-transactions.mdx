@@ -129,7 +129,7 @@ const userOpHash = await kernelClient.sendUserOperation({
 
 You can use Viem's helper functions such as `encodeFunctionData` to encode function calls.  For example:
 
-```
+```ts
 const userOpHash = await kernelClient.sendUserOperation({
   userOperation: {
     callData: await kernelClient.account.encodeCallData({
