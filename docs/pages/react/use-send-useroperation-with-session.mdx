@@ -1,0 +1,121 @@
+import MutationResult from '../shared/mutation-result.mdx'
+
+# useSendUserOperationWithSession [Hooks for sending user operation with session keys]
+
+## Import
+```tsx
+import { useSendUserOperationWithSession } from '@zerodev/waas'
+```
+
+## Usage
+```tsx
+import { useSendUserOperationWithSession, useKernelClient } from '@zerodev/waas';
+import { parseAbi } from 'viem';
+
+function App() {
+  const { write } = useSendUserOperationWithSession();
+  const { address } = useKernelClient();
+  const abi = parseAbi(['function mint(address _to) public']);
+
+  return (
+    <button 
+      onClick={() =>
+        write([
+          {
+            address: '0x34bE7f35132E97915633BC1fc020364EA5134863',
+            abi: abi,
+            functionName: "mint",
+            args: [address],
+            value: 0n
+          }
+        ])
+      }
+    >
+      Send UserOp With Session
+    </button>
+  )
+}
+```
+
+## Parameters
+```tsx
+import { type UseSendUserOperationWithSessionParameters } from '@zerodev/waas';
+```
+
+### sessionId
+
+`0x${tring}`
+
+The sessionId of session used to send user operation
+
+
+### paymaster
+`{type: "SPONSOR"} | {type: "ERC20", gasToken: string} | undefined`
+
+The paymaster type and gas token address.
+- #### type
+  `SPONSOR | ERC20`
+  The type of paymaster.
+- #### gasToken
+  `string | undefined`
+  The symbol of erc20 token used for erc20 paymaster.
+
+### isParallel
+`boolean | undefined`
+
+- Default to `True`
+- The flag determine whether the user operation allows parallel execution.
+
+### nonceKey
+`string | undefined`
+
+The key to generate nonce for userop. 
+
+## Return Types
+
+```tsx
+import { type UseSendUserOperationWithSessionReturnType } from '@zerodev/waas'
+```
+
+<br />
+
+---
+
+[TanStack Query mutation docs](https://tanstack.com/query/v5/docs/react/reference/useMutation)
+
+### write
+`(variables: SendUserOperationWithSessionVariables) => void`
+
+The mutation function to send useroperation with session.
+
+- #### variables 
+  - ##### address
+    `Address`
+    The contract's address.
+  - ##### abi
+    `Abi`
+    The contract's ABI.
+  - ##### functionName
+    `string`
+    - Function to call on the contract.
+    - Inferred from [`abi`](#abi)
+  - ##### args
+    `readonly unknown[] | undefined`
+    - Arguments to pass when calling the contract.
+    - Inferred from [`abi`](#abi) and [`functionName`](#functionname)
+  - ##### value
+    `bigint | undefined`
+    Value in wei sent with this transaction.
+
+### data
+`Hash | undefined`
+
+- Defaults to `undefined`
+- The last successfully resolved data for the mutation.
+
+
+### isDisabled
+`boolean` 
+- `True` if there are multiple sessions while no sessionId specified.
+
+<MutationResult />

@@ -1,0 +1,90 @@
+import MutationResult from '../shared/mutation-result.mdx'
+
+# useCreateKernelClientPasskey [Hook for creating kernel client with Passkey]
+
+## Import
+```tsx
+import { useCreateKernelClientPasskey } from '@zerodev/waas'
+```
+
+## Usage
+```tsx
+import { useCreateKernelClientPasskey } from '@zerodev/waas';
+
+function App() {
+  const { connectRegister, connectLogin } = 
+    useCreateKernelClientPasskey({ version: 'v3' });
+  
+  return (
+    <div>
+      <button onClick={() => {
+        connectRegister({ username: 'USER_NAME' })
+      }}>
+        Register
+      </button>
+      <button onClick={() => {
+        connectLogin()
+      }}>
+        Login
+      </button>
+    </div>
+  )
+}
+```
+
+## Parameters
+```tsx
+import { type UseCreateKernelClientPasskeyParameters } from '@zerodev/waas';
+```
+
+### version
+
+`v2 | v3`
+
+The version of kernel account.
+```tsx
+import { useCreateKernelClientPasskey } from '@zerodev/waas';
+
+function App() {
+  const { connectRegister, connectLogin } = 
+    useCreateKernelClientPasskey({ version: 'v3' }); // [!code focus]
+}
+```
+
+## Return Types
+
+```tsx
+import { type UseCreateKernelClientPasskeyReturnType } from '@zerodev/waas'
+```
+
+<br />
+
+---
+
+[TanStack Query mutation docs](https://tanstack.com/query/v5/docs/react/reference/useMutation)
+
+### connectRegister
+`(variables: CreateKernelClientPasskeyVariables) => void`
+
+The mutation function to register passkey and create the kernel smart account.
+
+- #### variables 
+  - ##### username
+    `string`
+    The username of the registered passkey.
+
+### connectLogin
+`() => void`
+
+The mutation function to login created passkey and create the kernel smart account.
+
+### data
+`CreateKernelClientPasskeyReturnType | undefined`
+  - ##### validator
+    `KernelValidator<EntryPoint>` The object of kernel validator.
+  - ##### kernelAccount
+    `KernelSmartAccount<EntryPoint>` The object of kernel account.
+  - ##### entryPoint
+    `EntryPoint` The entrypoint address of kernel account.
+
+<MutationResult />

@@ -23,6 +23,7 @@ export default defineConfig({
   topNav: [
     // { text: 'Smart Wallet', link: '/', match: '/modules' },
     { text: 'SDK', link: '/', match: '/sdk' },
+    { text: 'React', link: '/react/use-balance', match: '/react' },
     // { text: 'Kernel', link: '/', match: '/kernel' },
     { text: 'Infra', link: '/meta-infra/intro', match: '/meta-infra' },
     {
@@ -514,5 +515,61 @@ export default defineConfig({
         ],
       }
     ],
+    "/react": [
+      {
+        "text": "Hooks",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "useBalance",
+            "link": "/react/use-balance",
+          },
+          {
+            "text": "useCreateBasicSession",
+            "link": "/react/use-create-basic-session",
+          },
+          {
+            "text": "useCreateSession",
+            "link": "/react/use-create-session",
+          },
+          {
+            "text": "useCreateKernelClientEOA",
+            "link": "/react/use-create-kernelclient-eoa"
+          },
+          {
+            "text": "useCreateKernelClientPasskey",
+            "link": "/react/use-create-kernelclient-passkey"
+          },
+          {
+            "text": "useDisconnectKernelClient",
+            "link": "/react/use-disconnect-kernelclient",
+          },
+          {
+            "text": "useKernelClient",
+            "link": "/react/use-kernelclient",
+          },
+          {
+            "text": "useSendUserOperation",
+            "link": "/react/use-send-useroperation",
+          },
+          {
+            "text": "useSendUserOperationWithSession",
+            "link": "/react/use-send-useroperation-with-session",
+          },
+          {
+            "text": "useSessions",
+            "link": "/react/use-sessions",
+          },
+          {
+            "text": "useSessionKernelClient",
+            "link": "/react/use-session-kernelclient",
+          },
+          {
+            "text": "useSetKernelClient",
+            "link": "/react/use-set-kernelclient",
+          }
+        ]
+      }
+    ]
   },
 })
