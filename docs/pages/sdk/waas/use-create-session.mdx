@@ -1,0 +1,75 @@
+import MutationResult from '../shared/mutation-result.mdx'
+
+# useCreateSession [Hook for creating session for kernel v3 account]
+
+## Import
+```tsx
+import { useCreateSession } from '@zerodev/waas'
+```
+
+## Usage
+```tsx
+import { useCreateSession } from '@zerodev/waas';
+import { toGasPolicy } from '@zerodev/permissions/policies';
+
+function App() {
+  const { write } = useCreateSession();
+  
+  return (
+    <button onClick={() => {
+      write({
+        policies: [toGasPolicy({ allowed: 1000000000n })]
+      })
+    }}>
+      Create Session
+    </button>
+  )
+}
+```
+
+## Parameters
+
+No parameter needed.
+
+
+## Return Types
+
+```tsx
+import { type UseCreateSessionReturnType } from '@zerodev/waas'
+```
+
+<br />
+
+---
+
+[TanStack Query mutation docs](https://tanstack.com/query/v5/docs/react/reference/useMutation)
+
+### write
+`(variables: CreateSessionVariables) => void`
+
+The mutation function to create session for v3 kernel account.
+
+- #### variables 
+  - ##### policies
+    `Policy[]`
+    The policies of the session.
+
+### data
+`CreateSessionReturnType | undefined`
+  - ##### sessionKey
+    `0x${string}`
+    The private key of the session.
+  - ##### sessionId
+    `0x${string}`
+    The id of the session.
+  - ##### smartAccount
+    `0x${string}`
+    The address of smart account.
+  - ##### enableSignature
+    `0x${string}`
+    The signature to enable session.
+  - ##### policies
+    `Policy[]`
+    The policies of session.
+
+<MutationResult />

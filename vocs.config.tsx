@@ -157,6 +157,60 @@ export default defineConfig({
         ],
       },
       {
+        "text": "WaaS",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "useBalance",
+            "link": "/sdk/waas/use-balance",
+          },
+          {
+            "text": "useCreateBasicSession",
+            "link": "/sdk/waas/use-create-basic-session",
+          },
+          {
+            "text": "useCreateSession",
+            "link": "/sdk/waas/use-create-session",
+          },
+          {
+            "text": "useCreateKernelClientEOA",
+            "link": "/sdk/waas/use-create-kernelclient-eoa"
+          },
+          {
+            "text": "useCreateKernelClientPasskey",
+            "link": "/sdk/waas/use-create-kernelclient-passkey"
+          },
+          {
+            "text": "useDisconnectKernelClient",
+            "link": "/sdk/waas/use-disconnect-kernelclient",
+          },
+          {
+            "text": "useKernelClient",
+            "link": "/sdk/waas/use-kernelclient",
+          },
+          {
+            "text": "useSendUserOperation",
+            "link": "/sdk/waas/use-send-useroperation",
+          },
+          {
+            "text": "useSendUserOperationWithSession",
+            "link": "/sdk/waas/use-send-useroperation-with-session",
+          },
+          {
+            "text": "useSessions",
+            "link": "/sdk/waas/use-sessions",
+          },
+          {
+            "text": "useSessionKernelClient",
+            "link": "/sdk/waas/use-session-kernelclient",
+          },
+          {
+            "text": "useSetKernelClient",
+            "link": "/sdk/waas/use-set-kernelclient",
+          }
+        ] 
+      },
+      {
         "text": "Signers",
         "collapsed": false,
         "items": [

@@ -1,0 +1,52 @@
+import MutationResult from '../shared/mutation-result.mdx'
+
+# useDisconnectKernelClient [Hook for disconnecting kernel account client]
+
+## Import
+```tsx
+import { useDisconnectKernelClient } from '@zerodev/waas'
+```
+
+## Usage
+```tsx
+import { useDisconnectKernelClient } from '@zerodev/waas';
+
+function App() {
+  const { disconnect } = useDisconnectKernelClient();
+
+  return (
+    <button onClick={() => disconnect()}>
+      Disconnect
+    </button>
+  )
+}
+```
+
+## Parameters
+
+No parameter needed.
+
+## Return Types
+
+```tsx
+import { type UseDisconnectKernelClientReturnType } from '@zerodev/waas'
+```
+
+<br />
+
+---
+
+[TanStack Query mutation docs](https://tanstack.com/query/v5/docs/react/reference/useMutation)
+
+### disconnect
+`() => void`
+
+The mutation function to disconnect kernel client.
+
+### data
+`boolean | undefined`
+
+- Defaults to `undefined`
+- The last successfully resolved data for the mutation.
+
+<MutationResult />

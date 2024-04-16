@@ -1,0 +1,62 @@
+import QueryResult from "../shared/query-result.mdx"
+
+# useKernelClient [Hook for getting kernel account client]
+
+## Import
+```tsx
+import { useKernelClient } from '@zerodev/waas'
+```
+
+## Usage
+```tsx
+import { useKernelClient } from '@zerodev/waas';
+
+function App() {
+  const { kernelClient } = useKernelClient();	
+}
+```
+
+## Parameters
+
+```tsx
+import { type UseKernelClientParameters } from '@zerodev/waas';
+```
+
+### paymaster
+`{type: "SPONSOR"} | {type: "ERC20", gasToken: string} | undefined`
+
+The paymaster type and gas token address.
+#### type
+  `SPONSOR | ERC20`
+  The type of paymaster.
+#### gasToken
+  `string | undefined`
+  The symbol of erc20 token used for erc20 paymaster.
+
+## Return Types
+
+```tsx
+import { type UseKernelClientReturnType } from '@zerodev/waas'
+```
+
+### address
+`Address | undefined`
+
+The address of connected kernel account.
+
+### kernelAccount
+`KernelSmartAccount<EntryPoint> | undefined`
+
+The connected kernel account.
+
+### kernelClient
+`KernelAccountClient<EntryPoint> | undefined`
+
+The connected kernel account client.
+
+### isConnected
+`boolean`
+
+Will be `true` if the kernel client exists
+
+<QueryResult />
