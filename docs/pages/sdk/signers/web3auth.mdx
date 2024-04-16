@@ -31,12 +31,13 @@ const web3auth = new Web3Auth({
 
 ### Use with ZeroDev
 
+Use the provider from Web3Auth to create a smart account signer, which can be passed to a validator. For detailed guidance on using a validator, refer to our documentation on [creating accounts](/sdk/core-api/create-account#api).
+
 ```typescript
-import { createEcdsaKernelAccountClient } from '@zerodev/presets/zerodev';
-import { providerToSmartAccountSigner } from 'permissionless';
-import { polygonMumbai } from 'viem/chains';
+import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
+import { providerToSmartAccountSigner, ENTRYPOINT_ADDRESS_V07 } from 'permissionless';
 import Web3 from "web3";
-import { type Hex } from "viem"
+import { type Hex, createPublicClient } from "viem"
 
 // Get the Provider and EOA address (this will be the address of the signer) from Web3Auth
 const web3authProvider = await web3auth.provider;
@@ -46,12 +47,16 @@ const [address] = await web3.eth.getAccounts();
 // Create the smart account signer from the provider and signer address
 const smartAccountSigner = await providerToSmartAccountSigner(web3authProvider, address as Hex);
 
-// Set up your Kernel client
-const kernelClient = await createEcdsaKernelAccountClient({
-  chain: polygonMumbai,
-  projectId: process.env.ZERODEV_PROJECT_ID,
-  signer: smartAccountSigner,
-});
+const publicClient = createPublicClient({
+  transport: http('https://rpc-amoy.polygon.technology'),
+})
 
-const kernelAddress = kernelClient.account.address;
+// Pass your `smartAccountSigner` to the validator
+const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
+  signer: smartAccountSigner,
+  entryPoint: ENTRYPOINT_ADDRESS_V07,
+})
+
+// You can now use this ECDSA Validator to create a Kernel account
 ```
+
