@@ -19,9 +19,21 @@ npm i
 npm run dev
 ```
 
-## Create a smart account using passkeys
-
 Open `app/page.tsx`.  We will be working on this file for the rest of the tutorial.
+
+## Create a ZeroDev project
+
+For this tutorial, [create a ZeroDev project](https://dashboard.zerodev.app) for Sepolia.
+
+On `app/page.tsx`, fill out these variables with the URLs found on your dashboard.
+
+```
+const BUNDLER_URL = ""
+const PAYMASTER_URL = ""
+const PASSKEY_SERVER_URL = ""
+```
+
+## Create a smart account using passkeys
 
 Let's hook up the `Register` and `Login` buttons so they actually do something.
 
