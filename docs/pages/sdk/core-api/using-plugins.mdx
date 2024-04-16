@@ -47,6 +47,8 @@ const account = await createKernelAccount(publicClient, {
 
 Now, when you send a UserOp with this `account`, the regular validator will be enabled,  and the regular validator (in this case the session key) will be used for signing the UserOp.
 
+Note that Kernel plugins are enabled "lazily" -- you don't have to explicitly enable them.  That is, whenever you send the first UserOp with an `account` object with a `regular` plugin, the plugin will be enabled as a part of that UserOp.  The UserOp itself can do whatever it needs to do.
+
 ### Using only a regular validator
 
 If a regular validator has already been enabled, you can use it without access to the sudo validator.
