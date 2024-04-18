@@ -31,9 +31,7 @@ bun add @zerodev/waas
 In typical React pattern, `@zerodev/waas` is set up via a provider.  A typical setup may look like this:
 
 ```tsx
-"use client"
 import { ZeroDevProvider } from "@zerodev/waas"
-import "@mantine/core/styles.css"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ReactNode } from "react"
 import { WagmiProvider, createConfig, http } from "wagmi"
