@@ -4,13 +4,17 @@ In this tutorial, you will learn how to create composable permissions.
 
 We will create what's commonly known as a "session key" -- a key that can only do specific things under specific conditions.  Here, we will create a key that can only mint an NFT, and can only mint once every month.
 
-## Code Examples
+## Code Example
 
-Refer to these examples if you get lost in the tutorial:
+Clone and set up [the examples repo](https://github.com/zerodevapp/zerodev-examples) by following the README.
 
-- [Using permissions](https://github.com/zerodevapp/zerodev-examples/blob/main/permissions/main.ts)
-- [Owner creates a session key](https://github.com/zerodevapp/zerodev-examples/blob/main/session-keys/owner-created.ts)
-- [Register a session key with the owner](https://github.com/zerodevapp/zerodev-examples/blob/main/session-keys/agent-created.ts)
+Make sure you can run the permissions example script with:
+
+```bash
+npx ts-node permissions/main.ts
+```
+
+Refer to the [example script](https://github.com/zerodevapp/zerodev-examples/blob/main/permissions/main.ts) as you follow this tutorial.
 
 ## Installation
 
@@ -127,6 +131,14 @@ Try running [this script](https://github.com/zerodevapp/zerodev-examples/blob/ma
 ## Storing Session Keys
 
 Session keys (and permission validators in general) can be stored, by serializing them and then deserializing them later.
+
+### Code examples
+
+There are two general patterns with storing session keys.
+
+- The owner creates a session key for another agent to store & use.  Check out [this example](https://github.com/zerodevapp/zerodev-examples/blob/main/session-keys/owner-created.ts).
+- The agent creates a session key and asks the owner to "approve" it as a session key.  Check out [this example](https://github.com/zerodevapp/zerodev-examples/blob/main/session-keys/agent-created.ts).
+  - In this flow, the owner never sees the private part of the session key, so it may be better for security.
 
 ### Serializing a session key
 

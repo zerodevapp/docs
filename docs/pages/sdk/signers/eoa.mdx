@@ -9,21 +9,24 @@ We'll explore three methods to integrate a signer with ZeroDev: using an EIP-119
 EIP-1193 is a standard interface for Ethereum providers, such as MetaMask or hardware wallets, where the key material is hosted externally rather than on the local client. ZeroDev supports creating a signer from any provider that implements this interface.
 
 ```typescript
-import { createEcdsaKernelAccountClient } from '@zerodev/presets/zerodev';
-import { providerToSmartAccountSigner } from 'permissionless';
-import { polygonMumbai } from "viem/chains";
+import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
+import { providerToSmartAccountSigner, ENTRYPOINT_ADDRESS_V07 } from 'permissionless';
+import { createPublicClient } from "viem";
 
 // `window.ethereum` is the provider object that is injected into the browser by a wallet, like metamask, that enables JSON RPC communication with the walelt.
 const smartAccountSigner = await providerToSmartAccountSigner(window.ethereum);
 
-// Set up your Kernel client
-const kernelClient = await createEcdsaKernelAccountClient({
-  chain: polygonMumbai,
-  projectId: process.env.ZERODEV_PROJECT_ID,
-  signer: smartAccountSigner,
-});
+const publicClient = createPublicClient({
+  transport: http('https://rpc-amoy.polygon.technology'),
+})
 
-const kernelAddress = kernelClient.account.address;
+// Pass your `smartAccountSigner` to the validator
+const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
+  signer: smartAccountSigner,
+  entryPoint: ENTRYPOINT_ADDRESS_V07,
+})
+
+// You can now use this ECDSA Validator to create a Kernel account
 ```
 
 ### Viem Wallet Client Integration
@@ -31,37 +34,45 @@ A [Wallet Client](https://viem.sh/docs/clients/wallet.html) is an interface to i
 
 In this example, we assume that you have access to a WalletClient object.
 ```typescript
-import { createEcdsaKernelAccountClient } from '@zerodev/presets/zerodev';
-import { walletClientToSmartAccountSigner } from 'permissionless';
+import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
+import { walletClientToSmartAccountSigner, ENTRYPOINT_ADDRESS_V07 } from 'permissionless';
 
 const smartAccountSigner = walletClientToSmartAccountSigner(walletClient);
 
-// Set up your Kernel client
-const kernelClient = await createEcdsaKernelAccountClient({
-  chain: polygonMumbai,
-  projectId: process.env.ZERODEV_PROJECT_ID,
-  signer: smartAccountSigner,
-});
+const publicClient = createPublicClient({
+  transport: http('https://rpc-amoy.polygon.technology'),
+})
 
-const kernelAddress = kernelClient.account.address;
+// Pass your `smartAccountSigner` to the validator
+const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
+  signer: smartAccountSigner,
+  entryPoint: ENTRYPOINT_ADDRESS_V07,
+})
+
+// You can now use this ECDSA Validator to create a Kernel account
 ```
 
 ### Local Account
 A Local Account refers to an EOA where the private key is directly accessible on the client. In this example we assume you have access to the private key locally.
 
 ```typescript
-import { createEcdsaKernelAccountClient } from "@zerodev/presets/zerodev"
+import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
+import { ENTRYPOINT_ADDRESS_V07 } from 'permissionless';
 import { privateKeyToAccount } from "viem/accounts"
-import { polygonMumbai } from "viem/chains"
 import { Hex } from "viem"
 
 // Create a signer
-const signer = privateKeyToAccount(process.env.PRIVATE_KEY as Hex)
+const smartAccountSigner = privateKeyToAccount(process.env.PRIVATE_KEY as Hex)
 
-// Create a Kernel client
-const kernelClient = await createEcdsaKernelAccountClient({
-  chain: polygonMumbai,
-  projectId: process.env.ZERODEV_PROJECT_ID,
-  signer,
+const publicClient = createPublicClient({
+  transport: http('https://rpc-amoy.polygon.technology'),
 })
+
+// Pass your `smartAccountSigner` to the validator
+const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
+  signer: smartAccountSigner,
+  entryPoint: ENTRYPOINT_ADDRESS_V07,
+})
+
+// You can now use this ECDSA Validator to create a Kernel account
 ```

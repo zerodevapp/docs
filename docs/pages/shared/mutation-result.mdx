@@ -5,21 +5,6 @@
 
 The error object for the mutation, if an error was encountered.
 
-### failureCount
-
-`number`
-
-- The failure count for the mutation.
-- Incremented every time the mutation fails.
-- Reset to `0` when the mutation succeeds.
-
-### failureReason
-
-`Error | null`
-
-- The failure reason for the mutation retry.
-- Reset to `null` when the mutation succeeds.
-
 ### isError / isIdle / isPending / isSuccess
 
 `boolean`
@@ -33,12 +18,6 @@ Boolean variables derived from [`status`](#status).
 - will be `true` if the mutation has been `paused`.
 - see [Network Mode](https://tanstack.com/query/v5/docs/react/guides/network-mode) for more information.
 
-### reset
-
-`() => void`
-
-A function to clean the mutation internal state (e.g. it resets the mutation to its initial state).
-
 ### status
 
 `'idle' | 'pending' | 'error' | 'success'`
@@ -48,9 +27,8 @@ A function to clean the mutation internal state (e.g. it resets the mutation to 
 - `'error'` if the last mutation attempt resulted in an error.
 - `'success'` if the last mutation attempt was successful.
 
-### submittedAt
+### reset
 
-`number`
+`() => void`
 
-- The timestamp for when the mutation was submitted.
-- Defaults to `0`.
+A function to clean the mutation internal state (e.g. it resets the mutation to its initial state).
