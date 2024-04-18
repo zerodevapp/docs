@@ -517,6 +517,14 @@ export default defineConfig({
     ],
     "/react": [
       {
+        "text": "Getting Started",
+        "link": "/react/getting-started",
+      },
+      {
+        "text": "Code Examples",
+        "link": "https://github.com/zerodevapp/waas-examples"
+      },
+      {
         "text": "Hooks",
         "collapsed": false,
         "items": [
