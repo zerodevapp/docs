@@ -288,7 +288,7 @@ export default defineConfig({
           },
           {
             "text": "Connect Wallet with Other DApps",
-            "link": "/sdk/advanced/wallet-connect"
+            "link": "/react/use-wallet-connect"
           },
         ],
       },
