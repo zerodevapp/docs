@@ -575,6 +575,10 @@ export default defineConfig({
           {
             "text": "useSetKernelClient",
             "link": "/react/use-set-kernelclient",
+          },
+          {
+            "text": "useWalletConnect",
+            "link": "/react/use-wallet-connect",
           }
         ]
       }
