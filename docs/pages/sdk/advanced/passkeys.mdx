@@ -31,6 +31,10 @@ ZeroDev/Kernel supports using passkeys as signers. The support comes in two flav
 
 ZeroDev implements passkey supports through a **progressive passkey validator**, which uses native passkeys if ERC-7212 is available, and falls back to smart contract passkeys otherwise. Notably, this means that if you use passkeys on a network where ERC-7212 isn't available, and the network later adds support for ERC-7212, you don't need to upgrade your validator -- it will automatically start taking advantage of the ERC-7212 precompile.
 
+## Quickstart
+
+[Follow this tutorial](/sdk/getting-started/tutorial-passkeys) to get started with passkey smart accounts.
+
 ## Installation
 
 :::code-group
