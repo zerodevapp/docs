@@ -21,7 +21,7 @@ export default defineConfig({
     </>
   ),
   topNav: [
-    // { text: 'Smart Wallet', link: '/', match: '/modules' },
+    // { text: 'Smart Wallet', link: '/smart-wallet/intro', match: '/smart-wallet' },
     { text: 'SDK', link: '/', match: '/sdk' },
     { text: 'React', link: '/react/getting-started', match: '/react' },
     // { text: 'Kernel', link: '/', match: '/kernel' },
@@ -51,140 +51,6 @@ export default defineConfig({
     }
   ],
   sidebar: {
-    "/smart-wallet": [
-      {
-        "text": "Getting Started",
-        "collapsed": false,
-        "items": [
-          {
-            "text": "Introduction",
-            "link": "/"
-          },
-        ],
-      },
-      {
-        "text": "Onboarding",
-        "collapsed": false,
-        "items": [
-          {
-            "text": "Signin",
-            "link": "/modules/signin"
-          },
-          {
-            "text": "Importing Assets",
-            "link": "/modules/importing-assets"
-          },
-          {
-            "text": "Fiat Onramp",
-            "link": "/modules/onramp"
-          },
-        ],
-      },
-      {
-        "text": "Transacting",
-        "collapsed": false,
-        "items": [
-          {
-            "text": "Sponsoring Gas for Users",
-            "link": "/modules/gas"
-          },
-          {
-            "text": "Paying Gas in ERC20",
-            "link": "/modules/gas"
-          },
-          {
-            "text": "Batching Transactions",
-            "link": "/modules/batching"
-          },
-          {
-            "text": "One-click Trading",
-            "link": "/modules/one-click-trading"
-          },
-          {
-            "text": "Transaction Automation",
-            "link": "/modules/transaction-automation"
-          },
-          {
-            "text": "DeFi Integrations",
-            "link": "/modules/modules-integrations"
-          },
-          {
-            "text": "Intents",
-            "link": "/modules/transaction-automation"
-          },
-          {
-            "text": "Estimating Gas",
-            "link": "/modules/estimating-gas"
-          },
-          {
-            "text": "Delegatecall",
-            "link": "/modules/estimating-gas"
-          },
-          {
-            "text": "Send Transactions in Parallel",
-            "link": "/modules/parallel-transactions"
-          },
-        ],
-      },
-      {
-        "text": "Security",
-        "collapsed": false,
-        "items": [
-          {
-            "text": "Account Recovery",
-            "link": "/modules/account-recovery"
-          },
-          {
-            "text": "Multisig",
-            "link": "/modules/account-recovery"
-          },
-        ],
-      },
-      {
-        "text": "Offramp",
-        "collapsed": false,
-        "items": [
-          {
-            "text": "Exporting Assets",
-            "link": "/modules/offramp"
-          },
-          {
-            "text": "Fiat Offramp",
-            "link": "/modules/offramp"
-          },
-          {
-            "text": "Wallet Connect",
-            "link": "/modules/offramp"
-          },
-          {
-            "text": "MetaMask Snap",
-            "link": "/modules/offramp"
-          },
-        ],
-      },
-      {
-        "text": "Reliability",
-        "collapsed": false,
-        "items": [
-          {
-            "text": "Meta Bundler",
-          },
-          {
-            "text": "Fallback Bundlers & Paymasters",
-          },
-        ],
-      },
-      {
-        "text": "Customization",
-        "collapsed": false,
-        "items": [
-          {
-            "text": "Customize Styling",
-            "link": "/modules/customize"
-          },
-        ],
-      },
-    ],
     "/": [
       {
         "text": "Getting Started",
@@ -279,11 +145,15 @@ export default defineConfig({
             "link": "/sdk/advanced/recovery"
           },
           {
+            "text": "Key Storage",
+            "link": "/sdk/advanced/key-storage"
+          },
+          {
             "text": "DeFi Integrations",
             "link": "/sdk/advanced/defi"
           },
           {
-            "text": "Sending Parallel Orders",
+            "text": "Parallel Transactions",
             "link": "/sdk/advanced/parallel-orders"
           },
           {
@@ -484,6 +354,140 @@ export default defineConfig({
             "text": "How to use ZeroDev with Gelato",
             "link": "/sdk/faqs/use-with-gelato"
           }
+        ],
+      },
+    ],
+    "/smart-wallet": [
+      {
+        "text": "Getting Started",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Introduction",
+            "link": "/smart-wallet/intro"
+          },
+        ],
+      },
+      {
+        "text": "Onboarding",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Signin",
+            "link": "/smart-wallet/signin"
+          },
+          {
+            "text": "Importing Assets",
+            "link": "/smart-wallet/importing-assets"
+          },
+          {
+            "text": "Fiat Onramp",
+            "link": "/smart-wallet/onramp"
+          },
+        ],
+      },
+      {
+        "text": "Transacting",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Sponsoring Gas for Users",
+            "link": "/smart-wallet/gas"
+          },
+          {
+            "text": "Paying Gas in ERC20",
+            "link": "/smart-wallet/gas"
+          },
+          {
+            "text": "Batching Transactions",
+            "link": "/smart-wallet/batching"
+          },
+          {
+            "text": "One-click Trading",
+            "link": "/smart-wallet/one-click-trading"
+          },
+          {
+            "text": "Transaction Automation",
+            "link": "/smart-wallet/transaction-automation"
+          },
+          {
+            "text": "DeFi Integrations",
+            "link": "/smart-wallet/smart-wallet-integrations"
+          },
+          {
+            "text": "Intents",
+            "link": "/smart-wallet/transaction-automation"
+          },
+          {
+            "text": "Estimating Gas",
+            "link": "/smart-wallet/estimating-gas"
+          },
+          {
+            "text": "Delegatecall",
+            "link": "/smart-wallet/estimating-gas"
+          },
+          {
+            "text": "Send Transactions in Parallel",
+            "link": "/smart-wallet/parallel-transactions"
+          },
+        ],
+      },
+      {
+        "text": "Security",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Account Recovery",
+            "link": "/smart-wallet/account-recovery"
+          },
+          {
+            "text": "Multisig",
+            "link": "/smart-wallet/account-recovery"
+          },
+        ],
+      },
+      {
+        "text": "Offramp",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Exporting Assets",
+            "link": "/smart-wallet/offramp"
+          },
+          {
+            "text": "Fiat Offramp",
+            "link": "/smart-wallet/offramp"
+          },
+          {
+            "text": "Wallet Connect",
+            "link": "/smart-wallet/offramp"
+          },
+          {
+            "text": "MetaMask Snap",
+            "link": "/smart-wallet/offramp"
+          },
+        ],
+      },
+      {
+        "text": "Reliability",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Meta Bundler",
+          },
+          {
+            "text": "Fallback Bundlers & Paymasters",
+          },
+        ],
+      },
+      {
+        "text": "Customization",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Customize Styling",
+            "link": "/smart-wallet/customize"
+          },
         ],
       },
     ],
