@@ -1,5 +1,9 @@
 # Parallel UserOps
 
+:::info
+Impatient?  Check out [a complete example here](https://github.com/zerodevapp/zerodev-examples/blob/main/send-transactions/with-2d-nonce.ts).
+:::
+
 With a EOA, the nonce is sequential: 1, 2, 3, ...  This means that transactions must be ordered sequentially, and a transaction cannot be processed unless a previous transaction was completed.
 
 With smart accounts, the nonce can be two-dimensional, which allows for *parallel UserOps*.  Imagine that your user wants to place three trades:
