@@ -35,6 +35,9 @@ const kernelClient = createKernelAccountClient({
     const paymaster = createStackupPaymasterClient({
       chain: polygonMumbai,
       transport: http('STACKUP_PAYMASTER_RPC'),
+      context: {
+        type: "payg",
+      },
     })
     return paymaster.sponsorUserOperation({
       userOperation
