@@ -6,6 +6,20 @@ With ZeroDev, your users can create smart accounts in three ways:
 - Socials
 - EOAs
 
+## React
+
+### Passkeys
+
+### Socials
+
+### EOAs
+
+```ts
+const { validator } = useWaaSValidator({
+  options: ['passkeys', 'socials'],
+})
+```
+
 ## SDK
 
 ### Passkeys
@@ -29,13 +43,5 @@ const socialValidator = createSocialValidator({
 ```ts
 const socialValidator = createEcdsaValidator({
   // ...
-})
-```
-
-## React Hooks
-
-```ts
-const { validator } = useWaaSValidator({
-  options: ['passkeys', 'socials'],
 })
 ```

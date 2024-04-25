@@ -160,6 +160,10 @@ export default defineConfig({
             "text": "Connect Wallet with Other DApps",
             "link": "/react/use-wallet-connect"
           },
+          {
+            "text": "Fallback Providers",
+            "link": "/sdk/advanced/fallback-providers"
+          },
         ],
       },
       {
@@ -325,7 +329,7 @@ export default defineConfig({
             "link": "/sdk/infra/pimlico"
           },
           {
-            "text": "StackUp",
+            "text": "Stackup",
             "link": "/sdk/infra/stackup"
           },
         ],
@@ -365,6 +369,10 @@ export default defineConfig({
           {
             "text": "Introduction",
             "link": "/smart-wallet/intro"
+          },
+          {
+            "text": "Setup",
+            "link": "/smart-wallet/setup"
           },
         ],
       },
