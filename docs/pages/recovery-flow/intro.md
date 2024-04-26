@@ -7,7 +7,7 @@ The recovery flow works with Kernel accounts that have set up recovery using the
 - [Using our pre-built recovery setup UI.](/recovery-flow/setup)
   - This is super easy to integrate with.
 
-- [Using ZeroDev.](/sdk/plugins/recovery)
+- [Using ZeroDev.](/sdk/advanced/recovery)
   - This is harder to integrate with but allows you to customize your user experience.
 
 In either case, once an account has been set up for recovery, the guardian (which may be the user themselves) can recover the user's account through [the recovery portal](/recovery-flow/portal).
