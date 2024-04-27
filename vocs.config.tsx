@@ -6,7 +6,9 @@ export default defineConfig({
     dark: '/logo-white.svg',
     light: '/logo-black.svg'
   },
-  ogImageUrl: 'https://vocs.dev/api/og?logo=%logo&title=%title&description=%description',
+  ogImageUrl: {
+    '/': 'https://vocs.dev/api/og?logo=%logo&title=%title&description=%description',
+  },
   editLink: {
     pattern: 'https://github.com/zerodevapp/docs/edit/main/docs/pages/:path',
     text: 'Edit on GitHub',
