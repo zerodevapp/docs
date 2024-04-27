@@ -168,6 +168,10 @@ export default defineConfig({
             "text": "Supported DeFi Tokens",
             "link": "/sdk/advanced/supported-defi-tokens"
           },
+          {
+            "text": "Supported Base Tokens",
+            "link": "/sdk/advanced/supported-base-tokens"
+          },
         ],
       },
       {
