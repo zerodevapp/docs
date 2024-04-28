@@ -1,0 +1,39 @@
+# Creating wallets
+
+ZeroDev supports three types of wallet creation:
+
+- Passkeys
+  - ZeroDev supports on-chain passkeys, where transactions are signed directly with passkeys on your user's device, and the signatures are validated on-chain with either [RIP-7212](https://github.com/ethereum/RIPs/blob/master/RIPS/rip-7212.md) (if supported by the network) or smart contracts, without reliance on centralized infrastructure.  [Learn more here](/sdk/advanced/passkeys).
+- Socials
+  - ZeroDev supports social logins natively, but you can also use ZeroDev with [third-party auth providers](/sdk/signers/intro) such as Dynamic, Privy, and Magic if your prefer their UI.
+- EOA
+  - It's important to note that when a user signs in with an EOA (e.g. MetaMask) through ZeroDev, the EOA is not used as a wallet, but rather as the *signer* of the ZeroDev smart wallet.  Therefore, the address of the smart wallet is different than the address of the user's EOA.
+
+## React
+
+:::info
+Check out this [code example](https://github.com/zerodevapp/waas-examples/tree/main/create-account).
+:::
+
+### Passkeys
+
+```ts
+```
+
+### Socials
+
+```ts
+```
+
+### EOA
+
+```ts
+```
+
+## Core SDK
+
+Check out these links for using the Core SDK directly:
+
+- [Passkeys](/sdk/advanced/passkeys) 
+- Socials
+- [EOA](/sdk/core-api/create-account)
