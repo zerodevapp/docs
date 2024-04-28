@@ -164,14 +164,6 @@ export default defineConfig({
             "text": "Fallback Providers",
             "link": "/sdk/advanced/fallback-providers"
           },
-          {
-            "text": "Supported DeFi Tokens",
-            "link": "/sdk/advanced/supported-defi-tokens"
-          },
-          {
-            "text": "Supported Base Tokens",
-            "link": "/sdk/advanced/supported-base-tokens"
-          },
         ],
       },
       {
