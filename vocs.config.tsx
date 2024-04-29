@@ -136,7 +136,7 @@ export default defineConfig({
             "link": "/sdk/advanced/passkeys"
           },
           {
-            "text": "Session Keys",
+            "text": "Session Keys / 1-Click Trading",
             "link": "/sdk/advanced/session-keys"
           },
           {
