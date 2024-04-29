@@ -390,6 +390,20 @@ const sessionKeyAccount = await createKernelAccount(publicClient, {
 })
 ```
 
+### Transferring ETH
+
+If you want to transfer ETH with a session key, specify the `data` field as such:
+
+```ts
+import { pad } from 'viem'
+
+await sessionKeyAccountClient.sendTransaction({
+  to: address,
+  data: pad("0x", { size: 4 }),
+  value: amountToTransfer,
+})
+```
+
 ## FAQs
 
 ### Does creating session keys cost gas?
