@@ -391,10 +391,6 @@ export default defineConfig({
             "text": "Importing Assets",
             "link": "/smart-wallet/importing-assets"
           },
-          {
-            "text": "Fiat Onramp",
-            "link": "/smart-wallet/onramp"
-          },
         ],
       },
       {

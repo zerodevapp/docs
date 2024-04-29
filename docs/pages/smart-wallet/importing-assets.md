@@ -1,8 +1,13 @@
 # Importing Assets
 
-We make it easy to transfer assets from any chain into the DApp.
+Generally there are two ways to get assets into the smart wallet:
 
-So if your user currently has say ETH on mainnet but your DApp requires USDC on Arbitrum, we make it easy to transfer (we take care of bridging).
+- Fiat onramp
+- Importing assets from another wallet
+
+ZeroDev works with any fiat onramp solution -- you simply specify the smart wallet address as the destination address.
+
+In this doc, we describe how to use ZeroDev's routing function to help users transfer their assets from another wallet (presumably an EOA) into the smart account.  We support both same-chain and cross-chain transfers.
 
 ## SDK
 
