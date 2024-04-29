@@ -75,24 +75,21 @@ import { arbitrum } from "viem/chains"
 const chain = arbitrum
 
 const userOpHash = await defiClient.sendSwapUserOp({
-  tokenIn: baseTokenAddresses[chain.id].USDC,
-  amountIn: parseUnits('100', 6),  // USDC uses 6 decimals
-  tokenOut: baseTokenAddresses[chain.id].USDT,
+  fromToken: baseTokenAddresses[chain.id].USDC,
+  fromAmount: parseUnits('100', 6),  // USDC uses 6 decimals
+
+  toToken: baseTokenAddresses[chain.id].USDT,
+
   gasToken: 'sponsored',
 })
 ```
 
 Where:
 
-- `tokenIn` is the input token.
-- `amountIn` is a `bigint` representing the input token amount.  Note that this uses the smallest unit for the token, e.g. Wei for Ether.
-- `tokenOut` is the output token.
-- `gasToken`: specify how gas is paid for for this UserOp.  This can be:
-  - `sponsored`: sponsor the UserOp.
-  - `tokenIn`: pays gas in the input token, using a [ERC20 paymaster](/sdk/core-api/pay-gas-with-erc20s).
-  - `tokenOut`: pays gas in the output token, using a [ERC20 paymaster](/sdk/core-api/pay-gas-with-erc20s).
-  - `native`: pays gas in the native token, using the account's balance.
-  - You can also specify an `Address` for a ERC20 token, to pay gas with that token using a [ERC20 paymaster](/sdk/core-api/pay-gas-with-erc20s).
+- `fromToken` is the input token.
+- `fromAmount` is a `bigint` representing the input token amount.  Note that this uses the smallest unit for the token, e.g. Wei for Ether.
+- `toToken` is the output token.
+- `gasToken`: [see below.](#gas-tokens)
 
 ### Entering / Exiting DeFi positions
 
@@ -100,9 +97,11 @@ Entering a DeFi position simply means swapping a token into a DeFi token.  For e
 
 ```ts
 const userOpHash = await defiClient.sendSwapUserOp({
-  tokenIn: baseTokenAddresses[chain.id].USDC,
-  amountIn: 1_000_000,
-  tokenOut: defiTokenAddresses[chain.id]['USDC']['aave-v3'],
+  fromToken: baseTokenAddresses[chain.id].USDC,
+  fromAmount: 1_000_000,
+
+  toToken: defiTokenAddresses[chain.id]['USDC']['aave-v3'],
+
   gasToken: 'sponsored',
 })
 ```
@@ -111,4 +110,49 @@ Similarly, exiting a DeFi position is just swapping a DeFi token into another to
 
 ### Cross-chain Swaps
 
+To swap tokens across chains, use `sendSwapUserOpCrossChain`.  For example, to swap USDC on Arbitrum to DAI on Polygon:
+
+```ts
+const userOpHash = await defiClient.sendSwapUserOpCrossChain({
+  fromToken: "USDC",
+  fromAmount: 1_000_000,
+  fromChain: arbitrum.id,
+
+  toToken: "DAI",
+  toAddress: addressOut,
+  toChainId: polygon.id,
+
+  gasToken: "sponsored"
+})
+```
+
+Where:
+
+- `fromToken` is the input token.
+- `fromAmount` is a `bigint` representing the input token amount.  Note that this uses the smallest unit for the token, e.g. Wei for Ether.
+- `fromChainId`: the chain for `fromToken`,
+- `toToken` is the output token.
+- `toChainId`: the chain for `toToken`,
+- `toAddress`: defaults to the account's own address. If specified, it will send the output token to that address instead.
+- `gasToken`: [see below.](#gas-tokens)
+
 ### Listing Tokens
+
+You can list all ERC20 tokens an account owns with the `listTokenBalances` function:
+
+```ts
+const accountBalances = await defiClient.listTokenBalances({
+  account: account.address,
+  chainId: chain.id,
+})
+```
+
+### Gas Tokens
+
+The `gasToken` flag specifies how gas is paid for the UserOp.  It can be one of the following values:
+
+- `sponsored`: sponsor the UserOp.
+- `fromToken`: pays gas in the input token, using a [ERC20 paymaster](/sdk/core-api/pay-gas-with-erc20s).
+- `toToken`: pays gas in the output token, using a [ERC20 paymaster](/sdk/core-api/pay-gas-with-erc20s).
+- `native`: pays gas in the native token, using the account's balance.
+- You can also specify an `Address` for a ERC20 token, to pay gas with that token using a [ERC20 paymaster](/sdk/core-api/pay-gas-with-erc20s).
