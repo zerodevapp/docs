@@ -1,5 +1,26 @@
 # Supported Defi Tokens
 
+This is the full list of DeFi tokens (aka "vaults") supported by ZeroDev's [DeFi integrations](/sdk/advanced/defi).
+
+## Usage
+
+To use these tokens, import the `defiTokenAddresses` constant:
+
+```ts
+import { defiTokenAddresses } from "@zerodev/defi"
+```
+
+Then get the DeFi token address with `defiTokenAddresses[chainId][baseToken][protocol]`.  For example, to deposit USDC into the AAVE v3 USDC token vault:
+
+```ts
+const userOpHash = await defiClient.sendSwapUserOp({
+  tokenIn: baseTokenAddresses[chain.id].USDC,
+  amountIn: 1_000_000,
+  tokenOut: defiTokenAddresses[chain.id]['USDC']['aave-v3'],
+  gasToken: 'sponsored',
+})
+```
+
 ## Ethereum Mainnet
 
 | Tokens | Protocol | Address |

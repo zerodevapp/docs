@@ -1,5 +1,26 @@
 # Supported Base Tokens
 
+This is the full list of base tokens supported by ZeroDev's [DeFi integrations](/sdk/advanced/defi).
+
+## Usage
+
+To use these tokens, import the `baseTokenAddresses` constant:
+
+```ts
+import { baseTokenAddresses } from "@zerodev/defi"
+```
+
+Then get the base token address with `baseTokenAddresses[chainId][baseToken]`.  For example, to swap USDC into USDT:
+
+```ts
+const userOpHash = await defiClient.sendSwapUserOp({
+  tokenIn: baseTokenAddresses[chain.id].USDC,
+  amountIn: 1_000_000,
+  tokenOut: baseTokenAddresses[chain.id].USDT,
+  gasToken: 'sponsored',
+})
+```
+
 ## Ethereum Mainnet
 
 | Symbol | Address |
