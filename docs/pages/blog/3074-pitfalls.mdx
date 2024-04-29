@@ -1,0 +1,99 @@
+---
+authors:
+    - "[derek](https://twitter.com/decentrek)"
+date: 2024-04-29
+layout: minimal
+---
+
+# The pitfalls of EIP-3074, and how to avoid them
+
+::authors
+
+(Thanks to [Yoav Weiss](https://twitter.com/yoavw) and [Dan Finlay](https://twitter.com/danfinlay) for feedback and review.)
+
+[EIP-3074](https://eips.ethereum.org/EIPS/eip-3074) has been confirmed for the next Ethereum hardfork (”Pectra”), which is amazing news for the Ethereum community.  For the first time, EOA users will be able to enjoy the benefits of account abstraction (AA) — gas sponsorship, transaction batching, session keys, passkeys, etc.  At ZeroDev, we cannot be more excited to bring these smart account features to EOA users.
+
+At its core, 3074 is a very simple proposal.  Two new opcodes, `AUTH` and `AUTHCALL`, together enable a smart contract (known as an “invoker”) to take over the address of a EOA.  Most of the complexity in enabling the aforementioned AA features is left out of the protocol itself, and left to the application layer (specifically invokers and relayers) to handle.
+
+By leaving complexity out of the spec, however, EIP-3074 opens up many possible paths to account abstraction.  **The danger is that some of these paths may lead to a future of AA that is more centralized and permissioned than any of us intended or desired.**  This blog post explains:
+
+- How EIP-3074 could lead to 1) permissioned mempools and 2) popular wallets gate-keeping account innovations.
+- How to avoid such outcomes.
+
+### Why EIP-3074 needs relayers
+
+One common misconception about EIP-3074 is that, by itself, it enables account abstraction.  Actually, by itself, EIP-3074 only enables *execution abstraction*, meaning that EOAs can execute calls through smart contracts, notably enabling transaction batching.
+
+The main part of AA, however, is *validation abstraction* — determining the validity of transactions through smart contracts.  Validation abstraction is what enables use cases such as gas sponsorship, session keys, passkeys, etc.
+
+“Native account abstraction,” such as EIP-7560, achieves validation abstraction by updating the protocol itself to support a new transaction type for smart accounts.  Since EIP-3074 doesn’t go that far, it must rely on relayers to “package” smart account transactions into EOA transactions, in order to achieve validation abstraction and therefore most of the benefits of AA.
+
+### Can EIP-3074 relayers form a permissionless mempool?
+
+A mempool is a network of relayers that shares transactions with one another.  A mempool is said to be *permissionless* when:
+
+- Any relayers can join the mempool.
+- Anyone can send transactions to the mempool.
+
+In Ethereum, about 90% of transactions go into the public mempool, which is permissionless; the rest go into various private and permissioned mempools such as Flashbots Protect, usually for MEV protection.
+
+While permissioned mempools have an important role to play, it’s crucial that a permissionless mempool *exists*.  To see why, consider the fact that currently [over 35% of MEV-Boost relays censor transactions](https://www.mevwatch.info/).  Since permissioned mempools consist of a known set of nodes, they are particular susceptible to government pressures.  A permissionless mempool serves as the last line of defense against censorship, ensuring that transactions can be included even in the most adversarial scenarios.
+
+If we are not careful, however, **EIP-3074 mempools may become exclusively permissioned**.
+
+### Why permissionless mempools are hard
+
+In a permissionless mempool, every node sees the transactions received by everyone.  Therefore, a permissionless mempool must protect nodes (relayers) from Denial-of-Service (DoS) attacks, where nodes are so busy processing invalid transactions that they can’t process valid transactions.
+
+Smart account transactions are particularly challenging for DoS protection, because:
+
+- It takes more computational resources to validate a transaction, since validation is implemented with smart contracts and therefore can consume significant computational resources.
+- Since the validation contract can read chain state, valid transactions may become invalid as the chain state changes.
+
+As a result, a mempool of nodes that verify smart account transactions are particularly vulnerable to DoS attacks.  The second problem is especially tricky, because if a relayer thinks that a smart account transaction is valid, packages it into a EOA, and submits it on-chain, only to find out that it’s invalid after all, the relayer will have wasted not just computational resources but also gas, which makes the attack particularly economically disruptive.
+
+Since EIP-3074 doesn’t address this problem, the problem must be solved by invokers and relayers.  If it’s not solved, **the default behavior would be for all 3074 relayers to only accept transactions from trusted senders, resulting in fragmented and permissioned mempools, and a low degree of censorship resistance.**
+
+### How to build a permissionless mempool
+
+The trick to protecting a mempool from DoS attacks is to ensure that:
+
+- Validating a transaction is cheap, relative to the cost of executing the transaction.
+- A valid transaction cannot be made invalid without significant cost to the attacker.
+
+To achieve these properties, we can leverage *validation-execution separation*, [the idea that underpins ERC-4337 and EIP-7560 (native account abstraction)](https://twitter.com/VitalikButerin/status/1576199517434949634).  Basically, the smart account should implement a `validate()` function separate from an `execute()` function.  Relayers only simulate the `validate()` function, which is limited to a small amount of gas, to determine if the transaction is valid.  And the `validate()` function can only access state inside the account, so that state change outside of the account cannot invalidate the transaction.  The `execute()` function handles the actual execution of the transaction, which may consume a large amount of gas and access any state, since relayers don’t need to simulate it.
+
+Therefore, **EIP-3074 invokers should implement validation-execution separation.**  Without it, 3074 relayers will have to whitelist transaction senders and mempool participants in order to protect themselves, leading to permissioned and fragmented mempools.
+
+### Will popular wallets gate-keep account innovations?
+
+Invokers, which are essentially smart accounts, are absolutely security-critical — a malicious or buggy invoker could easily lose all your assets.  As such, wallets like MetaMask will almost certainly whitelist invokers for their users, so that using a non-whitelisted invoker would trigger a big warning or outright fail.
+
+While some commentators have pointed to the whitelist as an issue, I think it’s in fact perfectly understandable, once you start thinking of invokers as just a part of the wallet software.  After all, MetaMask doesn’t let users run custom code on MetaMask itself, so it makes sense that it won’t let users run custom invokers.
+
+But wait — MetaMask actually *does* let users run custom code.  It’s called [snaps](https://metamask.io/snaps/).  So how does MetaMask let users run custom code, while keeping users safe?
+
+The answer lies in a separation of concerns — there is a MetaMask *kernel* that handles the most security-critical aspects of the wallet, such as storing and signing with private keys.  And then there are “modules” which are snaps that handle the less security-critical tasks, such as displaying notifications.
+
+Since EIP-3074 says nothing about how invokers should be implemented, **the danger is that popular wallets might whitelist only *non-extensible invokers*, leaving no room for innovations from third parties whatsoever.**
+
+### Can there be “snaps” for invokers?
+
+Ideally, an invoker would be architected like MetaMask itself — an “invoker kernel” would handle the core invoker logic, while exposing an “invoker modules” interface for the less security-critical functions.
+
+As an example, consider gas abstraction — the idea that gas can be paid for by a “gas module,” such as a DEX that swaps ERC20s into native gas tokens to enable ERC20 gas payments.  Assuming the invoker kernel is properly designed, a malicious gas module should not be able to steal user assets — the worst it can do is to NOT pay gas.  This is the reason why in ERC-4337, any account can work with any paymaster without trusting each other, thus allowing paymasters to be developed independently of wallets.
+
+The bottom line is, **given a securely designed “invoker kernel,” many aspects of a smart account can be securely modularized**.  That’s what we should strive for with EIP-3074, so that we can **keep users safe while ensuring that account innovations are not monopolized by wallet companies**.
+
+### Conclusions
+
+The greatest strength of EIP-3074, its simplicity, is also its greatest weakness.  If it wasn’t so simple, it wouldn’t have been merged into the protocol.  But because it’s so simple, the application layer has to tackle most of the complexity of AA, opening up a lot of room for mistakes.
+
+This post highlights two particular pitfalls to avoid:
+
+- If we don’t implement validation-execution separation for invokers, it will be hard for a permissionless mempool to exist for EIP-3074 transactions, fragmenting the relayer ecosystem and increasing the risks of censorship.
+- If popular wallets don’t whitelist modular invokers that properly implement separation-of-concerns, users will only have access to a fixed set of account functionalities, severely limiting the potential of account abstraction.
+
+In a follow-up blog post, I will make the case that the best way to avoid these pitfalls is to use EIP-3074 in conjunction with ERC-4337 (and eventually EIP-7560), which will give EOA users the benefits of ERC-4337 “for free”: permissionless mempools, diverse paymasters, modular smart accounts, and more.
+
+At the end of the day, **the future of AA is bright, and all the more so with EIP-3074 bringing AA to EOA users**.  Let’s try to build around EIP-3074 the right way, so that we can preserve the spirit of Ethereum itself: open, innovative, and permissionless.
