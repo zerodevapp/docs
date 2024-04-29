@@ -24,7 +24,7 @@ export default defineConfig({
     </>
   ),
   topNav: [
-    { text: 'Smart Wallet', link: '/smart-wallet/intro', match: '/smart-wallet' },
+    // { text: 'Smart Wallet', link: '/smart-wallet/intro', match: '/smart-wallet' },
     { text: 'SDK', link: '/', match: '/sdk' },
     { text: 'React', link: '/react/getting-started', match: '/react' },
     // { text: 'Kernel', link: '/', match: '/kernel' },
