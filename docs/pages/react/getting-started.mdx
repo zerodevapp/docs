@@ -9,19 +9,19 @@ The relationship between `@zerodev/waas` and `@zerodev/sdk` is similar to the re
 :::code-group
 
 ```bash [npm]
-npm i @zerodev/waas
+npm i @zerodev/waas wagmi viem@2.x @tanstack/react-query
 ```
 
 ```bash [yarn]
-yarn add @zerodev/waas
+yarn add @zerodev/waas wagmi viem@2.x @tanstack/react-query
 ```
 
 ```bash [pnpm]
-pnpm i @zerodev/waas
+pnpm i @zerodev/waas wagmi viem@2.x @tanstack/react-query
 ```
 
 ```bash [bun]
-bun add @zerodev/waas
+bun add @zerodev/waas wagmi viem@2.x @tanstack/react-query
 ```
 
 :::
@@ -31,9 +31,7 @@ bun add @zerodev/waas
 In typical React pattern, `@zerodev/waas` is set up via a provider.  A typical setup may look like this:
 
 ```tsx
-"use client"
 import { ZeroDevProvider } from "@zerodev/waas"
-import "@mantine/core/styles.css"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ReactNode } from "react"
 import { WagmiProvider, createConfig, http } from "wagmi"
