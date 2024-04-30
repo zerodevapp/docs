@@ -91,6 +91,7 @@ Where:
 - `fromToken` is the input token.
 - `fromAmount` is a `bigint` representing the input token amount.  Note that this uses the smallest unit for the token, e.g. Wei for Ether.
 - `toToken` is the output token.
+- `toAddress`: defaults to the account's own address. If specified, it will send the output token to that address instead.
 - `gasToken`: [see below.](#gas-tokens)
 
 ### Entering / Exiting DeFi positions
@@ -126,7 +127,6 @@ To swap tokens across chains, use `sendSwapUserOpCrossChain`.  For example, to s
 const userOpHash = await defiClient.sendSwapUserOpCrossChain({
   fromToken: baseTokenAddresses[mainnet.id].DAI,
   fromAmount: 1_000_000,
-  fromChain: mainnet.id,
 
   toToken: defiTokenAddresses[arbitrum.id]['USDC']['aave-v3'],
   toChainId: arbitrum.id,
@@ -139,7 +139,6 @@ Where:
 
 - `fromToken` is the input token.
 - `fromAmount` is a `bigint` representing the input token amount.  Note that this uses the smallest unit for the token, e.g. Wei for Ether.
-- `fromChainId`: the chain for `fromToken`,
 - `toToken` is the output token.
 - `toChainId`: the chain for `toToken`,
 - `toAddress`: defaults to the account's own address. If specified, it will send the output token to that address instead.
