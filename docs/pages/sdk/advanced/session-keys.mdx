@@ -353,7 +353,7 @@ Here's what each flag means:
 
 ### Batching and Delegatecall
 
-To use session keys with [batching](/sdk/core-api/batch-transactions), specify the following `executorData` when constructing the account:
+To use session keys with [batching](/sdk/core-api/batch-transactions), specify the following `action` when constructing the account:
 
 ```ts
 import { zeroAddress, toFunctionSelector } from "viem"
@@ -363,8 +363,8 @@ const sessionKeyAccount = await createKernelAccount(publicClient, {
   plugins: {
     sudo: ecdsaValidator,
     regular: sessionKeyValidator,
-    executorData: {  // [!code focus]
-      executor: zeroAddress,  // [!code focus]
+    action: {  // [!code focus]
+      address: zeroAddress,  // [!code focus]
       selector: toFunctionSelector(getAbiItem({ abi: KernelAccountAbi, name: "executeBatch" })),  // [!code focus]
     },  // [!code focus]
   },
