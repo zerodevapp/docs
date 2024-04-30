@@ -93,9 +93,16 @@ Where:
 
 ### Entering / Exiting DeFi positions
 
-Entering a DeFi position simply means swapping a token into a DeFi token.  For example, to enter the USDC AAV3 v3 lending vault:
+Entering a DeFi position simply means swapping a token into a DeFi token.
+
+You can get a DeFi token address through the `defiTokenAddresses` constant, which is a map with three keys: `chainId => tokenName => protocolName`.  For example, the DeFi token representing the USDC vault on AAVE v3 on Arbitrum would be `defiTokenAddresses[arbitrum.id]['USDC']['aave-v3']`.  So, to enter the vault:
 
 ```ts
+import { defiTokenAddresses } from "@zerodev/defi"
+import { arbitrum } from "viem/chains"
+
+const chain = arbitrum
+
 const userOpHash = await defiClient.sendSwapUserOp({
   fromToken: baseTokenAddresses[chain.id].USDC,
   fromAmount: 1_000_000,
@@ -113,14 +120,14 @@ Similarly, exiting a DeFi position is just swapping a DeFi token into another to
 To swap tokens across chains, use `sendSwapUserOpCrossChain`.  For example, to swap USDC on Arbitrum to DAI on Polygon:
 
 ```ts
+// Convert mainnet DAI to USDC and lead it through AAVE on USDC
 const userOpHash = await defiClient.sendSwapUserOpCrossChain({
-  fromToken: "USDC",
+  fromToken: baseTokenAddresses[mainnet.id].DAI,
   fromAmount: 1_000_000,
-  fromChain: arbitrum.id,
+  fromChain: mainnet.id,
 
-  toToken: "DAI",
-  toAddress: addressOut,
-  toChainId: polygon.id,
+  toToken: defiTokenAddresses[arbitrum.id]['USDC']['aave-v3'],
+  toChainId: arbitrum.id,
 
   gasToken: "sponsored"
 })
