@@ -49,7 +49,7 @@ Check out [these code examples](https://github.com/zerodevapp/zerodev-examples/t
 
 ### Creating a DeFi client
 
-Start by creating a DeFi client:
+All DeFi APIs are exposed through a "DeFi client":
 
 ```ts
 import { createKernelDefiClient } from "@zerodev/defi"
@@ -163,3 +163,12 @@ The `gasToken` flag specifies how gas is paid for the UserOp.  It can be one of 
 - `toToken`: pays gas in the output token, using a [ERC20 paymaster](/sdk/core-api/pay-gas-with-erc20s).
 - `native`: pays gas in the native token, using the account's balance.
 - You can also specify an `Address` for a ERC20 token, to pay gas with that token using a [ERC20 paymaster](/sdk/core-api/pay-gas-with-erc20s).
+
+### Getting the UserOp without sending
+
+If you want to just construct a UserOp but not send it immediately, use:
+
+- `getSwapUserOp` instead of `sendSwapUserOp`
+- `getSwapUserOpCrossChain` instead of `sendSwapUserOpCrossChain`
+
+If you want to get regular transaction data instead of UserOps (presumably because you want to send the transaction through a EOA), use `getSwapUserOpCrossChain`.
