@@ -120,7 +120,7 @@ Similarly, exiting a DeFi position is just swapping a DeFi token into another to
 To swap tokens across chains, use `sendSwapUserOpCrossChain`.  For example, to swap USDC on Arbitrum to DAI on Polygon:
 
 ```ts
-// Convert mainnet DAI to USDC and lead it through AAVE on USDC
+// Convert mainnet DAI to USDC, and lend it through AAVE on Arbitrum
 const userOpHash = await defiClient.sendSwapUserOpCrossChain({
   fromToken: baseTokenAddresses[mainnet.id].DAI,
   fromAmount: 1_000_000,
