@@ -382,8 +382,8 @@ const sessionKeyAccount = await createKernelAccount(publicClient, {
   plugins: {
     sudo: ecdsaValidator,
     regular: sessionKeyValidator,
-    executorData: { // [!code focus]
-      executor: zeroAddress, // [!code focus]
+    action: { // [!code focus]
+      address: zeroAddress, // [!code focus]
       selector: toFunctionSelector("executeDelegateCall(address, bytes)"), // [!code focus]
     }, // [!code focus]
   },
