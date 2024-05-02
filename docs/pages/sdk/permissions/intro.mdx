@@ -1,4 +1,4 @@
-# Permissions
+# Permissions (Session Keys)
 
 With Kernel, you can assign different permissions to different keys.  Some of these keys might be owned by the owner(s) of the smart account, and some might be short-lived keys that you share with others to delegate transactions.  The latter are also commonly known as "session keys."
 
@@ -59,12 +59,12 @@ Signers specify the keys and the algorithms the keys use.  ZeroDev provides sign
 
 Policies are the conditions under which the keys can be used.  ZeroDev provides the following policies:
 
-- Sudo policy: you can do anything
-- Call policy: you can only call certain contracts or functions (and only with certain params)
-- Gas policy: you can only spend up to X amount of gas
-- Signature policy: you can only sign certain messages
-- Rate limit policy: you can only send UserOps within a given rate limit
-- Timestamp policy: you can only send UserOps within certain timeframes
+- [Sudo policy](/sdk/permissions/policies/sudo): you can do anything
+- [Call policy](/sdk/permissions/policies/call): you can only call certain contracts or functions (and only with certain params)
+- [Gas policy](/sdk/permissions/policies/gas): you can only spend up to X amount of gas
+- [Signature policy](/sdk/permissions/policies/signature): you can only sign certain messages
+- [Rate limit policy](/sdk/permissions/policies/rate-limit): you can only send UserOps within a given rate limit
+- [Timestamp policy](/sdk/permissions/policies/timestamp): you can only send UserOps within certain timeframes
 
 ### Actions
 
@@ -76,4 +76,4 @@ If that's confusing, just forget about actions.  Mostly commonly you will only b
 
 ## Next Steps
 
-[Follow this tutorial to get started with permissions.](/sdk/permissions/getting-started)
+- [Learn to automate transactions for users with permissions.](/sdk/permissions/transaction-automation)

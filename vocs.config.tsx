@@ -136,7 +136,7 @@ export default defineConfig({
             "link": "/sdk/advanced/passkeys"
           },
           {
-            "text": "Session Keys / 1-Click Trading",
+            "text": "Session Keys",
             "link": "/sdk/advanced/session-keys"
           },
           {
@@ -170,16 +170,20 @@ export default defineConfig({
         ],
       },
       {
-        "text": "Permissions",
+        "text": "Permissions (Session Keys)",
         "collapsed": false,
         "items": [
           {
             "text": "Introduction",
             "link": "/sdk/permissions/intro"
           },
+          // {
+          //   "text": "Tutorial: 1-Click Trading",
+          //   "link": "/sdk/permissions/1-click-trading"
+          // },
           {
-            "text": "Getting Started",
-            "link": "/sdk/permissions/getting-started"
+            "text": "Tutorial: Transaction Automation",
+            "link": "/sdk/permissions/transaction-automation"
           },
           {
             "text": "Signers",

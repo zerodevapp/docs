@@ -129,7 +129,8 @@ const userOpHash = await defiClient.sendSwapUserOpCrossChain({
   toToken: defiTokenAddresses[arbitrum.id]['USDC']['aave-v3'],
   toChainId: arbitrum.id,
 
-  gasToken: "sponsored"
+  // Pay gas with input token
+  gasToken: "fromToken"
 })
 ```
 
