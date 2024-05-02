@@ -156,7 +156,7 @@ export default defineConfig({
             "link": "/sdk/advanced/defi"
           },
           {
-            "text": "Parallel Transactions",
+            "text": "Parallel Transactions (2D Nonces)",
             "link": "/sdk/advanced/parallel-orders"
           },
           {
