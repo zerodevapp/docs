@@ -358,13 +358,17 @@ export default defineConfig({
             "link": "/sdk/faqs/use-with-ethers"
           },
           {
+            "text": "Can you use ZeroDev with React Native?",
+            "link": "/sdk/faqs/use-with-react-native"
+          },
+          {
             "text": "Is ZeroDev Audited?",
             "link": "/sdk/faqs/audits"
           },
           {
             "text": "How to use ZeroDev with Gelato",
             "link": "/sdk/faqs/use-with-gelato"
-          }
+          },
         ],
       },
     ],
