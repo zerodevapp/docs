@@ -1,0 +1,169 @@
+# Tutorial -- Transaction Automation
+
+In this tutorial, you will learn how to automate transactions for your users using [session keys](/smart-wallet/permissions/intro).  This is useful when you want to send transactions for your users from your server, for instance.
+
+Refer to [this code example](https://github.com/zerodevapp/zerodev-examples/blob/main/session-keys/transaction-automation.ts) while you follow along the tutorial.  You can run the example by following instructions of [the examples repo](https://github.com/zerodevapp/zerodev-examples).
+
+## Installation
+
+Session keys are enabled through the `@zerodev/permissions` package.  The examples repo already installed this, but normally you would install permissions with:
+
+:::code-group
+
+```bash [npm]
+npm i @zerodev/permissions
+```
+
+```bash [yarn]
+yarn add @zerodev/permissions
+```
+
+```bash [pnpm]
+pnpm i @zerodev/permissions
+```
+
+```bash [bun]
+bun add @zerodev/permissions
+```
+
+:::
+
+## The Architecture of Transaction Automation
+
+In the typical architecture for transaction automation, there's an "owner" and an "agent":
+
+- The "owner" is the entity that controls the user's master key.
+- The "agent" is the entity that automates transactions for the owner.
+
+For instance, your user might be using an embedded wallet (master key) with your frontend, and you might want to automate transactions for your users from your server.  In this case, the frontend would be the "owner" and your server would be the "agent."
+
+From a high level, this is how transaction automation works:
+
+- The agent creates a session key.
+  - At this point, the session key has not been approved by the owner.
+- The agent sends the "address" of the session key to the owner for approval.
+- The owner signs the address and returns the approval (signature) to the agent.
+- The agent can now send transactions for users using the approval and the session key.
+
+## Code Flow
+
+### Agent: creating a session key
+
+From the agent's side, create a [ECDSA signer](/smart-wallet/permissions/signers/ecdsa) as the session key:
+
+```ts
+const sessionPrivateKey = generatePrivateKey()
+
+const sessionKeySigner = await toECDSASigner({
+  signer: privateKeyToAccount(sessionPrivateKey),
+})
+```
+
+Note that if you do not wish to store the private key of the session key, you could use a [remote signer](https://docs.zerodev.app/sdk/advanced/key-storage) instead:
+
+```ts
+const remoteSigner = await toRemoteSigner({
+    apiKey,
+    mode: RemoteSignerMode.Create
+})
+
+const sessionKeySigner = toECDSASigner({
+  signer: remoteSigner,
+})
+```
+
+### Agent: send session key "address" to the owner
+
+For the owner to approve the session key, the agent must send the "address" of the session key to the owner.  Note that the private key is never sent -- it's only the address which is the public key of the session key that's sent.
+
+To obtain the session key address:
+
+```ts
+const sessionKeyAddress = sessionKeySigner.account.address
+```
+
+Send this address to the owner.
+
+### Owner: approving the session key
+
+Now, on the owner side, approve the session key with [policies](/smart-wallet/permissions/intro#policies):
+
+```ts
+const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
+  entryPoint,
+  signer,
+})
+
+// Create an "empty account" as the signer -- you only need the public
+// key (address) to do this.
+const emptyAccount = addressToEmptyAccount(sessionKeyAddress)
+const emptySessionKeySigner = await toECDSASigner({ signer: emptyAccount })
+
+const permissionPlugin = await toPermissionValidator(publicClient, {
+  entryPoint,
+  signer: emptySessionKeySigner,
+  policies: [
+    // your policies
+  ],
+})
+
+const sessionKeyAccount = await createKernelAccount(publicClient, {
+  entryPoint,
+  plugins: {
+    sudo: ecdsaValidator,
+    regular: permissionPlugin,
+  },
+})
+
+const approval = await serializePermissionAccount(sessionKeyAccount)
+```
+
+Now, send the serialized approval back to the agent.
+
+### Agent: using the session key
+
+When the agent wants to use the session key, first recreate the signer.  Presumably, you would've stored the session key somewhere:
+
+```ts
+// Using a stored private key
+const sessionKeySigner = await toECDSASigner({
+  signer: privateKeyToAccount(sessionPrivateKey),
+})
+```
+
+Or if you were using a remote signer:
+
+```ts
+const remoteSignerWithGet = await toRemoteSigner({
+    apiKey,
+    keyAddress: remoteSignerAddress // you should've stored this
+    mode: RemoteSignerMode.Get
+})
+
+const sessionKeySigner = toECDSASigner({
+  signer: remoteSigner,
+})
+```
+
+Now create an account object by combining the approval (which you should've stored somewhere) with the `sessionKeySigner`:
+
+```ts
+const sessionKeyAccount = await deserializePermissionAccount(
+  publicClient,
+  entryPoint,
+  approval,
+  sessionKeySigner
+)
+```
+
+Finally, [construct a Kernel client](https://docs.zerodev.app/sdk/core-api/create-account#create-an-account-client) as usual:
+
+```ts
+const kernelClient = createKernelAccountClient({
+  account: sessionKeyAccount,
+
+  // the other params
+})
+```
+
+Now you can send transactions with the Kernel client.

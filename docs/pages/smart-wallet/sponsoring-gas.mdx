@@ -1,0 +1,57 @@
+# Sponsoring Gas
+
+You can sponsor gas for your users so they don't have to acquire gas tokens (e.g. ETH) before using your app.
+
+## How to pay for gas
+
+When you sponsor gas through ZeroDev, we "front" the gas for you, and then charge your credit card at the end of your billing cycle.  If you prefer to pay upfront, you can also purchase gas credits from us.
+
+## Set up gas policies
+
+To start sponsoring gas, you need to set up "gas policies."  Gas policies are security measures to ensure that you don't overspend on gas.
+
+You can set up gas policies on the ZeroDev dashboard or through the admin API.  [Read this document to learn how to set up gas policies.](/meta-infra/gas-policies)
+
+## React API
+
+Set the `paymaster` param when fetching the `kernelClient` through `useKernelClient`:
+
+```ts
+```
+
+## Core API
+
+:::info
+Check out [a complete example here](https://github.com/zerodevapp/zerodev-examples/blob/main/create-account/main.ts).
+:::
+
+When [creating an account](/smart-wallet/creating-wallets), you can specify a `sponsorUserOperation` function when you create the account client.
+
+The `sponsorUserOperation` function essentially takes a UserOp and then returns a UserOp with the `paymasterAndData` field set.  You can use the `createZeroDevPaymasterClient` helper function:
+
+```typescript
+import { http } from "viem"
+import { ENTRYPOINT_ADDRESS_V07 } from "permissionless"
+import { createZeroDevPaymasterClient, createKernelAccountClient } from "@zerodev/sdk"
+
+const entryPoint = ENTRYPOINT_ADDRESS_V07
+
+const kernelClient = createKernelAccountClient({
+  // other options...
+
+  middleware: {
+    sponsorUserOperation: async ({ userOperation }) => {
+      const zerodevPaymaster = createZeroDevPaymasterClient({
+        chain,
+        entryPoint,
+        // Get this RPC from ZeroDev dashboard
+        transport: http(PAYMASTER_RPC),
+      })
+      return zerodevPaymaster.sponsorUserOperation({
+        userOperation,
+        entryPoint,
+      })
+    }
+  }
+})
+```

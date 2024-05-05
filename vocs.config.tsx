@@ -24,7 +24,7 @@ export default defineConfig({
     </>
   ),
   topNav: [
-    // { text: 'Smart Wallet', link: '/smart-wallet/intro', match: '/smart-wallet' },
+    { text: 'Smart Wallet', link: '/smart-wallet/intro', match: '/smart-wallet' },
     { text: 'SDK', link: '/', match: '/sdk' },
     { text: 'React', link: '/react/getting-started', match: '/react' },
     // { text: 'Kernel', link: '/', match: '/kernel' },
@@ -402,20 +402,34 @@ export default defineConfig({
         ],
       },
       {
+        "text": "Gas",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Sponsoring Gas",
+            "link": "/smart-wallet/sponsoring-gas"
+          },
+          {
+            "text": "Paying Gas in ERC20s",
+            "link": "/smart-wallet/pay-gas-in-erc20s"
+          },
+          {
+            "text": "Estimating Gas",
+            "link": "/smart-wallet/estimating-gas"
+          },
+        ],
+      },
+      {
         "text": "Transacting",
         "collapsed": false,
         "items": [
           {
-            "text": "Sponsoring Gas for Users",
-            "link": "/smart-wallet/gas"
-          },
-          {
-            "text": "Paying Gas in ERC20",
-            "link": "/smart-wallet/gas"
+            "text": "Sending Transactions",
+            "link": "/smart-wallet/sending-transactions"
           },
           {
             "text": "Batching Transactions",
-            "link": "/smart-wallet/batching"
+            "link": "/smart-wallet/batching-transactions"
           },
           {
             "text": "One-click Trading",
@@ -426,24 +440,20 @@ export default defineConfig({
             "link": "/smart-wallet/transaction-automation"
           },
           {
+            "text": "Delegatecall",
+            "link": "/smart-wallet/delegatecall"
+          },
+          {
+            "text": "Parallel Transactions",
+            "link": "/smart-wallet/parallel-transactions"
+          },
+          {
             "text": "DeFi Integrations",
             "link": "/smart-wallet/smart-wallet-integrations"
           },
           {
-            "text": "Intents",
-            "link": "/smart-wallet/transaction-automation"
-          },
-          {
-            "text": "Estimating Gas",
-            "link": "/smart-wallet/estimating-gas"
-          },
-          {
-            "text": "Delegatecall",
-            "link": "/smart-wallet/estimating-gas"
-          },
-          {
-            "text": "Send Transactions in Parallel",
-            "link": "/smart-wallet/parallel-transactions"
+            "text": "Using the Wallet on Other Apps",
+            "link": "/smart-wallet/wallet-connect"
           },
         ],
       },
@@ -462,28 +472,6 @@ export default defineConfig({
         ],
       },
       {
-        "text": "Offramp",
-        "collapsed": false,
-        "items": [
-          {
-            "text": "Exporting Assets",
-            "link": "/smart-wallet/offramp"
-          },
-          {
-            "text": "Fiat Offramp",
-            "link": "/smart-wallet/offramp"
-          },
-          {
-            "text": "Wallet Connect",
-            "link": "/smart-wallet/offramp"
-          },
-          {
-            "text": "MetaMask Snap",
-            "link": "/smart-wallet/offramp"
-          },
-        ],
-      },
-      {
         "text": "Reliability",
         "collapsed": false,
         "items": [
@@ -492,6 +480,90 @@ export default defineConfig({
           },
           {
             "text": "Fallback Bundlers & Paymasters",
+          },
+        ],
+      },
+      {
+        "text": "Permissions (Session Keys)",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Introduction",
+            "link": "/smart-wallet/permissions/intro"
+          },
+          // {
+          //   "text": "Tutorial: 1-Click Trading",
+          //   "link": "/sdk/permissions/1-click-trading"
+          // },
+          {
+            "text": "Tutorial: Transaction Automation",
+            "link": "/smart-wallet/permissions/transaction-automation"
+          },
+          {
+            "text": "Signers",
+            "collapsed": false,
+            "items": [
+              {
+                "text": "ECDSA",
+                "link": "/smart-wallet/permissions/signers/ecdsa"
+              },
+              {
+                "text": "Passkeys",
+                "link": "/smart-wallet/permissions/signers/passkeys"
+              },
+              {
+                "text": "Multisig",
+                "link": "/smart-wallet/permissions/signers/multisig"
+              },
+              {
+                "text": "Build your own signer",
+                "link": "/smart-wallet/permissions/signers/build-your-own"
+              },
+            ],
+          },
+          {
+            "text": "Policies",
+            "collapsed": false,
+            "items": [
+              {
+                "text": "Sudo policy",
+                "link": "/smart-wallet/permissions/policies/sudo"
+              },
+              {
+                "text": "Call policy",
+                "link": "/smart-wallet/permissions/policies/call"
+              },
+              {
+                "text": "Gas policy",
+                "link": "/smart-wallet/permissions/policies/gas"
+              },
+              {
+                "text": "Signature policy",
+                "link": "/smart-wallet/permissions/policies/signature"
+              },
+              {
+                "text": "Rate Limit policy",
+                "link": "/smart-wallet/permissions/policies/rate-limit"
+              },
+              {
+                "text": "Timestamp policy",
+                "link": "/smart-wallet/permissions/policies/timestamp"
+              },
+              {
+                "text": "Build your own policy",
+                "link": "/smart-wallet/permissions/policies/build-your-own"
+              },
+            ],
+          },
+          {
+            "text": "Actions",
+            "collapsed": true,
+            "items": [
+              {
+                "text": "Build your own action",
+                "link": "/smart-wallet/permissions/actions/build-your-own"
+              },
+            ],
           },
         ],
       },

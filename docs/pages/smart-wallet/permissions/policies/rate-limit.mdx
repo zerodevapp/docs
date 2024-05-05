@@ -1,0 +1,31 @@
+# Rate Limit Policy
+
+The rate limit policy specifies the frequency at which the signer is allowed to send UserOps.
+
+## API
+
+```ts
+import { toRateLimitPolicy } from "@zerodev/permissions/policies"
+
+// In this example, the signer can send one UserOp per month
+const rateLimitPolicy = toRateLimitPolicy({
+  count: 1,
+  interval: 60 * 60 * 24 * 30,  // one month in seconds
+})
+
+const validator = toPermissionValidator(publicClient, {
+  entryPoint,
+  signer: someSigner,
+  policies: [
+    rateLimitPolicy,
+    // ...other policies
+  ],
+})
+```
+
+Arguments to `toRateLimitPolicy`:
+
+- `count`: the number of times the signer can send UserOps in the given internal.
+- (optional) `interval`: the length of the interval, in seconds.
+  - If not specified, then the interval is infinite, which means that you can use `count` to specify the number of times the signer can send UserOps in total.
+- (optional) `startAt`: the starting UNIX timestamp for when the rate limit should take effect.  Before that, the signer cannot send any UserOps.
