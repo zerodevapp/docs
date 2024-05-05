@@ -30,7 +30,7 @@ import { createZeroDevPaymasterClient, createKernelAccountClient } from "@zerode
 const entryPoint = ENTRYPOINT_ADDRESS_V07
 
 const kernelClient = createKernelAccountClient({
-  // other options
+  // other options...
 
   middleware: {
     sponsorUserOperation: async ({ userOperation }) => {
