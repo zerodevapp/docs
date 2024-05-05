@@ -1,0 +1,145 @@
+# Quickstart -- Core SDK
+
+Create a new project with `npm` (or whatever package manager you use):
+
+```bash
+mkdir zerodev
+cd zerodev
+npm init -y
+```
+
+Install the ZeroDev SDK and presets:
+
+```bash
+npm i @zerodev/sdk @zerodev/ecdsa-validator permissionless
+```
+
+Install dev packages for TypeScript:
+
+```bash
+npm i --save-dev @types/node tslib
+```
+
+Create the following `tsconfig.json` (TypeScript config):
+
+```json
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "declaration": true,
+    "outDir": "./lib",
+    "strict": true,
+    "esModuleInterop": true
+  },
+  "include": ["./**/*.ts"]
+}
+```
+
+Create a script `index.ts` with the following code:
+
+```ts
+import { createKernelAccount, createKernelAccountClient, createZeroDevPaymasterClient } from "@zerodev/sdk"
+import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
+import { http, encodeFunctionData, parseAbi, createPublicClient } from "viem"
+import { generatePrivateKey, privateKeyToAccount } from "viem/accounts"
+import { sepolia } from "viem/chains"
+import { ENTRYPOINT_ADDRESS_V07 } from "permissionless"
+
+// The NFT contract we will be interacting with
+const contractAddress = '0x34bE7f35132E97915633BC1fc020364EA5134863'
+const contractABI = parseAbi([
+  'function mint(address _to) public',
+  'function balanceOf(address owner) external view returns (uint256 balance)'
+])
+
+const PROJECT_ID = '98fd43a8-fb2f-4948-a7ae-069f53969f73'
+const BUNDLER_RPC = `https://rpc.zerodev.app/api/v2/bundler/${PROJECT_ID}`
+const PAYMASTER_RPC = `https://rpc.zerodev.app/api/v2/paymaster/${PROJECT_ID}`
+
+const chain = sepolia
+const entryPoint = ENTRYPOINT_ADDRESS_V07
+
+const main = async () => {
+  // Construct a signer
+  const privateKey = generatePrivateKey()
+  const signer = privateKeyToAccount(privateKey)
+
+  // Construct a public client
+  const publicClient = createPublicClient({
+    transport: http(BUNDLER_RPC),
+  })
+
+  // Construct a validator
+  const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
+    signer,
+    entryPoint,
+  })
+
+  // Construct a Kernel account
+  const account = await createKernelAccount(publicClient, {
+    plugins: {
+      sudo: ecdsaValidator,
+    },
+    entryPoint,
+  })
+
+  // Construct a Kernel account client
+  const kernelClient = createKernelAccountClient({
+    account,
+    chain,
+    entryPoint,
+    bundlerTransport: http(BUNDLER_RPC),
+    middleware: {
+      sponsorUserOperation: async ({ userOperation }) => {
+        const zerodevPaymaster = createZeroDevPaymasterClient({
+          chain,
+          entryPoint,
+          transport: http(PAYMASTER_RPC),
+        })
+        return zerodevPaymaster.sponsorUserOperation({
+          userOperation,
+          entryPoint,
+        })
+      },
+    },
+  })
+
+  const accountAddress = kernelClient.account.address
+  console.log("My account:", accountAddress)
+
+  // Send a UserOp
+  console.log('Minting NFT...')
+  await kernelClient.sendTransaction({
+    to: contractAddress,
+    value: BigInt(0),
+    data: encodeFunctionData({
+      abi: contractABI,
+      functionName: "mint",
+      args: [accountAddress],
+    }),
+  })
+
+  console.log(`NFT minted: https://sepolia.etherscan.io/address/${accountAddress}`)
+}
+
+main()
+```
+
+Run it:
+
+```bash
+npx ts-node index.ts
+```
+
+You should see an output like this:
+
+```txt
+My account: 0x86611F3465Bd82c03C03b5bC1C362e22567e92Bc
+Minting NFT...
+See NFT here: https://mumbai.polygonscan.com/address/0x86611F3465Bd82c03C03b5bC1C362e22567e92Bc#nfttransfers
+```
+
+Congrats -- you just minted your first gasless NFT with ZeroDev!
+
+In this example, you used a public ZeroDev API key.  Now read [the tutorial](/sdk/getting-started/tutorial) to see how you can set up your own ZeroDev project.

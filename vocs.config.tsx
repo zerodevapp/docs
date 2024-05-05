@@ -382,8 +382,12 @@ export default defineConfig({
             "link": "/smart-wallet/intro"
           },
           {
-            "text": "Setup",
-            "link": "/smart-wallet/setup"
+            "text": "Quickstart: React",
+            "link": "/smart-wallet/quickstart-react"
+          },
+          {
+            "text": "Quickstart: Core SDK",
+            "link": "/smart-wallet/quickstart-core"
           },
         ],
       },
@@ -449,7 +453,7 @@ export default defineConfig({
           },
           {
             "text": "DeFi Integrations",
-            "link": "/smart-wallet/smart-wallet-integrations"
+            "link": "/smart-wallet/defi-integrations"
           },
           {
             "text": "Using the Wallet on Other Apps",
@@ -564,16 +568,6 @@ export default defineConfig({
                 "link": "/smart-wallet/permissions/actions/build-your-own"
               },
             ],
-          },
-        ],
-      },
-      {
-        "text": "Customization",
-        "collapsed": false,
-        "items": [
-          {
-            "text": "Customize Styling",
-            "link": "/smart-wallet/customize"
           },
         ],
       },
