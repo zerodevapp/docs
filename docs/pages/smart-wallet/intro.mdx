@@ -6,7 +6,7 @@ By "smart," we refer to the fact that we use account abstraction (AA), including
 
 ## How ZeroDev improves UX
 
-Web3 UX can be roughly divided into three areas: keys, transactions, and gas.
+Web3 UX can be roughly divided into three areas: keys, gas, and transactions.
 
 ### Keys
 
@@ -15,6 +15,12 @@ Traditionally, keys are represented as 12-word seed phrases that users are expec
 With ZeroDev, you can support not just traditional wallets like MetaMask, but also **social signins** and **passkeys**, including a flexible multisig system.
 
 Furthermore, ZeroDev supports account recovery, so your users can recover their accounts even if they lose their login credentials.
+
+### Gas
+
+Gas is a huge barrier to onboarding.  If your users do not happen to have the native gas token (e.g. ETH) in their wallet, they cannot transact on your app.
+
+With ZeroDev, gas can be sponsored, or paid in any ERC20 tokens.
 
 ### Transactions
 
@@ -26,7 +32,7 @@ Web3 transactions typically work like this:
 - Every transaction does one thing.
 - You must wait for a previous transaction to complete before any future transactions can complete.
 
-With ZeroDev, all these assumptions are no longer true:
+With ZeroDev, transactions gain superpowers:
 
 - You can send transactions for your users.
 - The user does not need to confirm every transaction.
@@ -34,15 +40,9 @@ With ZeroDev, all these assumptions are no longer true:
 - Transactions can be batched.
 - Transactions can be processed in parallel.
 
-### Gas
-
-Gas is a huge barrier to onboarding.  If your users do not happen to have the native gas token (e.g. ETH) in their wallet, they cannot transact on your app.
-
-With ZeroDev, gas can be sponsored, or paid in any ERC20 tokens.
-
 ## How ZeroDev fits into the wallet stack
 
-ZeroDev can be used as a full-stack embedded wallet solution, or it can be used alongside a traditional (non-AA) embedded wallet to provide AA functionalities.
+ZeroDev can be used as a full-stack embedded wallet solution, or it can be used alongside a traditional embedded wallet such as Privy and Dynamic to provide AA functionalities.
 
 ## Next Steps
 
@@ -50,4 +50,4 @@ There are two ways to use ZeroDev:
 
 - If you are building a React-based application, we recommend using the `@zerodev/waas` package.  [Click here to get started](/smart-wallet/quickstart-react).
 
-- If you are building a non-React app or if you simply prefer lower-level control, use the core SDK `@zerodev/sdk`.  [Click here to get started](/smart-wallet/quickstart-core).
+- If you are building a non-React app or if you prefer lower-level control, use the core SDK `@zerodev/sdk`.  [Click here to get started](/smart-wallet/quickstart-core).

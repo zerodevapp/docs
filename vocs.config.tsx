@@ -389,6 +389,10 @@ export default defineConfig({
             "text": "Quickstart: Core SDK",
             "link": "/smart-wallet/quickstart-core"
           },
+          {
+            "text": "Setting up ZeroDev Projects",
+            "link": "/smart-wallet/setting-up-zerodev-projects"
+          },
         ],
       },
       {
