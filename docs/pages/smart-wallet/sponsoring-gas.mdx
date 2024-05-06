@@ -17,6 +17,15 @@ You can set up gas policies on the ZeroDev dashboard or through the admin API.  
 Set the `paymaster` param when fetching the `kernelClient` through `useKernelClient`:
 
 ```ts
+import { useKernelClient } from "@zerodev/waas"
+
+function App() {
+  const { kernelClient } = useKernelClient({
+    paymaster: {
+      type: "SPONSOR"
+    }
+  })
+}
 ```
 
 ## Core API
