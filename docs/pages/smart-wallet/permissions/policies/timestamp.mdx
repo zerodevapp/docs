@@ -1,0 +1,29 @@
+# Timestamp Policy
+
+The timestamp policy specifies the start and end time for when the signer is valid.
+
+## API
+
+```ts
+import { toTimestampPolicy } from "@zerodev/permissions/policies"
+
+// In this example, the signer can send one UserOp per month
+const timestampPolicy = toTimestampPolicy({
+  validAfter: 1704085200,  // January 1, 2024 12:00 AM UTC
+  validUntil: 1735707599,  // December 31, 2024 11:59 PM UTC
+})
+
+const validator = toPermissionValidator(publicClient, {
+  entryPoint,
+  signer: someSigner,
+  policies: [
+    timestampPolicy,
+    // ...other policies
+  ],
+})
+```
+
+Arguments to `toTimestampPolicy`:
+
+- `validAfter`: the time after which the signer becomes valid.  If not specified, the signer is immediately valid.
+- `validUntil`: the time before which the signer is valid.  If not specified, the signer never expires.

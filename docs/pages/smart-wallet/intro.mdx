@@ -1,25 +1,53 @@
 # ZeroDev Smart Wallet
 
-ZeroDev is a smart embedded wallet for Web3 projects, especially DeFi projects.  By leveraging account abstraction (AA), ZeroDev enables you to build safe, friendly, and powerful experiences for your users.
+ZeroDev is a **smart embedded wallet** for building user-friendly Web3 experiences, particularly for DeFi applications.
 
-ZeroDev focuses on the following areas:
+By "smart," we refer to the fact that we use account abstraction (AA), including ERC-4337 for smart contract accounts (aka "smart accounts") and EIP-3074 for EOAs.
 
-- Onboarding: through on-chain passkeys and social signins
-  - signing
-  - importing assets: easily help EOA users deposit assets into your DApp-specific smart accounts
+## How ZeroDev improves UX
 
-- Transaction
-  - Gas abstraction
-  - Batch execution
-  - One-click trading
-  - Transaction automation
-  - DeFi integrations
-  - Parallel orders
+Web3 UX can be roughly divided into three areas: keys, gas, and transactions.
 
-- Security
-  - recovery
-  - multisig
+### Keys
 
-- Offramp & interoperability
-  - wallet connect
-  - export assets
+Traditionally, keys are represented as 12-word seed phrases that users are expected to diligently record and secure.  This is very poor UX and where the majority of users fall off.
+
+With ZeroDev, you can support not just traditional wallets like MetaMask, but also **social signins** and **passkeys**, including a flexible multisig system.
+
+Furthermore, ZeroDev supports account recovery, so your users can recover their accounts even if they lose their login credentials.
+
+### Gas
+
+Gas is a huge barrier to onboarding.  If your users do not happen to have the native gas token (e.g. ETH) in their wallet, they cannot transact on your app.
+
+With ZeroDev, gas can be sponsored, or paid in any ERC20 tokens.
+
+### Transactions
+
+Web3 transactions typically work like this:
+
+- The user initiates every transactions.
+- The user confirms every transaction.
+- Every transaction can do anything (which means a single bad transaction can steal your tokens).
+- Every transaction does one thing.
+- You must wait for a previous transaction to complete before any future transactions can complete.
+
+With ZeroDev, transactions gain superpowers:
+
+- You can send transactions for your users.
+- The user does not need to confirm every transaction.
+- Transactions can be scoped with "permissions."
+- Transactions can be batched.
+- Transactions can be processed in parallel.
+
+## How ZeroDev fits into the wallet stack
+
+ZeroDev can be used as a full-stack embedded wallet solution, or it can be used alongside a traditional embedded wallet such as Privy and Dynamic to provide AA functionalities.
+
+## Next Steps
+
+There are two ways to use ZeroDev:
+
+- If you are building a React-based application, we recommend using the `@zerodev/waas` package.  [Click here to get started](/smart-wallet/quickstart-react).
+
+- If you are building a non-React app or if you prefer lower-level control, use the core SDK `@zerodev/sdk`.  [Click here to get started](/smart-wallet/quickstart-core).

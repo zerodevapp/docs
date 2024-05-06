@@ -1,0 +1,34 @@
+# Delegatecall
+
+:::warning
+`delegatecall` is very dangerous.  Unless you know exactly what you are doing, don't do it, or you might risk losing all your funds.
+:::
+
+`delegatecall` is a powerful EVM opcode that allows the calling contract to execute code in another contract, while keeping the storage context.  [You can read more about `delegatecall` here](https://solidity-by-example.org/delegatecall/).
+
+## Core API
+
+:::info
+Check out [a complete example here](https://github.com/zerodevapp/zerodev-examples/blob/main/delegatecall/main.ts).
+:::
+
+
+To send a UserOp that uses `delegatecall`, simply specify the `callType` of the UserOp:
+
+
+```typescript
+const userOpHash = await kernelClient.sendUserOperation({
+  userOperation: {
+    callData: await kernelClient.account.encodeCallData({
+      to: targetAdress,
+      data: callData,
+      value: 0n,
+      callType: "delegatecall",
+    }),
+  },
+})
+```
+
+## React API
+
+TODO

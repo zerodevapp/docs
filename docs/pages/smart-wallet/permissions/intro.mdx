@@ -1,0 +1,79 @@
+# Permissions (Session Keys)
+
+With Kernel, you can assign different permissions to different keys.  Some of these keys might be owned by the owner(s) of the smart account, and some might be short-lived keys that you share with others to delegate transactions.  The latter are also commonly known as "session keys."
+
+To set up permissions for a key, you must answer three questions: who, when, and what.
+
+- **Who** (what key) can perform the action?
+- **When** (under what condition) can the action be performed?
+- **What** is the action anyways?
+
+These three questions correspond to three types of "permissions plugins":
+
+- **Signers** (who) specify the key and the algorithm (ECDSA, WebAuthn) it uses.
+- **Policies** (when) specify the *conditions* under which the keys can be used.  Some example conditions are:
+  - Only if interacting with Uniswap
+  - Only if spending USDC
+  - Only once a month
+- **Actions** (what) specify the execution function the key uses.
+
+## Composing Permissions
+
+Kernel is the first smart account to support *composable permissions*.  That is, you can build up fine-grained permissions from putting together signers, policies, and actions.  Here's the formula:
+
+```
+Permission = 1 signer + N policies + 1 action
+```
+
+In pseudo-code, this is what it looks like:
+
+```ts
+const account = createKernelAccount({
+  signer: passkeySigner,
+  policies: [
+    onlyUSDC,
+    onlyUniswap,
+    oncePerMonth,
+  ],
+  action,
+})
+```
+
+Here, the `signer` will be able to perform `action` if all `policies` are met.
+
+Now let's dive into these plugin types.
+
+## Permission Plugins
+
+Because permissions are plugins, **you can write your own permissions** if the default ones provided by ZeroDev don't meet your needs.
+
+### Signers
+
+Signers specify the keys and the algorithms the keys use.  ZeroDev provides signers for:
+
+- ECDSA
+- WebAuthn (passkeys)
+- Multisig
+
+### Policies
+
+Policies are the conditions under which the keys can be used.  ZeroDev provides the following policies:
+
+- [Sudo policy](/smart-wallet/permissions/policies/sudo): you can do anything
+- [Call policy](/smart-wallet/permissions/policies/call): you can only call certain contracts or functions (and only with certain params)
+- [Gas policy](/smart-wallet/permissions/policies/gas): you can only spend up to X amount of gas
+- [Signature policy](/smart-wallet/permissions/policies/signature): you can only sign certain messages
+- [Rate limit policy](/smart-wallet/permissions/policies/rate-limit): you can only send UserOps within a given rate limit
+- [Timestamp policy](/smart-wallet/permissions/policies/timestamp): you can only send UserOps within certain timeframes
+
+### Actions
+
+Actions are arbitrary functions that the smart account will `delegatecall` to.  They give you perfect flexibility over the execution logic.
+
+Note that actions are NOT to be confused with the calls you actually want to execute.  For example, if you want to interact with Uniswap, that's just the call you want to execute.  "Action" here specifically refers to the execution function by which Uniswap is called.
+
+If that's confusing, just forget about actions.  Mostly commonly you will only be setting up signers and policies, and the `action` will default to Kernel's default `execute()` function, which is enough for most needs.
+
+## Next Steps
+
+- [Learn to automate transactions for users with permissions.](/smart-wallet/permissions/transaction-automation)
