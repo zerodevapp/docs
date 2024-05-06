@@ -23,17 +23,48 @@ import { useKernelClient } from "@zerodev/waas"
 
 function App() {
   const { kernelClient } = useKernelClient({
-    paymaster: {
-      type: "ERC20",
-      gasToken: "USDC"
-    }
+    paymaster: { type: "ERC20", gasToken: "USDC" }
   })
 }
 ```
 
 If you have not approved tokens for the paymaster, you also need to do this:
 
-```ts
+```tsx
+import { parseEther, http } from "viem";
+import { useKernelClient, useSendTransaction } from "@zerodev/waas";
+import { 
+  gasTokenAddresses, 
+  getERC20PaymasterApproveCall, 
+  createZeroDevPaymasterClient 
+} from "@zerodev/sdk"
+
+function App() {
+  const { kernelClient } = useKernelClient({
+    paymaster: { type: "ERC20", gasToken: "USDC" }
+  });
+  const { write } = useSendTransaction({
+    paymaster: { type: "SPONSOR" }
+  })
+
+  const approve = async () => { // [!code focus]
+    const paymasterClient = createZeroDevPaymasterClient({ // [!code focus]
+      chain: chain, // [!code focus]
+      entryPoint: kernelClient?.account.entryPoint, // [!code focus]
+      transport: http('ZERODEV_PAYMASTER_RPC'), // get the RPC on ZeroDev dashboard // [!code focus]
+    }) // [!code focus]
+     
+    const approveTx = await getERC20PaymasterApproveCall(paymasterClient, { // [!code focus]
+      gasToken: gasTokenAddresses[chain.id]['USDC'], // [!code focus]
+      approveAmount: parseEther('0.1'), // [!code focus]
+    });  // [!code focus]
+    write([approveTx]) // [!code focus]
+  } // [!code focus]
+
+  return (
+    <button onClick={() => approve()}>Approve</button>
+  )
+}
 ```
 
 ## Core API
