@@ -18,6 +18,36 @@ Check out this [code example](https://github.com/zerodevapp/waas-examples/tree/m
 ### Passkeys
 
 ```ts
+import { useCreateKernelClientPasskey } from "@zerodev/waas"
+
+function App() {
+  const { connectRegister, connectLogin, isPending } = useCreateKernelClientPasskey(
+    { version: "v3" }
+  );
+
+  return (
+    <div>
+      <button
+        disabled={isPending}
+        onClick={() => {
+          // username of the passkey
+          connectRegister({ username: "KERNEL_USER_NAME" }); 
+        }}
+      >
+        Register
+      </button>
+      <button 
+        disabled={isPending}
+        onClick={() => {
+          connectLogin();
+        }}
+      >
+        Login
+      </button>
+    </div>
+  )
+}
+
 ```
 
 ### Socials
@@ -28,6 +58,24 @@ Check out this [code example](https://github.com/zerodevapp/waas-examples/tree/m
 ### EOA
 
 ```ts
+import { useCreateKernelClientEOA } from "@zerodev/waas"
+import { useConnect } from "wagmi"
+
+function App() {
+  const { connectors } = useConnect();
+  const { connect, isPending } = useCreateKernelClientEOA({ version: "v3" });
+
+  return (
+    <button
+      disabled={isPending}
+      onClick={() => {
+        connect({ connector: connectors[0] })
+      }} 
+    >
+      {"Create Smart Account"}
+    </button>
+  )
+}
 ```
 
 ## Core SDK

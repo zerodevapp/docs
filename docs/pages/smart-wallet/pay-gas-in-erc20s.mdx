@@ -19,6 +19,16 @@ Let's go through these two steps next.  We will be using mainnet USDC in the fol
 Set the `paymaster` param when fetching the `kernelClient` through `useKernelClient`:
 
 ```ts
+import { useKernelClient } from "@zerodev/waas"
+
+function App() {
+  const { kernelClient } = useKernelClient({
+    paymaster: {
+      type: "ERC20",
+      gasToken: "USDC"
+    }
+  })
+}
 ```
 
 If you have not approved tokens for the paymaster, you also need to do this:

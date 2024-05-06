@@ -23,6 +23,34 @@ To send UserOps in parallel, simply assign them with different nonce keys.
 When sending UserOps with `useSendUserOperation` or `useSendUserOperationWithSession`, you can specify a `nonceKey` which is a string.
 
 ```tsx
+import { useSendUserOperation, useKernelClient } from '@zerodev/waas'
+import { parseAbi } from 'viem'
+ 
+function App() {
+  const { write } = useSendUserOperation({
+    nonceKey: '0'
+  })
+  const { address } = useKernelClient()
+  const abi = parseAbi(['function mint(address _to) public'])
+ 
+  return (
+    <button
+      onClick={() =>
+        write([
+          {
+            address: '0x34bE7f35132E97915633BC1fc020364EA5134863',
+            abi: abi,
+            functionName: "mint",
+            args: [address],
+            value: 0n,
+          },
+        ])
+      }
+    >
+      Send UserOp
+    </button>
+  )
+}
 ```
 
 UserOps with the same `nonceKey` will be ordered sequentially.  UserOps with different `nonceKey`s will be ordered in parallel.  All UserOps use a nonceKey of `0` by default.
