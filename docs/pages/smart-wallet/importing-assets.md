@@ -9,19 +9,6 @@ ZeroDev works with any fiat onramp solution -- you simply specify the smart wall
 
 In this doc, we describe how to use ZeroDev's routing function to help users transfer their assets from another wallet (presumably an EOA) into the smart account.  We support both same-chain and cross-chain transfers.
 
-## SDK
+## React API
 
-```ts
-const assetList = listAssets(eoa)
-
-const manager = makeImportManager({
-  sourceAsset: '0x',
-  sourceChain: '',
-})
-```
-
-## Hooks
-
-- Pick source assets
-- Pick target assets
-- Execute
+## Core API
