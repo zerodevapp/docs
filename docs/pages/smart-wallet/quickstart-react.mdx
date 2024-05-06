@@ -1,1 +1,138 @@
 # Quickstart -- React
+
+## 1. Create a next project
+Please follow the [installation](https://nextjs.org/docs/getting-started/installation) to create a next proejct
+```bash=
+npx create-next-app@latest
+```
+
+## 2. Install the required packages.
+:::code-group
+
+```bash [npm]
+npm install @zerodev/waas wagmi viem@2.x @tanstack/react-query
+```
+
+```bash [pnpm]
+pnpm add @zerodev/waas wagmi viem@2.x @tanstack/react-query
+```
+
+```bash [yarn]
+yarn add @zerodev/waas wagmi viem@2.x @tanstack/react-query
+```
+
+```bash [bun]
+bun install @zerodev/waas wagmi viem@2.x @tanstack/react-query
+```
+
+:::
+
+## 3. Setup wagmi config and provider
+Please follow wagmi's instruction to setup [wagmi config](https://wagmi.sh/react/getting-started)
+
+## 4. Setup context provider
+```ts filename=Providers.tsx // [Providers.tsx]
+import { sepolia } from "wagmi/chains"
+import { ZeroDevProvider } from "@zerodev/waas"
+
+function Providers({ children }: { children: React.ReactNode}) {
+  const ZERODEV_PROJECT_ID = '98fd43a8-fb2f-4948-a7ae-069f53969f73'
+
+  return (
+    // Ensure ZeroDevProvider is nested within wagmi's provider
+    <ZeroDevProvider appId={ZERODEV_PROJECT_ID} chain={sepolia}> // [!code focus]
+      {children}
+    </ZeroDevProvider> // [!code focus]
+  )
+}
+```
+
+## 5. Use ZeroDev waas
+
+### Create Smart Account
+
+```tsx filename=page.tsx // [page.tsx]
+import { useCreateKernelClientEOA } from "@zerodev/waas"
+import { useConnect } from "wagmi"
+
+function App() {
+  const { connectors } = useConnect();
+  const { connect, isPending } = useCreateKernelClientEOA({ version: "v3" });
+
+  return (
+    <button
+      disabled={isPending}
+      onClick={() => {
+        connect({ connector: connectors[0] })
+      }} 
+    >
+      {isPending ? 'Connecting...' : 'Create Smart Account'}
+    </button>
+  )
+}
+```
+
+### Get Smart Account Address
+
+```tsx filename=page.tsx // [page.tsx]
+import { useKernelClient } from "@zerodev/waas"
+
+function App() {
+  const { address } = useKernelClient()
+
+  return (
+    /* ...Create Smart Account */
+    <p>{`Smart Account Address: ${address}`}</p>
+  )
+}
+```
+
+### Send Sponsored User Operation
+
+```tsx filename=page.tsx // [page.tsx]
+import { parseAbi } from "viem"
+import { useKernelClient, useSendUserOperation } from "@zerodev/waas"
+
+function App() {
+  const { address } = useKernelClient()
+  const { data: userOpHash, write, isPending } = useSendUserOperation({
+    paymaster: {
+      type: "SPONSOR"
+    }
+  })
+  const tokenAddress = "0x3870419Ba2BBf0127060bCB37f69A1b1C090992B"
+  const abi = parseAbi(["function mint(address _to, uint256 amount) public"])
+
+  return (
+    /* ...Create & Get Smart Account */
+    <div>
+      <button 
+        disabled={isPending}
+        onClick={() => {
+          write([
+            {
+              address: tokenAddress,
+              abi: abi,
+              functionName: "mint",
+              args: [address, 1],
+              value: BigInt(0),
+            }
+          ])
+        }}
+      >
+        {isPending ? 'Minting...' : 'Mint'}
+      </button>
+      {userOpHash && <p>{`UserOp Hash: ${userOpHash}`}</p>}
+    </div>
+  )
+}
+```
+
+## Next Steps
+Congrats -- you just sent your first gasless transaction with ZeroDev waas!
+
+In this example, you used a public ZeroDev API key.  Now learn [how to set up your own ZeroDev project](/smart-wallet/setting-up-zerodev-projects).
+
+:::info
+Complete quickstart example code can be found [here](https://github.com/zerodevapp/waas-examples/tree/main/quick-start)
+:::
