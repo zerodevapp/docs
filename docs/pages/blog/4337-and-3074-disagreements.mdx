@@ -59,7 +59,7 @@ Given that, and given the already vibrant 4337 ecosystem of bundlers, paymasters
 There are three reasons why 3074 has been criticized for being at odds with censorship resistance (CR), which [Yoav nicely summarized here](https://notes.ethereum.org/@yoav/3074-implications#Potential-centralization-vectors).  In short:
 
 - By not explicitly separating validation from execution, 3074 risks leading to centralized relayers.
-- By not introducing any structure to the invoker, wallets must fully trust invokers and therefore they must whitelist invokers.  Therefore wallets will gate-keep account innovations.
+- By not introducing any structure to invokers, wallets must fully trust invokers and therefore must whitelist invokers.  Therefore, wallets will gate-keep account innovations.
 - By including 3074 in Pectra (the next hardfork), we are delaying the inclusion of EIP-7547 aka “Inclusion Lists,” which is a core effort in the CR roadmap.
 
 I wrote about the first two problems in [a previous blog post](https://twitter.com/decentrek/status/1784919543036719251), so I won’t go into them here, except to say that they are both solvable problems: 3074 can (and should) leverage decentralized mempools by [leveraging the 4337 mempool](https://notes.ethereum.org/@yoav/eip-3074-erc-4337-synergy#An-ultra-cheap-way-to-create-an-ERC-4337-account), and whitelisted invokers can allow for custom invoker code as long as they are [designed like modular accounts](https://twitter.com/decentrek/status/1784919543036719251).
