@@ -1,0 +1,101 @@
+# Infra Fallbacks
+
+:::info
+Impatient?  Check out [a complete example here](https://github.com/zerodevapp/zerodev-examples/blob/main/fallback-clients/main.ts).
+:::
+
+ZeroDev offers a "[meta infrastructure](/meta-infra/intro)" that integrates with all leading AA infra providers.  When you use ZeroDev, you can pick [a specific infrastructure provider](/meta-infra/rpcs#bundler-rpc).  If you don't pick one, we pick one for you.
+
+However, sometimes an infra provider may experience downtime.  We have developed a "fallbacks" feature that allows you to set up multiple providers, so that when one fails, another takes over.
+
+## Core API
+
+Start by creating multiple account clients:
+
+```ts
+// Get these from your ZeroDev dashboard
+const PAYMASTER_RPC = 'your ZeroDev paymaster RPC'
+const BUNDLER_RPC = 'your ZeroDev bundler RPC'
+
+const PAYMASTER_RPC_STACKUP = PAYMASTER_RPC + '?provider=STACKUP'
+const BUNDLER_RPC_STACKUP = BUNDLER_RPC + '?provider=STACKUP'
+
+const PAYMASTER_RPC_PIMLICO = PAYMASTER_RPC + '?provider=PIMLICO'
+const BUNDLER_RPC_PIMLICO = BUNDLER_RPC + '?provider=PIMLICO'
+
+// Create an account client with stackup as provider
+const kernelClient1 = createKernelAccountClient({
+    account,
+    chain,
+    bundlerTransport: http(BUNDLER_RPC_STACKUP),
+    middleware: {
+        sponsorUserOperation: async ({ userOperation }) => {
+            const zeroDevPaymasterClient = createZeroDevPaymasterClient({
+                chain,
+                transport: http(PAYMASTER_RPC_STACKUP),
+                entryPoint
+            })
+            return zeroDevPaymasterClient.sponsorUserOperation({
+                userOperation,
+                entryPoint
+            })
+        }
+    },
+    entryPoint
+})
+
+// Create an account client with pimlico as provider
+const kernelClient2 = createKernelAccountClient({
+    account,
+    chain,
+    bundlerTransport: http(BUNDLER_RPC_PIMLICO),
+    middleware: {
+        sponsorUserOperation: async ({ userOperation }) => {
+            const zeroDevPaymasterClient = createZeroDevPaymasterClient({
+                chain,
+                transport: http(PAYMASTER_RPC_PIMLICO),
+                entryPoint
+            })
+            return zeroDevPaymasterClient.sponsorUserOperation({
+                userOperation,
+                entryPoint
+            })
+        }
+    },
+    entryPoint
+})
+```
+
+Then combine the Kernel clients with the `createFallbackKernelAccountClient` function:
+
+```ts
+const kernelClient = createFallbackKernelAccountClient([
+    kernelClient1,
+    kernelClient2,
+])
+```
+
+Now you can use `kernelClient` as usual.  Your `kernelClient` will use `kernelClient1` by default, and if it runs into any issues with it, it will fallback to `kernelClient2`.
+
+### Using non-ZeroDev infra as fallbacks
+
+In the previous example, we used different providers as fallbacks through ZeroDev.  If you are worried that ZeroDev itself might go down, you can also sign up directly with providers like Stackup and Pimlico and set them up as fallback providers.
+
+To do that, simply:
+
+- [Set up a Kernel account client with Stackup](/sdk/infra/stackup).
+- [Set up a Kernel account client with Pimlico](/sdk/infra/pimlico).
+
+Then combine them with `createFallbackKernelAccountClient`:
+
+```ts
+const kernelClient = createFallbackKernelAccountClient([
+    zerodevKernelClient,
+    stackupKernelClient,
+    pimlicoKernelClient,
+])
+```
+
+## React API
+
+TODO
