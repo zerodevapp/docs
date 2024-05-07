@@ -17,6 +17,8 @@ Check out this [code example](https://github.com/zerodevapp/waas-examples/tree/m
 
 ### Passkeys
 
+Use [`useCreateKernelClientPasskey`](/react/use-create-kernelclient-passkey).
+
 ```tsx
 import { useCreateKernelClientPasskey } from "@zerodev/waas"
 
@@ -42,6 +44,8 @@ function App() {
 
 ### Socials
 
+Use `useCreateKernelClientSocial`.  Note that you can also use ZeroDev with a [third-party auth provider](/sdk/signers/intro) (e.g. Privy/Dynamic) to enable social logins.
+
 ```tsx
 import { useCreateKernelClientSocial } from "@zerodev/waas"
 
@@ -57,6 +61,8 @@ function App() {
 ```
 
 ### EOA
+
+If you want to use an EOA wallet as signer to your ZeroDev smart wallet, wrap the `ZeroDevProvider` inside a Wagmi provider, then use [`useCreateKernelClientEOA`](/react/use-create-kernelclient-eoa).
 
 ```tsx
 import { useCreateKernelClientEOA } from "@zerodev/waas"
