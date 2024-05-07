@@ -17,31 +17,21 @@ Check out this [code example](https://github.com/zerodevapp/waas-examples/tree/m
 
 ### Passkeys
 
-```ts
+```tsx
 import { useCreateKernelClientPasskey } from "@zerodev/waas"
 
 function App() {
-  const { connectRegister, connectLogin, isPending } = useCreateKernelClientPasskey(
+  const { connectRegister, connectLogin } = useCreateKernelClientPasskey(
     { version: "v3" }
   );
 
   return (
     <div>
-      <button
-        disabled={isPending}
-        onClick={() => {
-          // username of the passkey
-          connectRegister({ username: "KERNEL_USER_NAME" }); 
-        }}
-      >
+      // username of the passkey
+      <button onClick={() => connectRegister({ username: "KERNEL_USER_NAME" })}>
         Register
       </button>
-      <button 
-        disabled={isPending}
-        onClick={() => {
-          connectLogin();
-        }}
-      >
+      <button onClick={() => connectLogin()}>
         Login
       </button>
     </div>
@@ -52,27 +42,33 @@ function App() {
 
 ### Socials
 
-```ts
+```tsx
+import { useCreateKernelClientSocial } from "@zerodev/waas"
+
+function App() {
+  const { login } = useCreateKernelClientSocial({ version: "v3" });
+
+  return (
+    <button onClick={() => login("google")}>
+      Create Smart Account
+    </button>
+  )
+}
 ```
 
 ### EOA
 
-```ts
+```tsx
 import { useCreateKernelClientEOA } from "@zerodev/waas"
 import { useConnect } from "wagmi"
 
 function App() {
   const { connectors } = useConnect();
-  const { connect, isPending } = useCreateKernelClientEOA({ version: "v3" });
+  const { connect } = useCreateKernelClientEOA({ version: "v3" });
 
   return (
-    <button
-      disabled={isPending}
-      onClick={() => {
-        connect({ connector: connectors[0] })
-      }} 
-    >
-      {"Create Smart Account"}
+    <button onClick={() => connect({ connector: connectors[0] })}>
+      Create Smart Account
     </button>
   )
 }

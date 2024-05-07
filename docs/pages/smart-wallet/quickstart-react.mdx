@@ -27,19 +27,15 @@ bun install @zerodev/waas wagmi viem@2.x @tanstack/react-query
 
 :::
 
-## 3. Setup wagmi config and provider
-Please follow wagmi's instruction to setup [wagmi config](https://wagmi.sh/react/getting-started)
-
-## 4. Setup context provider
+## 3. Setup context provider
 ```ts filename=Providers.tsx // [Providers.tsx]
-import { sepolia } from "wagmi/chains"
+import { sepolia } from "viem/chains"
 import { ZeroDevProvider } from "@zerodev/waas"
 
 function Providers({ children }: { children: React.ReactNode}) {
   const ZERODEV_PROJECT_ID = '98fd43a8-fb2f-4948-a7ae-069f53969f73'
 
   return (
-    // Ensure ZeroDevProvider is nested within wagmi's provider
     <ZeroDevProvider appId={ZERODEV_PROJECT_ID} chain={sepolia}> // [!code focus]
       {children}
     </ZeroDevProvider> // [!code focus]
@@ -47,23 +43,21 @@ function Providers({ children }: { children: React.ReactNode}) {
 }
 ```
 
-## 5. Use ZeroDev waas
+## 4. Use ZeroDev waas
 
 ### Create Smart Account
 
 ```tsx filename=page.tsx // [page.tsx]
-import { useCreateKernelClientEOA } from "@zerodev/waas"
-import { useConnect } from "wagmi"
+import { useCreateKernelClientPasskey } from "@zerodev/waas"
 
 function App() {
-  const { connectors } = useConnect();
-  const { connect, isPending } = useCreateKernelClientEOA({ version: "v3" });
+  const { connectRegister, isPending } = useCreateKernelClientPasskey({ version: "v3" });
 
   return (
     <button
       disabled={isPending}
       onClick={() => {
-        connect({ connector: connectors[0] })
+        connectRegister({ username: "zerodev_quickstart" })
       }} 
     >
       {isPending ? 'Connecting...' : 'Create Smart Account'}
