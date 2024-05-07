@@ -22,7 +22,7 @@ The two sides differ most strongly in their views on the following two topics:
 
 ERC-4337 authors believe that:
 
-- 4337/7560 is the “official” endgame for AA that the entire community should rally around, in the same way that, say, the rollup-centric roadmap is the “official” endgame for scaling that the entire community should rally around.
+- 4337/7560 is the “official” endgame for AA that the entire community should rally around, in the same way that, say, the rollup-centric roadmap is the “official” endgame for scaling that the entire community rallies around.
 - It’s more important for Ethereum to prioritize censorship-resistance even if it means delaying UX improvements.
 
 EIP-3074 authors believe that:
@@ -50,14 +50,16 @@ The core point of both resources is that **any AA system would naturally evolve 
 
 Now, that’s not to say that there’s nothing opinionated about ERC-4337.  But the authors have done an admirable job of slowly trimming down 4337/7560 and moving the more opinionated parts of it into separate RIPs that L2s can selectively adopt, such as [the 2D nonce system](https://github.com/eth-infinitism/RIPs/blob/73734b91e2b88db9e4247147d2d426925ab1b8af/RIPS/rip-9996.md).
 
-Still, the point is that the *core* part of 4337/7560, namely the idea of 1) separating validation from execution and 2) enforcing storage access rules during the validation phase, will be a part of any AA design that can enable a decentralized mempool.  Therefore, if we believe that it’s critical to keep the Ethereum mempool decentralized and censorship-resistant, which I certainly do, then it’s critical to embrace a AA design that shares core design elements with 4337/7560.  Given that, and given the already vibrant 4337 ecosystem of bundlers, paymasters, and smart accounts, it would be most productive in my opinion for the community to embrace 4337/7560 as the “official AA end-game,” the same way that we all embraced proof-of-stake or the rollup-centric roadmap.
+Still, the point is that the *core* part of 4337/7560, namely the idea of 1) separating validation from execution and 2) enforcing storage access rules during the validation phase, will be a part of any AA design that can enable a decentralized mempool.  Therefore, if we believe that it’s critical to keep the Ethereum mempool decentralized and censorship-resistant, which I certainly do, then it’s critical to embrace a AA design that shares core design elements with 4337/7560.
 
-# Why 3074 is at odds with Censorship Resistance
+Given that, and given the already vibrant 4337 ecosystem of bundlers, paymasters, and smart accounts, it would be most productive in my opinion for the community to embrace 4337/7560 as the “official AA end-game,” the same way that we all embraced proof-of-stake or the rollup-centric roadmap.
+
+# Why 3074 is at odds with censorship resistance
 
 There are three reasons why 3074 has been criticized for being at odds with censorship resistance (CR), which [Yoav nicely summarized here](https://notes.ethereum.org/@yoav/3074-implications#Potential-centralization-vectors).  In short:
 
 - By not explicitly separating validation from execution, 3074 risks leading to centralized relayers.
-- By not introducing any structure to the invoker, wallets must fully trust invokers and therefore they must whitelist invokers.  Therefore wallets will gate-keep account innovations.
+- By not introducing any structure to invokers, wallets must fully trust invokers and therefore must whitelist invokers.  Therefore, wallets will gate-keep account innovations.
 - By including 3074 in Pectra (the next hardfork), we are delaying the inclusion of EIP-7547 aka “Inclusion Lists,” which is a core effort in the CR roadmap.
 
 I wrote about the first two problems in [a previous blog post](https://twitter.com/decentrek/status/1784919543036719251), so I won’t go into them here, except to say that they are both solvable problems: 3074 can (and should) leverage decentralized mempools by [leveraging the 4337 mempool](https://notes.ethereum.org/@yoav/eip-3074-erc-4337-synergy#An-ultra-cheap-way-to-create-an-ERC-4337-account), and whitelisted invokers can allow for custom invoker code as long as they are [designed like modular accounts](https://twitter.com/decentrek/status/1784919543036719251).
@@ -86,11 +88,11 @@ However, **I don’t believe it’s productive to stifle all other valuable effo
 
 # Why UX is an urgent problem
 
-People pushing to delay or remove ERC-3074 tend to think that Ethereum UX is, while not ideal, mostly fine right now.
+People pushing to delay or remove EIP-3074 tend to think that Ethereum UX is, while not ideal, mostly fine right now.
 
 However, in the same way that it would be complacent to stop working on CR because users are still able to get their transactions included, it would be complacent to stop improving UX for EOA users because they seem to be able to use their wallets.
 
-The reality, which we sometimes forgot, is that Ethereum and Web3 in general are very, very far from mainstream adoption.  If you are reading this post, you are an early adopter.  And while token prices are going up, there has been no massive breakthrough in Web3 adoption in a very long time.
+The reality, which we sometimes forget, is that Ethereum and Web3 in general are very, very far from mainstream adoption.  If you are reading this post, you are an early adopter.  And while token prices are going up, there has been no massive breakthrough in Web3 adoption in a very long time.
 
 To put it bluntly — **what’s the point of making something censorship-resistant if no one uses it**?  Of course, Ethereum is blessed to have a ton of users already.  But my point is that the value of censorship-resistance of a thing scales with the *value* that the very thing provides, and to me 3074 can help Ethereum provide significantly more value by making EOAs more powerful & friendly.
 
@@ -108,6 +110,6 @@ Historically, it would seem that the power to make protocol-level decisions has 
 
 # Conclusion
 
-My personal take, though, is that **ultimately 3074 is good, and that we should respect the process this time around and see 3074 through**.  Even if we decide to remove it, we should replace it with another EIP (in Pectra -- not delaying further) that would bring about the same level of benefits as ERC-3074, such as [EIP-5806](https://eips.ethereum.org/EIPS/eip-5806) or the new [transaction subtypes proposal](https://github.com/eth-infinitism/RIPs/pull/1).
+My personal take, though, is that **ultimately 3074 is good, and that we should respect the process this time around and see 3074 through**.  Even if we decide to remove it, we should replace it with another EIP (in Pectra -- not delaying further) that would bring about the same level of benefits as EIP-3074, such as [EIP-5806](https://eips.ethereum.org/EIPS/eip-5806) or the new [transaction subtypes proposal](https://github.com/eth-infinitism/RIPs/pull/1).
 
 In a future blog post, I will write about how to combine 3074 with 4337 to provide powerful UX to EOA users while preserving censorship-resistance.  For now, let’s unite around shipping 3074 and get back to building great Web3 products that people love, which is ultimately all that matters.
