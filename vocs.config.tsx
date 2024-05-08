@@ -71,6 +71,10 @@ export default defineConfig({
             "text": "Setting up ZeroDev Projects",
             "link": "/smart-wallet/setting-up-zerodev-projects"
           },
+          {
+            "text": "Code Examples",
+            "link": "/smart-wallet/code-examples"
+          },
         ],
       },
       {
