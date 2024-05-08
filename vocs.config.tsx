@@ -118,7 +118,7 @@ export default defineConfig({
             "link": "/smart-wallet/batching-transactions"
           },
           {
-            "text": "One-click Trading",
+            "text": "1-click Trading (1CT)",
             "link": "/smart-wallet/one-click-trading"
           },
           {
