@@ -4,6 +4,14 @@
 Check out the [complete quickstart code here](https://github.com/zerodevapp/waas-examples/tree/main/quick-start).
 :::
 
+ZeroDev has two main packages: `@zerodev/waas` which is designed for React projects, and `@zerodev/sdk` which is our core SDK that can be used in any JavaScript environment.
+
+If you are building a React project, we recommend starting with `@zerodev/waas`, which is what we will walk you through in this tutorial.  You can always ["dropping down" to the core SDK](#interop-with-the-core-sdk) when necessary.
+
+## 0. Clone the code
+
+Since React has a lot of boilerplate, we will only focus on the ZeroDev-specific code.  We recommend cloning the [complete quickstart code](https://github.com/zerodevapp/waas-examples/tree/main/quick-start) and refer to it if you get lost as you follow along this tutorial.
+
 ## 1. Create a Next.js project
 
 In this tutorial, we will be using [Next.js](https://nextjs.org/docs/getting-started/installation).  Start by creating a Next.js project:
@@ -14,27 +22,31 @@ npx create-next-app@latest
 
 ## 2. Install ZeroDev and dependencies
 
+Install `@zerodev/waas` and its dependencies:
+
 :::code-group
 
 ```bash [npm]
-npm install @zerodev/waas wagmi viem@2.x @tanstack/react-query
+npm install @zerodev/waas viem@2.x @tanstack/react-query
 ```
 
 ```bash [pnpm]
-pnpm add @zerodev/waas wagmi viem@2.x @tanstack/react-query
+pnpm add @zerodev/waas viem@2.x @tanstack/react-query
 ```
 
 ```bash [yarn]
-yarn add @zerodev/waas wagmi viem@2.x @tanstack/react-query
+yarn add @zerodev/waas viem@2.x @tanstack/react-query
 ```
 
 ```bash [bun]
-bun install @zerodev/waas wagmi viem@2.x @tanstack/react-query
+bun add @zerodev/waas viem@2.x @tanstack/react-query
 ```
 
 :::
 
 ## 3. Setup context provider
+
+Create a provider in typical React style.  You will need to [create a project ID from the dashboard](/smart-wallet/setting-up-zerodev-projects), and make sure you are using the right `chain` object corresponding to your ZeroDev project.
 
 ```ts filename=Providers.tsx // [Providers.tsx]
 import { sepolia } from "viem/chains"
@@ -54,6 +66,8 @@ function Providers({ children }: { children: React.ReactNode}) {
 ## 4. Use ZeroDev waas
 
 ### Create a Smart Account
+
+Let's start by creating an account:
 
 ```tsx filename=page.tsx // [page.tsx]
 import { useCreateKernelClientPasskey } from "@zerodev/waas"
@@ -76,6 +90,8 @@ function App() {
 
 ### Get the Smart Account Address
 
+Now you can get the account address as such:
+
 ```tsx filename=page.tsx // [page.tsx]
 import { useKernelClient } from "@zerodev/waas"
 
@@ -90,6 +106,8 @@ function App() {
 ```
 
 ### Send Sponsored User Operation
+
+And here's how you send transactions:
 
 ```tsx filename=page.tsx // [page.tsx]
 import { parseAbi } from "viem"
@@ -129,6 +147,12 @@ function App() {
   )
 }
 ```
+
+### Interop with the Core SDK
+
+If you ever want to use the Core SDK (perhaps because a feature is only supported in the core SDK but not through the React API), you can "drop down" to the SDK with [the `useKernelClient` hook](/react/use-kernelclient#usekernelclient).
+
+Similarly, if you have created a Kernel client object with the core SDK, you can "embed" it inside the React SDK using [the `useSetKernelClient` hook](https://docs.zerodev.app/react/use-set-kernelclient).
 
 ## Next Steps
 
