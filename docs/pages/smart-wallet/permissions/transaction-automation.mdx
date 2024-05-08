@@ -59,7 +59,7 @@ const sessionKeySigner = await toECDSASigner({
 })
 ```
 
-Note that if you do not wish to store the private key of the session key, you could use a [remote signer](https://docs.zerodev.app/sdk/advanced/key-storage) instead:
+Note that if you do not wish to store the private key of the session key, you could use a [remote signer](/sdk/advanced/key-storage) instead:
 
 ```ts
 const remoteSigner = await toRemoteSigner({
@@ -156,7 +156,7 @@ const sessionKeyAccount = await deserializePermissionAccount(
 )
 ```
 
-Finally, [construct a Kernel client](https://docs.zerodev.app/sdk/core-api/create-account#create-an-account-client) as usual:
+Finally, [construct a Kernel client](/sdk/core-api/create-account#create-an-account-client) as usual:
 
 ```ts
 const kernelClient = createKernelAccountClient({
