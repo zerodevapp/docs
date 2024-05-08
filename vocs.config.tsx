@@ -632,6 +632,10 @@ export default defineConfig({
             "link": "/react/use-create-kernelclient-passkey"
           },
           {
+            "text": "useCreateKernelClientSocial",
+            "link": "/react/use-create-kernelclient-social"
+          },
+          {
             "text": "useDisconnectKernelClient",
             "link": "/react/use-disconnect-kernelclient",
           },
