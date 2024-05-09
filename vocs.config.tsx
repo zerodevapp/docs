@@ -82,7 +82,7 @@ export default defineConfig({
         "collapsed": false,
         "items": [
           {
-            "text": "Creating Wallets",
+            "text": "Passkey & Social Logins",
             "link": "/smart-wallet/creating-wallets"
           },
           {
