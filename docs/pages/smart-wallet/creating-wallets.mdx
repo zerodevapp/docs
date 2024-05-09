@@ -19,7 +19,7 @@ Check out this [code example](https://github.com/zerodevapp/waas-examples/tree/m
 
 You can learn more about [how ZeroDev's on-chain passkeys work here](/sdk/advanced/passkeys).
 
-Create the wallet using [`useCreateKernelClientPasskey`](/react/use-create-kernelclient-passkey):
+Create the wallet using [`useCreateKernelClientPasskey`](/react/use-create-kernelclient-passkey).  Use `connectRegister` to create a new passkey, or `connectLogin` to use an existing key.
 
 ```tsx
 import { useCreateKernelClientPasskey } from "@zerodev/waas"
@@ -32,7 +32,7 @@ function App() {
   return (
     <div>
       // username of the passkey
-      <button onClick={() => connectRegister({ username: "KERNEL_USER_NAME" })}>
+      <button onClick={() => connectRegister({ username: "passkey identifier" })}>
         Register
       </button>
       <button onClick={() => connectLogin()}>
