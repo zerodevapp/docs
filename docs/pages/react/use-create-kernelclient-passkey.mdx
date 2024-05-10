@@ -73,13 +73,28 @@ The mutation function to register passkey and create the kernel smart account.
     `string`
     The username of the registered passkey.
 
+### connectRegisterAsync
+`(variables: CreateKernelClientPasskeyVariables) => Promise<CreateKernelClientPasskeyData>`
+
+Similar to [connectRegister](#connectregister) but returns a promise.
+
+- #### variables 
+  - ##### username
+    `string`
+    The username of the registered passkey.
+
 ### connectLogin
 `() => void`
 
 The mutation function to login created passkey and create the kernel smart account.
 
+### connectLoginAsync
+`() => Promise<CreateKernelClientPasskeyData>`
+
+Similar to [connectLogin](#connectlogin) but returns a promise.
+
 ### data
-`CreateKernelClientPasskeyReturnType | undefined`
+`CreateKernelClientPasskeyData | undefined`
   - ##### validator
     `KernelValidator<EntryPoint>` The object of kernel validator.
   - ##### kernelAccount

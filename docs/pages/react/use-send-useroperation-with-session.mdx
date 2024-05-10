@@ -107,6 +107,30 @@ The mutation function to send useroperation with session.
     `bigint | undefined`
     Value in wei sent with this transaction.
 
+### writeAsync
+`(variables: SendUserOperationWithSessionVariables) => Promise<Hash>`
+
+Similar to [write](#write) but returns a promise.
+
+- #### variables 
+  - ##### address
+    `Address`
+    The contract's address.
+  - ##### abi
+    `Abi`
+    The contract's ABI.
+  - ##### functionName
+    `string`
+    - Function to call on the contract.
+    - Inferred from [`abi`](#abi)
+  - ##### args
+    `readonly unknown[] | undefined`
+    - Arguments to pass when calling the contract.
+    - Inferred from [`abi`](#abi) and [`functionName`](#functionname)
+  - ##### value
+    `bigint | undefined`
+    Value in wei sent with this transaction.
+
 ### data
 `Hash | undefined`
 

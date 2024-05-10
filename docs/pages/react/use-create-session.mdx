@@ -54,8 +54,19 @@ The mutation function to create session for v3 kernel account.
     `Policy[]`
     The policies of the session.
 
+### writeAsync
+`(variables: CreateSessionVariables) => Promise<CreateSessionData>`
+
+Similar to [write](#write) but returns a promise.
+
+- #### variables 
+  - ##### policies
+    `Policy[]`
+    The policies of the session.
+
+
 ### data
-`CreateSessionReturnType | undefined`
+`CreateSessionData | undefined`
   - ##### sessionKey
     `0x${string}`
     The private key of the session.

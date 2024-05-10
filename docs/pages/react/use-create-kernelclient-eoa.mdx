@@ -63,8 +63,18 @@ The mutation function to connect eoa and create the kernel smart account.
     `Connector | undefined`
     The connectors.
 
+### connectAsync
+`(variables: CreateKernelClientEOAVariables) => Promise<CreateKernelClientEOAData>`
+
+Similar to [connect](#connect) but returns a promise.
+
+- #### variables 
+  - ##### connector
+    `Connector | undefined`
+    The connectors.
+
 ### data
-`CreateKernelClientEOAReturnType | undefined`
+`CreateKernelClientEOAData | undefined`
   - ##### validator
     `KernelValidator<EntryPoint>` The object of kernel validator.
   - ##### kernelAccount

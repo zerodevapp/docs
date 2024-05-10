@@ -70,8 +70,18 @@ The mutation function to create session for v2 kernel account.
     `Permission<Abi>[]`
     The permissions of the session.
 
+### writeAsync
+`(variables: CreateBasicSessionVariables) => Promise<CreateBasicSessionData>`
+
+Similar to [write](#write) but returns a promise.
+
+- #### variables 
+  - ##### permissions
+    `Permission<Abi>[]`
+    The permissions of the session.
+
 ### data
-`CreateBasicSessionReturnType | undefined`
+`CreateBasicSessionData | undefined`
   - ##### sessionKey
     `0x${string}` The private key of the session.
   - ##### sessionId
