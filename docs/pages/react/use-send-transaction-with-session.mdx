@@ -1,0 +1,118 @@
+import MutationResult from '../shared/mutation-result.mdx'
+
+# useSendTransactionWithSession [Hooks for sending transactions with session keys]
+
+## Import
+```tsx
+import { useSendTransactionWithSession } from '@zerodev/waas'
+```
+
+## Usage
+```tsx
+import { useSendTransactionWithSession } from '@zerodev/waas';
+
+function App() {
+  const { write } = useSendTransactionWithSession();
+
+  return (
+    <button 
+      onClick={() =>
+        write([
+          {
+            to: TO_ADDRESS,
+            value: VALUE,
+            data: DATA
+          }
+        ])
+      }
+    >
+      Send Transactions With Session
+    </button>
+  )
+}
+```
+
+## Parameters
+```tsx
+import { type UseSendTransactionWithSessionParameters } from '@zerodev/waas';
+```
+
+### sessionId
+
+`0x${tring}`
+
+The sessionId of session used to send user operation
+
+### paymaster
+`{type: "SPONSOR"} | {type: "ERC20", gasToken: string} | undefined`
+
+The paymaster type and gas token address.
+- #### type
+  `SPONSOR | ERC20`
+  The type of paymaster.
+- #### gasToken
+  `string | undefined`
+  The symbol of erc20 token used for erc20 paymaster.
+
+### isParallel
+`boolean | undefined`
+
+- Default to `True`
+- The flag determine whether the user operation allows parallel execution.
+
+### nonceKey
+`string | undefined`
+
+The key to generate nonce for userop. 
+
+## Return Types
+
+```tsx
+import { type UseSendTransactionWithSessionReturnType } from '@zerodev/waas'
+```
+
+<br />
+
+---
+
+[TanStack Query mutation docs](https://tanstack.com/query/v5/docs/react/reference/useMutation)
+
+### write
+`(variables: SendTransactionWithSessionVariables) => void`
+
+The mutation function to send transactions with session.
+
+- #### variables 
+  - ##### to
+    `Address`
+    The contract's address.
+  - ##### value
+    `bigint | undefined`
+    Value in wei sent with this transaction.
+  - ##### data
+    `Hex | undefined`
+    Data sent with this transaction.
+
+### writeAsync
+`(variables: SendTransactionWithSessionVariables) => Promise<SendTransactionWithSessionData>`
+
+Similar to [write](#write) but returns a promise.
+
+- #### variables 
+  - ##### to
+    `Address`
+    The contract's address.
+  - ##### value
+    `bigint | undefined`
+    Value in wei sent with this transaction.
+  - ##### data
+    `Hex | undefined`
+    Data sent with this transaction.
+
+### data
+`Hash | undefined`
+
+- Defaults to `undefined`
+- The last successfully resolved data for the mutation.
+
+<MutationResult />

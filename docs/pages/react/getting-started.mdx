@@ -31,32 +31,36 @@ bun add @zerodev/waas wagmi viem@2.x @tanstack/react-query
 In typical React pattern, `@zerodev/waas` is set up via a provider.  A typical setup may look like this:
 
 ```tsx
-import { ZeroDevProvider } from "@zerodev/waas"
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { ReactNode } from "react"
+import { ZeroDevProvider, createConfig as createZdConfig } from "@zerodev/waas"
 import { WagmiProvider, createConfig, http } from "wagmi"
-import { sepolia } from "wagmi/chains"
-import { injected } from "wagmi/connectors"
+import { sepolia, arbitrum } from "wagmi/chains"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
-if (!process.env.NEXT_PUBLIC_ZERODEV_APP_ID) {
-  throw new Error("Missing NEXT_PUBLIC_ZERODEV_APP_ID")
-}
-
-export default function Providers({ children }: { children: ReactNode }) {
-  const zdAppId = process.env.NEXT_PUBLIC_ZERODEV_APP_ID || ""
-  const config = createConfig({
-    chains: [sepolia],
-    connectors: [injected()],
+export default function Providers({ children }: { children: React.ReactNode }) {  
+  const wagmiConfig = createConfig({
+    chains: [arbitrum, sepolia],
     transports: {
-      [sepolia.id]: http(`https://rpc.zerodev.app/api/v2/bundler/${zdAppId}`),
+      [arbitrum.id]: http(),
+      [sepolia.id]: http(),
     },
+  })
+  const zdConfig = createZdConfig({
+    chains: [arbitrum, sepolia],
+    transports: {
+      [arbitrum.id]: http(),
+      [sepolia.id]: http(),
+    },
+    projectIds: {
+      [arbitrum.id]: ZERODEV_ARB_PROJECT_ID,
+      [sepolia.id]: ZERODEV_SEPOLIA_PROJECT_ID
+    } 
   })
   const queryClient = new QueryClient()
 
   return (
-    <WagmiProvider config={config}>
+    <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
-        <ZeroDevProvider appId={zdAppId} chain={sepolia}>
+        <ZeroDevProvider config={zdConfig}>
           {children}
         </ZeroDevProvider>
       </QueryClientProvider>

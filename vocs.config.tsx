@@ -616,6 +616,14 @@ export default defineConfig({
             "link": "/react/use-balance",
           },
           {
+            "text": "useChainId",
+            "link": "/react/use-chainid",
+          },
+          {
+            "text": "useChains",
+            "link": "/react/use-chains",
+          },
+          {
             "text": "useCreateBasicSession",
             "link": "/react/use-create-basic-session",
           },
@@ -644,6 +652,14 @@ export default defineConfig({
             "link": "/react/use-kernelclient",
           },
           {
+            "text": "useSendTransaction",
+            "link": "/react/use-send-transaction",
+          },
+          {
+            "text": "useSendTransactionWithSession",
+            "link": "/react/use-send-transaction-with-session",
+          },
+          {
             "text": "useSendUserOperation",
             "link": "/react/use-send-useroperation",
           },
@@ -662,6 +678,10 @@ export default defineConfig({
           {
             "text": "useSetKernelClient",
             "link": "/react/use-set-kernelclient",
+          },
+          {
+            "text": "useSwitchChain",
+            "link": "/react/use-switch-chain",
           },
           {
             "text": "useWalletConnect",

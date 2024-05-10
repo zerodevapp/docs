@@ -49,14 +49,25 @@ bun add @zerodev/waas viem@2.x @tanstack/react-query
 Create a provider in typical React style.  You will need to [create a project ID from the dashboard](/smart-wallet/setting-up-zerodev-projects), and make sure you are using the right `chain` object corresponding to your ZeroDev project.
 
 ```ts filename=Providers.tsx // [Providers.tsx]
+import { http } from "viem"
 import { sepolia } from "viem/chains"
-import { ZeroDevProvider } from "@zerodev/waas"
+import { ZeroDevProvider, createConfig } from "@zerodev/waas"
 
 function Providers({ children }: { children: React.ReactNode}) {
-  const ZERODEV_PROJECT_ID = '98fd43a8-fb2f-4948-a7ae-069f53969f73'
+  const PROJECT_ID = '98fd43a8-fb2f-4948-a7ae-069f53969f73'
+
+  const config = createConfig({
+    chains: [sepolia],
+    transports: {
+      [sepolia.id]: http()
+    },
+    projectIds: {
+      [sepolia.id]: PROJECT_ID
+    }
+  })
 
   return (
-    <ZeroDevProvider appId={ZERODEV_PROJECT_ID} chain={sepolia}> // [!code focus]
+    <ZeroDevProvider config={config}> // [!code focus]
       {children}
     </ZeroDevProvider> // [!code focus]
   )
