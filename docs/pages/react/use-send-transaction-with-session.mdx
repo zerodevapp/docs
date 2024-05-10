@@ -1,37 +1,32 @@
 import MutationResult from '../shared/mutation-result.mdx'
 
-# useSendUserOperationWithSession [Hooks for sending user operation with session keys]
+# useSendTransactionWithSession [Hooks for sending transactions with session keys]
 
 ## Import
 ```tsx
-import { useSendUserOperationWithSession } from '@zerodev/waas'
+import { useSendTransactionWithSession } from '@zerodev/waas'
 ```
 
 ## Usage
 ```tsx
-import { useSendUserOperationWithSession, useKernelClient } from '@zerodev/waas';
-import { parseAbi } from 'viem';
+import { useSendTransactionWithSession } from '@zerodev/waas';
 
 function App() {
-  const { write } = useSendUserOperationWithSession();
-  const { address } = useKernelClient();
-  const abi = parseAbi(['function mint(address _to) public']);
+  const { write } = useSendTransactionWithSession();
 
   return (
     <button 
       onClick={() =>
         write([
           {
-            address: '0x34bE7f35132E97915633BC1fc020364EA5134863',
-            abi: abi,
-            functionName: "mint",
-            args: [address],
-            value: 0n
+            to: TO_ADDRESS,
+            value: VALUE,
+            data: DATA
           }
         ])
       }
     >
-      Send UserOp With Session
+      Send Transactions With Session
     </button>
   )
 }
@@ -39,7 +34,7 @@ function App() {
 
 ## Parameters
 ```tsx
-import { type UseSendUserOperationWithSessionParameters } from '@zerodev/waas';
+import { type UseSendTransactionWithSessionParameters } from '@zerodev/waas';
 ```
 
 ### sessionId
@@ -47,7 +42,6 @@ import { type UseSendUserOperationWithSessionParameters } from '@zerodev/waas';
 `0x${tring}`
 
 The sessionId of session used to send user operation
-
 
 ### paymaster
 `{type: "SPONSOR"} | {type: "ERC20", gasToken: string} | undefined`
@@ -74,7 +68,7 @@ The key to generate nonce for userop.
 ## Return Types
 
 ```tsx
-import { type UseSendUserOperationWithSessionReturnType } from '@zerodev/waas'
+import { type UseSendTransactionWithSessionReturnType } from '@zerodev/waas'
 ```
 
 <br />
@@ -84,28 +78,36 @@ import { type UseSendUserOperationWithSessionReturnType } from '@zerodev/waas'
 [TanStack Query mutation docs](https://tanstack.com/query/v5/docs/react/reference/useMutation)
 
 ### write
-`(variables: SendUserOperationWithSessionVariables) => void`
+`(variables: SendTransactionWithSessionVariables) => void`
 
-The mutation function to send useroperation with session.
+The mutation function to send transactions with session.
 
 - #### variables 
-  - ##### address
+  - ##### to
     `Address`
     The contract's address.
-  - ##### abi
-    `Abi`
-    The contract's ABI.
-  - ##### functionName
-    `string`
-    - Function to call on the contract.
-    - Inferred from [`abi`](#abi)
-  - ##### args
-    `readonly unknown[] | undefined`
-    - Arguments to pass when calling the contract.
-    - Inferred from [`abi`](#abi) and [`functionName`](#functionname)
   - ##### value
     `bigint | undefined`
     Value in wei sent with this transaction.
+  - ##### data
+    `Hex | undefined`
+    Data sent with this transaction.
+
+### writeAsync
+`(variables: SendTransactionWithSessionVariables) => Promise<SendTransactionWithSessionData>`
+
+Similar to [write](#write) but returns a promise.
+
+- #### variables 
+  - ##### to
+    `Address`
+    The contract's address.
+  - ##### value
+    `bigint | undefined`
+    Value in wei sent with this transaction.
+  - ##### data
+    `Hex | undefined`
+    Data sent with this transaction.
 
 ### data
 `Hash | undefined`
