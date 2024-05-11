@@ -8,7 +8,7 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "vocs": "^1.0.0-alpha.25"
+    "vocs": "^1.0.0-alpha.50"
   },
   "scripts": { 
     "dev": "vocs dev", 
