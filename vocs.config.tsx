@@ -334,6 +334,10 @@ export default defineConfig({
             "link": "/sdk/advanced/passkeys"
           },
           {
+            "text": "Social Login",
+            "link": "/sdk/advanced/social-login"
+          },
+          {
             "text": "Session Keys",
             "link": "/sdk/advanced/session-keys"
           },
