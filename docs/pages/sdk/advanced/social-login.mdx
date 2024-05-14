@@ -1,0 +1,148 @@
+import SocialLoginSetup from '../../shared/social-login-setup.mdx'
+
+# Social Login
+
+Social login allows users to authenticate using their existing social media accounts such as Google or Facebook.
+
+ZeroDev supports social logins natively, but you can also use ZeroDev with [third-party auth providers](/sdk/signers/intro) such as Dynamic, Privy, and Magic if you prefer their UI.
+
+## Setup
+
+<SocialLoginSetup />
+
+## Installation
+
+:::code-group
+
+```bash [npm]
+npm i @zerodev/social-validator
+```
+
+```bash [yarn]
+yarn add @zerodev/social-validator
+```
+
+```bash [pnpm]
+pnpm i @zerodev/social-validator
+```
+
+```bash [bun]
+bun add @zerodev/social-validator
+```
+
+:::
+
+## API
+
+### `isAuthorized`
+
+Checks if the user is authorized. In a web app, this is typically called on page load to check if the user is logged in.
+
+```ts
+isAuthorized({ projectId: string }): Promise<boolean>
+```
+
+#### Parameters
+- projectId (string): Your ZeroDev project ID.
+
+#### Returns
+- `Promise<boolean>`: Resolves to true if the user is logged in, otherwise false.
+
+#### Example
+
+```ts
+import { isAuthorized } from "@zerodev/social-validator"
+
+const authorized = await isAuthorized({ projectId: 'your_project_id' });
+console.log(authorized); // true or false
+```
+
+### `initiateLogin`
+
+Initiates a social login process by redirecting the user to the specified OAuth provider. 
+
+After a successful login, the user will be redirected back to your app. You may then call the `getSocialValidator` function to create a [Kernel account](https://docs.zerodev.app/sdk/core-api/create-account#create-a-kernel-account) using the social validator as the sudo validator.
+
+```ts
+initiateLogin({
+  socialProvider: "google" | "facebook",
+  oauthCallbackUrl?: string,
+  projectId: string
+})
+```
+
+#### Parameters
+- socialProvider ("google" | "facebook"): The social provider to use for login.
+- oauthCallbackUrl (string, optional): The URL to redirect to after login. Defaults to the current window location if not provided.
+- projectId (string): Your ZeroDev project ID.
+
+#### Example
+
+```ts
+import { initiateLogin } from "@zerodev/social-validator"
+
+initiateLogin({
+  socialProvider: "google",
+  projectId: "your_project_id"
+});
+```
+
+### `getSocialValidator`
+
+Gets a social validator for the specified entry point. Use this function after a successful login to create a [Kernel account](https://docs.zerodev.app/sdk/core-api/create-account#create-a-kernel-account) using the social validator as the sudo validator.
+
+```ts
+getSocialValidator<entryPoint extends EntryPoint, TTransport extends Transport = Transport, TChain extends Chain | undefined = Chain | undefined>(
+  client: Client<TTransport, TChain, undefined>,
+  {
+    entryPoint: entryPointAddress,
+    projectId: string
+  }
+): Promise<KernelValidator<entryPoint, "SocialValidator">>
+```
+
+#### Parameters
+- client (Client): The client instance.
+- entryPoint (entryPoint): The entry point address.
+- projectId (string): Your ZeroDev project ID.
+
+#### Returns
+- `Promise<KernelValidator<entryPoint, "SocialValidator">>`: Resolves to a social validator object.
+
+#### Example
+
+```ts
+import { getSocialValidator } from "@zerodev/social-validator"
+import { ENTRYPOINT_ADDRESS_V07 } from "permissionless"
+
+const socialValidator = await getSocialValidator(
+  publicClient,
+  {
+    entryPoint: ENTRYPOINT_ADDRESS_V07,
+    projectId: "your_project_id"
+  }
+);
+```
+:::info
+Now you can proceed to [create Kernel accounts](https://docs.zerodev.app/sdk/core-api/create-account#create-a-kernel-account) using the social validator as the sudo validator.
+:::
+
+### `logout`
+
+Logs out the current user.
+
+```ts
+logout({ projectId: string })
+```
+
+#### Parameters
+- projectId (string): Your ZeroDev project ID.
+
+#### Example
+
+```ts
+import { logout } from "@zerodev/social-validator"
+
+await logout({ projectId: "your_project_id" });
+```
+

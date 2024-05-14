@@ -1,3 +1,5 @@
+import SocialLoginSetup from '../shared/social-login-setup.mdx'
+
 # Creating wallets
 
 ZeroDev supports three types of wallet creation:
@@ -64,27 +66,7 @@ function App() {
 
 #### Set Up Social Login
 
-ZeroDev offers two modes for setting up social login: Development and Production. Follow the steps below to configure your social login in our [dashboard](https://dashboard.zerodev.app/auth-options).
-
-- **Development Mode**:
-  - Available to all users by default.
-  - Functions only when your application is running locally on the `localhost` URI.
-  - Ideal for testing social sign-in features during development.
-
-- **Production Mode**:
-  - Available to users on the "Growth" plan or higher.
-  - To activate, complete the form in the [Social Auth](https://dashboard.zerodev.app/auth-options) section of the ZeroDev dashboard.
-  - Submit the form for review; reviews are typically completed within 24 hours.
-  - Ensure all sections of the form are completed accurately to facilitate a successful review.
-  - ZeroDev uses [Magic](https://magic.link/docs/home/security/product-security) for its social integration. Links to Magic's documentation are provided in the form to assist with setup (e.g., Google Developer Console).
-
-**Production Mode Configuration Steps**:
-1. Enter the client ID and client secret from your social provider into the designated fields in the ZeroDev dashboard.
-2. Copy the redirect URI provided by ZeroDev into your social provider’s dashboard.
-3. Ensure that the redirect URI and whitelist URI for your application are input correctly in the form.
-4. Submit the form for review.
-
-For detailed information on how Magic handles the creation of public/private key pairs, integral to the security of the social login process, please refer to [Magic's product security documentation](https://magic.link/docs/home/security/product-security).
+<SocialLoginSetup />
 
 ### EOA
 
