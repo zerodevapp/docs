@@ -168,12 +168,18 @@ The `gasToken` flag specifies how gas is paid for the UserOp.  It can be one of 
 
 ### Getting the UserOp without sending
 
-If you want to just construct a UserOp but not send it immediately, use:
+If you want to just construct a UserOp but not send it immediately (perhaps because you want to show the user a gas estimate), use:
 
 - `getSwapUserOp` instead of `sendSwapUserOp`
 - `getSwapUserOpCrossChain` instead of `sendSwapUserOpCrossChain`
 
-If you want to get regular transaction data instead of UserOps (presumably because you want to send the transaction through a EOA), use `getSwapUserOpCrossChain`.
+The functions above will get a signed UserOp but not sending it.  If you want to get an unsigned UserOp, use:
+
+- `getSwapData`, [like this](https://github.com/zerodevapp/zerodev-examples/blob/8cd83fd5e588a11414d1eb946622eda864e2b044/defi/get-swap-data.ts#L67-L84).
+
+If you want to get regular transaction data instead of UserOps (presumably because you want to send the transaction through a EOA), use:
+
+- `getSwapUserOpCrossChain`
 
 ## React API
 
