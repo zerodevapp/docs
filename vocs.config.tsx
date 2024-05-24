@@ -126,13 +126,19 @@ export default defineConfig({
             "link": "/smart-wallet/transaction-automation"
           },
           {
-            "text": "Delegatecall",
-            "link": "/smart-wallet/delegatecall"
-          },
-          {
             "text": "Parallel Transactions",
             "link": "/smart-wallet/parallel-transactions"
           },
+          {
+            "text": "Delegatecall",
+            "link": "/smart-wallet/delegatecall"
+          },
+        ],
+      },
+      {
+        "text": "Interoperability",
+        "collapsed": false,
+        "items": [
           {
             "text": "DeFi Integrations",
             "link": "/smart-wallet/defi-integrations"
