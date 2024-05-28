@@ -1,0 +1,159 @@
+---
+authors:
+    - "[derek](https://twitter.com/decentrek)"
+date: 2024-05-28
+layout: minimal
+---
+
+# SDKs are dead; long live capabilities
+
+::authors
+
+Building with AA is great… or is it?  While the benefits of AA are well-known, people who have actually tried to build with AA know that the developer experience is far from optimal.
+
+Luckily, a paradigm shift is coming, and it will forever change the developer experience of AA for the better.  In this blog post, I will explain:
+
+- The issues with using AA right now.
+- How the new paradigm, aka “capabilities,” will vastly improve the developer experience.
+- What you as a developer can do today to get ready for this paradigm shift.
+
+# Why building with AA sucks right now
+
+Today, to build with AA means doing the following two things:
+
+- Creating an embedded AA wallet inside your application for the user.
+- Interacting with the embedded AA wallet through vendor-specific APIs.
+
+If you have never built with AA before, this might sound like insanity — and it is.  Embedded wallets are nice, but why do you HAVE TO use them?  And why do you HAVE TO use them through vendor-specific APIs?
+
+The reason is that, up until this point, **it had not been possible for DApps to communicate with AA wallets through standardized APIs**.  Instead, if a DApp wants to leverage AA wallet features such as gas sponsorship, it can’t just do it with any AA wallet that the user might bring.  Instead, the DApp MUST control the wallet itself — by embedding it inside the DApp.
+
+To make matters worse, DApps also become tightly coupled with these embedded AA wallets, since each AA wallet speaks different APIs.  This coupling happens at multiple levels:
+
+- Smart accounts have different execution interfaces, as well as different module interfaces.  [7579 and 6900](https://docs.zerodev.app/blog/who-when-what) solve this problem — except that they are not compatible with each other.  And some smart accounts don’t conform to either standard.
+- Paymasters use different APIs, so even the simple act of sponsoring gas involves using a vendor-specific paymaster interface.
+- Bundlers are probably the most standardized part of the stack, but even then there are common features like estimating gas prices that cannot be done via standardized APIs.
+
+**The upshot is that, as a DApp developer, using AA today means being coupled with multiple AA vendors at different layers of the stack.**  Imagine what it would be like if wallets today (e.g. MetaMask, Rabby, etc.) speak different APIs, and so do infra providers (e.g. Infura, Alchemy, etc.).  Your DApp would have to commit to a specific wallet, say MetaMask, and a specific infra provider, say Infura.  Now, your DApp can’t work for users using other wallets, and you cannot switch to another infra provider.  That would be insanity — and yet that’s the state of AA today.
+
+There are some solutions that address this issue.  ZeroDev aggregates multiple bundler/paymaster providers, so when you use ZeroDev you can switch the underlying provider without changing your code.  However, you are still limited to the infra providers that we integrate with.  Permissionless provides integrations with leading smart accounts and bundlers/paymasters, but again you are limited to what Permissionless integrates with.  Furthermore, none of these solution lets your user just *bring* an arbitrary AA wallet to your DApp — you still must use AA through an embedded wallet.
+
+# Bye-bye SDKs, Hello Capabilities
+
+Back in 2022 (!!), [Moody Salem](https://x.com/sendmoodz) (who was then working at Uniswap) proposed an innocuous ERC that is [ERC-5792](https://eips.ethereum.org/EIPS/eip-5792).  The [original ERC](https://github.com/ethereum/EIPs/pull/5792/files) was barely recognizable from what it is today — it was specifically meant to provide a transaction batching API, anticipating that wallets will soon acquire the ability to batch transactions from 4337 and 3074.  The ERC then became stagnant, seeing that 4337 hasn’t led to a proliferation of standalone smart wallets, and [3074 is dead in the water](https://docs.zerodev.app/blog/3074-governance).
+
+In the last several months, however, 5792 has taken on a new life thanks to contributions from many projects, notably Base and WalletConnect.  They decided to expand 5792 from simply focusing on batching, to becoming a general “capabilities ERC.”  Through 5792, a DApp can discover the “capabilities” of the connected wallet through a new RPC `wallet_getCapabilities`.  Then, the DApp can use those capabilities through a new `wallet_sendCalls` RPC.
+
+But what exactly are capabilities?  And why are they only becoming a thing now?
+
+# What are capabilities?
+
+Simply put, **capabilities are smart wallet features that DApps can use through standardized APIs**.  Each capability is identified by a unique key.  So far, the following capabilities have been proposed:
+
+- `atomicBatch` aka “transaction batching”, which is defined in [5792 itself](https://eips.ethereum.org/EIPS/eip-5792#atomicbatch-capability).
+- `paymasterService` aka “sponsoring paymasters” [(ERC-7677](https://www.erc7677.xyz/)), which allows DApps to sponsor gas for users.
+- `auxiliaryFunds` aka “magic spend” ([ERC-7682](https://github.com/ethereum/ERCs/blob/c6f316599b97dcb180d415fe734b40d04ee26b0e/ERCS/erc-7682.md)).  This capability indicates to DApps that the wallet has the ability to pull funds “just-in-time” from other sources like the user’s Coinbase account, and therefore the DApp should not block transactions even if the wallet does not appear to have sufficient balance, a common practice among DApps.
+- `permissions` aka “session keys” ([ERC-7715](https://github.com/ethereum/ERCs/pull/436)).  This capability allows DApps to request permissions from users in order to execute specific transactions, even without an active wallet connection (thus enabling use cases such as subscriptions and automated trading).
+
+But there are many AA features that haven’t been standardized as capabilities yet.  Just looking at [ZeroDev docs](https://docs.zerodev.app/), you can identify many examples such as delegatecall and cross-chain txns.  Over the next few months, we anticipate many more capabilities to be standardized.
+
+Note that **not all smart wallet features are capabilities**, because they may not be features that DApps can use.  For example, if a smart wallet uses [passkeys](https://docs.zerodev.app/sdk/advanced/passkeys) for transaction signing, that’s not really a “capability” in this context because the DApp doesn’t and shouldn’t care about how their users sign transactions with their wallets.  Multisig would fall under that catogory as well.
+
+Therefore, capabilities are only a subset of smart wallet features — the wallet features that *DApps can use*.
+
+# How do you use capabilities?
+
+So how exactly does a DApp use capabilities?  Luckily, it’s only a two step process:
+
+- Step 1: Discovering the capabilities that the connected wallet supports, with `wallet_getCapabilities`.
+
+For example, a wallet might return a response like this:
+
+```tsx
+{
+  "0x1": {
+    "atomicBatch": {
+	    "supported": true
+    }
+  },
+  "0x2105": {
+    "atomicBatch": {
+      "supported": true
+    }
+    "paymasterService": {
+      "supported": true
+    }
+  }
+}
+```
+
+Essentially, the wallet returns the capabilities it supports on each chain.  In this example, the wallet supports the `atomicBatch` capability on Ethereum (`0x1`), and both `atomicBatch` and `paymasterService` on Base (`0x2105`).
+
+- Step 2: Sending transactions with `wallet_sendCalls`, while indicating the capabilities you want to use.
+
+For example, let’s say you want to use a session key to send a batch of transactions, while sponsoring gas for your users.  You would include both the `paymasterService` and `permissions` capabilities in the `capabilities` field of the request.  The `atomicBatch` capability is implicitly implied with `wallet_sendCalls`.  Here’s an example request:
+
+```tsx
+provider.request({
+  method: 'wallet_sendCalls',
+  params: [{
+    version: '1.0',
+    chainId: '0x01',
+    from: '0xd46e8dd67c5d32be8058bb8eb970870f07244567',
+    calls: [
+      {
+        to: '0xd46e8dd67c5d32be8058bb8eb970870f07244567',
+        value: '0x9184e72a',
+        data: '0xd46e8dd67c5d32be8d46e8dd67c5d32be8058bb8eb970870f072445675058bb8eb970870f072445675'
+      },
+      {
+        to: '0xd46e8dd67c5d32be8058bb8eb970870f07244567',
+        value: '0x182183',
+        data: '0xfbadbaf01'
+      }
+    ],
+    capabilities: { 
+      paymasterService: { 
+        url: "<paymaster_url>", 
+      },
+      permissions: {
+        context: "<session_id>",
+      },
+    }
+  }]
+})
+```
+
+# Why capabilities are great
+
+**With capabilities, DApps no longer have to be tightly coupled with specific AA wallets or infra**.  Instead, they can leverage AA wallet features through standardized APIs.  That way, whether the user uses an embedded AA wallet or brings their own wallet to the DApp, the DApp would communicate with the wallet through the exact same API, maintaining a single code path while being compatible with all AA wallets.
+
+The capabilities paradigm is all the more important because, with the upcoming Pectra upgrade, EOA wallets will gain smart wallet features thanks to [EIP-7702](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-7702.md) (the successor of EIP-3074), so it will be more and more common for users to bring a wallet that supports capabilities.  DApps that can leverage capabilities will therefore have a significant edge over those who can’t — and the biggest winner will be users who enjoy improved UX.
+
+# Why capabilities now?
+
+It’s been over a year since ERC-4337 launched, so you might be wondering why capabilities have only become a thing now.  In my opinion, it comes down to a few factors:
+
+- It took time for AA builders to understand what the most important “AA features” really are.  While there are in theory an unlimited number of possible [modules](https://eips.ethereum.org/EIPS/eip-7579) thanks to the programmability of smart accounts, in practice most AA use cases are dominated by just three features: gas sponsorship, transaction batching, and permissions (session keys).  So with this understanding, it’s now possible to create standards for these most popular features.
+- It took someone with significant weight in the space like Coinbase to create an interoperability standard that breaks the local maximum of everyone building for their own ecosystem.  While we have also worked on many interoperability standards, notably for [modular accounts](https://eips.ethereum.org/EIPS/eip-7579) and [permissions](https://github.com/ethereum/ERCs/pull/436), Coinbase is able to propose a whole new *paradigm* that is capabilities and get everyone to fall in line.  Kudos to them.
+
+# What does this mean for ZeroDev?
+
+At ZeroDev, we have always embraced what’s good for the space over what’s good for ourselves.  That’s why we created [a modular account standard](https://eips.ethereum.org/EIPS/eip-7579) when we could’ve gone the other way and locked in our users with [Kernel](https://github.com/zerodevapp/kernel), the most widely used smart account.  That’s also why we [standardized permissions](https://github.com/ethereum/ERCs/pull/436) when we have [the most powerful session keys implementation](https://docs.zerodev.app/smart-wallet/permissions/intro).  Call us naive, but we truly believe that if we keep doing what’s good for the space, the business side will take care of itself.  And so far, that’s proven to be the case — ZeroDev is now one of the most widely used and trusted AA solutions on the market.
+
+So, again, we find ourselves tearing down the moat we’ve built in favor of interoperability.  But we are doing it because we believe only bad products need to lock people in — good products will win by providing the most value to users, and that’s what we will continue to do with capabilities.
+
+As of today, [ZeroDev has been fully updated with the capabilities API](https://docs.zerodev.app/smart-wallet/quickstart-capabilities).  This means two things:
+
+- If you are building a wallet with ZeroDev, your wallet can offer the capability API through our EIP-1193 provider or our WalletConnect integration.  In either case, DApps will be able to communicate with your wallet through the capabilities API.
+- If you are building a DApp and using ZeroDev as an embedded wallet, you can now interact with ZeroDev through the capabilities API using Viem and Wagmi.  By using the capabilities API, you ensure that your DApp will work with any smart wallets your users might bring, not just the embedded ZeroDev [wallet.](http://wallet.You)
+
+To learn more about ZeroDev’s capabilities support, [read this doc](https://docs.zerodev.app/smart-wallet/quickstart-capabilities).
+
+# Conclusion
+
+DApps today communicate with smart wallets through vendor-specific SDKs, but that will become a thing of the past.  **With the capabilities API, DApps can now leverage smart wallet features without being locked-in with any specific smart wallet or AA infra provider**.  This is a win for developers and users, and will do wonders for the wide adoption of smart wallets.
+
+By integrating with the capabilities API, DApps can not only improve UX for users of smart wallets today, but also set themselves up for a future where there will be more and more smart wallets thanks to ERC-4337, and even EOA wallets will become smart thanks to EIP-7702.  The fact that capabilities are now supported in Viem and Wagmi makes integrating with them a no-brainer. 
+
+If you want to get started with capabilities today, try [using ZeroDev with Wagmi](https://docs.zerodev.app/smart-wallet/quickstart-capabilities)!
