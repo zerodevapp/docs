@@ -16,6 +16,10 @@ Since the session key cannot do *everything*, but rather only do specific things
 
 ## Capabilities API
 
+:::info
+Check out [a complete code example here](todo).
+:::
+
 With [the capabilities API](/smart-wallet/quickstart-capabilities), you can create a "session" with the wallet by requesting permissions.  Then, transactions can be sent within those permissions, without asking the user for further confirmations.
 
 First, request permissions from the connected wallet using Viem:
