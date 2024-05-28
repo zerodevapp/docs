@@ -9,6 +9,12 @@ Batching transactions has a number of important benefits:
 - If any transaction in the batch reverts, the entire batch reverts. This ensures that your user won't be stuck in an inconsistent state.
   - This is known as "atomicity."
 
+## Capabilities API
+
+Thanks to [the new capabilities standard](/smart-wallet/quickstart-capabilities), you can batch transactions in a standard way regardless of the smart wallet implementation.
+
+To batch transactions, simply use the `wallet_sendCalls` API.  We will be using [Wagmi](https://wagmi.sh/react/api/hooks/useSendCalls) here but you can find the same API in [Viem](https://viem.sh/experimental/eip5792/sendCalls):
+
 ## React API
 
 Simply pass an array of transactions (UserOps) when using the `useSendUserOperation` hook:

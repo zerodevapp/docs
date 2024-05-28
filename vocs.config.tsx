@@ -60,6 +60,14 @@ export default defineConfig({
             "link": "/"
           },
           {
+            "text": "Which SDK should I use?",
+            "link": "/smart-wallet/which-sdk"
+          },
+          {
+            "text": "Quickstart: Capabilities",
+            "link": "/smart-wallet/quickstart-capabilities"
+          },
+          {
             "text": "Quickstart: React",
             "link": "/smart-wallet/quickstart-react"
           },

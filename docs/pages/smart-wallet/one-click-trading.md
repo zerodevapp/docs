@@ -14,6 +14,20 @@ ZeroDev enables 1CT through *session keys*.  Session keys are **temporary keys w
 
 Since the session key cannot do *everything*, but rather only do specific things, there's no need for the user to confirm every transaction.  The user would only confirm the *permissions* when the session key is created.
 
+## Capabilities API
+
+With [the capabilities API](/smart-wallet/quickstart-capabilities), you can create a "session" with the wallet by requesting permissions.  Then, transactions can be sent within those permissions, without asking the user for further confirmations.
+
+First, request permissions from the connected wallet using Viem:
+
+```ts
+```
+
+Now, every time you want to send a transaction with this session, use the `permissions` capability and include the `permissionsContext` in the `sendCalls` request:
+
+```ts
+```
+
 ## React API
 
 :::info

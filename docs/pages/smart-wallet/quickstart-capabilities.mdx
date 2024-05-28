@@ -1,0 +1,38 @@
+# Quickstart -- Capabilities
+
+Capabilities ([ERC-5792](https://eips.ethereum.org/EIPS/eip-5792)) is the [new standard way for DApps to interact with smart wallets](/blog/hello-capabilities).  On a high level, it comes down to two steps:
+
+- The DApp *discovers* capabilities of the connected wallet through the `wallet_getCapabilities` RPC.
+- The DApp *uses* capabilities through the `wallet_sendCalls` RPC.
+
+By standardizing smart wallet features such as gas sponsorship, transaction batching, and permissions (session keys), capabilities enable DApps to interact with any smart wallets through standard APIs.  This means that:
+
+- If you are building a DApp, you can write your code once and it will work with any AA wallets, whether it's embedded wallets like ZeroDev or standalone wallets like Coinbase Smart Wallet.
+
+- If you are building a wallet, you can write your code once and it will work with any AA accounts, whether it's ZeroDev (Kernel) or another smart account.
+
+**TLDR: capabilities standardize smart wallet features and thereby improve interoperability between smart wallets, reducing vendor lock-in for developers.**
+
+In this tutorial, we will guide you through setting up a ZeroDev embedded wallet in your DApp, and communicate with it through the standard capability API using Viem/Wagmi.
+
+## Code Example
+
+Use [this example repo](/todo) as a reference as you go through this tutorial.
+
+## Create an embedded Passkey Wallet
+
+ZeroDev has created a number of Wagmi connectors that speak the capabilities API.  In this tutorial, we will use the [passkey](/sdk/advanced/passkeys) connector.  You can find [other connectors here](/smart-wallet/creating-wallets).
+
+Create a Wagmi project with Next.js:
+
+## Send a sponsored transaction
+
+Now you can send a sponsored transaction with the capability API, which is already supported in Viem and Wagmi.
+
+Send a sponsored transaction through Wagmi:
+
+## Next Steps
+
+Congrats -- you just sent your first gasless transaction with ZeroDev, through the standard capability API!
+
+In this example, you used a public ZeroDev API key.  Now learn how to [set up your own ZeroDev project](/smart-wallet/setting-up-zerodev-projects).  Then browse the ZeroDev features using the sidebar and see what you'd like to use!
