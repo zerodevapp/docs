@@ -55,9 +55,11 @@ bun add @zerodev/wallet viem@latest wagmi @tanstack/react-query
 
 :::
 
-## 3. Setup context provider
+## 3. Setup a ZeroDev connector
 
-Create a provider in typical React style.  You will need to [create a project ID from the dashboard](/smart-wallet/setting-up-zerodev-projects), and make sure you are using the right `chain` object corresponding to your ZeroDev project.
+For this tutorial, we will let the user create smart wallets with [passkeys](https://docs.zerodev.app/smart-wallet/creating-wallets).
+
+Create a Wagmi provider and set it up with ZeroDev's passkey connector.  You will need to [create a project ID from the dashboard](/smart-wallet/setting-up-zerodev-projects), and make sure you are using the right `chain` object corresponding to your ZeroDev project.
 
 :::code-group
 
@@ -98,7 +100,7 @@ function Providers({ children }: { children: React.ReactNode}) {
 ```
 :::
 
-## 4. Create a Smart Wallet
+Then, create a button for creating the wallet:
 
 ```tsx filename=page.tsx // [page.tsx]
 import { useConnect, useConnectors } from 'wagmi'
@@ -120,7 +122,7 @@ function App() {
 }
 ```
 
-## 5. Send sponsored & batched transactions
+## 4. Send sponsored & batched transactions
 
 Now let's try using two capabilities together: gas sponsorship and batching.  We will send a batch of two transactions, and sponsor gas for them:
 
@@ -152,7 +154,14 @@ function App() {
                 functionName: "mint",
                 args: [address, 1],
                 value: BigInt(0),
-              }
+              },
+              {
+                address: tokenAddress,
+                abi: abi,
+                functionName: "mint",
+                args: [address, 1],
+                value: BigInt(0),
+              },
             ],
             capabilities: {
               paymasterService: {
