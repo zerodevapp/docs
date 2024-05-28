@@ -15,9 +15,49 @@ ZeroDev supports three types of wallet creation:
 
 [Capabilities](/smart-wallet/quickstart-capabilities) (ERC-5792) are the new standard for DApps to communicate with smart wallets.  If you are building a DApp and looking to use ZeroDev as an embedded smart wallet, we recommend that you do it through the capabilities API, in order to be compatible with other smart wallets.
 
+:::info
+Check out this [code example](https://github.com/zerodevapp/capabilities-examples/tree/main/create-account).
+:::
+
 ### Passkeys
+```tsx
+import { useConnect, useConnectors } from "wagmi"
+
+function App() {
+  const { connect } = useConnect();
+  const connectors = useConnectors();
+
+  // zerodev passkey connector
+  const connector = connectors.find((c) => c.id === 'zerodevPasskeySDK');
+  if (!connector) return <p>Connector not found</p>
+
+  return (
+    <button onClick={() => connect({ connector })}>
+      Create Smart Account
+    </button>
+  )
+}
+```
 
 ### EOA
+```tsx
+import { useConnect, useConnectors } from "wagmi"
+
+function App() {
+  const { connect } = useConnect();
+  const connectors = useConnectors();
+
+  // wrapped connector
+  const connector = connectors.find((c) => c.id === 'metaMaskSDK');
+  if (!connector) return <p>Connector not found</p>
+
+  return (
+    <button onClick={() => connect({ connector })}>
+      Create Smart Account
+    </button>
+  )
+}
+```
 
 ### Social
 
