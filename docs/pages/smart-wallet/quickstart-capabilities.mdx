@@ -1,0 +1,177 @@
+# Quickstart -- Capabilities
+
+Capabilities ([ERC-5792](https://eips.ethereum.org/EIPS/eip-5792)) is the [new standard way for DApps to interact with smart wallets](/blog/hello-capabilities).  On a high level, it comes down to two steps:
+
+- The DApp *discovers* capabilities of the connected wallet through the `wallet_getCapabilities` RPC.
+- The DApp *uses* capabilities through the `wallet_sendCalls` RPC.
+
+By standardizing smart wallet features such as gas sponsorship, transaction batching, and permissions (session keys), capabilities enable DApps to interact with any smart wallets through standard APIs.  This means that:
+
+- If you are building a DApp, you can write your code once and it will work with any AA wallets, whether it's embedded wallets like ZeroDev or standalone wallets like Coinbase Smart Wallet.
+
+- If you are building a wallet, you can write your code once and it will work with any AA accounts, whether it's ZeroDev (Kernel) or another smart account.
+
+**TLDR: capabilities standardize smart wallet features and thereby improve interoperability between smart wallets, reducing vendor lock-in for developers.**
+
+In this tutorial, we will guide you through setting up a ZeroDev embedded wallet in your DApp, and communicate with it through the standard capability API using Viem/Wagmi.
+
+## Code Example
+
+Use [this example repo](https://github.com/zerodevapp/capabilities-examples/tree/main/quick-start) as a reference as you go through this tutorial.
+
+## Create an embedded Passkey Wallet
+
+ZeroDev has created a number of Wagmi connectors that speak the capabilities API.  In this tutorial, we will use the [passkey](/sdk/advanced/passkeys) connector.  You can find [other connectors here](/smart-wallet/creating-wallets).
+
+## 1. Create a Wagmi project with Next.js:
+
+In this tutorial, we will be using [Next.js](https://nextjs.org/docs/getting-started/installation).  Start by creating a Next.js project:
+
+```bash
+npx create-next-app@latest
+```
+
+## 2. Install ZeroDev and dependencies
+
+Install `@zerodev/wallet` and its dependencies:
+
+:::code-group
+
+```bash [npm]
+npm install @zerodev/wallet viem@latest wagmi @tanstack/react-query
+```
+
+```bash [pnpm]
+pnpm add @zerodev/wallet viem@latest wagmi @tanstack/react-query
+```
+
+```bash [yarn]
+yarn add @zerodev/wallet viem@latest wagmi @tanstack/react-query
+```
+
+```bash [bun]
+bun add @zerodev/wallet viem@latest wagmi @tanstack/react-query
+```
+
+:::
+
+## 3. Setup context provider
+
+Create a provider in typical React style.  You will need to [create a project ID from the dashboard](/smart-wallet/setting-up-zerodev-projects), and make sure you are using the right `chain` object corresponding to your ZeroDev project.
+
+:::code-group
+
+```tsx [config.ts]
+import { passkeyConnector } from '@zerodev/wallet'
+import { sepolia } from 'viem/chains'; 
+import { http, createConfig } from 'wagmi'
+
+const PROJECT_ID = '98fd43a8-fb2f-4948-a7ae-069f53969f73'
+
+export const config = createConfig({
+  chains: [sepolia],
+  connectors: [
+    passkeyConnector(PROJECT_ID, sepolia, "v3", "zerodev_quickstart")
+  ],
+  transports: {
+    [sepolia.id]: http(),
+  },
+})
+```
+
+```tsx [Providers.tsx]
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { WagmiProvider } from 'wagmi'
+import { config } from './config.ts'
+
+function Providers({ children }: { children: React.ReactNode}) {
+  const queryClient = new QueryClient()
+ 
+  return (
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        {children}
+      </QueryClientProvider>
+    </WagmiProvider>
+  )
+}
+```
+:::
+
+## 4. Create a Smart Wallet
+
+```tsx filename=page.tsx // [page.tsx]
+import { useConnect, useConnectors } from 'wagmi'
+
+function App() {
+  const connectors = useConnectors();
+  const { connect, isPending } = useConnect();
+  
+  return (
+    <button
+      disabled={isPending}
+      onClick={() => {
+        connect({ connector: connectors[0] })
+      }} 
+    >
+      {isPending ? 'Connecting...' : 'Create Smart Account'}
+    </button>
+  )
+}
+```
+
+## 5. Send sponsored & batched transactions
+
+Now let's try using two capabilities together: gas sponsorship and batching.  We will send a batch of two transactions, and sponsor gas for them:
+
+```tsx filename=page.tsx // [page.tsx]
+import { parseAbi } from 'viem'
+import { useAccount } from 'wagmi'
+import { useWriteContracts } from 'wagmi/experimental';
+
+const PROJECT_ID = '98fd43a8-fb2f-4948-a7ae-069f53969f73'
+const tokenAddress = "0x3870419Ba2BBf0127060bCB37f69A1b1C090992B"
+const abi = parseAbi(["function mint(address _to, uint256 amount) public"])
+const paymasterUrl = `https://rpc.zerodev.app/api/v2/paymaster/${PROJECT_ID}`
+
+function App() {
+  const { address } = useAccount()
+  const { data, writeContracts, isPending } = useWriteContracts();
+
+  return (
+    /* ...Create & Get Smart Account */
+    <div>
+      <button 
+        disabled={isPending}
+        onClick={() => {
+          writeContracts({
+            contracts: [
+              {
+                address: tokenAddress,
+                abi: abi,
+                functionName: "mint",
+                args: [address, 1],
+                value: BigInt(0),
+              }
+            ],
+            capabilities: {
+              paymasterService: {
+                url: paymasterUrl
+              }
+            }
+          })
+        }}
+      >
+        {isPending ? 'Minting...' : 'Mint'}
+      </button>
+      {data && <p>{`UserOp Hash: ${data}`}</p>}
+    </div>
+  )
+}
+```
+
+## Next Steps
+
+Congrats -- you just sent your first gasless transaction with ZeroDev, through the standard capability API!
+
+In this example, you used a public ZeroDev API key.  Now learn how to [set up your own ZeroDev project](/smart-wallet/setting-up-zerodev-projects).  Then browse the ZeroDev features using the sidebar and see what you'd like to use!

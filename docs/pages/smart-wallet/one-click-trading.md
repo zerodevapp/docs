@@ -14,6 +14,79 @@ ZeroDev enables 1CT through *session keys*.  Session keys are **temporary keys w
 
 Since the session key cannot do *everything*, but rather only do specific things, there's no need for the user to confirm every transaction.  The user would only confirm the *permissions* when the session key is created.
 
+## Capabilities API
+
+:::info
+Check out [a complete code example here](https://github.com/zerodevapp/capabilities-examples/tree/main/session-keys).
+:::
+
+With [the capabilities API](/smart-wallet/quickstart-capabilities), you can create a "session" with the wallet by requesting permissions.  Then, transactions can be sent within those permissions, without asking the user for further confirmations.
+
+First, request permissions from the connected wallet using Viem:
+
+```tsx
+import { parseAbi } from "viem"
+import { walletActionsErc7715 } from "viem/experimental"
+import { useWalletClient } from "wagmi"
+
+function App() {
+  const {data: walletClient} = useWalletClient()
+
+  const handleIssuePermissions = async () => {
+    const session = await walletClient?.extend(walletActionsErc7715()).issuePermissions({
+      permissions: [
+        {
+          type: "contract-call",
+          data: {
+            permissions: [
+                onlyMintToken
+                // more policies...
+            ]
+          }
+        },
+      ],
+      expiry: Math.floor(Date.now().valueOf() / 1000) + 3600,
+    })
+  }
+
+  return (
+    <button disabled={!walletClient}  onClick={() => handleIssuePermissions()}>
+      Create Session
+    </button>
+  );
+}
+```
+
+Now, every time you want to send a transaction with this session, use the `permissions` capability and include the `permissionsContext` in the `sendCalls` request:
+
+```tsx
+import { useSendCalls } from "wagmi/experimental"
+
+function App() {
+  const { data, sendCalls } = useSendCalls();
+  
+  return (
+    <button
+      onClick={() => {
+        sendCalls({
+          calls: [
+            MintTokenCall
+          ],
+          capabilities: {
+            // paymasterService...  
+            permissions: {
+              sessionId: session.permissionsContext
+            }
+          }
+        });
+      }}
+    >
+      Mint With Session
+    </button>
+  );
+}
+```
+
 ## React API
 
 :::info

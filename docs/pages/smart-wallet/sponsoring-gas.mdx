@@ -12,6 +12,14 @@ To start sponsoring gas, you need to set up "gas policies."  Gas policies are se
 
 You can set up gas policies on the ZeroDev dashboard or through the admin API.  [Read this document to learn how to set up gas policies.](/meta-infra/gas-policies)
 
+## Capabilities API
+
+Thanks to [the new capabilities standard](/smart-wallet/quickstart-capabilities), you can use ZeroDev paymasters to sponsor gas for any smart wallets, and use any paymaster to sponsor gas for ZeroDev smart wallets.
+
+In this tutorial, we will be using the ZeroDev paymaster.  Make sure you have [set up gas policies](#set-up-gas-policies).  Then copy the paymaster URL from [your dashboard](https://dashboard.zerodev.app/).
+
+Now, you can send sponsored transactions using the `wallet_sendCalls` API with the `paymasterService` capability.  We will be using [Wagmi](https://wagmi.sh/react/api/hooks/useSendCalls) here but you can find the same API in [Viem](https://viem.sh/experimental/eip5792/sendCalls):
+
 ## React API
 
 Set the `paymaster` param when fetching the `kernelClient` through `useKernelClient`:
