@@ -134,7 +134,7 @@ The capabilities paradigm is all the more important because, with the upcoming P
 
 It’s been over a year since ERC-4337 launched, so you might be wondering why capabilities have only become a thing now.  In my opinion, it comes down to a few factors:
 
-- It took time for AA builders to understand what the most important “AA features” really are.  While there are in theory an unlimited number of possible [modules](https://eips.ethereum.org/EIPS/eip-7579) thanks to the programmability of smart accounts, in practice most AA use cases are dominated by just three features: gas sponsorship, transaction batching, and permissions (session keys).  So with this understanding, it’s now possible to create standards for these most popular features.
+- It took time for AA builders to understand what the most important “AA features” really are.  While there are in theory an unlimited number of possible [modules](https://eips.ethereum.org/EIPS/eip-7579) thanks to the programmability of smart accounts, in practice most AA use cases have been dominated by just three features: gas sponsorship, transaction batching, and permissions (session keys).  So with this understanding, it’s now possible to create standards for these most popular features.
 - Coinbase and WalletConnect, the two principle drivers behind this new paradigm, had enough weight in the space to break the local maximum of everyone building for their own ecosystem.  While we have also worked on many interoperability standards, notably for [modular accounts](https://eips.ethereum.org/EIPS/eip-7579) and [permissions](https://github.com/ethereum/ERCs/pull/436), we were not necessarily able to get all AA companies to fall in line the same way that Coinbase and WalletConnect did.  Kudos to them.
 
 # What does this mean for ZeroDev?
@@ -157,3 +157,7 @@ DApps today communicate with smart wallets through vendor-specific SDKs, but tha
 By integrating with the capabilities API, DApps can not only improve UX for users of smart wallets today, but also set themselves up for a future where there will be more and more smart wallets thanks to ERC-4337, and even EOA wallets will become smart thanks to EIP-7702.  The fact that capabilities are now supported in Viem and Wagmi makes integrating with them a no-brainer. 
 
 If you want to get started with capabilities today, try [using ZeroDev with Wagmi](https://docs.zerodev.app/smart-wallet/quickstart-capabilities)!
+
+<br/>
+
+*If you enjoyed this blog post, you can [amplify it here](https://x.com/decentrek/status/1795425083625976308).*
