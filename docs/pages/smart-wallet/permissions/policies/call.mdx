@@ -50,3 +50,17 @@ const validator = toPermissionValidator(publicClient, {
   - `operator`: this can be `EQUAL`, `GREATER_THAN`, `LESS_THAN`, `GREATER_THAN_OR_EQUAL`, `LESS_THAN_OR_EQUAL`, `NOT_EQUAL`.
   - `value`: the value of the argument to use with the operator.  For instance, `operator = EQUAL` and `value = 2` would mean "the argument must be equal to 2".
 - `operation`: whether this is a call or a delegatecall.  Defaults to call.
+
+## Transferring ETH
+
+If you want to transfer ETH given a call policy, specify the `data` field as such:
+
+```ts
+import { pad } from 'viem'
+
+await kernelClient.sendTransaction({
+  to: address,
+  data: pad("0x", { size: 4 }),
+  value: amountToTransfer,
+})
+```
