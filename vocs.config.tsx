@@ -377,7 +377,7 @@ export default defineConfig({
           },
           {
             "text": "Connect Wallet with Other DApps",
-            "link": "/react/use-wallet-connect"
+            "link": "/sdk/advanced/wallet-connect"
           },
           {
             "text": "Fallback Providers",
