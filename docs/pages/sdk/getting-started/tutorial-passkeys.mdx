@@ -44,8 +44,14 @@ In `handleRegister`, add the following code:
 const handleRegister = async () => {
   setIsRegistering(true)
 
-  const passkeyValidator = await createPasskeyValidator(publicClient, {  // [!code focus]
-    passkeyName: username,   // [!code focus]
+  const webAuthnKey = await toWebAuthnKey({ // [!code focus]
+            passkeyName: username, // [!code focus]
+            passkeyServerUrl: PASSKEY_SERVER_URL, // [!code focus]
+            mode: WebAuthnMode.Register // [!code focus]
+  }) // [!code focus]
+
+  const passkeyValidator = await toPasskeyValidator(publicClient, {  // [!code focus]
+    webAuthnKey,   // [!code focus]
     passkeyServerUrl: PASSKEY_SERVER_URL,   // [!code focus]
     entryPoint,   // [!code focus]
   })   // [!code focus]
@@ -63,7 +69,14 @@ And in `handleLogin`, add the following code:
 const handleLogin = async () => {
   setIsLoggingIn(true)
 
-  const passkeyValidator = await getPasskeyValidator(publicClient, { // [!code focus]
+  const webAuthnKey = await toWebAuthnKey({ // [!code focus]
+            passkeyName: username, // [!code focus]
+            passkeyServerUrl: PASSKEY_SERVER_URL, // [!code focus]
+            mode: WebAuthnMode.Login // [!code focus]
+  }) // [!code focus]
+
+  const passkeyValidator = await toPasskeyValidator(publicClient, { // [!code focus]
+    webAuthnKey,  // [!code focus]
     passkeyServerUrl: PASSKEY_SERVER_URL,  // [!code focus]
     entryPoint, // [!code focus]
   })  // [!code focus]

@@ -74,30 +74,44 @@ If you are testing on `localhost`, just leave the domain empty. If you are deplo
 ### Creating a new passkey
 
 ```ts
-import { createPasskeyValidator } from "@zerodev/passkey-validator"
+import { toPasskeyValidator, toWebAuthnKey, WebAuthnMode } from "@zerodev/passkey-validator"
 import { ENTRYPOINT_ADDRESS_V07 } from "permissionless"
 
-const passkeyValidator = await createPasskeyValidator(publicClient, {
+const webAuthnKey = await toWebAuthnKey({
   passkeyName: "passkey name",
   passkeyServerUrl: "your passkey server URL",
-  entryPoint: ENTRYPOINT_ADDRESS_V07,
+  mode: WebAuthnMode.Register
+})
+
+const passkeyValidator = await toPasskeyValidator(publicClient, {
+  webAuthnKey,
+  passkeyServerUrl: "your passkey server URL",
+  entryPoint: ENTRYPOINT_ADDRESS_V07
 })
 ```
 
-`createPasskeyValidator` will prompt the user to create a passkey with the given name.
+`toWebAuthnKey` will prompt the user to create a passkey with the given name.
 
 ### Using an existing passkey
 
 ```ts
-import { getPasskeyValidator } from "@zerodev/passkey-validator"
+import { toPasskeyValidator, toWebAuthnKey, WebAuthnMode } from "@zerodev/passkey-validator"
+import { ENTRYPOINT_ADDRESS_V07 } from "permissionless"
 
-const passkeyValidator = await getPasskeyValidator(publicClient, {
+const webAuthnKey = await toWebAuthnKey({
+  passkeyName: "passkey name",
   passkeyServerUrl: "your passkey server URL",
-  entryPoint: ENTRYPOINT_ADDRESS_V07,
+  mode: WebAuthnMode.Login
+})
+
+const passkeyValidator = await toPasskeyValidator(publicClient, {
+  webAuthnKey,
+  passkeyServerUrl: "your passkey server URL",
+  entryPoint: ENTRYPOINT_ADDRESS_V07
 })
 ```
 
-`getPasskeyValidator` will prompt the user to select an existing passkey.
+`toWebAuthnKey` will prompt the user to select an existing passkey.
 
 ### Creating Kernel accounts
 
@@ -293,16 +307,24 @@ Then, you can pass your server URL as `passkeyServerUrl`.
 
 ```ts
 // creating a new passkey
-const passkeyValidator = await createPasskeyValidator(publicClient, {
-  passkeyName: "passkey name",
-  passkeyServerUrl: "your passkey server URL",
-  entryPoint: ENTRYPOINT_ADDRESS_V07,
+const webAuthnKey = await toWebAuthnKey({
+    passkeyName: "passkey name",
+    passkeyServerUrl: "your passkey server URL",
+    mode: WebAuthnMode.Register
 })
 
 // using an existing passkey
-const passkeyValidator = await getPasskeyValidator(publicClient, {
+const webAuthnKey = await toWebAuthnKey({
+    passkeyName: "passkey name",
+    passkeyServerUrl: "your passkey server URL",
+    mode: WebAuthnMode.Login
+})
+
+// create passkey validator
+const passkeyValidator = await toPasskeyValidator(publicClient, {
+  webAuthnKey,
   passkeyServerUrl: "your passkey server URL",
-  entryPoint: ENTRYPOINT_ADDRESS_V07,
+  entryPoint: ENTRYPOINT_ADDRESS_V07
 })
 ```
 
