@@ -168,7 +168,11 @@ const kernelClient = createKernelAccountClient({
 
 Now you can send transactions with the Kernel client.
 
-### Revoking a Session Key
+## Revoking a Session Key
+
+:::info
+Here's a [code example](https://github.com/zerodevapp/zerodev-examples/blob/main/session-keys/transaction-automation.ts#L114-L158) for revoking session keys.
+:::
 
 After a session key has been used, or if it's no longer needed, it's a good security practice to revoke it to ensure it cannot be used for any further transactions. Here's how you can revoke a session key:
 
