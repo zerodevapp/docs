@@ -167,3 +167,31 @@ const kernelClient = createKernelAccountClient({
 ```
 
 Now you can send transactions with the Kernel client.
+
+### Revoking a Session Key
+
+After a session key has been used, or if it's no longer needed, it's a good security practice to revoke it to ensure it cannot be used for any further transactions. Here's how you can revoke a session key:
+
+First, prepare your environment for the revocation process. This involves creating a "sudo" account capable of performing privileged operations, such as uninstalling plugins.
+
+```ts
+const sudoAccount = await createKernelAccount(publicClient, {
+    plugins: {
+      sudo: ecdsaValidator,
+    },
+  // other params
+});
+
+const sudoKernelClient = createKernelAccountClient({
+  account: sudoAccount,
+  // other params
+})
+```
+
+Now to revoke the session key by uninstalling its associated permission plugin, call `uninstallPlugin` on `sudoKernelClient`. 
+
+```ts
+const txHash = await sudoKernelClient.uninstallPlugin({
+    plugin: permissionPlugin,
+});
+```
