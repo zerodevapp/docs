@@ -40,6 +40,7 @@ Create a script `index.ts` with the following code:
 
 ```ts
 import { createKernelAccount, createKernelAccountClient, createZeroDevPaymasterClient } from "@zerodev/sdk"
+import { KERNEL_V3_1 } from "@zerodev/sdk/constants"
 import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
 import { http, createPublicClient, zeroAddress } from "viem"
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts"
@@ -52,6 +53,7 @@ const PAYMASTER_RPC = `https://rpc.zerodev.app/api/v2/paymaster/${PROJECT_ID}`
 
 const chain = sepolia
 const entryPoint = ENTRYPOINT_ADDRESS_V07
+const kernelVersion = KERNEL_V3_1
 
 const main = async () => {
   // Construct a signer
@@ -67,6 +69,7 @@ const main = async () => {
   const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
     signer,
     entryPoint,
+    kernelVersion
   })
 
   // Construct a Kernel account
@@ -75,6 +78,7 @@ const main = async () => {
       sudo: ecdsaValidator,
     },
     entryPoint,
+    kernelVersion
   })
 
   // Construct a Kernel account client

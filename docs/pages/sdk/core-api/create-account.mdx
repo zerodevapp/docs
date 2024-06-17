@@ -48,6 +48,19 @@ import { ENTRYPOINT_ADDRESS_V07 } from "permissionless"
 const entryPoint = ENTRYPOINT_ADDRESS_V07
 ```
 
+### Picking a Kernel version
+
+Kernel versions 2.x are compatible with EntryPoint 0.6 and Kernel versions 3.x+ are compatible with EntryPoint 0.7.
+
+```ts
+import { KERNEL_V3_1 } from "@zerodev/sdk/constants"
+
+// or
+// import { KERNEL_V2_4 } from "@zerodev/sdk/constants"
+
+const kernelVersion = KERNEL_V3_1 // or KERNEL_V2_4 
+```
+
 ### Creating a public client
 
 In Viem, a [public client](https://viem.sh/docs/clients/public.html) is an interface to a JSON-RPC API such as Infura or Alchemy.  Most bundlers today implement the standard JSON-RPC in addition to bundler RPC, so you can also create a public client with your bundler.
@@ -87,6 +100,7 @@ import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
 const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
   signer,
   entryPoint,
+  kernelVersion
 })
 ```
 
@@ -102,6 +116,7 @@ const account = await createKernelAccount(publicClient, {
     sudo: ecdsaValidator,
   },
   entryPoint,
+  kernelVersion
 })
 ```
 
