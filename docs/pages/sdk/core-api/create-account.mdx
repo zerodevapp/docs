@@ -50,15 +50,16 @@ const entryPoint = ENTRYPOINT_ADDRESS_V07
 
 ### Picking a Kernel version
 
-Kernel versions 2.x are compatible with EntryPoint 0.6 and Kernel versions 3.x+ are compatible with EntryPoint 0.7.
+[Kernel](https://github.com/zerodevapp/kernel) is the smart account that ZeroDev builds on.  ZeroDev used to implicitly use the latest version of Kernel, which has caused some compatibility issues when people upgrade the SDK.  Therefore, starting from ZeroDev SDK v5.3, we require that you explicitly specify the Kernel version.  This how you generally should choose:
+
+- If you had already been in production with ZeroDev SDK v4 or lower, use Kernel version 2.4 with EntryPoint 0.6.
+- If you had already been in production with ZeroDev SDK v5, use Kernel version 3.0 with EntryPoint 0.7.
+- If you are still in development or starting a new project, use Kernel version 3.1 with EntryPoint 0.7.
 
 ```ts
 import { KERNEL_V3_1 } from "@zerodev/sdk/constants"
 
-// or
-// import { KERNEL_V2_4 } from "@zerodev/sdk/constants"
-
-const kernelVersion = KERNEL_V3_1 // or KERNEL_V2_4 
+const kernelVersion = KERNEL_V3_1
 ```
 
 ### Creating a public client
