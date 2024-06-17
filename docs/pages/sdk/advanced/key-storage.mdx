@@ -74,6 +74,7 @@ const ecdsaSigner = toECDSASigner({ signer: remoteSigner })
 
 const permissionPlugin = await toPermissionValidator(publicClient, {
     entryPoint,
+    kernelVersion,
     signer: ecdsaSigner,
     policies: [
       // ...

@@ -33,6 +33,7 @@ const callPolicy = toCallPolicy({
 
 const validator = toPermissionValidator(publicClient, {
   entryPoint,
+  kernelVersion,
   signer: someSigner,
   policies: [
     callPolicy,

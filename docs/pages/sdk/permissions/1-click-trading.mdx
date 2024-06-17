@@ -99,6 +99,7 @@ Here comes the fun part -- we "compose" the signer and policies together into a 
 ```ts
 const sessionKeyValidator = await toPermissionValidator(publicClient, {
   entryPoint,
+  kernelVersion,
   signer: sessionKeySigner,
   policies: [
     callPolicy,
@@ -120,6 +121,7 @@ const account = await createKernelAccount(publicClient, {
     regular: sessionKeyValidator,
   },
   entryPoint,
+  kernelVersion,
 })
 ```
 
@@ -157,6 +159,7 @@ const sessionKeySigner = await toECDSASigner({
 const sessionKeyAccount = await deserializePermissionAccount(
   publicClient,
   entryPoint,
+  kernelVersion,
   serializedSessionKey,
   sessionKeySigner,
 )

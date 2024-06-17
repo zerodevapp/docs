@@ -32,6 +32,7 @@ const guardianSigner = privateKeyToAccount(GUARDIAN_KEY)
 const guardianValidator = await signerToEcdsaValidator(publicClient, {
   signer: guardianSigner,
   entryPoint,
+  kernelVersion
 })
 ```
 
@@ -54,6 +55,7 @@ Then, set up the account with the executor:
 ```ts
 const account = await createKernelAccount(publicClient, {
   entryPoint,
+  kernelVersion,
   plugins: {
     sudo: sudoValidator,
     regular: guardianValidator,

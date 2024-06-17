@@ -24,6 +24,7 @@ const gasPolicy = toGasPolicy({
 
 const validator = toPermissionValidator(publicClient, {
   entryPoint,
+  kernelVersion,
   signer: someSigner,
   policies: [
     gasPolicy,

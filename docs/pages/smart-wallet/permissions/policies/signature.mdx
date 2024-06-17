@@ -15,6 +15,7 @@ const signaturePolicy = toSignatureCallerPolicy({
 
 const validator = toPermissionValidator(publicClient, {
   entryPoint,
+  kernelVersion,
   signer: someSigner,
   policies: [
     signaturePolicy,

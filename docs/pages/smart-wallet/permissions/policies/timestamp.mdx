@@ -15,6 +15,7 @@ const timestampPolicy = toTimestampPolicy({
 
 const validator = toPermissionValidator(publicClient, {
   entryPoint,
+  kernelVersion,
   signer: someSigner,
   policies: [
     timestampPolicy,

@@ -19,6 +19,7 @@ const webAuthnSigner = await toWebAuthnSigner(publicClient, {
 
 const validator = toPermissionValidator(publicClient, {
   entryPoint,
+  kernelVersion,
   signer: webAuthnSigner,
   policies: [
     // ...

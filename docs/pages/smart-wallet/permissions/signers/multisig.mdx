@@ -23,6 +23,7 @@ const multisigSigner = await toWeightedECDSASigner(publicClient, {
 
 const validator = toPermissionValidator(publicClient, {
   entryPoint,
+  kernelVersion,
   signer: multisigSigner,
   policies: [
     // ...

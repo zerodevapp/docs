@@ -52,6 +52,7 @@ import { createWeightedECDSAValidator } from "@zerodev/weighted-ecdsa-validator"
 
 const multisigValidator = await createWeightedECDSAValidator(publicClient, {
   entryPoint,
+  kernelVersion,
   config: {
     threshold: 100,
     signers: [
@@ -77,11 +78,13 @@ If a multisig account has already been deployed, you can skip the multisig confi
 ```ts
 const multisigValidator = await createWeightedECDSAValidator(publicClient, {
   entryPoint,
+  kernelVersion,
   signers: [signerB, signerC],
 })
 
 const account = await createKernelAccount(publicClient, {
   entryPoint,
+  kernelVersion,
   deployedAccountAddress: '<your multisig address>',
   plugins: {
     sudo: multisigValidator,
