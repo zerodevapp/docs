@@ -16,6 +16,7 @@ const ecdsaSigner = toECDSASigner({
 
 const validator = toPermissionValidator(publicClient, {
   entryPoint,
+  kernelVersion,
   signer: ecdsaSigner,
   policies: [
     // ...

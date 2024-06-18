@@ -49,6 +49,7 @@ Use the provider from Privy to create a smart account signer, which can be passe
 
 ```typescript
 import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
+import { KERNEL_V3_1 } from "@zerodev/sdk/constants"
 import { providerToSmartAccountSigner, ENTRYPOINT_ADDRESS_V07 } from 'permissionless';
 import { createPublicClient } from "viem";
 
@@ -63,6 +64,7 @@ const publicClient = createPublicClient({
 const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
   signer: smartAccountSigner,
   entryPoint: ENTRYPOINT_ADDRESS_V07,
+  kernelVersion: KERNEL_V3_1
 })
 
 // You can now use this ECDSA Validator to create a Kernel account

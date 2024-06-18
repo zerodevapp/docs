@@ -91,6 +91,7 @@ Now, on the owner side, approve the session key with [policies](/sdk/permissions
 ```ts
 const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
   entryPoint,
+  kernelVersion,
   signer,
 })
 
@@ -101,6 +102,7 @@ const emptySessionKeySigner = await toECDSASigner({ signer: emptyAccount })
 
 const permissionPlugin = await toPermissionValidator(publicClient, {
   entryPoint,
+  kernelVersion,
   signer: emptySessionKeySigner,
   policies: [
     // your policies
@@ -109,6 +111,7 @@ const permissionPlugin = await toPermissionValidator(publicClient, {
 
 const sessionKeyAccount = await createKernelAccount(publicClient, {
   entryPoint,
+  kernelVersion,
   plugins: {
     sudo: ecdsaValidator,
     regular: permissionPlugin,
@@ -151,6 +154,7 @@ Now create an account object by combining the approval (which you should've stor
 const sessionKeyAccount = await deserializePermissionAccount(
   publicClient,
   entryPoint,
+  kernelVersion,
   approval,
   sessionKeySigner
 )

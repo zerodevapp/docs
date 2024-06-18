@@ -15,6 +15,7 @@ const rateLimitPolicy = toRateLimitPolicy({
 
 const validator = toPermissionValidator(publicClient, {
   entryPoint,
+  kernelVersion,
   signer: someSigner,
   policies: [
     rateLimitPolicy,

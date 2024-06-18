@@ -10,6 +10,7 @@ EIP-1193 is a standard interface for Ethereum providers, such as MetaMask or har
 
 ```typescript
 import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
+import { KERNEL_V3_1 } from "@zerodev/sdk/constants"
 import { providerToSmartAccountSigner, ENTRYPOINT_ADDRESS_V07 } from 'permissionless';
 import { createPublicClient } from "viem";
 
@@ -24,6 +25,7 @@ const publicClient = createPublicClient({
 const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
   signer: smartAccountSigner,
   entryPoint: ENTRYPOINT_ADDRESS_V07,
+  kernelVersion: KERNEL_V3_1
 })
 
 // You can now use this ECDSA Validator to create a Kernel account
@@ -35,6 +37,7 @@ A [Wallet Client](https://viem.sh/docs/clients/wallet.html) is an interface to i
 In this example, we assume that you have access to a WalletClient object.
 ```typescript
 import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
+import { KERNEL_V3_1 } from "@zerodev/sdk/constants"
 import { walletClientToSmartAccountSigner, ENTRYPOINT_ADDRESS_V07 } from 'permissionless';
 
 const smartAccountSigner = walletClientToSmartAccountSigner(walletClient);
@@ -47,6 +50,7 @@ const publicClient = createPublicClient({
 const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
   signer: smartAccountSigner,
   entryPoint: ENTRYPOINT_ADDRESS_V07,
+  kernelVersion: KERNEL_V3_1
 })
 
 // You can now use this ECDSA Validator to create a Kernel account
@@ -57,6 +61,7 @@ A Local Account refers to an EOA where the private key is directly accessible on
 
 ```typescript
 import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
+import { KERNEL_V3_1 } from "@zerodev/sdk/constants"
 import { ENTRYPOINT_ADDRESS_V07 } from 'permissionless';
 import { privateKeyToAccount } from "viem/accounts"
 import { Hex } from "viem"
@@ -72,6 +77,7 @@ const publicClient = createPublicClient({
 const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
   signer: smartAccountSigner,
   entryPoint: ENTRYPOINT_ADDRESS_V07,
+  kernelVersion: KERNEL_V3_1
 })
 
 // You can now use this ECDSA Validator to create a Kernel account
