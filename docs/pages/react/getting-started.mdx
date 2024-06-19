@@ -36,27 +36,27 @@ import { WagmiProvider, createConfig, http } from "wagmi"
 import { sepolia, arbitrum } from "wagmi/chains"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
-export default function Providers({ children }: { children: React.ReactNode }) {  
-  const wagmiConfig = createConfig({
-    chains: [arbitrum, sepolia],
-    transports: {
-      [arbitrum.id]: http(),
-      [sepolia.id]: http(),
-    },
-  })
-  const zdConfig = createZdConfig({
-    chains: [arbitrum, sepolia],
-    transports: {
-      [arbitrum.id]: http(),
-      [sepolia.id]: http(),
-    },
-    projectIds: {
-      [arbitrum.id]: ZERODEV_ARB_PROJECT_ID,
-      [sepolia.id]: ZERODEV_SEPOLIA_PROJECT_ID
-    } 
-  })
-  const queryClient = new QueryClient()
+const wagmiConfig = createConfig({
+  chains: [arbitrum, sepolia],
+  transports: {
+    [arbitrum.id]: http(),
+    [sepolia.id]: http(),
+  },
+})
+const zdConfig = createZdConfig({
+  chains: [arbitrum, sepolia],
+  transports: {
+    [arbitrum.id]: http(),
+    [sepolia.id]: http(),
+  },
+  projectIds: {
+    [arbitrum.id]: ZERODEV_ARB_PROJECT_ID,
+    [sepolia.id]: ZERODEV_SEPOLIA_PROJECT_ID
+  } 
+})
+const queryClient = new QueryClient()
 
+export default function Providers({ children }: { children: React.ReactNode }) {  
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
