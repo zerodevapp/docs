@@ -52,8 +52,8 @@ const handleRegister = async () => {
 
   const passkeyValidator = await toPasskeyValidator(publicClient, {  // [!code focus]
     webAuthnKey,   // [!code focus]
-    passkeyServerUrl: PASSKEY_SERVER_URL,   // [!code focus]
     entryPoint,   // [!code focus]
+    kernelVersion: KERNEL_V3_1,   // [!code focus]
   })   // [!code focus]
 
   await createAccountAndClient(passkeyValidator)  // [!code focus]
@@ -77,8 +77,8 @@ const handleLogin = async () => {
 
   const passkeyValidator = await toPasskeyValidator(publicClient, { // [!code focus]
     webAuthnKey,  // [!code focus]
-    passkeyServerUrl: PASSKEY_SERVER_URL,  // [!code focus]
     entryPoint, // [!code focus]
+    kernelVersion: KERNEL_V3_1   // [!code focus]
   })  // [!code focus]
 
   await createAccountAndClient(passkeyValidator)  // [!code focus]
@@ -99,6 +99,7 @@ const createAccountAndClient = async (passkeyValidator: any) => {
       sudo: passkeyValidator, // [!code focus]
     }, // [!code focus]
     entryPoint, // [!code focus]
+    kernelVersion: KERNEL_V3_1   // [!code focus]
   }) // [!code focus]
 
   kernelClient = createKernelAccountClient({ // [!code focus]
