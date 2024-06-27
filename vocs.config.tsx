@@ -555,6 +555,10 @@ export default defineConfig({
             "text": "Stackup",
             "link": "/sdk/infra/stackup"
           },
+          {
+            "text": "Coinbase",
+            "link": "/sdk/infra/coinbase"
+          },
         ],
       },
       {
