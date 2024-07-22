@@ -1,0 +1,90 @@
+# Setting up the Yi Connector
+
+The Yi Connector is a Wagmi connector with a customizable UI.  Through the UI, your users can create an embedded smart wallet, or connect with an existing smart wallet.  In either case, the resulting Wagmi connector will expose [a standardized API](/dapp/knowledge/capabilities) for your application to interact with, thus decoupling your application from the implementation details of the smart wallet.
+
+## Import
+
+```ts
+import { yiConnector } from '@zerodev/yi'
+```
+
+## Usage
+
+```ts
+import { createConfig, http } from '@wagmi/core'
+import { mainnet, sepolia } from '@wagmi/core/chains'
+import { yiConnector } from '@yi/connector'
+
+export const config = createConfig({
+  chains: [mainnet, sepolia],
+  connectors: [yiConnector({
+    // Yi connector parameters
+  })],
+  transports: {
+    [mainnet.id]: http(),
+    [sepolia.id]: http(),
+  },
+})
+```
+
+## Parameters
+
+```ts
+import { type YiConnectorParameters } from '@yi/connector'
+```
+
+### styling
+
+`unknown`
+
+Custom styling for the Yi connector.
+
+[Read this for details.](/dapp/onboarding/yi-connector-styling)
+
+### embeddedWalletAuthMethods
+
+`AuthMethod[]`
+
+A list of auth methods to show to your users for use with the embedded smart wallet.  If not specified, all auth methods are shown.
+
+Valid values of `AuthMethod` include:
+
+- `passkey`
+- `social`
+- `EOA`
+
+### supportedWallets
+
+`SmartWallet[]`
+
+A list of smart wallets you want to show to the user.  The wallets will be presented in the order of this array.  If not specified, all smart wallets are shown.
+
+Valid values of `SmartWallet` include:
+
+- `yi`
+- `coinbaseSmartWallet`
+
+### requiredCapabilities
+
+`Capability[]`
+
+A list of [capabilities](/knowledge/capabilities) that you need from the smart wallet.  If specified, Yi will warn the user if they attempt to connect with a smart wallet that doesn't support any of the required capabilities.
+
+Valid values of `Capability` include:
+
+- `paymasterService`
+- `atomicBatch`
+- `auxiliaryFunds`
+- `permissions`
+
+### permissions
+
+`Permission[]`
+
+A list of permissions to request upon connecting with the wallet.  Transactions sent through the Yi connector will automatically use a matching permission if available.
+
+### CAB (chain abstracted balances)
+
+`CABToken[]`
+
+A list of tokens to enable chain-abstracted balances (CAB) for.

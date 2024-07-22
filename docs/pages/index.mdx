@@ -1,55 +1,39 @@
-# ZeroDev Smart Wallet
+# ZeroDev -- Build with Smart Accounts
 
-ZeroDev is a **smart, white-labeled, and modular embedded wallet** for building user-friendly Web3 experiences, particularly for DeFi applications.
+ZeroDev provides tooling and infra for developers to build dapps and wallets with smart accounts.
 
-- **Smart**: ZeroDev leverages account abstraction.
-- **White-labeled**: ZeroDev doesn't have a UI -- it provides the underlying wallet logic that you can build a totally customized experience on top of.
-- **Modular**: ZeroDev is built on top of [Kernel](https://github.com/zerodevapp/kernel), the most popular open-source smart account that supports ERC-7579 plugins for customizing wallet logic.
+The first question you must answer before using ZeroDev is: are you building a wallet or a dapp?
 
-ZeroDev is one of the most trusted solutions in AA, powering more than 50% of all AA wallets and a majority of DeFi volume that leverages AA.
+## Are you building a wallet or a dapp?
 
-## How ZeroDev improves UX
+The line between wallets and dapps can be blurry in Web3, especially as smart accounts make wallets more capable than ever before.
 
-Web3 UX can be roughly divided into three areas: **keys, gas, and transactions**.
+For the purpose of using ZeroDev, we define wallets and dapps as follows:
 
-### Keys
+- DApps are applications where you'd rather your users bring their own wallets.
 
-Traditionally, keys are represented as 12-word seed phrases that users are expected to diligently record and secure.  This is very poor UX and where the majority of users fall off.
+- Wallets are applications where you don't want your users to bring their wallets; rather, you want your app to be the wallet for them.
 
-With ZeroDev, you can support not just traditional wallets like MetaMask, but also **social signins** and **passkeys**, including a flexible multisig system.
+## Using ZeroDev for a DApp
 
-Furthermore, ZeroDev supports account recovery, so your users can recover their accounts even if they lose their login credentials.
+If you are building a dapp, we recommend the following approach:
 
-### Gas
+- Use Yi as your onboarding wallet, for users who don't have smart wallets.
+- Use the capability API through Viem/Wagmi to communicate with the connected smart wallet, whether it's Yi or another smart wallet the user brings.
+- Set up capability infra (e.g. paymasters) through the ZeroDev dashboard.
 
-Gas is a huge barrier to onboarding.  If your users do not happen to have the native gas token (e.g. ETH) in their wallet, they cannot transact on your app.
+[Read this to get started.](/dapp)
 
-With ZeroDev, gas can be sponsored, or paid in any ERC20 tokens.
+## Using ZeroDev as a Wallet
 
-### Transactions
+If you are building a wallet, we recommend the following approach:
 
-Web3 transactions typically work like this:
+- Use the ZeroDev SDK to set up an embedded smart account.
+- Use the capabilities API to interact with the smart account.
+  - Use the ZeroDev SDK to interact with the smart account when you need more advanced functionalities that the capabilities API doesn't provide.
 
-- The user initiates every transactions.
-- The user confirms every transaction.
-- Every transaction can do anything (which means a single bad transaction can steal your tokens).
-- Every transaction does one thing.
-- You must wait for a previous transaction to complete before any future transactions can complete.
+[Read this to get started.](/wallet)
 
-With ZeroDev, transactions gain superpowers:
+## Using ZeroDev for Hybrid Apps
 
-- You can send transactions for your users.
-- The user does not need to confirm every transaction.
-- Transactions can be scoped with "permissions."
-- Transactions can be batched.
-- Transactions can be processed in parallel.
-
-## How ZeroDev fits into the wallet stack
-
-ZeroDev can be used as a full-stack embedded wallet solution, or it can be used alongside a traditional embedded wallet such as Privy and Dynamic to provide AA functionalities.
-
-## Next Steps
-
-- If you are building a DApp, get started with [the capabilities API](/smart-wallet/quickstart-capabilities).
-- If you are building a wallet, get started with the [Core SDK](/smart-wallet/quickstart-core) or the [React SDK](/smart-wallet/quickstart-react).
-- If you are unsure, [read this first](/smart-wallet/which-sdk).
+It's possible 
