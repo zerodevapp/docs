@@ -5,9 +5,10 @@ The call policy limits the target (either contract or EOA) that the UserOp can i
 ## API
 
 ```ts
-import { ParamCondition, toCallPolicy } from "@zerodev/permissions/policies"
+import { ParamCondition, toCallPolicy, CallPolicyVersion } from "@zerodev/permissions/policies"
 
 const callPolicy = toCallPolicy({
+  policyVersion: CallPolicyVersion.V0_0_2,
   permissions: [
     {
       // target address

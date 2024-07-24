@@ -76,6 +76,7 @@ const sessionPrivateKey = generatePrivateKey()
 const sessionKeyAccount = privateKeyToAccount(sessionPrivateKey)
 
 const callPolicy = toCallPolicy({
+  policyVersion: CallPolicyVersion.V0_0_2,
   permissions: [
     {
       target: contractAddress,
