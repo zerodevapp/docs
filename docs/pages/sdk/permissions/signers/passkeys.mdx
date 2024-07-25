@@ -5,7 +5,7 @@ The WebAuthn (passkeys) signer signs with a single passkey.  Read [the passkeys 
 ## API
 
 ```typescript
-import { toWebAuthnKey, toWebAuthnSigner, WebAuthnMode } from "@zerodev/permissions/signers"
+import { toWebAuthnKey, toWebAuthnSigner, WebAuthnMode, WebAuthnSignerVersion} from "@zerodev/permissions/signers"
 
 const passkeyName = "Key Name"  // any name you want
 const passkeyServerUrl = "..."  // get this from ZeroDev dashboard
@@ -19,7 +19,7 @@ const webAuthnKey = await toWebAuthnKey({
 
 const webAuthnSigner = await toWebAuthnSigner(publicClient, {
   webAuthnKey,
-  passkeyServerUrl,
+  webAuthnSignerVersion: WebAuthnSignerVersion.V0_0_2
 })
 
 const validator = toPermissionValidator(publicClient, {
