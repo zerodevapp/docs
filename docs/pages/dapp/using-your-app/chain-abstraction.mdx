@@ -1,0 +1,50 @@
+# Chain Abstraction
+
+One of the most powerful features of Yi is chain-abstracted balances (CAB).  When CAB is enabled for a user account for a particular token, say USDC, their USDC balances across all chains will be aggregated into one balance -- the chain-abstracted balance.  Then, the user can use the balance on any chain.  The best part?  A transaction using CAB is just as fast as a regular transaction -- the user doesn't need to deal with bridging at all.
+
+There are a huge variety of use cases for CAB.  Some common examples are:
+
+- Improve onboarding: instead of asking your user to deposit tokens on a specific chain, just let them deposit tokens on any chain.  That way, they don't have to bridge tokens.
+
+- Improve multi-chain apps: if your app interacts with protocols on many chains,
+
+- Chain-abstracted margin:
+
+[Read this to learn more about how CAB works](/dapp/knowledge/chain-abstraction).  In this document, we will focus on how to use CAB with Yi.
+
+## Using CAB from Yi 
+
+Using CAB from Yi is simple -- simply set the `cab` setting to a list of tokens you want to enable CAB for.
+
+A 7710 session will then be created for the account.  The session will be able to do two things:
+
+- Transfer tokens into a CAB vault.
+- Make transactions for the account where it draws money from a liquidity provider before making the actual request.
+
+## Using CAB
+
+First, create a 7710 session with the 7710 session SDK:
+
+```ts
+const cabClient = await sdk.createCabClient({
+  accountAddress: account.address,
+  tokens: ['USDC'],
+  // if `autoDeposit` is set to true, the user will sign two messages:
+  // - one to enable the auto deposit
+  // - one to create the cab session itsel
+  autoDeposit: true,
+  signMessage: (msg) => {
+    // Here we have no idea what SDK the user is using, so we just ask
+    // them to implement a signing function for us
+    return account.signMessage(msg)
+  },
+})
+
+// cabClient.sendUserOperation()...
+```
+
+When you enable CAB on Yi, all requests will be routed through the CAB client.
+
+By default, the CAB client uses the master signer.  But if you also specify permissions, then it will use a session signer with the specified caveats.
+
+Yi is a framework for building applications on top of chain-abstracted smart accounts (CASA).  With CASA, 
