@@ -1,90 +1,93 @@
-# Building Smart Applications with Yi
+# Yi -- Chain-abstracted Smart Accounts
 
-Yi is a framework for building smart applications -- applications that leverage smart accounts (aka "account abstraction" or AA) to provide great UX for users.
+Yi is a framework for building with chain-abstracted smart accounts (CASA for short).  With a CASA, your tokens across all chains are unified into a chain-abstracted balance (CAB) that is simultaneously available on every chain.  You can then spend that CAB on any chain, without ever dealing with bridges.
 
-Here are some things you can do with smart applications:
+The use cases of chain abstraction are endless.  Here are a few examples:
 
-- Onboard users with passkeys and social logins.
-- Sponsor gas for users, or let them pay gas in ERC20 tokens.
-- Safely remove confirmation prompts.
-- Automate transactions for users from your backend.
-- Chain abstraction -- allow your users to use their tokens from any chain on any chain.
+## Using CASA
 
-Read on to learn about [Why Yi](#why-yi) and [How Yi Works](#how-yi-works).
+There are two ways to use CASA:
 
-## Why Yi?
+- If you have already integrated with a smart account (presumably with a smart account framework such as ZeroDev/Biconomy/Alchemy/Permissionless), you can turn the smart account into a CASA with the Yi SDK.
 
-There are tons of AA solutions out there.  What's special about Yi?
+- If you are building a new application, you can use the Yi Connector to easily enable your users to create Yi accounts.
 
-First, a bit of history.  We built ZeroDev in early 2023 when ERC-4337 first came out.  ZeroDev was the first "AA framework" and powers many of the most widely used AA wallets/applications to date.  Other AA frameworks that came later such as Account Kit, Biconomy, and Permissionless largely worked similarly to ZeroDev.
+  - From EOA
+  - From social providers
+    - Build tutorials with Privy/Dynamic
+  - From passkeys
 
-While the ZeroDev SDK remains a powerful solution for wallet builders, we believe that ZeroDev and all AA solutions to date are a poor fit for building *applications*, for two reasons: developer lock-in and user lock-in.
 
-### Developer lock-in
+### Building a new application on CASA
 
-Given that each smart account implementation (Kernel, Safe, Light Account, etc.) speaks a different API, a smart application must be implemented against a specific account implementation, using a vendor-specific SDK built for the smart account.
+Let's not support Coinbase Smart Wallet for now -- it doesn't work with permissions, won't work with CAB, and can't import accounts.  It's purely useless.
 
-Considering the difficulty with migrating between smart accounts, the application ends up highly coupled with a specific AA provider, with little chance of migrating to a different vendor once the application has gone live.
+Create a EIP-1193 provider or a Wagmi connector that:
 
-This would be akin to if today when you build an app, you have to build it for a specific wallet (e.g. MetaMask) and it won't work with any other wallet.  That would be insane, and yet that has been the state of AA until now.
+- Speak the EIP-5792 capabilities APIs
+- Can enable common capabilities directly
+  - Sponsorship: specify the paymaster URL; then it will be used for all txns (and if a txn is not sponsored, it's sent without paymaster).
+  - Batching: use `sendCalls`
+  - Permissions:
+    - just specify permissions, which will then be applied to all calls???
+  - CAB
+    - getBalance and `readContractERC20` returns the correct CAB balances
+    - sendTransaction automatically uses CAB
 
-### User lock-in
+# Yi -- Chain-abstracted Smart Accounts
 
-As a further consequence of the lack of smart account interoperability, the user cannot bring their own smart wallet to the application, since there's no guarantee that the user's own smart wallet happens to use the same smart account implementation that the app was programmed against.
+Yi is a framework for building with chain-abstracted smart accounts (CASA).  With Yi, you can turn an existing smart account into CASA, or you can build a new application on CASA.
 
-Instead, the user MUST use the app through an embedded smart wallet, resulting in a fragmented experience where the user wounds up having a bunch of embedded wallets across apps, whether they like it or not.
+## Setting up a Yi Connector
 
-Another consequence of forcing the user to use an embedded wallet is that it makes it difficult for the user to use the tokens/assets from your app on other Web3 protocols, losing out on one of the greatest benefits of Web3 -- interoperability.
+```ts
+import { createConfig, http } from '@wagmi/core'
+import { mainnet, sepolia } from '@wagmi/core/chains'
+import { yiPasskeyConnector } from '@yi/connectors'
+ 
+export const config = createConfig({
+  chains: [mainnet, sepolia],
+  connectors: [yiPasskeyConnector({
+    // if set, this will execute all transactions within the session,
+    // thus skipping confirmation prompts
+    useSession: {
+      // 7715 permissions
+    },
+    cab: {
 
-### How Yi is different
+    },
+  })],
+  transports: {
+    [mainnet.id]: http(),
+    [sepolia.id]: http(),
+  },
+})
+```
 
-Yi is a new AA solution built specifically for applications that addresses the problems above, using the technologies of 2024:
+## Setting up Yi with Embedded Signers
 
-- Thanks to [capabilities (ERC-5792)](/dapp/knowledge/capabilities), it's now possible to build a smart application in such a way that works with any smart wallet (embedded or standalone), as opposed to locking in the application with a specific smart wallet.
+You can use a solution like Privy/Dynamic as the signin frontend, while using their signer to power your Yi account.
 
-- Thanks to [subaccounts](/dapp/knowledge/subaccounts) (which is itself a special case of [permissions](/dapp/knowledge/permissions)), it's now possible to onboard users with embedded wallets while giving them a path to migrate to a standalone wallet, as opposed to permanently trapping the user with an embedded wallet.
+```ts
+import { signerToProvider } from '@yi/sdk'
+ 
 
-Incidentally, Yi is also the first AA solution to support true [chain-abstraction](/dapp/knowledge/chain-abstraction), giving it more power than all AA solutions to date.
+const {
 
-## How Yi Works
+} = useWalletClient()
 
-Yi is not just a new solution.  Yi is a new paradigm for building smart applications.
+const signer = walletClientToSmartAccountSigner(walletClient)
 
-Yi helps you optimize the three parts of your user's journey:
+const provider = await signerToProvider({
+  signer: signer,
+  useSession: {
+    // 7715 permissions
+  },
+  cab: {
 
-- Onboarding: how does your user connect to your app with a smart wallet, especially if they don't already own one?
+  },
+})
+ 
+```
 
-- Using your app: how do your users use your app with minimal distractions from the Web3 complexities such as gas, confirmations, and bridging?
-
-- Interop: how do your users use the tokens/assets from your app on other apps (and vice versa)?
-
-### Onboarding
-
-[Capabilities (ERC-5792)](/dapp/knowledge/capabilities) have made it possible to build standalone smart wallets (as opposed to embedded ones) such as Yi Wallet and Coinbase Smart Wallet.  And with the rise of [ERC-7702](/dapp/knowledge/7702), existing EOA wallets will become smart as well.  The upshot is that if you are building an app for smart wallets, you will want your app to work for *all* smart wallets, not just a particular one.
-
-However, as of today most users don't use a smart wallet, so it's paramount that your app is able to spin up an embedded smart wallet for those users.
-
-To address these needs, Yi provides a "smart wallet connector" called Yi Connector.  Yi Connector is a Wagmi connector with a customizable UI.  Through the UI, your users can create an embedded smart wallet, or connect with an existing smart wallet.  In either case, the resulting Wagmi connector will expose [a standardized API](/dapp/knowledge/capabilities) for your application to interact with, thus decoupling your application from the implementation details of the smart wallet.
-
-### Using your app
-
-When your user uses your app, the last thing you want is to distract them from your application with Web3 idiosyncrasies like gas, confirmations, and bridging.
-
-With Yi, you can remove these points of frictions:
-
-- Your users can forget about gas if you sponsor gas for them, or they can pay gas in their preferred ERC20 tokens.
-- Your users can safely skip confirmations by granting your app with [permissions](/dapp/knowledge/permissions), and even let your app automate transactions for them from your backend.
-- Your users can use tokens from any chain on any chain, achieving "[chain abstraction](/dapp/knowledge/chain-abstraction)" and therefore making bridging unnecessary.
-
-As a result, applications built with Yi offer a level of UX that is unparalleled in Web3 today.
-
-### Interop
-
-If you manage to engage and retain your user, they will accumulate some tokens/assets on your app, and at some point they will want to use those assets on other apps/protocols.
-
-With existing embedded wallet solutions, the best you can do is:
-
-- Let your user withdraw assets from your app, which hurts your own app's retention.
-- Let your user export the private key of your embedded wallet and import it into a EOA wallet.  This is very insecure (since the key is shared over the network in plain text), and requires that your user manage a new EOA wallet in parallel to their existing EOA wallets, which most wallet software like MetaMask don't support very well.
-
-With Yi, the embedded account in your app can be used as a [subaccount](/dapp/knowledge/subaccounts) in a standalone smart wallet such as Yi Wallet, all without ever sharing keys.  Your user can therefore easily use the account in your app elsewhere, enjoying the great UX of embedded wallets without losing the interoperability of standalone wallets.
+### Setting up Yi with EOA signers

@@ -38,6 +38,9 @@ const cabClient = await sdk.createCabClient({
     // them to implement a signing function for us
     return account.signMessage(msg)
   },
+  hooks: {
+    receivedRepayTokensInfo: (repayTokensInfo) => {},
+  },
 })
 
 // cabClient.sendUserOperation()...

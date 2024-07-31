@@ -24,8 +24,7 @@ export default defineConfig({
     </>
   ),
   topNav: [
-    { text: 'Build a DApp', link: '/dapp', match: '/dapp' },
-    { text: 'Build a Wallet', link: '/wallet', match: '/wallet' },
+    { text: 'SDK', link: '/sdk', match: '/sdk' },
     {
       link: 'https://dashboard.zerodev.app/',
       text: 'Dashboard',
@@ -47,98 +46,114 @@ export default defineConfig({
     }
   ],
   sidebar: {
-    "/dapp": [
+    "/sdk": [
       {
         "text": "Getting Started",
         "collapsed": false,
         "items": [
           {
             "text": "Introduction",
-            "link": "/dapp"
+            "link": "/sdk"
           },
           {
             "text": "Demo App",
-            "link": "/dapp"
+            "link": "/sdk"
+          },
+          {
+            "text": "Quick Start",
+            "link": "/sdk/quick-start"
           },
         ],
       },
       {
-        "text": "Onboarding",
+        "text": "Setting up Yi",
         "collapsed": false,
         "items": [
           {
-            "text": "Setting up the Yi Connector",
-            "link": "/dapp/onboarding/yi-connector-setup"
+            "text": "Introduction",
+            "link": "/sdk"
           },
           {
-            "text": "Styling the Yi Connector",
-            "link": "/dapp/onboarding/yi-connector-styling"
+            "text": "Authentication",
+            "collapsed": false,
+            "items": [
+              {
+                "text": "Social / email",
+                "link": "/sdk"
+              },
+              {
+                "text": "Passkeys",
+                "link": "/sdk/quick-start"
+              },
+              {
+                "text": "EOAs",
+                "link": "/sdk/quick-start"
+              },
+              {
+                "text": "Third-party signers",
+                "link": "/sdk/quick-start"
+              },
+            ],
+          },
+          {
+            "text": "Chain abstraction",
+            "link": "/sdk/quick-start"
+          }
+        ],
+      },
+      {
+        "text": "Using Yi",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Introduction",
+            "link": "/sdk/quick-start"
+          },
+          {
+            "text": "Sponsoring gas",
+            "link": "/sdk/quick-start"
+          },
+          {
+            "text": "Paying gas in ERC20s",
+            "link": "/sdk/quick-start"
+          },
+          {
+            "text": "Batching transactions",
+            "link": "/sdk/quick-start"
+          },
+          {
+            "text": "1-click trading",
+            "link": "/sdk/quick-start"
+          },
+          {
+            "text": "Automating transactions",
+            "link": "/sdk/quick-start"
           },
         ],
       },
       {
-        "text": "Using your app",
+        "text": "Using Yi with other accounts",
         "collapsed": false,
         "items": [
           {
-            "text": "Sponsoring Gas",
-            "link": "/dapp/using-your-app/sponsor-gas"
+            "text": "Basic Usage",
+            "link": "/sdk/interop"
           },
           {
-            "text": "Batching Transactions",
-            "link": "/dapp/using-your-app/batching-transactions"
+            "text": "Kernel (ZeroDev)",
+            "link": "/sdk/interop/kernel"
           },
           {
-            "text": "Removing Confirmations",
-            "link": "/dapp/using-your-app/removing-confirmations"
+            "text": "Safe",
+            "link": "/sdk/interop/safe"
           },
           {
-            "text": "Transaction Automation",
-            "link": "/dapp/using-your-app/transaction-automation"
+            "text": "Biconomy",
+            "link": "/sdk/interop/biconomy"
           },
           {
-            "text": "Chain Abstraction",
-            "link": "/dapp/using-your-app/chain-abstraction"
-          },
-        ],
-      },
-      {
-        "text": "Interop",
-        "collapsed": false,
-        "items": [
-          {
-            "text": "Using embedded account in Yi Wallet",
-            "link": "/dapp/interop/using-yi-wallet"
-          },
-          {
-            "text": "Importing an account into Yi Wallet",
-            "link": "/dapp/interop/importing-account-into-yi-wallet"
-          },
-        ],
-      },
-      {
-        "text": "Knowledge Base",
-        "collapsed": false,
-        "items": [
-          {
-            "text": "What are capabilities (ERC-5792)?",
-            "link": "/dapp/knowledge/capabilities"
-          },
-          {
-            "text": "What is ERC-7702?",
-            "link": "/dapp/knowledge/7702"
-          },
-          {
-            "text": "What are permissions (ERC-7715)?",
-            "link": "/dapp/knowledge/permissions"
-          },
-          {
-            "text": "What are subaccounts?",
-            "link": "/dapp/knowledge/subaccounts"
-          },
-          {
-            "text": "What is chain abstraction?",
-            "link": "/dapp/knowledge/chain-abstraction"
+            "text": "Alchemy",
+            "link": "/sdk/interop/alchemy"
           },
         ],
       },
