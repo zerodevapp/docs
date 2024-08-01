@@ -1,55 +1,39 @@
-# ZeroDev Smart Wallet
+# ZeroDev Introduction
 
-ZeroDev is a **smart, white-labeled, and modular embedded wallet** for building user-friendly Web3 experiences, particularly for DeFi applications.
+**ZeroDev** is a modular SDK for developing DApps and wallets using smart accounts (account abstraction).
 
-- **Smart**: ZeroDev leverages account abstraction.
-- **White-labeled**: ZeroDev doesn't have a UI -- it provides the underlying wallet logic that you can build a totally customized experience on top of.
-- **Modular**: ZeroDev is built on top of [Kernel](https://github.com/zerodevapp/kernel), the most popular open-source smart account that supports ERC-7579 plugins for customizing wallet logic.
+ZeroDev is modular in three ways:
 
-ZeroDev is one of the most trusted solutions in AA, powering more than 50% of all AA wallets and a majority of DeFi volume that leverages AA.
+- [**Modular smart accounts**](/sdk/permissions/intro) -- you can configure the smart account with plugins to enable features like passkeys, session keys, account recovery, etc.
 
-## How ZeroDev improves UX
+- [**Modular signers**](/sdk/signers/intro) -- your users can manage keys with a variety of methods ranging from passkeys to third-party WaaS such as Privy, Dynamic, Magic, etc.
 
-Web3 UX can be roughly divided into three areas: **keys, gas, and transactions**.
+- [**Modular infra**](/sdk/infra/intro) -- you can use any account abstraction infra provider such as Pimlico, StackUp, Alchemy, etc.
 
-### Keys
+## Why Account Abstraction
 
-Traditionally, keys are represented as 12-word seed phrases that users are expected to diligently record and secure.  This is very poor UX and where the majority of users fall off.
+Simply put, account abstraction is how you build a Web3 experience that feels like Web2, without compromising on security for your users.  With AA, you can:
 
-With ZeroDev, you can support not just traditional wallets like MetaMask, but also **social signins** and **passkeys**, including a flexible multisig system.
+- **Create self-custody wallets** for your users that support **Web2 logins** (socials, email, passkeys, etc.), so they don’t need to worry about seed phrases.
 
-Furthermore, ZeroDev supports account recovery, so your users can recover their accounts even if they lose their login credentials.
+- **Sponsor gas** for your users so they don’t need to worry about gas, or let them **pay gas in ERC20 tokens** like USDC or even your own project tokens.
 
-### Gas
+- Simplify user flow by **batching transactions**, **removing signing prompts**, and even **automating transactions** for users while they are offline (think subscriptions).
 
-Gas is a huge barrier to onboarding.  If your users do not happen to have the native gas token (e.g. ETH) in their wallet, they cannot transact on your app.
+- **Recover wallets** for users if they lose their keys.
 
-With ZeroDev, gas can be sponsored, or paid in any ERC20 tokens.
+And these are just some examples!  ZeroDev is **fully programmable** and can support additional features via plugins.
 
-### Transactions
+## Why ZeroDev
 
-Web3 transactions typically work like this:
+- **Powerful**: ZeroDev supports all major AA features such as sponsoring gas and batching transactions, as well as powerful plugins such as session keys, recovery, passkeys, and more.
 
-- The user initiates every transactions.
-- The user confirms every transaction.
-- Every transaction can do anything (which means a single bad transaction can steal your tokens).
-- Every transaction does one thing.
-- You must wait for a previous transaction to complete before any future transactions can complete.
+- **Modular**: ZeroDev is the first AA SDK that natively supports plugins.  You can customize your wallet logic by developing custom plugins.
 
-With ZeroDev, transactions gain superpowers:
+- **Interoperable**: ZeroDev is built on top of [Viem](https://viem.sh/) and [Permissionless](https://docs.pimlico.io/permissionless/reference), which means:
+  - You can interact with smart accounts through standard Viem APIs.
+  - You can use ZeroDev with any AA infra providers, avoiding vendor lock-in.
 
-- You can send transactions for your users.
-- The user does not need to confirm every transaction.
-- Transactions can be scoped with "permissions."
-- Transactions can be batched.
-- Transactions can be processed in parallel.
+## Getting Started
 
-## How ZeroDev fits into the wallet stack
-
-ZeroDev can be used as a full-stack embedded wallet solution, or it can be used alongside a traditional embedded wallet such as Privy and Dynamic to provide AA functionalities.
-
-## Next Steps
-
-- If you are building a DApp, get started with [the capabilities API](/smart-wallet/quickstart-capabilities).
-- If you are building a wallet, get started with the [Core SDK](/smart-wallet/quickstart-core) or the [React SDK](/smart-wallet/quickstart-react).
-- If you are unsure, [read this first](/smart-wallet/which-sdk).
+To start coding with ZeroDev, check out [the quickstart](/sdk/getting-started/quickstart) or [the tutorial](/sdk/getting-started/tutorial).
