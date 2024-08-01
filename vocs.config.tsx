@@ -56,12 +56,16 @@ export default defineConfig({
             "link": "/sdk"
           },
           {
-            "text": "Demo App",
-            "link": "/sdk"
+            "text": "Yi vs Other Solutions",
+            "link": "/sdk/yi-vs-others"
           },
           {
-            "text": "Quick Start",
-            "link": "/sdk/quick-start"
+            "text": "Demo App",
+            "link": "https://demo.yi.app/"
+          },
+          {
+            "text": "Quickstart",
+            "link": "/sdk/quickstart"
           },
         ],
       },
@@ -71,7 +75,7 @@ export default defineConfig({
         "items": [
           {
             "text": "Introduction",
-            "link": "/sdk"
+            "link": "/sdk/setting-up-yi"
           },
           {
             "text": "Authentication",
@@ -79,25 +83,25 @@ export default defineConfig({
             "items": [
               {
                 "text": "Social / email",
-                "link": "/sdk"
+                "link": "/sdk/setting-up-yi/auth/social"
               },
               {
                 "text": "Passkeys",
-                "link": "/sdk/quick-start"
+                "link": "/sdk/setting-up-yi/auth/passkeys"
               },
               {
                 "text": "EOAs",
-                "link": "/sdk/quick-start"
+                "link": "/sdk/setting-up-yi/auth/eoa"
               },
               {
                 "text": "Third-party signers",
-                "link": "/sdk/quick-start"
+                "link": "/sdk/setting-up-yi/auth/third-party-signers"
               },
             ],
           },
           {
             "text": "Chain abstraction",
-            "link": "/sdk/quick-start"
+            "link": "/sdk/setting-up-yi/chain-abstraction"
           }
         ],
       },
@@ -106,28 +110,28 @@ export default defineConfig({
         "collapsed": false,
         "items": [
           {
-            "text": "Introduction",
-            "link": "/sdk/quick-start"
+            "text": "Basic Usage",
+            "link": "/sdk/using-yi/basic-usage"
           },
           {
             "text": "Sponsoring gas",
-            "link": "/sdk/quick-start"
+            "link": "/sdk/using-yi/sponsoring-gas"
           },
           {
             "text": "Paying gas in ERC20s",
-            "link": "/sdk/quick-start"
+            "link": "/sdk/using-yi/paying-gas-in-erc20s"
           },
           {
             "text": "Batching transactions",
-            "link": "/sdk/quick-start"
+            "link": "/sdk/using-yi/batching-transactions"
           },
           {
             "text": "1-click trading",
-            "link": "/sdk/quick-start"
+            "link": "/sdk/using-yi/one-click-trading"
           },
           {
             "text": "Automating transactions",
-            "link": "/sdk/quick-start"
+            "link": "/sdk/using-yi/automating-transactions"
           },
         ],
       },
@@ -136,7 +140,7 @@ export default defineConfig({
         "collapsed": false,
         "items": [
           {
-            "text": "Basic Usage",
+            "text": "Introduction",
             "link": "/sdk/interop"
           },
           {
@@ -154,6 +158,24 @@ export default defineConfig({
           {
             "text": "Alchemy",
             "link": "/sdk/interop/alchemy"
+          },
+        ],
+      },
+      {
+        "text": "Knowledge Base",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "What is a smart account?",
+            "link": "/sdk/interop"
+          },
+          {
+            "text": "What is Chain Abstraction?",
+            "link": "/sdk/interop"
+          },
+          {
+            "text": "What are capabilities (ERC-5792)?",
+            "link": "/sdk/knowledge-base/capabilities"
           },
         ],
       },
