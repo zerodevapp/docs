@@ -1,17 +1,13 @@
 # Basic Usage of Yi
 
-Yi is the first AA solution to make extensive use of [ERC-5792](/sdk/knowledge-base/capabilities) and [ERC-7715](/sdk/knowledge-base/permissions) -- two standards that together provide a standard set of APIs for the most common AA features, including:
+Yi is the [first smart account solution](/sdk/yi-vs-others) to make extensive use of open standards including [ERC-5792](/sdk/knowledge-base/capabilities) (aka "capabilities") and [ERC-7715](/sdk/knowledge-base/permissions) (aka "permissions").  As such, you can use Yi through standard libraries including Wagmi and Viem.
 
-- Gas sponsorship
-- Transaction batching
-- Permissions (aka "session keys")
+To start using Yi:
 
-As a result, you don't need to use Yi through any vendor-specific SDK.  Rather, you can just use plain Viem and Wagmi to interact with Yi.  This significantly reduces your vendor lock-in comparing to the previous generation of AA solutions.
+- If you had [set up Yi as a Wagmi connector](/sdk/setting-up-yi#using-yi-through-wagmi), you can use Yi through [standard Wagmi hooks](https://wagmi.sh/react/api/hooks).
 
-To start using Yi, simply choose one of the following paths:
+- If you had [set up Yi as a Viem wallet client](/sdk/setting-up-yi#using-yi-through-viem), you can use Yi through [standard Viem actions](https://viem.sh/docs/actions/wallet/introduction).
 
-- [Set up Yi as a Wagmi connector](/sdk/setting-up-yi#using-yi-through-wagmi), then use Yi through [standard Wagmi hooks](https://wagmi.sh/react/api/hooks).
+The standard Wagmi and Viem APIs will allow you to perform basic actions such as [sending transactions](https://wagmi.sh/react/guides/send-transaction), [reading from contracts](https://wagmi.sh/react/guides/read-from-contract), etc.
 
-- [Set up Yi as a Viem wallet client](/sdk/setting-up-yi#using-yi-through-viem), then use Yi through [standard Viem actions](https://viem.sh/docs/actions/wallet/introduction).
-
-The standard Wagmi and Viem APIs will allow you to perform basic actions such as sending transactions, calling contracts, etc.  For advanced account abstraction and chain abstraction features, find specific instructions with the sidebar on the left.
+For advanced account abstraction and chain abstraction features, find specific instructions with the left sidebar.
