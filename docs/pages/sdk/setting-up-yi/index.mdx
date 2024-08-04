@@ -1,36 +1,62 @@
 # Setting up Yi
 
-There are two ways to use Yi:
+Yi is proudly [built on open standards](/sdk/yi-vs-others).  As such, you can use Yi through your favorite libraries, notably Wagmi and Viem.
 
-- If you are building a Wagmi app, we recommend [using Yi as a Wagmi connector](#using-yi-as-a-wagmi-connector).
+## Installation
 
-- If you are not using Wagmi, we recommend [using Yi as a EIP-1193 provider](#using-yi-as-a-eip-1193-provider).
+If you are going to be using Yi through Wagmi:
 
-## Using Yi as a Wagmi connector
+:::code-group
 
-```ts
+```bash [npm]
+npm i @build-with-yi/wagmi
 ```
 
-## Using Yi as a EIP-1193 provider
-
-```ts
-const yiProvider =
+```bash [yarn]
+yarn add @build-with-yi/wagmi
 ```
 
-Once you have created a Yi provider, you typically want to "wrap" it inside a Web3 library to more easily use it.  We recommend using Viem because it natively supports the [capabilities API](/sdk/knowledge-base/capabilities) which is helpful for using AA features such as gas sponsorship.  Here's how to wrap the Yi provider with Viem:
-
-```ts
-import { createWalletClient, custom } from 'viem'
-import { mainnet } from 'viem/chains'
-import { walletActionsEip5792 } from 'viem/experimental'
- 
-const client = createWalletClient({
-  chain: mainnet,
-  transport: custom(yiProvider)
-}).extend(walletActionsEip5792()) 
+```bash [pnpm]
+pnpm i @build-with-yi/wagmi
 ```
+
+```bash [bun]
+bun add @build-with-yi/wagmi
+```
+
+:::
+
+If you are going to be using Yi through Viem:
+
+:::code-group
+
+```bash [npm]
+npm i @build-with-yi/viem
+```
+
+```bash [yarn]
+yarn add @build-with-yi/viem
+```
+
+```bash [pnpm]
+pnpm i @build-with-yi/viem
+```
+
+```bash [bun]
+bun add @build-with-yi/viem
+```
+
+:::
+
+## Setting up Yi
+
+Follow the links below to learn how to set up Yi with your preferred authentication methods.
+
+- [Social / email](/sdk/setting-up-yi/social)
+- [Passkeys](/sdk/setting-up-yi/passkeys)
+- [EOA](/sdk/setting-up-yi/eoa)
+- [Third-party signers](/sdk/setting-up-yi/third-party-signers)
 
 ## Next Steps
 
-- Learn more about how to set up specific authentication methods.
-- Learn to use the Yi connector/provider.
+Once you finish setting up Yi, [learn to use Yi](/sdk/using-yi/basic-usage).

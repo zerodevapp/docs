@@ -1,0 +1,19 @@
+# Signing into Yi with a EOA wallet
+
+You can create a Yi smart account by using a EOA wallet (e.g. MetaMask) as its "signer" -- meaning that the EOA wallet will sign the transactions and messages for the Yi account.
+
+## Wagmi connector
+
+You can set up a Yi connector by wrapping a EOA connector.
+
+```ts
+```
+
+## EIP-1193 provider
+
+You can set up a Yi provider with a EOA signer.
+
+```ts
+```
+
+Then you can wrap the provider into a Viem wallet client [like this](/sdk/setting-up-yi#using-yi-through-viem).

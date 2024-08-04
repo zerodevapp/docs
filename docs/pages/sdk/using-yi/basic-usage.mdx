@@ -1,16 +1,17 @@
 # Basic Usage of Yi
 
-As described in [Setting up Yi](/sdk/setting-up-yi), Yi can be used either as a Wagmi connector or a EIP-1193 provider.  When using Yi as a EIP-1193 provider, we recommend that you wrap the provider with a Viem client, like this:
+Yi is the first AA solution to make extensive use of [ERC-5792](/sdk/knowledge-base/capabilities) and [ERC-7715](/sdk/knowledge-base/permissions) -- two standards that together provide a standard set of APIs for the most common AA features, including:
 
-```ts
-import { createWalletClient, custom } from 'viem'
-import { mainnet } from 'viem/chains'
-import { walletActionsEip5792 } from 'viem/experimental'
- 
-const client = createWalletClient({
-  chain: mainnet,
-  transport: custom(yiProvider)
-}).extend(walletActionsEip5792()) 
-```
+- Gas sponsorship
+- Transaction batching
+- Permissions (aka "session keys")
 
-Now you can use the `client` to execute transactions and do anything you'd normally do with a wallet.
+As a result, you don't need to use Yi through any vendor-specific SDK.  Rather, you can just use plain Viem and Wagmi to interact with Yi.  This significantly reduces your vendor lock-in comparing to the previous generation of AA solutions.
+
+To start using Yi, simply choose one of the following paths:
+
+- [Set up Yi as a Wagmi connector](/sdk/setting-up-yi#using-yi-through-wagmi), then use Yi through [standard Wagmi hooks](https://wagmi.sh/react/api/hooks).
+
+- [Set up Yi as a Viem wallet client](/sdk/setting-up-yi#using-yi-through-viem), then use Yi through [standard Viem actions](https://viem.sh/docs/actions/wallet/introduction).
+
+The standard Wagmi and Viem APIs will allow you to perform basic actions such as sending transactions, calling contracts, etc.  For advanced account abstraction and chain abstraction features, find specific instructions with the sidebar on the left.

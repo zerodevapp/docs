@@ -1,39 +1,34 @@
-# ZeroDev -- Build with Smart Accounts
+# Yi -- Chain-abstracted Smart Account
 
-ZeroDev provides tooling and infra for developers to build dapps and wallets with smart accounts.
+Yi is a **chain-abstracted smart account** that you can embed into your application, to enable a seamless onboarding and transaction experience for your users.
 
-The first question you must answer before using ZeroDev is: are you building a wallet or a dapp?
+Through **account abstraction** and **chain abstraction**, Yi removes the major pain points with Web3 UX today, including:
 
-## Are you building a wallet or a dapp?
+- Bridges
+- Gas
+- Seed phrases
+- Confirmations
 
-The line between wallets and dapps can be blurry in Web3, especially as smart accounts make wallets more capable than ever before.
+Read on to learn Yi's features, and [how Yi compares with other AA solutions](/sdk/yi-vs-others).
 
-For the purpose of using ZeroDev, we define wallets and dapps as follows:
+## Yi's top features
 
-- DApps are applications where you'd rather your users bring their own wallets.
+### Chain abstraction, not bridges
 
-- Wallets are applications where you don't want your users to bring their wallets; rather, you want your app to be the wallet for them.
+Yi is the first *chain-abstracted smart account* -- a smart account that aggregates its tokens into a "chain-abstracted balance (CAB)" that's simultaneously available on every chain.
 
-## Using ZeroDev for a DApp
+For example, if you deposit 100 USDC to a Yi account on Base, then deposit 200 USDC to the account on Polygon, the account will now hold 300 "chain-abstracted USDC" that can be spent on any chain.
 
-If you are building a dapp, we recommend the following approach:
+Amazingly, these chain-abstracted tokens can be spent *at the speed of the destination chain* -- just like a regular transaction.  This is unlike a traditional bridge where the user has to wait for confirmations on both the source chain and the destination chain.
 
-- Use Yi as your onboarding wallet, for users who don't have smart wallets.
-- Use the capability API through Viem/Wagmi to communicate with the connected smart wallet, whether it's Yi or another smart wallet the user brings.
-- Set up capability infra (e.g. paymasters) through the ZeroDev dashboard.
+### Paymasters, not gas
 
-[Read this to get started.](/dapp)
+Yi is a ERC-4337 smart account with support for *paymasters* -- which are smart contracts that can sponsor gas for your users or allow them to pay gas with ERC20 tokens.
 
-## Using ZeroDev as a Wallet
+### Passkeys and socials, not seed phrases
 
-If you are building a wallet, we recommend the following approach:
+If your users don't already have a wallet, don't ask them to 
 
-- Use the ZeroDev SDK to set up an embedded smart account.
-- Use the capabilities API to interact with the smart account.
-  - Use the ZeroDev SDK to interact with the smart account when you need more advanced functionalities that the capabilities API doesn't provide.
+### Permissions, not confirmations
 
-[Read this to get started.](/wallet)
-
-## Using ZeroDev for Hybrid Apps
-
-It's possible 
+## Next steps

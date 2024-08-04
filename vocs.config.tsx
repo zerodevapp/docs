@@ -24,7 +24,7 @@ export default defineConfig({
     </>
   ),
   topNav: [
-    { text: 'SDK', link: '/sdk', match: '/sdk' },
+    { text: 'SDK', link: '/', match: '/sdk' },
     {
       link: 'https://dashboard.zerodev.app/',
       text: 'Dashboard',
@@ -46,14 +46,14 @@ export default defineConfig({
     }
   ],
   sidebar: {
-    "/sdk": [
+    "/": [
       {
         "text": "Getting Started",
         "collapsed": false,
         "items": [
           {
             "text": "Introduction",
-            "link": "/sdk"
+            "link": "/"
           },
           {
             "text": "Yi vs Other Solutions",
@@ -78,31 +78,21 @@ export default defineConfig({
             "link": "/sdk/setting-up-yi"
           },
           {
-            "text": "Authentication",
-            "collapsed": false,
-            "items": [
-              {
-                "text": "Social / email",
-                "link": "/sdk/setting-up-yi/auth/social"
-              },
-              {
-                "text": "Passkeys",
-                "link": "/sdk/setting-up-yi/auth/passkeys"
-              },
-              {
-                "text": "EOAs",
-                "link": "/sdk/setting-up-yi/auth/eoa"
-              },
-              {
-                "text": "Third-party signers",
-                "link": "/sdk/setting-up-yi/auth/third-party-signers"
-              },
-            ],
+            "text": "Social / email",
+            "link": "/sdk/setting-up-yi/social"
           },
           {
-            "text": "Chain abstraction",
-            "link": "/sdk/setting-up-yi/chain-abstraction"
-          }
+            "text": "Passkeys",
+            "link": "/sdk/setting-up-yi/passkeys"
+          },
+          {
+            "text": "EOAs",
+            "link": "/sdk/setting-up-yi/eoa"
+          },
+          {
+            "text": "Third-party signers",
+            "link": "/sdk/setting-up-yi/third-party-signers"
+          },
         ],
       },
       {
@@ -112,6 +102,10 @@ export default defineConfig({
           {
             "text": "Basic Usage",
             "link": "/sdk/using-yi/basic-usage"
+          },
+          {
+            "text": "Chain Abstraction",
+            "link": "/sdk/using-yi/chain-abstraction"
           },
           {
             "text": "Sponsoring gas",
@@ -170,12 +164,16 @@ export default defineConfig({
             "link": "/sdk/interop"
           },
           {
-            "text": "What is Chain Abstraction?",
-            "link": "/sdk/interop"
+            "text": "How does chain abstraction work?",
+            "link": "/sdk/knowledge-base/chain-abstraction"
           },
           {
             "text": "What are capabilities (ERC-5792)?",
             "link": "/sdk/knowledge-base/capabilities"
+          },
+          {
+            "text": "What are permissions (ERC-7715)?",
+            "link": "/sdk/knowledge-base/permissions"
           },
         ],
       },
