@@ -1,0 +1,70 @@
+# Custom Gas Policies
+
+Custom gas policies enable you to tailor your sponsorship criteria using a webhook. This feature allows you to set up a custom policy that calls a URL you provide to determine whether to sponsor a transaction.
+
+## Getting Started
+
+To utilize custom gas policies, you'll need to configure a webhook endpoint on your server. This endpoint will receive data from ZeroDev and must return a JSON response indicating whether to proceed with the transaction sponsorship.
+
+### Setting up Your Webhook Endpoint
+
+Endpoint Requirements: 
+- Must accept `POST` requests.
+- The `POST` request will incude the `userOp`, `projectId`, and `chainId` in the body (see example below).
+- The request must return a `200` status with a `proceed` boolean (see example below).
+
+## Configuring Your Custom Policy
+Sign in to your ZeroDev dashboard and navigate to the Gas Policies page. At the bottom of the page, you will find the Custom Policy form as shown below.
+
+<p align="center">
+  <img src="/img/custom_gas_policy.png" width="80%" />
+</p>
+
+Enter the following options
+
+- **Webhook URL**: The full URL that the ZeroDev policy engine will make a POST request to.
+- **Timeout Settings**: The amount of time the policy engine will wait for a response from your webhook URL. It's important to keep response times low to decrease latency for your end-users.
+- **Policy Pass on Error**: Select this option to always pass the policy when an error occurs or the webhook times out.
+- **Enabling the Policy**: Toggle this option when you are ready to enable the policy for your project.
+
+## Webhook Payload
+The `POST` that is sent to your webhook url will include the `projectId`, `userOp`, and `chainId`.
+
+Here is an example request body.
+```JSON
+{
+  "projectId": "<THE PROJECT ID FOR THE GIVEN USEROP>",
+  "userOp": {
+    "sender": "0x...",
+    "nonce": "0x...",
+    "initCode": "0x...",
+    "callData": "0x...",
+    "paymasterAndData": "0x...",
+    "signature": "0x...",
+    "maxFeePerGas": "0x...",
+    "maxPriorityFeePerGas": "0x...",
+    "callGasLimit": "0x...",
+    "verificationGasLimit": "0x...",
+    "preVerificationGas": "0x..."
+  },
+  "chainId": 80001
+}
+```
+
+## Expected Webhook Response
+Your webhook should respond with a `200` status code and a JSON body like below
+
+Return `true` to sponser the `userOp` and `false` otherwise.
+```JSON
+{
+  "proceed": true
+}
+```
+
+## Example Webhook Server
+To help you get started with implementing your custom gas policies, we've provided an example webhook server. This server is designed to demonstrate how you might receive and handle incoming webhook requests from ZeroDev.
+
+The repository includes a basic server setup using Express.js, which listens for POST requests on a specified route. It logs the incoming data to the console and responds with a JSON object indicating a successful transaction sponsorship.
+
+You can find the example server [here](https://github.com/zerodevapp/example-webhook-server/tree/main).
+

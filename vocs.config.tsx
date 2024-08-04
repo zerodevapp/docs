@@ -25,6 +25,7 @@ export default defineConfig({
   ),
   topNav: [
     { text: 'SDK', link: '/', match: '/sdk' },
+    { text: 'Infra', link: '/meta-infra/intro', match: '/meta-infra' },
     {
       link: 'https://dashboard.zerodev.app/',
       text: 'Dashboard',
@@ -104,7 +105,7 @@ export default defineConfig({
             "link": "/sdk/using-yi/basic-usage"
           },
           {
-            "text": "Chain Abstraction",
+            "text": "Chain abstraction",
             "link": "/sdk/using-yi/chain-abstraction"
           },
           {
@@ -189,6 +190,34 @@ export default defineConfig({
           },
         ],
       },
+    ],
+    "/meta-infra": [
+      {
+        "text": "Getting Started",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Introduction",
+            "link": "/meta-infra/intro"
+          },
+          {
+            "text": "Gas Policies",
+            "link": "/meta-infra/gas-policies"
+          },
+          {
+            "text": "Custom Gas Policies",
+            "link": "/meta-infra/custom-gas-policies"
+          },
+          {
+            "text": "Bundler & Paymaster RPCs",
+            "link": "/meta-infra/rpcs"
+          },
+          {
+            "text": "Admin API",
+            "link": "/meta-infra/api"
+          }
+        ],
+      }
     ],
   },
 })
