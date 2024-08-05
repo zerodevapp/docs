@@ -25,12 +25,12 @@ export default defineConfig({
   ),
   topNav: [
     { text: 'SDK', link: '/', match: '/sdk' },
-    { text: 'Infra', link: '/meta-infra/intro', match: '/meta-infra' },
-    {
-      link: 'https://dashboard.zerodev.app/',
-      text: 'Dashboard',
-    },
-    { text: 'Blog', link: '/blog', match: '/blog' },
+    // { text: 'Infra', link: '/meta-infra/intro', match: '/meta-infra' },
+    // {
+    //   link: 'https://dashboard.zerodev.app/',
+    //   text: 'Dashboard',
+    // },
+    // { text: 'Blog', link: '/blog', match: '/blog' },
   ],
   socials: [
     {
