@@ -64,10 +64,10 @@ export default defineConfig({
             "text": "Demo App",
             "link": "https://demo.yi.app/"
           },
-          {
-            "text": "Quickstart",
-            "link": "/sdk/quickstart"
-          },
+          // {
+          //   "text": "Quickstart",
+          //   "link": "/sdk/quickstart"
+          // },
         ],
       },
       {

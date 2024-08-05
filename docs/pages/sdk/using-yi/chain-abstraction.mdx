@@ -31,6 +31,8 @@ On testnet, Yi uses a test token called `6TEST`, on the following networks:
 - Ethereum Sepolia
 - Polygon Amoy
 
+You can mint `6TEST` tokens by following [these instructions](https://docs.stackup.sh/docs/erc20-paymaster-example#%E2%91%A4-get-6test-tokens).
+
 ## Enabling chain abstraction
 
 When a user enables chain abstraction, they will need to sign a message.  Under the hood, this message creates a [session](/sdk/using-yi/automating-transactions) that will automatically turn tokens on all supported networks into chain-abstracted balances (CAB).
@@ -63,7 +65,7 @@ When you send a transaction, Yi automatically spends CAB if the transaction need
 
 ### Wagmi
 
-To send a transaction that might use CAB, use [`sendCalls()`](https://wagmi.sh/react/api/hooks/useSendCalls) or [`writeContracts()`](https://wagmi.sh/react/api/hooks/useWriteContracts).  Here's an example with `writeContracts`:
+To send a transaction that may spend CAB, use [`sendCalls()`](https://wagmi.sh/react/api/hooks/useSendCalls) or [`writeContracts()`](https://wagmi.sh/react/api/hooks/useWriteContracts).  Here's an example with `writeContracts`:
 
 ```tsx
 import { useWriteContracts } from 'wagmi/experimental'
