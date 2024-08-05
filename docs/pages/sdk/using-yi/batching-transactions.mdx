@@ -1,0 +1,46 @@
+# Batching transactions
+
+Yi can turn multiple transactions into a single "batch transaction," so that your user only needs to wait for one transaction instead of several.
+
+## Wagmi
+
+Send batched transactions with [`sendCalls()`](https://wagmi.sh/react/api/hooks/useSendCalls) or [`writeContracts()`](https://wagmi.sh/react/api/hooks/useWriteContracts).  For example, using `writeContracts()`:
+
+```tsx
+import { parseAbi } from 'viem'
+import { writeContracts } from '@wagmi/core/experimental'
+import { config } from './config'
+
+const abi = parseAbi([
+  'function approve(address, uint256) returns (bool)',
+  'function transferFrom(address, address, uint256) returns (bool)',
+])
+
+const id = await writeContracts(config, {
+  contracts: [
+    {
+      address: '0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2',
+      abi,
+      functionName: 'approve',
+      args: [
+        '0xa5cc3c03994DB5b0d9A5eEdD10CabaB0813678AC', 
+        100n
+      ],
+    },
+    {
+      address: '0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2',
+      abi,
+      functionName: 'transferFrom',
+      args: [
+        '0xa5cc3c03994DB5b0d9A5eEdD10CabaB0813678AC',
+        '0x0000000000000000000000000000000000000000',
+        100n
+      ],
+    },
+  ],
+})
+```
+
+## Viem
+
+TODO

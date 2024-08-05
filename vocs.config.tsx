@@ -113,8 +113,8 @@ export default defineConfig({
             "link": "/sdk/using-yi/sponsoring-gas"
           },
           {
-            "text": "Paying gas in ERC20s",
-            "link": "/sdk/using-yi/paying-gas-in-erc20s"
+            "text": "Paying gas with ERC20s",
+            "link": "/sdk/using-yi/paying-gas-with-erc20"
           },
           {
             "text": "Batching transactions",
