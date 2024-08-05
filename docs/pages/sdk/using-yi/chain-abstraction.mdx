@@ -59,9 +59,11 @@ TODO
 
 ## Spending chain-abstraction balances (CAB)
 
+When you send a transaction, Yi automatically spends CAB if the transaction needs CAB.  For example, if you are buying an NFT on Arbitrum that costs 500 USDC, and you don't have USDC on Arbitrum, then Yi will spend 500 USDC worth of CAB on this transaction.
+
 ### Wagmi
 
-To spend CAB, use [`sendCalls()`](https://wagmi.sh/react/api/hooks/useSendCalls) or [`writeContracts()`](https://wagmi.sh/react/api/hooks/useWriteContracts).  Here's an example with `writeContracts`:
+To send a transaction that might use CAB, use [`sendCalls()`](https://wagmi.sh/react/api/hooks/useSendCalls) or [`writeContracts()`](https://wagmi.sh/react/api/hooks/useWriteContracts).  Here's an example with `writeContracts`:
 
 ```tsx
 import { useWriteContracts } from 'wagmi/experimental'
