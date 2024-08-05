@@ -62,7 +62,7 @@ export default defineConfig({
           },
           {
             "text": "Demo App",
-            "link": "https://demo.yi.app/"
+            "link": "https://github.com/zerodevapp/cab-demo"
           },
           // {
           //   "text": "Quickstart",
@@ -130,39 +130,39 @@ export default defineConfig({
           },
         ],
       },
-      {
-        "text": "Using Yi with other accounts",
-        "collapsed": false,
-        "items": [
-          {
-            "text": "Introduction",
-            "link": "/sdk/interop"
-          },
-          {
-            "text": "Kernel (ZeroDev)",
-            "link": "/sdk/interop/kernel"
-          },
-          {
-            "text": "Safe",
-            "link": "/sdk/interop/safe"
-          },
-          {
-            "text": "Biconomy",
-            "link": "/sdk/interop/biconomy"
-          },
-          {
-            "text": "Alchemy",
-            "link": "/sdk/interop/alchemy"
-          },
-        ],
-      },
+      // {
+      //   "text": "Using Yi with other accounts",
+      //   "collapsed": false,
+      //   "items": [
+      //     {
+      //       "text": "Introduction",
+      //       "link": "/sdk/interop"
+      //     },
+      //     {
+      //       "text": "Kernel (ZeroDev)",
+      //       "link": "/sdk/interop/kernel"
+      //     },
+      //     {
+      //       "text": "Safe",
+      //       "link": "/sdk/interop/safe"
+      //     },
+      //     {
+      //       "text": "Biconomy",
+      //       "link": "/sdk/interop/biconomy"
+      //     },
+      //     {
+      //       "text": "Alchemy",
+      //       "link": "/sdk/interop/alchemy"
+      //     },
+      //   ],
+      // },
       {
         "text": "Knowledge Base",
         "collapsed": false,
         "items": [
           {
             "text": "What is a smart account?",
-            "link": "/sdk/interop"
+            "link": "/sdk/knowledge-base/smart-account"
           },
           {
             "text": "How does chain abstraction work?",
