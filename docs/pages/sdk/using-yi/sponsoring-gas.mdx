@@ -21,11 +21,11 @@ For a paymaster to work with the capabilities API, it needs to be compliant with
 
 Sign up for one of these services and obtain a paymaster URL.
 
-## Send transactions using `wallet_sendCalls` with the paymaster URL
+## Send transactions using `sendCalls` with the paymaster URL
 
 ### Wagmi
 
-If you are using Wagmi, you can send sponsored transactions with `sendCalls()` or `writeContracts()`, by including the following capabilities:
+If you are using Wagmi, you can send sponsored transactions with [`sendCalls()`](https://wagmi.sh/react/api/hooks/useSendCalls) or [`writeContracts()`](https://wagmi.sh/react/api/hooks/useWriteContracts), by including the following capabilities:
 
 ```tsx
 capabilities: { 
