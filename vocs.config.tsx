@@ -124,6 +124,10 @@ export default defineConfig({
         "text": "Advanced",
         "collapsed": false,
         "items": [
+          // {
+          //   "text": "Chain Abstraction",
+          //   "link": "/sdk/advanced/chain-abstraction"
+          // },
           {
             "text": "Passkeys",
             "link": "/sdk/advanced/passkeys"

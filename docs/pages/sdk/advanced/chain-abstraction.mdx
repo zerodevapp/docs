@@ -1,0 +1,137 @@
+# Chain Abstraction
+
+:::warning
+Chain abstraction is in private alpha.  [Contact Derek](https://t.me/derek_chiang) for access.
+:::
+
+ZeroDev is the first smart account solution to support *chain abstraction*.
+
+With ZeroDev, you can turn a token balance into a "**chain-abstracted balance**" (CAB).  Instead of thinking about "USDC on Ethereum" vs "USDC on Arbitrum," your user can just look at their "USDC balance" as a single balance that can be spent on any chain.
+
+For example, if you deposit 100 USDC to a Yi account on Base, then deposit 200 USDC to the account on Polygon, the account will now hold 300 "chain-abstracted USDC" that can be spent on any chain.
+
+Amazingly, these chain-abstracted tokens can be spent at the speed of the destination chain -- just like a regular transaction. This is unlike a traditional bridge where the user has to wait for confirmations on both the source chain and the destination chain.
+
+## Code example
+
+You can refer to [this code example](https://github.com/zerodevapp/zerodev-examples/blob/main/chain-abstraction/main.ts) for using CAB.
+
+## Usage
+
+### Installation
+
+:::code-group
+
+```bash [npm]
+npm i @zerodev/cab
+```
+
+```bash [yarn]
+yarn add @zerodev/cab
+```
+
+```bash [pnpm]
+pnpm i @zerodev/cab
+```
+
+```bash [bun]
+bun add @zerodev/cab
+```
+
+:::
+
+### Setting up the Kernel account
+
+For the best experience with CAB, we recommend setting up your Kernel account with the *multi-chain ECDSA validator*:
+
+```tsx
+const ecdsaValidator = await toMultiChainECDSAValidator(publicClient, {
+  signer,
+  entryPoint,
+  kernelVersion,
+})
+```
+
+Then you can [set up a Kernel client with this validator as usual](https://docs.zerodev.app/sdk/core-api/create-account#create-a-kernel-account).
+
+If you are looking to enable CAB for accounts using [the regular ECDSA validator](https://docs.zerodev.app/sdk/core-api/create-account#creating-a-ecdsa-validator) or another validator, [get in touch](https://t.me/derek_chiang).
+
+### Setting up the CAB client
+
+To use CAB, wrap the kernel client into a CAB client:
+
+```tsx
+const cabClient = createKernelCABClient(kernelClient, {
+  transport: http(CAB_PAYMASTER_URL),
+})
+```
+
+Note that since CAB is in private alpha, you need to contact us to obtain the CAB paymaster URL.
+
+### Enabling chain-abstracted balance
+
+Before using CAB, you need to enable CAB for the smart account, by specifying a list of tokens you wish to support.  Currently, CAB supports USDC only.  Please let us know if there are specific tokens you wish us to support.
+
+```tsx
+await cabClient.enableCAB({
+  tokens: [{
+    name: "USDC",
+    // networks: [arbitrum.id, base.id],
+  }]
+})
+```
+
+You can optionally specify the list of networks to enable CAB for.  If you don't specify it, CAB is enabled for all supported networks, which currently includes:
+
+- Ethereum mainnet
+- Arbitrum
+- Optimism
+- Base
+- Polygon
+
+### Spending chain-abstracted balance
+
+There are three steps to spending CAB:
+
+- Construct the calls
+- Prepare the CAB UserOp and token info
+- Send the UserOp
+
+First, start by constructing the calls.  You can include multiple calls if you'd like to send a batch.
+
+```tsx
+// In this example, we are performing a USDC transfer
+const calls = [
+  {
+    to: usdcContractAddress,
+    data: encodeFunctionData({
+      abi: erc20Abi,
+      functionName: "transfer",
+      args: [account.address, BigInt(1000)]
+    }),
+    value: BigInt(0),
+  }
+]
+```
+
+Then, prepare the CAB UserOp.  Here you need to decide which tokens on which chain you'd like to "repay" with.
+
+```tsx
+const repayTokens = [
+  {
+    address: supportedTokens.USDC[42161].token,
+    chainId: 42161
+  }
+]
+
+const { userOperation, repayTokensInfo, sponsorTokensInfo } =
+  await cabClient.prepareUserOperationRequestCAB({
+    account: cabClient.account,
+    transactions: calls,
+    repayTokens: repayTokens
+  })
+```
+
+### Reading chain-abstracted balance
+
+### Withdrawing chain-abstracted balance
