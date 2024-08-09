@@ -57,11 +57,15 @@ export default defineConfig({
             "link": "/"
           },
           {
-            "text": "Yi vs Other Solutions",
+            "text": "Why chain abstraction",
+            "link": "/sdk/why-chain-abstraction"
+          },
+          {
+            "text": "Yi vs other solutions",
             "link": "/sdk/yi-vs-others"
           },
           {
-            "text": "Demo App",
+            "text": "Demo",
             "link": "https://github.com/zerodevapp/cab-demo"
           },
           // {
