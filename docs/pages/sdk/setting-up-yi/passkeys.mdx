@@ -1,2 +1,72 @@
 # Signing into Yi with Passkeys
 
+Passkeys are cryptographic key pairs created on end-user devices. [Apple](https://developer.apple.com/passkeys) and [Google](https://developers.google.com/identity/passkeys) are two major industry players pushing for the passkeys standard, which means that passkeys are widely available on consumer devices such as:
+
+- iPhones / iPads / Macbooks
+- Android phones / tablets
+- Chrome (on Windows / Mac / Android)
+
+[See here for a full list of systems that support passkeys.](https://passkeys.dev/device-support/#matrix)
+
+The biggest value-add of passkeys, in the context of Web3, is **saving users from manually managing and securing their private keys.** Instead of writing down 12-word seed phrases, your user can simply use a passkey-enabled device to manage their wallet, and trust that the hardware will safely store the passkey, and the hardware vendor (e.g. Apple/Google) will [securely backup the keys](#how-are-passkeys-sync-ed-and-recovered).
+
+Make sure you check out [the official passkeys demo](https://webauthn.io/) if you are not familiar with how passkeys work.
+
+## Wagmi
+
+Set up the Wagmi config with a Yi connector:
+
+```ts
+import { WagmiProvider, createConfig, http } from "wagmi"
+import { arbitrum, optimism } from "wagmi/chains"
+import { ReactNode } from "react"
+import { passkeyConnector } from "@build-with-yi/wagmi" // [!code focus]
+
+export default function Providers({ children }: { children: ReactNode }) {
+  const config = createConfig({
+    chains: [arbitrum, optimism],
+    transports: {
+      [arbitrum.id]: http(),
+      [optimism.id]: http(),
+    },
+    connectors: [ // [!code focus]
+      passkeyConnector(), // [!code focus]
+    ], // [!code focus]
+  })
+  const queryClient = new QueryClient()
+
+  return (
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        {children}
+      </QueryClientProvider>
+    </WagmiProvider>
+  )
+}
+```
+
+Now, you can create "Login" and "Register" buttons using our hooks:
+
+```tsx
+import { usePasskey } from "@build-with-yi/wagmi";
+
+export function ConnectButton() {
+  const { connectRegister, connectLogin } = usePasskey();
+
+  return (
+    <div>
+      <Button onClick={() => connectLogin("Passkey name")} >
+        Login
+      </Button>
+      <Button onClick={() => connectRegister("Passkey name")} >
+        Register
+      </Button>
+    </div>
+  )
+}
+```
+
+## Viem
+
+TODO
+
