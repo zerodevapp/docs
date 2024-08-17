@@ -42,9 +42,13 @@ bun add @zerodev/cab
 
 ### Setting up the Kernel account
 
-For the best experience with CAB, we recommend setting up your Kernel account with the *multi-chain ECDSA validator*:
+For the best experience with CAB, we recommend setting up your Kernel account with a *multi-chain validator*, which is a [validator](https://docs.zerodev.app/sdk/core-api/using-plugins) that can sign messages for multiple chains in one signature.  This is useful for CAB because CAB needs to be enabled for each chain, so with a multi-chain validator you can enable CAB with just one signature, whereas with a regular validator you'd need to sign once per chain.
+
+To set up a multi-chain ECDSA validator:
 
 ```tsx
+import { toMultiChainECDSAValidator } from "@zerodev/multi-chain-validator"
+
 const ecdsaValidator = await toMultiChainECDSAValidator(publicClient, {
   signer,
   entryPoint,
@@ -52,9 +56,9 @@ const ecdsaValidator = await toMultiChainECDSAValidator(publicClient, {
 })
 ```
 
-Then you can [set up a Kernel client with this validator as usual](https://docs.zerodev.app/sdk/core-api/create-account#create-a-kernel-account).
+To set up a multi-chain passkeys validator, check out [this example](https://github.com/zerodevapp/build-with-yi/blob/45ca61968de9ff39244687796bc69e09586a4421/packages/wagmi/src/provider/helpers/initializeClientsFromPasskey.ts#L55-L84).
 
-If you are looking to enable CAB for accounts using [the regular ECDSA validator](https://docs.zerodev.app/sdk/core-api/create-account#creating-a-ecdsa-validator) or another validator, [get in touch](https://t.me/derek_chiang).
+Once you have created a validator, you can [set up a Kernel client with this validator as usual](https://docs.zerodev.app/sdk/core-api/create-account#create-a-kernel-account).
 
 ### Setting up the CAB client
 
@@ -81,13 +85,18 @@ await cabClient.enableCAB({
 })
 ```
 
-You can optionally specify the list of networks to enable CAB for.  If you don't specify it, CAB is enabled for all supported networks, which currently includes:
+You can optionally specify the list of networks to enable CAB for.  If you don't specify it, CAB is enabled for all supported networks.
 
-- Ethereum mainnet
-- Arbitrum
-- Optimism
-- Base
-- Polygon
+If you are not using a multi-chain validator, you need to enableCAB for each network, one at a time:
+
+```tsx
+await cabClient.enableCAB({
+  tokens: [{
+    name: "USDC",
+    networks: [arbitrum.id],
+  }]
+})
+```
 
 ### Spending chain-abstracted balance
 
@@ -134,4 +143,11 @@ const { userOperation, repayTokensInfo, sponsorTokensInfo } =
 
 ### Reading chain-abstracted balance
 
-### Withdrawing chain-abstracted balance
+To read the CAB balance for an account:
+
+```tsx
+const cabBalance = await cabClient.getCabBalance({
+  address: account.address,
+  token: 'USDC',  // replace with your intended token
+})
+```
