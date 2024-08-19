@@ -14,7 +14,7 @@ Amazingly, these chain-abstracted tokens can be spent at the speed of the destin
 
 ## Code example
 
-You can refer to [this code example](https://github.com/zerodevapp/zerodev-examples/blob/main/chain-abstraction/main.ts) for using CAB.
+Here's a [complete code example](https://github.com/zerodevapp/zerodev-examples/blob/main/chain-abstraction/main.ts) for using CAB.  To run the example you need to set the environment variable `CAB_PAYMASTER_URL`, which you can obtain from Derek.
 
 ## Usage
 
@@ -123,22 +123,28 @@ const calls = [
 ]
 ```
 
-Then, prepare the CAB UserOp.  Here you need to decide which tokens on which chain you'd like to "repay" with.
+Then, prepare the CAB UserOp by specifying the calls and repay tokens.  Repay tokens are the tokens the users will repay the solvers with.  Since CAB only supports USDC for now, both repay tokens and sponsor tokens (the tokens provided to the user by solvers) will be USDC, but in principle repay tokens and sponsor tokens can be different.  For example, a user might spend WETH while paying users back in USDC.
 
 ```tsx
-const repayTokens = [
-  {
-    address: supportedTokens.USDC[42161].token,
-    chainId: 42161
-  }
-]
-
 const { userOperation, repayTokensInfo, sponsorTokensInfo } =
   await cabClient.prepareUserOperationRequestCAB({
-    account: cabClient.account,
-    transactions: calls,
-    repayTokens: repayTokens
+    calls,
+    repayTokens: ['USDC'],
   })
+```
+
+Here you have three pieces of data which you can display to users for them to confirm the transaction, if you wish:
+
+- `userOperation` is the full UserOp that will be sent.
+- `repayTokensInfo` is information for the repay tokens (the tokens the user is paying solvers)
+- `sponsorTokensInfo` is information for the sponsor tokens (the tokens the user is spending, aka the tokens paid by solvers)
+
+Finally, send the CAB UserOp:
+
+```tsx
+const userOpHash = await cabClient.sendUserOperationCAB({
+  userOperation,
+})
 ```
 
 ### Reading chain-abstracted balance
@@ -148,6 +154,6 @@ To read the CAB balance for an account:
 ```tsx
 const cabBalance = await cabClient.getCabBalance({
   address: account.address,
-  token: 'USDC',  // replace with your intended token
+  token: 'USDC',
 })
 ```
