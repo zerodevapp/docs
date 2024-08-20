@@ -64,14 +64,15 @@ const kernelVersion = KERNEL_V3_1
 
 ### Creating a public client
 
-In Viem, a [public client](https://viem.sh/docs/clients/public.html) is an interface to a JSON-RPC API such as Infura or Alchemy.  Most bundlers today implement the standard JSON-RPC in addition to bundler RPC, so you can also create a public client with your bundler.
+In Viem, a [public client](https://viem.sh/docs/clients/public.html) is an interface to a JSON-RPC API such as Infura or Alchemy.  Most bundlers today implement the standard JSON-RPC in addition to bundler RPC, so you can also use your bundler RPC for the public client.  Though for maximal stability, we recommend using your own RPC (e.g. Infura/Alchemy).
 
 ```typescript
 import { createPublicClient, http } from "viem"
 
 const publicClient = createPublicClient({
   // Use your RPC provider or bundler.
-  // You can get this RPC from the ZeroDev dashboard.
+  // We recommend using your own RPC provider for maximal stability, but you can
+  // also use the bundler RPC from the ZeroDev dashboard.
   transport: http("RPC_URL"),
 })
 ```
