@@ -1,10 +1,10 @@
 # 1-click Trading
 
-Yi supports "permissions" through through ERC-7702, a standard coauthored by ZeroDev, WalletConnect, MetaMask, Coinbase, and Biconomy.  A Yi user can grant permissions to the DApp to execute specific transactions on their behalf.  For example, the user might say:
+Yi supports "permissions" through [ERC-7715](/sdk/knowledge-base/permissions), a standard coauthored by ZeroDev, WalletConnect, MetaMask, Coinbase, and Biconomy.  A Yi user can grant permissions to the DApp to execute specific transactions on their behalf.  For example, the user might say:
 
 - When I use this app, it can trade up to 1000 USDC on Uniswap for me.
 
-Once the DApp has received these permissions, it can now send transactions on behalf of the user without further confirmation prompts, so long as the transactions are within the permissions. Therefore, the user gains a "1-click trading" experience without sacrificing security.
+Once the DApp has received these permissions, it can now send transactions on behalf of the user without further confirmation prompts, so long as the transactions are within the permissions. Therefore, the user achieves a "1-click trading" experience without sacrificing security.
 
 ## Requesting permissions
 
@@ -105,3 +105,5 @@ const id = await writeContracts(config, {
   },
 })
 ```
+
+When a transaction is executed with permissions, the user won't be prompted to sign the transaction, so from the user's perspective this will be "1-click trading."
