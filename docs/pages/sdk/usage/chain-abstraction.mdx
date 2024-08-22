@@ -1,8 +1,8 @@
 # Chain Abstraction
 
-The killer feature of Yi is chain abstraction.  When chain abstraction is enabled for a token, the token's balance turns into a "chain-abstracted balance" (CAB) that you can deposit into from any network, and that you can spend on any network.
+The killer feature of Magic Account is chain abstraction.  When chain abstraction is enabled for a token, the token's balance turns into a "chain-abstracted balance" (CAB) that you can deposit into from any network, and that you can spend on any network.
 
-For example, let's say you have enabled chain abstraction for USDC.  If you deposit 100 USDC to a Yi account on Base, then deposit 200 USDC to the account on Polygon, the account will now hold 300 "chain-abstracted USDC."  You can then spend this 300 USDC on any chain.
+For example, let's say you have enabled chain abstraction for USDC.  If you deposit 100 USDC to a Magic Account on Base, then deposit 200 USDC to the account on Polygon, the account will now hold 300 "chain-abstracted USDC."  You can then spend this 300 USDC on any chain.
 
 Amazingly, these chain-abstracted tokens can be spent *at the speed of the destination chain* -- just like a regular transaction.  For example, if you spend the chain-abstracted USDC to buy an NFT on Optimism, the transaction is as fast as any regular Optimism transaction.  This is unlike a traditional bridge where the user has to wait for confirmations on both the source chain and the destination chain.
 
@@ -12,7 +12,7 @@ To learn how chain abstraction works, [read this](/sdk/knowledge-base/chain-abst
 
 ### Mainnet
 
-Currently Yi supports only **USDC** for chain abstraction, on the following networks:
+Currently Magic Account supports only **USDC** for chain abstraction, on the following networks:
 
 - Ethereum mainnet
 - Arbitrum
@@ -22,11 +22,11 @@ Currently Yi supports only **USDC** for chain abstraction, on the following netw
 
 We are working on supporting more tokens and networks as we scale up the system.  If there's a token or network you need, [get in touch](https://t.me/derek_chiang).
 
-Note that even with only USDC enabled for chain-abstraction, you can still spend *any token* because you can swap USDC to any token on-the-fly.  For example, if you want to buy an NFT with ETH on Arbitrum, but you don't have ETH on Arbitrum, you can simply create a [batch transaction](/sdk/using-yi/batching-transactions) where the first transaction swaps USDC into ETH, and then the second transaction purchases the NFT.
+Note that even with only USDC enabled for chain-abstraction, you can still spend *any token* because you can swap USDC to any token on-the-fly.  For example, if you want to buy an NFT with ETH on Arbitrum, but you don't have ETH on Arbitrum, you can simply create a [batch transaction](/sdk/usage/batching-transactions) where the first transaction swaps USDC into ETH, and then the second transaction purchases the NFT.
 
 ### Testnet
 
-On testnet, Yi uses a test token called `6TEST`, on the following networks:
+On testnet, Magic Account uses a test token called `6TEST`, on the following networks:
 
 - Ethereum Sepolia
 - Polygon Amoy
@@ -35,12 +35,12 @@ You can mint `6TEST` tokens by following [these instructions](https://docs.stack
 
 ## Enabling chain abstraction
 
-When a user enables chain abstraction, they will need to sign a message.  Under the hood, this message creates a [session](/sdk/using-yi/automating-transactions) that will automatically turn tokens on all supported networks into chain-abstracted balances (CAB).
+When a user enables chain abstraction, they will need to sign a message.  Under the hood, this message creates a [session](/sdk/usage/automating-transactions) that will automatically turn tokens on all supported networks into chain-abstracted balances (CAB).
 
 ### Wagmi
 
 ```tsx
-import { useEnableCab } from "@build-with-yi/wagmi"
+import { useEnableCab } from "@magic-account/wagmi"
 
 function App() {
   const { enableCab, isPending } = useEnableCab({
@@ -61,7 +61,7 @@ TODO
 
 ## Spending chain-abstraction balances (CAB)
 
-When you send a transaction, Yi automatically spends CAB if the transaction needs CAB.  For example, if you are buying an NFT on Arbitrum that costs 500 USDC, and you don't have USDC on Arbitrum, then Yi will spend 500 USDC worth of CAB on this transaction.
+When you send a transaction, Magic Account automatically spends CAB if the transaction needs CAB.  For example, if you are buying an NFT on Arbitrum that costs 500 USDC, and you don't have USDC on Arbitrum, then Magic Account will spend 500 USDC worth of CAB on this transaction.
 
 ### Wagmi
 
@@ -126,7 +126,7 @@ Instead, use a helper function to read the CAB.
 ### Wamgi
 
 ```tsx
-import { useReadCab } from "@build-with-yi/wagmi"
+import { useReadCab } from "@magic-account/wagmi"
 
 function App() {
   const { data: balance, refetch } = useReadCab()
@@ -146,7 +146,7 @@ function App() {
 
 ## Withdrawing CAB
 
-You don't normally need to "withdraw" CAB per se.  If you want to move the tokens to another account, you can simply do a transfer by [spending CAB](/sdk/using-yi/chain-abstraction#spending-chain-abstraction-balances-cab).
+You don't normally need to "withdraw" CAB per se.  If you want to move the tokens to another account, you can simply do a transfer by [spending CAB](/sdk/usage/chain-abstraction#spending-chain-abstraction-balances-cab).
 
 "Withdrawal" is only necessary in the worst case scenario -- if [the infra that powers CAB](/sdk/knowledge-base/chain-abstraction) goes down, and the user cannot access their CAB.  In that case, they can withdraw CAB from the CAB contracts directly.
 

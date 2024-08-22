@@ -61,10 +61,6 @@ export default defineConfig({
             "link": "/sdk/why-chain-abstraction"
           },
           {
-            "text": "Yi vs other solutions",
-            "link": "/sdk/yi-vs-others"
-          },
-          {
             "text": "Demo",
             "link": "https://github.com/zerodevapp/cab-demo"
           },
@@ -75,67 +71,67 @@ export default defineConfig({
         ],
       },
       {
-        "text": "Setting up Yi",
+        "text": "Setting up Magic Account",
         "collapsed": false,
         "items": [
           {
             "text": "Introduction",
-            "link": "/sdk/setting-up-yi"
+            "link": "/sdk/setup"
           },
           {
             "text": "Social / email",
-            "link": "/sdk/setting-up-yi/social"
+            "link": "/sdk/setup/social"
           },
           {
             "text": "Passkeys",
-            "link": "/sdk/setting-up-yi/passkeys"
+            "link": "/sdk/setup/passkeys"
           },
           {
             "text": "EOAs",
-            "link": "/sdk/setting-up-yi/eoa"
+            "link": "/sdk/setup/eoa"
           },
           {
             "text": "Third-party signers",
-            "link": "/sdk/setting-up-yi/third-party-signers"
+            "link": "/sdk/setup/third-party-signers"
           },
         ],
       },
       {
-        "text": "Using Yi",
+        "text": "Using Magic Account",
         "collapsed": false,
         "items": [
           {
             "text": "Basic Usage",
-            "link": "/sdk/using-yi/basic-usage"
+            "link": "/sdk/usage"
           },
           {
             "text": "Chain abstraction",
-            "link": "/sdk/using-yi/chain-abstraction"
+            "link": "/sdk/usage/chain-abstraction"
           },
           {
             "text": "Sponsoring gas",
-            "link": "/sdk/using-yi/sponsoring-gas"
+            "link": "/sdk/usage/sponsoring-gas"
           },
           {
             "text": "Paying gas with ERC20s",
-            "link": "/sdk/using-yi/paying-gas-with-erc20"
+            "link": "/sdk/usage/paying-gas-with-erc20"
           },
           {
             "text": "Batching transactions",
-            "link": "/sdk/using-yi/batching-transactions"
+            "link": "/sdk/usage/batching-transactions"
           },
           {
             "text": "1-click trading",
-            "link": "/sdk/using-yi/one-click-trading"
+            "link": "/sdk/usage/one-click-trading"
           },
           {
             "text": "Automating transactions",
-            "link": "/sdk/using-yi/automating-transactions"
+            "link": "/sdk/usage/automating-transactions"
           },
         ],
       },
       // {
-      //   "text": "Using Yi with other accounts",
+      //   "text": "Using Magic Account with other accounts",
       //   "collapsed": false,
       //   "items": [
       //     {

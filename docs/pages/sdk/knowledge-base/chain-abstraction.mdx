@@ -2,10 +2,10 @@
 
 Chain abstraction is the general idea that a user should be able to navigate multiple blockchains as if they are one unified chain.  There's no precise definition nor a canonical implementation of chain abstraction.
 
-In Yi, we define chain abstraction from the lens of a *chain-abstracted balance* (CAB).  A chain-abstracted balance is a single unified balance that can be deposited into from any chain, and that can be spent on any chain.  For example, if you deposit 100 USDC on Base to a Yi account, and 200 USDC on Arbitrum to the same Yi account, the Yi account will now hold a CAB that is 300 USDC.  These 300 USDC can now be spent on any chain that CAB supports.
+In Magic Account, we define chain abstraction from the lens of a *chain-abstracted balance* (CAB).  A chain-abstracted balance is a single unified balance that can be deposited into from any chain, and that can be spent on any chain.  For example, if you deposit 100 USDC on Base to a Magic Account account, and 200 USDC on Arbitrum to the same Magic Account account, the Magic Account account will now hold a CAB that is 300 USDC.  These 300 USDC can now be spent on any chain that CAB supports.
 
-Yi enables chain abstraction by implementing a protocol known as "MagicSpend++" that was [first proposed by the Socket team](https://ethresear.ch/t/magicspend-spend-now-debit-later/19678).  We've since been working closely with the Socket team to substantially improve the protocol, and Yi was the first implementation of MagicSpend++ that can be used in production.
+Magic Account enables chain abstraction by implementing a protocol known as "MagicSpend++" that was [first proposed by the Socket team](https://ethresear.ch/t/magicspend-spend-now-debit-later/19678).  We've since been working closely with the Socket team to substantially improve the protocol, and Magic Account was the first implementation of MagicSpend++ that can be used in production.
 
-In this document, we will explain in detail how MagicSpend++ works as implemented in Yi.
+In this document, we will explain in detail how MagicSpend++ works as implemented in Magic Account.
 
 TODO

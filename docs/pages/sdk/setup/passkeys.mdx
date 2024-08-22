@@ -1,4 +1,4 @@
-# Signing into Yi with Passkeys
+# Signing into Magic Account with Passkeys
 
 Passkeys are cryptographic key pairs created on end-user devices. [Apple](https://developer.apple.com/passkeys) and [Google](https://developers.google.com/identity/passkeys) are two major industry players pushing for the passkeys standard, which means that passkeys are widely available on consumer devices such as:
 
@@ -14,13 +14,13 @@ Make sure you check out [the official passkeys demo](https://webauthn.io/) if yo
 
 ## Wagmi
 
-Set up the Wagmi config with a Yi connector:
+Set up the Wagmi config with a Magic Account connector:
 
 ```ts
 import { WagmiProvider, createConfig, http } from "wagmi"
 import { arbitrum, optimism } from "wagmi/chains"
 import { ReactNode } from "react"
-import { passkeyConnector } from "@build-with-yi/wagmi" // [!code focus]
+import { passkeyConnector } from "@magic-account/wagmi" // [!code focus]
 
 export default function Providers({ children }: { children: ReactNode }) {
   const config = createConfig({
@@ -48,7 +48,7 @@ export default function Providers({ children }: { children: ReactNode }) {
 Now, you can create "Login" and "Register" buttons using our hooks:
 
 ```tsx
-import { usePasskey } from "@build-with-yi/wagmi";
+import { usePasskey } from "@magic-account/wagmi";
 
 export function ConnectButton() {
   const { connectRegister, connectLogin } = usePasskey();
