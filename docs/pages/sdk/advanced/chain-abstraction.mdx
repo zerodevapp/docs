@@ -42,6 +42,8 @@ bun add @zerodev/cab
 
 ### Setting up the Kernel account
 
+Skip to the next section if your ZeroDev app is already live.  This section is for developers who can still change how they set up their Kernel accounts.
+
 For the best experience with CAB, we recommend setting up your Kernel account with a *multi-chain validator*, which is a [validator](https://docs.zerodev.app/sdk/core-api/using-plugins) that can sign messages for multiple chains in one signature.  This is useful for CAB because CAB needs to be enabled for each chain, so with a multi-chain validator you can enable CAB with just one signature, whereas with a regular validator you'd need to sign once per chain.
 
 To set up a multi-chain ECDSA validator:
@@ -62,7 +64,7 @@ Once you have created a validator, you can [set up a Kernel client with this val
 
 ### Setting up the CAB client
 
-To use CAB, wrap the kernel client into a CAB client:
+To use CAB, wrap the [kernel client](/sdk/core-api/create-account#create-an-account-client) into a CAB client:
 
 ```tsx
 const cabClient = createKernelCABClient(kernelClient, {
@@ -70,7 +72,7 @@ const cabClient = createKernelCABClient(kernelClient, {
 })
 ```
 
-Note that since CAB is in private alpha, you need to contact us to obtain the CAB paymaster URL.
+For testing, you can use `https://cab-paymaster-service.onrender.com/paymaster/api` as the `CAB_PAYMASTER_URL`.  You need to [contact us](https://t.me/derek_chiang) to obtain a CAB paymaster URL for production.
 
 ### Enabling chain-abstracted balance
 
