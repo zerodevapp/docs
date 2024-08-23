@@ -149,6 +149,10 @@ export default defineConfig({
             "link": "/sdk/advanced/recovery"
           },
           {
+            "text": "Multi-chain Signing",
+            "link": "/sdk/advanced/multi-chain-signing"
+          },
+          {
             "text": "Key Storage",
             "link": "/sdk/advanced/key-storage"
           },
