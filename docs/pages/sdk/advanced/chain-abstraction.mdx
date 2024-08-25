@@ -125,7 +125,7 @@ const calls = [
 ]
 ```
 
-Then, prepare the CAB UserOp by specifying the calls and repay tokens.  Repay tokens are the tokens the users will repay the solvers with.  Since CAB only supports USDC for now, both repay tokens and sponsor tokens (the tokens provided to the user by solvers) will be USDC, but in principle repay tokens and sponsor tokens can be different.  For example, a user might spend WETH while paying users back in USDC.
+Then, prepare the CAB UserOp by specifying the calls and repay tokens.  Repay tokens are the tokens the users will repay the solvers with.  Since CAB only supports USDC for now, both repay tokens and sponsor tokens (the tokens provided to the user by solvers) will be USDC, but in principle repay tokens and sponsor tokens can be different.  For example, a user might spend WETH while paying solvers back in USDC.
 
 ```tsx
 const { userOperation, repayTokensInfo, sponsorTokensInfo } =
