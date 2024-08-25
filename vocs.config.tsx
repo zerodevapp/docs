@@ -64,6 +64,10 @@ export default defineConfig({
             "text": "Demo",
             "link": "https://github.com/zerodevapp/cab-demo"
           },
+          {
+            "text": "Get in touch",
+            "link": "https://t.me/derek_chiang",
+          },
           // {
           //   "text": "Quickstart",
           //   "link": "/sdk/quickstart"
