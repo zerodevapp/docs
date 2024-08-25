@@ -67,6 +67,8 @@ Once you have created a validator, you can [set up a Kernel client with this val
 To use CAB, wrap the [kernel client](/sdk/core-api/create-account#create-an-account-client) into a CAB client:
 
 ```tsx
+import { createKernelCABClient } from "@zerodev/cab"
+
 const cabClient = createKernelCABClient(kernelClient, {
   transport: http(CAB_PAYMASTER_URL),
 })
