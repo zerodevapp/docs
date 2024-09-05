@@ -14,7 +14,7 @@ Amazingly, these chain-abstracted tokens can be spent at the speed of the destin
 
 ## Code example
 
-Here's a [complete code example](https://github.com/zerodevapp/zerodev-examples/blob/main/chain-abstraction/main.ts) for using CAB.  To run the example you need to set the environment variable `CAB_PAYMASTER_URL`, which you can obtain from Derek.
+Here are [complete code examples](https://github.com/zerodevapp/zerodev-examples/blob/main/chain-abstraction) for using CAB.  To run the example you need to set the environment variable `CAB_PAYMASTER_URL`, which you can obtain from Derek.
 
 ## Usage
 
@@ -46,7 +46,7 @@ Skip to the next section if your ZeroDev app is already live.  This section is f
 
 For the best experience with CAB, we recommend setting up your Kernel account with a *multi-chain validator*, which is a [validator](https://docs.zerodev.app/sdk/core-api/using-plugins) that can sign messages for multiple chains in one signature.  This is useful for CAB because CAB needs to be enabled for each chain, so with a multi-chain validator you can enable CAB with just one signature, whereas with a regular validator you'd need to sign once per chain.
 
-To set up a multi-chain ECDSA validator:
+To set up a multi-chain ECDSA validator ([code example](https://github.com/zerodevapp/zerodev-examples/blob/main/chain-abstraction/multichain-validator.ts)):
 
 ```tsx
 import { toMultiChainECDSAValidator } from "@zerodev/multi-chain-validator"
