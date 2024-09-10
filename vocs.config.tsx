@@ -24,7 +24,8 @@ export default defineConfig({
     </>
   ),
   topNav: [
-    { text: 'SDK', link: '/', match: '/' },
+    { text: 'SDK', link: '/', match: '/sdk' },
+    { text: 'Magic Account', link: '/magic-account', match: '/magic-account' },
     { text: 'Infra', link: '/meta-infra/intro', match: '/meta-infra' },
     {
       link: 'https://dashboard.zerodev.app/',
@@ -377,6 +378,142 @@ export default defineConfig({
           {
             "text": "How to use ZeroDev with Gelato",
             "link": "/sdk/faqs/use-with-gelato"
+          },
+        ],
+      },
+    ],
+    "/magic-account": [
+      {
+        "text": "Getting Started",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Introduction",
+            "link": "/"
+          },
+          {
+            "text": "Why chain abstraction",
+            "link": "/magic-account/why-chain-abstraction"
+          },
+          {
+            "text": "Demo",
+            "link": "https://github.com/zerodevapp/cab-demo"
+          },
+          {
+            "text": "Get in touch",
+            "link": "https://t.me/derek_chiang",
+          },
+          // {
+          //   "text": "Quickstart",
+          //   "link": "/sdk/quickstart"
+          // },
+        ],
+      },
+      {
+        "text": "Setting up Magic Account",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Introduction",
+            "link": "/magic-account/setup"
+          },
+          {
+            "text": "Social / email",
+            "link": "/magic-account/setup/social"
+          },
+          {
+            "text": "Passkeys",
+            "link": "/magic-account/setup/passkeys"
+          },
+          {
+            "text": "EOAs",
+            "link": "/magic-account/setup/eoa"
+          },
+          {
+            "text": "Third-party signers",
+            "link": "/magic-account/setup/third-party-signers"
+          },
+        ],
+      },
+      {
+        "text": "Using Magic Account",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Basic Usage",
+            "link": "/magic-account/usage"
+          },
+          {
+            "text": "Chain abstraction",
+            "link": "/magic-account/usage/chain-abstraction"
+          },
+          {
+            "text": "Sponsoring gas",
+            "link": "/magic-account/usage/sponsoring-gas"
+          },
+          {
+            "text": "Paying gas with ERC20s",
+            "link": "/magic-account/usage/paying-gas-with-erc20"
+          },
+          {
+            "text": "Batching transactions",
+            "link": "/magic-account/usage/batching-transactions"
+          },
+          {
+            "text": "1-click trading",
+            "link": "/magic-account/usage/one-click-trading"
+          },
+          {
+            "text": "Automating transactions",
+            "link": "/magic-account/usage/automating-transactions"
+          },
+        ],
+      },
+      // {
+      //   "text": "Using Magic Account with other accounts",
+      //   "collapsed": false,
+      //   "items": [
+      //     {
+      //       "text": "Introduction",
+      //       "link": "/sdk/interop"
+      //     },
+      //     {
+      //       "text": "Kernel (ZeroDev)",
+      //       "link": "/sdk/interop/kernel"
+      //     },
+      //     {
+      //       "text": "Safe",
+      //       "link": "/sdk/interop/safe"
+      //     },
+      //     {
+      //       "text": "Biconomy",
+      //       "link": "/sdk/interop/biconomy"
+      //     },
+      //     {
+      //       "text": "Alchemy",
+      //       "link": "/sdk/interop/alchemy"
+      //     },
+      //   ],
+      // },
+      {
+        "text": "Knowledge Base",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "What is a smart account?",
+            "link": "/magic-account/knowledge-base/smart-account"
+          },
+          {
+            "text": "How does chain abstraction work?",
+            "link": "/magic-account/knowledge-base/chain-abstraction"
+          },
+          {
+            "text": "What are capabilities (ERC-5792)?",
+            "link": "/magic-account/knowledge-base/capabilities"
+          },
+          {
+            "text": "What are permissions (ERC-7715)?",
+            "link": "/magic-account/knowledge-base/permissions"
           },
         ],
       },

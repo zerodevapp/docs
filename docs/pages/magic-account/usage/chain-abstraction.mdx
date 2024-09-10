@@ -1,0 +1,155 @@
+# Chain Abstraction
+
+The killer feature of Magic Account is chain abstraction.  When chain abstraction is enabled for a token, the token's balance turns into a "chain-abstracted balance" (CAB) that you can deposit into from any network, and that you can spend on any network.
+
+For example, let's say you have enabled chain abstraction for USDC.  If you deposit 100 USDC to a Magic Account on Base, then deposit 200 USDC to the account on Polygon, the account will now hold 300 "chain-abstracted USDC."  You can then spend this 300 USDC on any chain.
+
+Amazingly, these chain-abstracted tokens can be spent *at the speed of the destination chain* -- just like a regular transaction.  For example, if you spend the chain-abstracted USDC to buy an NFT on Optimism, the transaction is as fast as any regular Optimism transaction.  This is unlike a traditional bridge where the user has to wait for confirmations on both the source chain and the destination chain.
+
+To learn how chain abstraction works, [read this](/sdk/knowledge-base/chain-abstraction).
+
+## Supported tokens and networks
+
+### Mainnet
+
+Currently Magic Account supports only **USDC** for chain abstraction, on the following networks:
+
+- Ethereum mainnet
+- Arbitrum
+- Optimism
+- Base
+- Polygon
+
+We are working on supporting more tokens and networks as we scale up the system.  If there's a token or network you need, [get in touch](https://t.me/derek_chiang).
+
+Note that even with only USDC enabled for chain-abstraction, you can still spend *any token* because you can swap USDC to any token on-the-fly.  For example, if you want to buy an NFT with ETH on Arbitrum, but you don't have ETH on Arbitrum, you can simply create a [batch transaction](/sdk/usage/batching-transactions) where the first transaction swaps USDC into ETH, and then the second transaction purchases the NFT.
+
+### Testnet
+
+On testnet, Magic Account uses a test token called `6TEST`, on the following networks:
+
+- Ethereum Sepolia
+- Polygon Amoy
+
+You can mint `6TEST` tokens by following [these instructions](https://docs.stackup.sh/docs/erc20-paymaster-example#%E2%91%A4-get-6test-tokens).
+
+## Enabling chain abstraction
+
+When a user enables chain abstraction, they will need to sign a message.  Under the hood, this message creates a [session](/sdk/usage/automating-transactions) that will automatically turn tokens on all supported networks into chain-abstracted balances (CAB).
+
+### Wagmi
+
+```tsx
+import { useEnableCab } from "@magic-account/wagmi"
+
+function App() {
+  const { enableCab, isPending } = useEnableCab({
+    tokens: ['USDC'],  // or set to "6TEST" for testnet
+  })
+
+  return (
+    <button onClick={ () => enableCab() } >
+      Enable Chain Abstraction
+    </button>
+  )
+}
+```
+
+### Viem
+
+TODO
+
+## Spending chain-abstraction balances (CAB)
+
+When you send a transaction, Magic Account automatically spends CAB if the transaction needs CAB.  For example, if you are buying an NFT on Arbitrum that costs 500 USDC, and you don't have USDC on Arbitrum, then Magic Account will spend 500 USDC worth of CAB on this transaction.
+
+### Wagmi
+
+To send a transaction that may spend CAB, use [`sendCalls()`](https://wagmi.sh/react/api/hooks/useSendCalls) or [`writeContracts()`](https://wagmi.sh/react/api/hooks/useWriteContracts).  Here's an example with `writeContracts`:
+
+```tsx
+import { useWriteContracts } from 'wagmi/experimental'
+import { parseAbi } from 'viem'
+
+const abi = parseAbi([
+  'function approve(address, uint256) returns (bool)',
+  'function transferFrom(address, address, uint256) returns (bool)',
+])
+
+function App() {
+  const { writeContracts } = useWriteContracts()
+
+  return (
+    <button
+      onClick={() =>
+        writeContracts({
+          contracts: [
+            {
+              address: '0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2',
+              abi,
+              functionName: 'approve',
+              args: [
+                '0xa5cc3c03994DB5b0d9A5eEdD10CabaB0813678AC', 
+                100n
+              ],
+            },
+            {
+              address: '0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2',
+              abi,
+              functionName: 'transferFrom',
+              args: [
+                '0xa5cc3c03994DB5b0d9A5eEdD10CabaB0813678AC',
+                '0x0000000000000000000000000000000000000000',
+                100n
+              ],
+            },
+          ],
+        })
+      }
+    >
+      Send CAB Transaction
+    </button>
+  )
+}
+```
+
+### Viem
+
+TODO
+
+## Reading CAB
+
+When a token is chain-abstracted, it actually [sits in a vault](/sdk/knowledge-base/chain-abstraction) and not inside the account itself.  So if you use the normal Wagmi/Viem actions to read the balance from the account (or if you look up the balance on a block explorer), you won't see the chain-abstracted balance.
+
+Instead, use a helper function to read the CAB.
+
+### Wamgi
+
+```tsx
+import { useReadCab } from "@magic-account/wagmi"
+
+function App() {
+  const { data: balance, refetch } = useReadCab()
+
+  return (
+    <div>
+      <p>CAB: { balance }</p>
+      <button onClick={ () => enableCab() } >
+        Refetch balance
+      </button>
+    </div>
+  )
+}
+```
+
+### Viem
+
+## Withdrawing CAB
+
+You don't normally need to "withdraw" CAB per se.  If you want to move the tokens to another account, you can simply do a transfer by [spending CAB](/sdk/usage/chain-abstraction#spending-chain-abstraction-balances-cab).
+
+"Withdrawal" is only necessary in the worst case scenario -- if [the infra that powers CAB](/sdk/knowledge-base/chain-abstraction) goes down, and the user cannot access their CAB.  In that case, they can withdraw CAB from the CAB contracts directly.
+
+### Wagmi
+
+### Viem

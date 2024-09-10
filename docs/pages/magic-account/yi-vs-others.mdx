@@ -1,0 +1,39 @@
+# Yi vs other solutions
+
+TODO
+
+{/* 
+
+There are tons of AA solutions out there.  What's special about Yi?
+
+First, a bit of history.  We built ZeroDev in early 2023 when ERC-4337 first came out.  ZeroDev was the first "AA framework" and powers many of the most widely used AA wallets/applications to date.  There are now many other AA frameworks on the market, including Permissionless, Account Kit, Biconomy, but they are all fundamentally similar to ZeroDev in the sense that they let you deal directly with AA primitives such as smart accounts, UserOps, bundlers, and paymasters.
+
+While the ZeroDev SDK remains a powerful solution for wallet builders, we believe that ZeroDev and all AA solutions to date are a poor fit for building *applications*, for two reasons: developer lock-in and user lock-in.
+
+### Developer lock-in
+
+Given that each smart account implementation (Kernel, Safe, Light Account, etc.) speaks a different API, a smart application is typically implemented against a specific account implementation, using a vendor-specific SDK built for the smart account.
+
+Considering the difficulty with migrating between smart accounts, the application ends up highly coupled with a specific AA provider, with little chance of migrating to a different vendor once the application has gone live.
+
+This would be akin to if today when you build an app, you have to build it for a specific wallet (e.g. MetaMask) and it won't work with any other wallet.  That would be insane, and yet that has been the state of AA until now.
+
+### User lock-in
+
+As a further consequence of the lack of smart account interoperability, the user cannot bring their own smart wallet to the application, since there's no guarantee that the user's own smart wallet happens to use the same smart account implementation that the app was programmed against.
+
+Instead, the user MUST use the app through an embedded smart wallet, resulting in a fragmented experience where the user wounds up having a bunch of embedded wallets across apps, whether they like it or not.
+
+Another consequence of forcing the user to use an embedded wallet is that it makes it difficult for the user to use the tokens/assets from your app on other Web3 protocols, losing out on one of the greatest benefits of Web3 -- interoperability.
+
+### How Yi is different
+
+Yi is a new AA solution built specifically for applications that addresses the problems above, using the technologies of 2024:
+
+- Thanks to [capabilities (ERC-5792)](/dapp/knowledge/capabilities), it's now possible to build a smart application in such a way that works with any smart wallet (embedded or standalone), as opposed to locking in the application with a specific smart wallet.
+
+- Thanks to [subaccounts](/dapp/knowledge/subaccounts) (which is itself a special case of [permissions](/dapp/knowledge/permissions)), it's now possible to onboard users with embedded wallets while giving them a path to migrate to a standalone wallet, as opposed to permanently trapping the user with an embedded wallet.
+
+- Importantly, Yi is also the first AA solution to support true [chain-abstraction](/dapp/knowledge/chain-abstraction), giving it more power than all AA solutions to date.
+
+*/}

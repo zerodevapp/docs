@@ -1,0 +1,109 @@
+# 1-click Trading
+
+Magic Account supports "permissions" through [ERC-7715](/sdk/knowledge-base/permissions), a standard coauthored by ZeroDev, WalletConnect, MetaMask, Coinbase, and Biconomy.  A Magic Account user can grant permissions to the DApp to execute specific transactions on their behalf.  For example, the user might say:
+
+- When I use this app, it can trade up to 1000 USDC on Uniswap for me.
+
+Once the DApp has received these permissions, it can now send transactions on behalf of the user without further confirmation prompts, so long as the transactions are within the permissions. Therefore, the user achieves a "1-click trading" experience without sacrificing security.
+
+## Requesting permissions
+
+To request permissions, use Viem's `grantPermissions` API:
+
+```tsx
+import { createPublicClient, createWalletClient, http } from 'viem'
+import { mainnet } from 'viem/chains'
+import { erc7715Actions } from 'viem/experimental'
+import { useWalletClient } from 'wagmi'
+
+function App() {
+  // Get wallet client from Magic Account
+  const client = useWalletClient()
+
+  // Extend the wallet client with 7715 actions
+  const permissionsClient = client.extend(erc7715Actions()) 
+  
+  // Request permissions
+  const permissionsContext = await permissionsClient.grantPermissions({/* ... */})
+
+  // ...the rest of your code
+}
+ 
+```
+
+For example, to request permissions to spend up to some amount of ERC20 tokens from a specific set of contracts:
+
+```tsx
+const permissionsContext = await permissionsClient.grantPermissions({ 
+  permissions: [
+    {
+      type: { custom: "erc20-token-approve" },
+      data: {
+        tokenAddress,
+        allowance,
+        contractAllowList: [
+          {
+            address: erc20SpenderAddress,
+            functions: [
+              toFunctionSelector(
+                getAbiItem({
+                  abi: erc20SpenderAbi,
+                  name: "spendAllowance",
+                })
+              ),
+            ],
+          },
+        ],
+      },
+      policies: [],
+    },
+  ]
+})
+```
+
+## Executing transactions with permissions
+
+Once you have obtained a `permissionsContext`, you can execute transactions with the permissions with [`sendCalls()`](https://wagmi.sh/react/api/hooks/useSendCalls) or [`writeContracts()`](https://wagmi.sh/react/api/hooks/useWriteContracts), by including the `permissionsContext` as a capability.  For example, using `writeContracts()`:
+
+
+```tsx
+import { parseAbi } from 'viem'
+import { writeContracts } from '@wagmi/core/experimental'
+import { config } from './config'
+
+const abi = parseAbi([
+  'function spendAllowance1(address, uint256) returns (bool)',
+  'function spendAllowance2(address, address, uint256) returns (bool)',
+])
+
+const id = await writeContracts(config, {
+  contracts: [
+    {
+      address: '0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2',
+      abi,
+      functionName: 'spendAllowance1',
+      args: [
+        '0xa5cc3c03994DB5b0d9A5eEdD10CabaB0813678AC', 
+        100n
+      ],
+    },
+    {
+      address: '0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2',
+      abi,
+      functionName: 'spendAllowance2',
+      args: [
+        '0xa5cc3c03994DB5b0d9A5eEdD10CabaB0813678AC',
+        '0x0000000000000000000000000000000000000000',
+        100n
+      ],
+    },
+  ],
+  capabilities: { 
+    permissions: { 
+      context: '<permissionsContext>'
+    } 
+  },
+})
+```
+
+When a transaction is executed with permissions, the user won't be prompted to sign the transaction, so from the user's perspective this will be "1-click trading."
