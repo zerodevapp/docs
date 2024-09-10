@@ -14,15 +14,15 @@ As a result, your user doesn't need to think about "Arbitrum USDC" vs "Base USDC
 
 ## How does Magic Account enable chain abstraction?
 
-Magic Account enables chain abstraction by implementing a protocol known as "MagicSpend++".  You can [read more about the protocol here](/sdk/knowledge-base/chain-abstraction), but here's a quick summary of how MagicSpend++ (as implemented in Magic Account) works:
+Magic Account enables chain abstraction by implementing a protocol known as "MagicSpend++".  You can [read more about the protocol here](/magic-account/knowledge-base/chain-abstraction), but here's a quick summary of how MagicSpend++ (as implemented in Magic Account) works:
 
-- When a user enables CAB for a Magic Account account, they sign [a session key](/sdk/usage/automating-transactions) for a web service that will automatically move their CAB tokens into an escrow.  Therefore, any CAB tokens that a user receives on their account will be automatically locked in the escrow.
+- When a user enables CAB for a Magic Account account, they sign [a session key](/magic-account/usage/automating-transactions) for a web service that will automatically move their CAB tokens into an escrow.  Therefore, any CAB tokens that a user receives on their account will be automatically locked in the escrow.
 
 - When a user sends a transaction, the Magic Account SDK simulates the transaction to determine how much CAB token it needs.  For example, if the user tries to buy an NFT on Optimism which is worth 300 USDC, but the user doesn't own USDC on Optimism, then the user needs 300 USDC via CAB.
 
 - Now, the user sends a request to the CAB paymaster, which checks that the user indeed owns at least 300 USDC worth of CAB.  If so, the paymaster signs the request.
 
-- The user executes the target transaction through a [batch transaction](/sdk/usage/batching-transactions), where the first call in the batch withdraws USDC from the CAB paymaster (which itself withdraws liquidity from solvers), and where the second call is the actual intended transaction.  This transaction also generates a *receipt* on-chain.
+- The user executes the target transaction through a [batch transaction](/magic-account/usage/batching-transactions), where the first call in the batch withdraws USDC from the CAB paymaster (which itself withdraws liquidity from solvers), and where the second call is the actual intended transaction.  This transaction also generates a *receipt* on-chain.
 
 - At a later point, the solver who provided the liquidity repays itself with the user's tokens on a chain where the user actually owns the token.  The solver does so by *proving* the existence of the receipt through a message bridge.
 
