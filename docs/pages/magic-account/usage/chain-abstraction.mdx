@@ -6,7 +6,7 @@ For example, let's say you have enabled chain abstraction for USDC.  If you depo
 
 Amazingly, these chain-abstracted tokens can be spent *at the speed of the destination chain* -- just like a regular transaction.  For example, if you spend the chain-abstracted USDC to buy an NFT on Optimism, the transaction is as fast as any regular Optimism transaction.  This is unlike a traditional bridge where the user has to wait for confirmations on both the source chain and the destination chain.
 
-To learn how chain abstraction works, [read this](/magic-account/knowledge-base/chain-abstraction).
+To learn how chain abstraction works, [read this](/magic-account/why-chain-abstraction).
 
 ## Supported tokens and networks
 
@@ -119,7 +119,7 @@ TODO
 
 ## Reading CAB
 
-When a token is chain-abstracted, it actually [sits in a vault](/magic-account/knowledge-base/chain-abstraction) and not inside the account itself.  So if you use the normal Wagmi/Viem actions to read the balance from the account (or if you look up the balance on a block explorer), you won't see the chain-abstracted balance.
+When a token is chain-abstracted, it actually [sits in a vault](/magic-account/why-chain-abstraction) and not inside the account itself.  So if you use the normal Wagmi/Viem actions to read the balance from the account (or if you look up the balance on a block explorer), you won't see the chain-abstracted balance.
 
 Instead, use a helper function to read the CAB.
 
@@ -148,7 +148,7 @@ function App() {
 
 You don't normally need to "withdraw" CAB per se.  If you want to move the tokens to another account, you can simply do a transfer by [spending CAB](/magic-account/usage/chain-abstraction#spending-chain-abstraction-balances-cab).
 
-"Withdrawal" is only necessary in the worst case scenario -- if [the infra that powers CAB](/magic-account/knowledge-base/chain-abstraction) goes down, and the user cannot access their CAB.  In that case, they can withdraw CAB from the CAB contracts directly.
+"Withdrawal" is only necessary in the worst case scenario -- if [the infra that powers CAB](/magic-account/why-chain-abstraction) goes down, and the user cannot access their CAB.  In that case, they can withdraw CAB from the CAB contracts directly.
 
 ### Wagmi
 
