@@ -396,7 +396,7 @@ export default defineConfig({
             "link": "/magic-account"
           },
           {
-            "text": "Magic Account vs Bridges",
+            "text": "How does it work?",
             "link": "/magic-account/why-chain-abstraction"
           },
           {
