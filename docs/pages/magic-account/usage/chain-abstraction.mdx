@@ -40,7 +40,7 @@ When a user enables chain abstraction, they will need to sign a message.  Under 
 ### Wagmi
 
 ```tsx
-import { useEnableCab } from "@magic-account/wagmi"
+import { useEnableCab } from "@zerodev/magic-account"
 
 function App() {
   const { enableCab, isPending } = useEnableCab({
@@ -126,7 +126,7 @@ Instead, use a helper function to read the CAB.
 ### Wamgi
 
 ```tsx
-import { useReadCab } from "@magic-account/wagmi"
+import { useReadCab } from "@zerodev/magic-account"
 
 function App() {
   const { data: balance, refetch } = useReadCab()

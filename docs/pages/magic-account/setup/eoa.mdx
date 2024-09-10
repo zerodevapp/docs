@@ -2,9 +2,7 @@
 
 You can sign into a Magic Account with a EOA wallet (e.g. MetaMask), in which case the EOA will serve as the "signer" of the Magic Account.  This means that every time the Magic Account signs a transaction or a message, the EOA wallet will sign it.  If you want to avoid having the EOA sign every transaction/message, you can [enable 1-click trading](/magic-account/using-yi/one-click-trading).
 
-As described in [the intro](/magic-account/setting-up-yi), you can use Magic Account through either [Wagmi](#wagmi) or [Viem](#viem).
-
-## Wagmi
+## API
 
 Set up the Wagmi config with a Magic Account connector.  You can create a Magic Account connector by wrapping a [EOA connector](https://wagmi.sh/core/api/connectors).  For example, to let users sign into Magic Account with MetaMask:
 
@@ -13,7 +11,7 @@ import { WagmiProvider, createConfig, http } from "wagmi"
 import { metaMask } from "wagmi/connectors"
 import { arbitrum, optimism } from "wagmi/chains"
 import { ReactNode } from "react"
-import { wrapEOAConnector } from "@magic-account/wagmi" // [!code focus]
+import { wrapEOAConnector } from "@zerodev/magic-account" // [!code focus]
 
 export default function Providers({ children }: { children: ReactNode }) {
   const config = createConfig({
@@ -37,7 +35,3 @@ export default function Providers({ children }: { children: ReactNode }) {
   )
 }
 ```
-
-## Viem
-
-TODO

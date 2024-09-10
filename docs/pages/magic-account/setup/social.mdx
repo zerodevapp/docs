@@ -4,7 +4,7 @@ Magic Account supports social signins.  We are starting with support for Google;
 
 If you are using social signin on localhost, make sure to use port `3000`.
 
-## Wagmi
+## API
 
 Set up your Wagmi config with the Google connector:
 
@@ -12,7 +12,7 @@ Set up your Wagmi config with the Google connector:
 import { WagmiProvider, createConfig, http } from "wagmi"
 import { arbitrum, optimism } from "wagmi/chains"
 import { ReactNode } from "react"
-import { googleConnector } from "@magic-account/wagmi" // [!code focus]
+import { googleConnector } from "@zerodev/magic-account" // [!code focus]
 
 export default function Providers({ children }: { children: ReactNode }) {
   const config = createConfig({
@@ -90,7 +90,3 @@ export function ConnectButton() {
   );
 }
 ```
-
-## Viem
-
-TODO

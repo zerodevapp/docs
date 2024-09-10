@@ -24,12 +24,16 @@ export default defineConfig({
     </>
   ),
   topNav: [
+    { text: 'Magic Account', link: '/magic-account', match: '/magic-account' },
     { text: 'SDK', link: '/', match: '/sdk' },
-    // { text: 'Magic Account', link: '/magic-account', match: '/magic-account' },
     { text: 'Infra', link: '/meta-infra/intro', match: '/meta-infra' },
     {
       link: 'https://dashboard.zerodev.app/',
       text: 'Dashboard',
+    },
+    {
+      link: 'https://t.me/derek_chiang',
+      text: 'Contact us',
     },
     { text: 'Blog', link: '/blog', match: '/blog' },
   ],
@@ -125,10 +129,10 @@ export default defineConfig({
         "text": "Advanced",
         "collapsed": false,
         "items": [
-          // {
-          //   "text": "Chain Abstraction",
-          //   "link": "/sdk/advanced/chain-abstraction"
-          // },
+          {
+            "text": "Chain Abstraction",
+            "link": "/sdk/advanced/chain-abstraction"
+          },
           {
             "text": "Passkeys",
             "link": "/sdk/advanced/passkeys"

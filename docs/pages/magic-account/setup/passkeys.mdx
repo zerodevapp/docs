@@ -12,7 +12,7 @@ The biggest value-add of passkeys, in the context of Web3, is **saving users fro
 
 Make sure you check out [the official passkeys demo](https://webauthn.io/) if you are not familiar with how passkeys work.
 
-## Wagmi
+## API
 
 Set up the Wagmi config with a Magic Account connector:
 
@@ -20,7 +20,7 @@ Set up the Wagmi config with a Magic Account connector:
 import { WagmiProvider, createConfig, http } from "wagmi"
 import { arbitrum, optimism } from "wagmi/chains"
 import { ReactNode } from "react"
-import { passkeyConnector } from "@magic-account/wagmi" // [!code focus]
+import { passkeyConnector } from "@zerodev/magic-account" // [!code focus]
 
 export default function Providers({ children }: { children: ReactNode }) {
   const config = createConfig({
@@ -48,7 +48,7 @@ export default function Providers({ children }: { children: ReactNode }) {
 Now, you can create "Login" and "Register" buttons using our hooks:
 
 ```tsx
-import { usePasskey } from "@magic-account/wagmi";
+import { usePasskey } from "@zerodev/magic-account";
 
 export function ConnectButton() {
   const { connectRegister, connectLogin } = usePasskey();
@@ -65,8 +65,3 @@ export function ConnectButton() {
   )
 }
 ```
-
-## Viem
-
-TODO
-
