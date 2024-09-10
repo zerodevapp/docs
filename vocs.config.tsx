@@ -508,10 +508,6 @@ export default defineConfig({
             "link": "/magic-account/knowledge-base/smart-account"
           },
           {
-            "text": "How does chain abstraction work?",
-            "link": "/magic-account/knowledge-base/chain-abstraction"
-          },
-          {
             "text": "What are capabilities (ERC-5792)?",
             "link": "/magic-account/knowledge-base/capabilities"
           },
