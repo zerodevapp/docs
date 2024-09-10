@@ -389,15 +389,15 @@ export default defineConfig({
         "items": [
           {
             "text": "Introduction",
-            "link": "/"
+            "link": "/magic-account"
           },
           {
-            "text": "Why chain abstraction",
+            "text": "Magic Account vs Bridges",
             "link": "/magic-account/why-chain-abstraction"
           },
           {
             "text": "Demo",
-            "link": "https://github.com/zerodevapp/cab-demo"
+            "link": "https://demo.magicaccount.io"
           },
           {
             "text": "Get in touch",
