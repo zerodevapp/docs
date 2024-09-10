@@ -25,7 +25,7 @@ export default defineConfig({
   ),
   topNav: [
     { text: 'SDK', link: '/', match: '/sdk' },
-    { text: 'Magic Account', link: '/magic-account', match: '/magic-account' },
+    // { text: 'Magic Account', link: '/magic-account', match: '/magic-account' },
     { text: 'Infra', link: '/meta-infra/intro', match: '/meta-infra' },
     {
       link: 'https://dashboard.zerodev.app/',
