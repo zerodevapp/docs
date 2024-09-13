@@ -16,7 +16,7 @@ As a result, your user doesn't need to think about "Arbitrum USDC" vs "Base USDC
 
 Magic Account enables chain abstraction by implementing a protocol known as "MagicSpend++," [which was originally proposed by Socket](https://ethresear.ch/t/magicspend-spend-now-debit-later/19678).  Here's a quick summary of how MagicSpend++ (as implemented in Magic Account) works:
 
-- When a user enables CAB for a Magic Account account, they sign [a session key](/magic-account/usage/automating-transactions) for a web service that will automatically move their CAB tokens into an escrow.  Therefore, any CAB tokens that a user receives on their account will be automatically locked in the escrow.
+- When a user enables CAB for a Magic Account account, they sign [a session key](/magic-account/usage/automating-transactions) for a watcher service that will automatically move their CAB tokens into an escrow.  Therefore, any CAB tokens that a user receives on their account will be automatically locked in the escrow.
 
 - When a user sends a transaction, the Magic Account SDK simulates the transaction to determine how much CAB token it needs.  For example, if the user tries to buy an NFT on Optimism which is worth 300 USDC, but the user doesn't own USDC on Optimism, then the user needs 300 USDC via CAB.
 
