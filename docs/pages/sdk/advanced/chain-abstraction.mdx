@@ -143,7 +143,7 @@ const calls = [
 ]
 ```
 
-Then, prepare the CAB UserOp by specifying the calls and repay tokens.  Repay tokens are the tokens the users will repay the solvers with.  Since CAB only supports USDC for now, both repay tokens and sponsor tokens (the tokens provided to the user by solvers) will be USDC, but in principle repay tokens and sponsor tokens can be different.  For example, a user might spend WETH while paying solvers back in USDC.
+Then, prepare the CAB UserOp by specifying the calls and repay tokens.  Note that the call can spend a different token than the repay token.  Currently the repay token can only be USDC, but the call can spend USDC/USDT/DAI/WETH/WBTC.  If the repay token and the spent token are different, the ZeroDev SDK automatically performs the swapping.
 
 ```tsx
 const { userOperation, repayTokensInfo, sponsorTokensInfo } =
