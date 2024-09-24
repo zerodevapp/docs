@@ -8,11 +8,25 @@ ZeroDev is the first smart account solution to support *chain abstraction*.
 
 With ZeroDev, you can turn a token balance into a "**chain-abstracted balance**" (CAB).  Instead of thinking about "USDC on Ethereum" vs "USDC on Arbitrum," your user can just look at their "USDC balance" as a single balance that can be spent on any chain.
 
-For example, if you deposit 100 USDC to a Yi account on Base, then deposit 200 USDC to the account on Polygon, the account will now hold 300 "chain-abstracted USDC" that can be spent on any chain.
+This guide is for using CAB directly through the ZeroDev SDK, which allows for fine-grained control.  We also have a Wagmi SDK called [Magic Account](/magic-account) which is better for new Wagmi projects.  To learn more about how CAB works, [read this](/magic-account/why-chain-abstraction).
 
-Amazingly, these chain-abstracted tokens can be spent at the speed of the destination chain -- just like a regular transaction. This is unlike a traditional bridge where the user has to wait for confirmations on both the source chain and the destination chain.  To learn more about chain abstraction, visit [Magic Account](/magic-account).
+## Features
 
-This guide is for users of the ZeroDev SDK to enable chain abstraction.  If you are starting a new Wagmi project from scratch, you may prefer to use [Magic Account](/magic-account).
+### One unified balance
+
+As aforementioned, CAB (chain-abstracted balance) is a single balance that can be spent on any chain.
+
+For example, if you deposit 100 USDC to a ZeroDev account on Base, then deposit 200 USDC to the account on Polygon, the account will now hold 300 "chain-abstracted USDC" that can be spent on any chain.
+
+### No bridging latency
+
+Amazingly, CAB can be spent at the speed of the destination chain -- just like a regular transaction. This is unlike a traditional bridge where the user has to wait for confirmations on both the source chain and the destination chain.  To learn more about chain abstraction, visit [Magic Account](/magic-account).
+
+### Spending as any tokens
+
+CAB can be spent as any supported tokens; ZeroDev automatically handles the swapping.  For example, if you have 500 USDC in CAB but you need to spend 500 USDT, you can do that.
+
+Currently, we support swapping USDC to USDT/DAI/WETH/WBTC.  Contact us if you are looking to support any specific tokens.
 
 ## Code example
 
