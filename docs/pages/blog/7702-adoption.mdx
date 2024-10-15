@@ -1,0 +1,162 @@
+---
+authors:
+    - "[derek](https://twitter.com/decentrek)"
+date: 2024-10-15
+layout: minimal
+---
+
+# What does EIP-7702 mean for YOU?  Part 1 -- The Adoption Cycle of 7702
+
+::authors
+
+*(You can [read this article on X here](https://x.com/decentrek/status/1846216581979734156))*
+
+This is part 1 of a series I'm writing to examine the impact that EIP-7702 is likely to have on different parts of the crypto world, including:
+
+- Users
+- Wallets
+- DApps
+- WaaS (embedded wallets) and other infra providers
+
+In part 1, I want to examine how the adoption of 7702 is likely to play out.  Will it be adopted super quickly or will we see a very long adoption cycle?  Who will adopt it first?  That's what this article is about.
+
+## What is EIP-7702
+
+First, a quick recap.  EIP-7702 is one of the EIPs slated to go live in Ethereum's next upgrade (Pectra), scheduled for Q1 2025.
+
+With EIP-7702, an EOA can "upgrade" itself into a smart account, while simultaneously remaining an EOA and keeping the same address.
+
+Once the account has been upgraded, the user can then experience most of the benefits of AA such as gas sponsorship, transaction batching, passkeys, etc.
+
+## How EIP-7702 differs from ERC-4337
+
+EIP-7702 is an account abstraction proposal, but it's different from ERC-4337 in critical ways:
+
+- You can upgrade existing EOAs into 7702 smart accounts, whereas today you must create new accounts to use ERC-4337. 
+- A EIP-7702 account is simultaneously a EOA and a smart account, whereas a ERC-4337 account today is a smart account only.
+- EIP-7702 is a EIP, whereas ERC-4337 is a ERC.  In other words, Ethereum L1 and all Ethereum-equivalent L2s will "automatically" get EIP-7702, whereas ERC-4337 requires the deployment of specific contracts and infra.
+
+In practice, the first two points -- that EIP-7702 can upgrade EOAs and that the EOAs remain EOAs even after the upgrade -- are the biggest reasons why EIP-7702 will likely boost AA adoption way more than ERC-4337 alone could do.  This is because:
+
+- People love their EOAs.  Asking users to move their assets to a new account/wallet is simply too much for most users.
+- Many dapps still don't support smart accounts.  The fact that a 7702 account is both a EOA and a smart account will give the user the best of both worlds -- the capabilities of smart accounts, and the compatibility of EOAs.
+
+However, it would be false to say that EIP-7702 will "kill" ERC-4337.  As we will discuss in a future article, EIP-7702 will need to leverage ERC-4337 in order to achieve its full potential, so EIP-7702 is actually incredibly good news for ERC-4337 companies today such as @zerodev_app.
+
+## How fast will 7702 adoption happen
+
+Now onto the main point of this article: how fast will 7702 be adopted, and how will the adoption play out in practice, i.e. how will different parts of the Web3 stack (e.g. wallets, dapps, infra) adopt 7702?
+
+For the first question -- how fast -- there are a few possible scenarios:
+
+- 7702 achieves huge adoption overnight because a ton of wallets/dapps will already have their 7702 integration ready to go on day 1 (since 7702 will go live on testnets like @ithacaxyz before it goes live on mainnet, giving projects a chance to support it on day 1).
+- 7702 achieves huge adoption over a short time (say within a year) after the launch.
+- 7702 will eventually achieve huge adoption, but it will play out over a long period of time (say between 1-3 years).
+- 7702 never achieves real adoption.
+
+My personal ranking of the likelihoods of these scenarios is 2 > 3 >> 4 > 1 (with 2/3 being the likely scenarios and 4/1 being the less likely scenarios).  In other words, 7702 will likely achieve massive adoption within a few years, but it's unlikely to be adopted overnight nor to be completely ignored.
+
+To see why, let's examine how 7702 adoption will likely play out in practice.
+
+## How wallets will adopt 7702
+
+Let's start by examining wallets, who are upstream in the adoption cycle of 7702, because without wallets supporting 7702, dapps can't leverage 7702 features.
+
+First, let's differentiate between **standalone wallets** like @MetaMask @CoinbaseWallet, and **wallet services** like @privy_io @dynamic_xyz @turnkeyhq @magic_labs.  Standalone wallets and wallet services will face different incentives in adopting 7702.  In this section we talk only about **standalone wallets**.
+
+Standalone wallets have a few options when it comes to adopting 7702:
+
+- They can embrace it fully by 1) implementing support for 7702 and 2) enabling it **by default** for all their users.
+
+- They can embrace it partially by 1) implementing support for 7702, but 2) keeping it disabled by default and requiring users to **opt into** 7702.
+
+- They can take a wait-and-see approach with 7702 and not implement support for it until competition forces them to do so.
+
+My prediction is that the long tail of wallet companies will go with option 3 (wait-and-see), for the simple reason that adopting 7702 is a lot of work so most wallet companies may simply not have the time and resources to implement it quickly.  **HOWEVER, the most important wallets, such as MetaMask and Coinbase, will go with option 2, i.e. quickly implementing 7702 support but requiring users to opt into it.**  There will also be new standalone wallets that go with option 1 (enabling 7702 by default), but since wallets are such a competitive space and difficult for new players to enter, realistically most users will be using existing wallets that go with option 2 or 3.
+
+## Why top wallets will quickly support 7702
+
+So why do I think that top wallets will implement 7702 support quickly?  Because:
+
+- I know from personal connections that these top wallet companies have been paying very close attention to the development of 7702, so they genuinely understand the benefits of 7702.
+
+- These projects are some of the most well-funded companies in the space, and therefore have the resources and capabilities to implement support for 7702.
+
+- Wallets are a hyper-competitive space and the top wallets have the most to lose, so the fear of missing out on a big paradigm shift will drive them to quickly adopt 7702 so they don't get disrupted by competitors.
+
+Now, why do I believe that these wallets won't enable 7702 by default, but rather require users to opt in?
+
+## Why top wallets will require users to opt into 7702
+
+In one word, **security**.
+
+The topic of security with 7702 is a very nuanced one and deserves its own post, but I will quickly go over the basics here.
+
+In short, it's incorrect to say either 1) that 7702 improves wallet security, or 2) that it hurts wallet security.  This is because security is a multi-facet thing, and 7702 improves security in some aspects while hurting security in others.
+
+7702 improves security because:
+
+- With [session keys](/sdk/advanced/session-keys) (otherwise known as "privilege de-escalation" or "subkeys"), you can interact with DApps in a "sandboxed" way, so that even a malicious dapp cannot steal everything from you.  This significantly reduces the probability and harm of phishing attacks.
+
+7702 doesn't improve security and possibly even hurts security in some ways because:
+
+- Since a 7702 account is simultaneously a EOA and a smart account, it doesn't relieve you from the need to secure your EOA private key (seed phrase).  This is the main reason why, **despite 7702, long-term it would still be best for the space to transition towards full smart accounts**, because only full smart accounts can fully eliminate the need for seed phrases, which are terribly hard to secure.
+
+- Since 7702 accounts are smart accounts, their security are now dependent on the security of the smart account implementation.  No matter how many times smart accounts are audited, there's always a non-zero chance that it has bugs.
+
+Therefore, it's really anyone's judgement as to whether a 7702 account is more or less secure than a EOA account, and also whether the UX benefits are worth the security tradeoffs.
+
+Since the most important property of a wallet is security, existing top wallets won't risk user security by enabling 7702 by default.  Rather, they will offload the decision to users and let users decide whether they want to use 7702 or not.
+
+## Will users opt into 7702?
+
+Given that top wallets will offer 7702 as an optional feature, the natural question becomes: will users opt in?
+
+The answer is actually very simple: **users will enable 7702 if if they really want to use a dapp/feature that requires 7702, and otherwise they won't**.  Therefore, this leads us to the second part of the analysis -- how will dapps adopt 7702?
+
+## How dapps will adopt 7702
+
+For dapps, 7702 (and AA in general) has four main value propositions:
+
+- Gas sponsorship
+- Transaction batching
+- Transaction automation (via session keys)
+- Chain abstraction (enabling CA with AA is a new area of research that [we are very excited about](https://x.com/decentrek/status/1833548246389547223))
+
+Together, these value props yield significant UX benefits that will differentiate a dapp from its competitors, so dapps do have a strong incentive to leverage AA.  The reason why you haven't seen too much dapp adoption for AA so far is that, with ERC-4337, dapps have to opt into an entirely new account model (smart accounts) that doesn't work with 99% of users out there (EOA users), but with 7702 a dapp can offer these UX benefits without turning away EOA users, so the cost/benefit calculus for dapps to adopt AA becomes much more favorable with 7702.
+
+**But here we see a chicken-and-egg problem -- dapps don't want to spend the time and resources into supporting 7702 if very few users will be using 7702-enabled wallets, but users also won't enable 7702 unless there are dapps that support 7702.**  How do we break this chicken-and-egg?
+
+This leads us to examining another part of the Web3 stack -- wallet services aka "embedded wallets."
+
+## How embedded wallets will adopt 7702
+
+Just like standalone wallets, embedded wallets providers won't enable 7702 by default, but rather provide that as an option to their customers (dapp developers).  However, unlike standalone wallets where the choice to enable 7702 is on the user (as it would be terribly insecure if a dapp could enable 7702 for your MetaMask), **the choice to enable 7702 for embedded wallets will rest with the dapp developer**, as embedded wallets are by definition new wallets that developers create for their users.
+
+**So, if a dapp developer wants to leverage AA features, they won't need to wait for their users to opt into 7702 -- they can just use 7702-enabled embedded wallets.**
+
+Now, you might say that developers have been able to leverage ERC-4337 through embedded wallets as well, but it hasn’t led to massive AA adoption.  The key difference with 7702, however, is that **developers do not have to exclude EOA users when they build with 7702-enabled embedded wallets**.  Rather, the apps can support both embedded wallets and EOA users.  EOA users who want to experience AA features with the app can just turn on 7702 for their EOA.
+
+Therefore, embedded wallets will play a key role in driving the adoption of 7702, by allowing developers to offer AA features without waiting for users to enable 7702 for their standalone wallets.
+
+## Putting everything together
+
+We have now examined how four different groups -- wallets, users, dapps, and embedded wallets -- will likely adopt 7702.  Let's now put everything together.
+
+- Standalone wallets (e.g. MetaMask) will implement support for 7702 but require users to opt in.
+
+- Embedded wallets (e.g. privy/dynamic) will also implement support for 7702, but require developers to opt in.
+
+- Innovative dapps will implement AA features using 7702-enabled embedded wallets.
+
+- Adventurous EOA users will try these dapps by turn on 7702 for their standalone wallets.
+
+- Seeing more users turning on 7702 and more dapps adopting 7702, the slower-moving dapps will start leveraging 7702/AA too.
+
+- As the number of AA-enabled dapps grow, the slower-moving users will enable 7702 too, in order to not miss out on all the new apps and new experiences.
+
+- As more and more users enable 7702, the long-tail of wallets who are yet to support 7702 will be forced to add support or risk fading into irrelevancy.
+
+Hopefully, **this virtuous cycle of wallets => dapps => users => wallets will drive the entire space to adopt 7702/AA**, which will bring a 10x improvement to Web3 UX as we know it today, and sets the stage for native AA, whenever that happens.
+
+In the next article, we will dive deeper into the technical side and examine how exactly wallets and dapps will implement support for 7702.
