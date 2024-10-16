@@ -51,6 +51,8 @@ We recommend that you take a look at [our code example](https://github.com/zerod
 
 ### Creating a magic address
 
+In the following example, we are going to create a magic address that, when receiving funds on any chain, will transfer the funds to a specific address on Base.  This is helpful when, for instance, you want to create a deposit address for your user, so that they can send funds to the address on any chain (possibly from a CEX), and then they will receive funds in their wallet on the chain that your app runs on.
+
 First import some types and functions:
 
 ```tsx
@@ -87,6 +89,8 @@ const srcTokens: CreateMagicAddressParams["srcTokens"] = [
 
 const destChain = base
 const slippage = 5000
+
+// This is the call that will be executed on the destination chain
 const call = createCall({
   target: FLEX.TOKEN_ADDRESS,  // any tokens
   value: 0n,
