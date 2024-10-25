@@ -47,7 +47,8 @@ const handleRegister = async () => {
   const webAuthnKey = await toWebAuthnKey({ // [!code focus]
             passkeyName: username, // [!code focus]
             passkeyServerUrl: PASSKEY_SERVER_URL, // [!code focus]
-            mode: WebAuthnMode.Register // [!code focus]
+            mode: WebAuthnMode.Register, // [!code focus]
+            passkeyServerHeaders: {} // [!code focus]
   }) // [!code focus]
 
   const passkeyValidator = await toPasskeyValidator(publicClient, {  // [!code focus]
@@ -73,7 +74,8 @@ const handleLogin = async () => {
   const webAuthnKey = await toWebAuthnKey({ // [!code focus]
             passkeyName: username, // [!code focus]
             passkeyServerUrl: PASSKEY_SERVER_URL, // [!code focus]
-            mode: WebAuthnMode.Login // [!code focus]
+            mode: WebAuthnMode.Login, // [!code focus]
+            passkeyServerHeaders: {} // [!code focus]
   }) // [!code focus]
 
   const passkeyValidator = await toPasskeyValidator(publicClient, { // [!code focus]

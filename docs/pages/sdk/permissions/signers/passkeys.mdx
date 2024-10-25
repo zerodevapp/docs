@@ -15,6 +15,7 @@ const webAuthnKey = await toWebAuthnKey({
   passkeyName,
   passkeyServerUrl,
   mode,
+  passkeyServerHeaders: {}
 })
 
 const webAuthnSigner = await toWebAuthnSigner(publicClient, {
