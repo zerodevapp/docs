@@ -17,22 +17,22 @@ Start by creating multiple account clients:
 const PAYMASTER_RPC = 'your ZeroDev paymaster RPC'
 const BUNDLER_RPC = 'your ZeroDev bundler RPC'
 
-const PAYMASTER_RPC_STACKUP = PAYMASTER_RPC + '?provider=STACKUP'
-const BUNDLER_RPC_STACKUP = BUNDLER_RPC + '?provider=STACKUP'
+const PAYMASTER_RPC_ALCHEMY = PAYMASTER_RPC + '?provider=ALCHEMY'
+const BUNDLER_RPC_ALCHEMY = BUNDLER_RPC + '?provider=ALCHEMY'
 
 const PAYMASTER_RPC_PIMLICO = PAYMASTER_RPC + '?provider=PIMLICO'
 const BUNDLER_RPC_PIMLICO = BUNDLER_RPC + '?provider=PIMLICO'
 
-// Create an account client with stackup as provider
+// Create an account client with Alchemy as provider
 const kernelClient1 = createKernelAccountClient({
     account,
     chain,
-    bundlerTransport: http(BUNDLER_RPC_STACKUP),
+    bundlerTransport: http(BUNDLER_RPC_ALCHEMY),
     middleware: {
         sponsorUserOperation: async ({ userOperation }) => {
             const zeroDevPaymasterClient = createZeroDevPaymasterClient({
                 chain,
-                transport: http(PAYMASTER_RPC_STACKUP),
+                transport: http(PAYMASTER_RPC_ALCHEMY),
                 entryPoint
             })
             return zeroDevPaymasterClient.sponsorUserOperation({
@@ -79,11 +79,10 @@ Now you can use `kernelClient` as usual.  Your `kernelClient` will use `kernelCl
 
 ### Using non-ZeroDev infra as fallbacks
 
-In the previous example, we used different providers as fallbacks through ZeroDev.  If you are worried that ZeroDev itself might go down, you can also sign up directly with providers like Stackup and Pimlico and set them up as fallback providers.
+In the previous example, we used different providers as fallbacks through ZeroDev.  If you are worried that ZeroDev itself might go down, you can also sign up directly with providers like Pimlico and set them up as fallback providers.
 
 To do that, simply:
 
-- [Set up a Kernel account client with Stackup](/sdk/infra/stackup).
 - [Set up a Kernel account client with Pimlico](/sdk/infra/pimlico).
 
 Then combine them with `createFallbackKernelAccountClient`:
@@ -91,7 +90,6 @@ Then combine them with `createFallbackKernelAccountClient`:
 ```ts
 const kernelClient = createFallbackKernelAccountClient([
     zerodevKernelClient,
-    stackupKernelClient,
     pimlicoKernelClient,
 ])
 ```

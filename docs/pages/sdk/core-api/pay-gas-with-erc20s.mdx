@@ -20,7 +20,7 @@ On a high level, you need to do two things to enable a smart account to pay gas 
 - Ensure that enough ERC20 tokens have been approved for the ERC20 paymaster.
   - This step is necessary because the ERC20 paymaster needs to withdraw ERC20 tokens from the smart account.
 
-Let's go through these two steps next.  We will be using mainnet USDC in the following examples, but you can use any of [these supported tokens](https://docs.stackup.sh/docs/supported-erc-20-tokens) thanks to our integration with StackUp.
+Let's go through these two steps next.  We will be using mainnet USDC in the following examples, but you can use any of [these supported tokens](https://docs.pimlico.io/infra/paymaster/erc20-paymaster/supported-tokens) thanks to our integration with Pimlico.
 
 ## Set up Kernel Client
 
@@ -103,7 +103,7 @@ const userOpHash = await kernelClient.sendUserOperation({
 })
 ```
 
-Note that you only have to approve once, as long as the approval amount is sufficient for many UserOps.  The [paymaster contract by StackUp](https://github.com/stackup-wallet/contracts/blob/662e96c6165d5a2b267bcd2799f93715fbea7f35/contracts/VerifyingPaymaster.sol) has not been audited but it's widely used and generally considered safe.
+Note that you only have to approve once, as long as the approval amount is sufficient for many UserOps.  The [paymaster contract by Pimlico](https://github.com/pimlicolabs/erc20-paymaster/blob/main/src/ERC20PaymasterV06.sol) has been audited, it's widely used and generally considered safe.
 
 ## Estimate Gas in ERC20s
 
@@ -134,4 +134,4 @@ You can also see [a code example for estimating gas here](https://github.com/zer
 
 ## Supported Tokens
 
-We support [these tokens](https://docs.stackup.sh/docs/supported-erc-20-tokens) thanks to our integration with StackUp.
+We support [these tokens](https://docs.pimlico.io/infra/paymaster/erc20-paymaster/supported-tokens) thanks to our integration with Pimlico.

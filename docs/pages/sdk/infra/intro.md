@@ -4,7 +4,6 @@ ZeroDev is compatible with any account abstraction infra provider.  Check out th
 
 - [ZeroDev](/meta-infra/intro)
 - [Pimlico](/sdk/infra/pimlico)
-- [StackUp](/sdk/infra/stackup)
 
 Read on to learn how to integrate with a custom provider.
 
