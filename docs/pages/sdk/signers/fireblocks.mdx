@@ -32,12 +32,14 @@ import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
 import { KERNEL_V3_1 } from "@zerodev/sdk/constants"
 import { providerToSmartAccountSigner, ENTRYPOINT_ADDRESS_V07 } from 'permissionless';
 import { createPublicClient } from "viem";
+import { polygonAmoy } from 'viem/chains';
 
 // Convert the FireblocksWeb3Provider to a SmartAccountSigner
 const smartAccountSigner = providerToSmartAccountSigner(fireblocksWeb3Provider);
 
 const publicClient = createPublicClient({
   transport: http('https://rpc-amoy.polygon.technology'),
+  chain: polygonAmoy,
 })
 
 // Pass your `smartAccountSigner` to the validator

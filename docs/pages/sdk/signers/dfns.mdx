@@ -60,6 +60,7 @@ import { KERNEL_V3_1 } from "@zerodev/sdk/constants"
 import { walletClientToSmartAccountSigner, ENTRYPOINT_ADDRESS_V07 } from 'permissionless';
 import { toAccount } from 'viem/accounts';
 import { createWalletClient, createPublicClient } from 'viem';
+import { polygonAmoy } from 'viem/chains';
 
 // Convert the dfns wallet to a SmartAccountSigner
 const amoyWallet = await initDfnsWallet(AMOY_WALLET_ID!);
@@ -72,6 +73,7 @@ const smartAccountSigner = walletClientToSmartAccountSigner(walletClient);
 
 const publicClient = createPublicClient({
   transport: http('https://rpc-amoy.polygon.technology'),
+  chain: polygonAmoy,
 })
 
 // Pass your `smartAccountSigner` to the validator

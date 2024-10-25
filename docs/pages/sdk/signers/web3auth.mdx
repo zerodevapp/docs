@@ -39,6 +39,7 @@ import { KERNEL_V3_1 } from "@zerodev/sdk/constants"
 import { providerToSmartAccountSigner, ENTRYPOINT_ADDRESS_V07 } from 'permissionless';
 import Web3 from "web3";
 import { type Hex, createPublicClient } from "viem"
+import { polygonAmoy } from 'viem/chains';
 
 // Get the Provider and EOA address (this will be the address of the signer) from Web3Auth
 const web3authProvider = await web3auth.provider;
@@ -50,6 +51,7 @@ const smartAccountSigner = await providerToSmartAccountSigner(web3authProvider, 
 
 const publicClient = createPublicClient({
   transport: http('https://rpc-amoy.polygon.technology'),
+  chain: polygonAmoy,
 })
 
 // Pass your `smartAccountSigner` to the validator

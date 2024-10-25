@@ -69,6 +69,7 @@ const main = async () => {
   // Construct a public client
   const publicClient = createPublicClient({
     transport: http(BUNDLER_RPC),
+    chain,
   })
 
   // Construct a validator

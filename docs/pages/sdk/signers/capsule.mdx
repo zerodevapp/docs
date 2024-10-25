@@ -49,6 +49,7 @@ const smartAccountSigner = walletClientToSmartAccountSigner(viemClient);
 
 const publicClient = createPublicClient({
   transport: http('https://rpc-amoy.polygon.technology'),
+  chain: polygonAmoy,
 })
 
 // Pass your `smartAccountSigner` to the validator

@@ -41,6 +41,7 @@ const smartAccountSigner = await providerToSmartAccountSigner(authProvider.provi
 
 const publicClient = createPublicClient({
   transport: http('https://rpc-amoy.polygon.technology'),
+  chain
 })
 
 // Pass your `smartAccountSigner` to the validator

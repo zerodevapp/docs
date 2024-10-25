@@ -40,6 +40,7 @@ import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
 import { KERNEL_V3_1 } from "@zerodev/sdk/constants"
 import { walletClientToSmartAccountSigner, ENTRYPOINT_ADDRESS_V07 } from 'permissionless';
 import { createWalletClient, createPublicClient } from "viem";
+import { polygonAmoy } from 'viem/chains';
 
 // Create a SmartAccountSigner from the turnkeyAccount
 const walletClient = createWalletClient({
@@ -50,6 +51,7 @@ const smartAccountSigner = walletClientToSmartAccountSigner(walletClient);
 
 const publicClient = createPublicClient({
   transport: http('https://rpc-amoy.polygon.technology'),
+  chain: polygonAmoy,
 })
 
 // Pass your `smartAccountSigner` to the validator

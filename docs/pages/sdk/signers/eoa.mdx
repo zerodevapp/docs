@@ -13,12 +13,14 @@ import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
 import { KERNEL_V3_1 } from "@zerodev/sdk/constants"
 import { providerToSmartAccountSigner, ENTRYPOINT_ADDRESS_V07 } from 'permissionless';
 import { createPublicClient } from "viem";
+import { polygonAmoy } from 'viem/chains';
 
 // `window.ethereum` is the provider object that is injected into the browser by a wallet, like metamask, that enables JSON RPC communication with the walelt.
 const smartAccountSigner = await providerToSmartAccountSigner(window.ethereum);
 
 const publicClient = createPublicClient({
   transport: http('https://rpc-amoy.polygon.technology'),
+  chain: polygonAmoy,
 })
 
 // Pass your `smartAccountSigner` to the validator
@@ -44,6 +46,7 @@ const smartAccountSigner = walletClientToSmartAccountSigner(walletClient);
 
 const publicClient = createPublicClient({
   transport: http('https://rpc-amoy.polygon.technology'),
+  chain
 })
 
 // Pass your `smartAccountSigner` to the validator
@@ -71,6 +74,7 @@ const smartAccountSigner = privateKeyToAccount(process.env.PRIVATE_KEY as Hex)
 
 const publicClient = createPublicClient({
   transport: http('https://rpc-amoy.polygon.technology'),
+  chain
 })
 
 // Pass your `smartAccountSigner` to the validator

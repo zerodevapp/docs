@@ -68,12 +68,14 @@ In Viem, a [public client](https://viem.sh/docs/clients/public.html) is an inter
 
 ```typescript
 import { createPublicClient, http } from "viem"
+import { polygonMumbai } from 'viem/chains'
 
 const publicClient = createPublicClient({
   // Use your RPC provider or bundler.
   // We recommend using your own RPC provider for maximal stability, but you can
   // also use the bundler RPC from the ZeroDev dashboard.
   transport: http("RPC_URL"),
+  chain: polygonMumbai,
 })
 ```
 
