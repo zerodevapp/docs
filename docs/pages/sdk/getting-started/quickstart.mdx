@@ -122,6 +122,7 @@ const main = async () => {
   const bundlerClient = kernelClient.extend(bundlerActions(entryPoint));
   await bundlerClient.waitForUserOperationReceipt({
     hash: userOpHash,
+    timeout: 1000 * 15,
   })
 
   console.log("View completed UserOp here: https://jiffyscan.xyz/userOpHash/" + userOpHash)
