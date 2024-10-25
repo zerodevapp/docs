@@ -46,7 +46,7 @@ If this looks daunting, let's focus on only the high level:
 
 A UserOp can fail at various stages, including during the paymaster call (if sponsored), the gas estimation call, or the final execution call. Identifying the failure point is straightforward by examining the method indicated in the error log of the failed UserOp. For instance:
 
-- **Paymaster Call Failures** might involve methods such as **`zd_sponsorUserOperation`** (ZeroDev meta-paymaster), **`pm_sponsorUserOperation`** (Stackup), or **`alchemy_requestPaymasterAndData`** (Alchemy).
+- **Paymaster Call Failures** might involve methods such as **`zd_sponsorUserOperation`** (ZeroDev meta-paymaster), **`pm_sponsorUserOperation`** (Pimlico), or **`alchemy_requestPaymasterAndData`** (Alchemy).
 - **Gas Estimation Call Failures** are indicated by the **`eth_estimateUserOperationGas`** method.
 - **Execution Call Failures** are marked by the **`eth_sendUserOperation`** method.
 
@@ -136,5 +136,6 @@ This result indicates various aspects of the validation process, with a particul
 There are some resources that we find helpful:
 
 - [StackUp's UserOp debugger](https://userop.dev/)
+- [Pimlico's UserOp debugger/simulator](https://dashboard.pimlico.io/debugging)
 - [StackUp docs on AA error codes](https://docs.stackup.sh/docs/entrypoint-errors)
 - [Pimlico error codes](https://docs.pimlico.io/bundler/reference/entrypoint-errors/aa10)

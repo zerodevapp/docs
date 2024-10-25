@@ -32,7 +32,7 @@ As the contract deployer, you would pay for the gas through your paymaster subsc
 
 We have successfully employed Orchestra to deploy multiple plugins, cutting the deployment time from hours to minutes.  However, the tool can still be improved:
 
-- Orchestra currently uses only ZeroDev infra, but it can in principle work with any AA infra.  We welcome PRs to add support for other infra providers such as StackUp, Pimlico, Alchemy, etc.
+- Orchestra currently uses only ZeroDev infra, but it can in principle work with any AA infra.  We welcome PRs to add support for other infra providers such as Pimlico, Alchemy, etc.
 - Orchestra currently only supports deterministic deployment using `CREATE2`, through the widely-used [deterministic deployment proxy](https://github.com/Arachnid/deterministic-deployment-proxy) which ensures that your contract will have the same address on every chain.  For most projects this is exactly what they want, but we welcome PRs for non-deterministic deployments.
 
 # Get Started

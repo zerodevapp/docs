@@ -346,10 +346,6 @@ export default defineConfig({
             "link": "/sdk/infra/pimlico"
           },
           {
-            "text": "Stackup",
-            "link": "/sdk/infra/stackup"
-          },
-          {
             "text": "Coinbase",
             "link": "/sdk/infra/coinbase"
           },
