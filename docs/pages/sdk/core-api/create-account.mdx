@@ -83,7 +83,7 @@ const publicClient = createPublicClient({
 
 As aforementioned, a Kernel account using a ECDSA validator is "owned" by a signer, which is anything that can sign messages with a private key.
 
-Since Kernel is built on top of Viem, we can use any [Viem account](https://viem.sh/docs/accounts/privateKey.html) as the signer.  In this example, we create a signer from a private key:
+Since Kernel is built on top of Viem, we can use any [Viem account](https://viem.sh/docs/accounts/local/toAccount) as the signer.  In this example, we create a signer from a private key:
 
 ```typescript
 import { Hex } from "viem"
