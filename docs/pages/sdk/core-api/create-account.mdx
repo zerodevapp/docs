@@ -68,13 +68,13 @@ In Viem, a [public client](https://viem.sh/docs/clients/public.html) is an inter
 
 ```typescript
 import { createPublicClient, http } from "viem"
-import { polygonMumbai } from 'viem/chains'
+import { base } from 'viem/chains'
 
 const publicClient = createPublicClient({
   // Use your own RPC provider (e.g. Infura/Alchemy).
   // Use the bundler RPC only for testing.
   transport: http("RPC_URL"),
-  chain: polygonMumbai,
+  chain: base,
 })
 ```
 
@@ -130,14 +130,14 @@ Now that we have an account, we can finally construct an "account client," which
 ```typescript
 import { createKernelAccountClient } from "@zerodev/sdk"
 import { http } from "viem"
-import { polygonMumbai } from 'viem/chains'
+import { base } from 'viem/chains'
 
 const kernelClient = createKernelAccountClient({
   account,
   entryPoint,
 
   // Replace with your chain
-  chain: polygonMumbai,
+  chain: base,
 
   // Replace with your bundler RPC.
   // For ZeroDev, you can find the RPC on your dashboard.
