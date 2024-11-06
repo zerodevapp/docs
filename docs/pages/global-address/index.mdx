@@ -1,0 +1,134 @@
+# Global Address
+
+**Global Address** is an address that encodes a *cross-chain intent*.  **When anyone sends funds to a global address on *any chain*, they are funding the intent and thereby triggering the intent on a *specific destination chain*.**  In other words, global address is *source-chain agnostic*, but *target-chain specific*.
+
+Some common use cases of global addresses are:
+
+- **Cross-chain deposits**: you can create a global address for your user for a specific chain.  Your user can then send funds to that address on any chain, and they will receive funds on the destination chain.
+  - This is especially powerful for **onboarding funds from CEXs and fiat onramps**, since most CEXs/onramps only support withdrawing funds to a few chains.
+    - For example, if your app is on Base but your user wants to use funds from a CEX that can only withdraw to Ethereum, you can create a global address so that when the user withdraws funds to that address, they will receive funds on Base.
+
+- **Cross-chain transactions**: you can associate a global address with a specific transaction, so that the transaction is triggered on the destination chain when it receives funds on any chain.
+  - For example, if your user wants to deposit into a vault on Base but they don't have funds on Base, you can create a global address with an action that is "depositing into the Base vault", and when your user sends funds to that address from any chain (say Arbitrum), the transaction will be executed with the user's funds on Base.
+
+## Try Global Address
+
+You can try using global address at [the official portal](https://global-address.zerodev.app/).
+
+## Installation
+
+:::code-group
+
+```bash [npm]
+npm i @zerodev/global-address
+```
+
+```bash [yarn]
+yarn add @zerodev/global-address
+```
+
+```bash [pnpm]
+pnpm i @zerodev/global-address
+```
+
+```bash [bun]
+bun add @zerodev/global-address
+```
+
+:::
+
+## Usage
+
+Global address has a beautifully simple API: just `createGlobalAddress` and then send funds to it.  That's really it.
+
+### Code Example
+
+We recommend that you take a look at [our code example](https://github.com/zerodevapp/global-address-example) (even better if you try running it) as you follow along the docs.
+
+### Creating a global address
+
+In the following example, we are going to create a global address that, when receiving funds on any chain, will transfer the funds to a specific address on Base.  This is helpful when, for instance, you want to create a deposit address for your user, so that they can send funds to the address on any chain (possibly from a CEX), and then they will receive funds in their wallet on the chain that your app runs on.
+
+First import some types and functions:
+
+```tsx
+import {
+  createGlobalAddress,
+  createCall,
+  ActionType,
+  FLEX,
+  CreateGlobalAddressParams,
+} from '@zerodev/global-address'
+```
+
+Then set up some values (explained below):
+
+```tsx
+// Replace with your own address
+const owner = '0x244b33858733aab5307B0919D31f73878cAF617B'
+
+// Source tokens (any ERC20 on arbitrum, ETH on mainnet, USDC on optimism)
+const srcTokens: CreateGlobalAddressParams["srcTokens"] = [
+  {
+    tokenType: 'ERC20',
+    chain: arbitrum,
+  },
+  {
+    tokenType: 'NATIVE',
+    chain: mainnet
+  },
+  {
+    tokenType: 'USDC',
+    chain: optimism
+  },
+]
+
+const destChain = base
+const slippage = 5000
+
+// This is the call that will be executed on the destination chain
+const call = createCall({
+  target: FLEX.TOKEN_ADDRESS,  // any tokens
+  value: 0n,
+  abi: erc20Abi,
+  functionName: 'transfer',
+  args: [owner, FLEX.AMOUNT],  // any amount
+  callType: CallType.CALL,
+})
+```
+
+Finally, create a global address:
+
+```tsx
+const { globalAddress } = await createGlobalAddress({
+  owner,
+  destChain,
+  srcTokens,
+  actions: {
+    'USDC': {
+      action: [call],
+      fallBack: [],
+    }
+  },
+  slippage,
+  config: {
+    baseUrl: 'https://global-address-server.onrender.com',
+  },
+})
+```
+
+The options are:
+
+- `owner` is an address that is authorized to recover funds from the global address, in case the global address fails to execute the target action for whatever reason.  Typically you would set this to your user's EOA wallet, but you could also set it to your own address if you want to recover funds for users.
+
+- `destChain` is the chain on which the `actions` are supposed to happen.  This is presumably the chain that your app runs on.
+
+- `srcTokens` is a list of tokens that the global address should be able to receive.  Only tokens listed in `srcTokens` will trigger actions on the destination.  The other tokens sent to the address will have to be manually recovered by the `owner`.
+
+- `actions` is a map that records which action will be triggered by which token.  In the example above, we specified an action that will be triggered when the global address receives `USDC`.
+
+- `slippage` is the *maximum* slippage that the user can expect.  `slippage` is an integer, where 1 is equal to 0.01% (so 100 would mean 1% slippage).  You can skip this param if you are unsure what to set, and the SDK will estimate a reasonable slippage based on your other settings.
+
+- `config` is other configs, notably the `baseUrl` that specifies the API server.  For now, use `https://global-address-server.onrender.com`.
+
+Once you have created a global address, you can send tokens to it on any of the chains specified in `srcTokens`, and the `actions` will happen on the `destChain`.  It's really that simple.
