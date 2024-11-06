@@ -110,9 +110,6 @@ const { globalAddress } = await createGlobalAddress({
     }
   },
   slippage,
-  config: {
-    baseUrl: 'https://global-address-server.onrender.com',
-  },
 })
 ```
 
@@ -127,7 +124,5 @@ The options are:
 - `actions` is a map that records which action will be triggered by which token.  In the example above, we specified an action that will be triggered when the global address receives `USDC`.
 
 - `slippage` is the *maximum* slippage that the user can expect.  `slippage` is an integer, where 1 is equal to 0.01% (so 100 would mean 1% slippage).  You can skip this param if you are unsure what to set, and the SDK will estimate a reasonable slippage based on your other settings.
-
-- `config` is other configs, notably the `baseUrl` that specifies the API server.  For now, use `https://global-address-server.onrender.com`.
 
 Once you have created a global address, you can send tokens to it on any of the chains specified in `srcTokens`, and the `actions` will happen on the `destChain`.  It's really that simple.
