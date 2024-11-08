@@ -1,18 +1,23 @@
 # Global Address
 
-**Global Address** is an address that encodes a *cross-chain intent*.  **When anyone sends funds to a global address on *any chain*, they are funding the intent and thereby triggering the intent on a *specific destination chain*.**  In other words, global address is *source-chain agnostic*, but *target-chain specific*.
+**Global Address** enables users to easily deposit funds to a L2/L3 from any CEXs, fiat onramps, and chains, by simply sending funds to a unique deposit address on any chain.
+
+Technically, **Global Address** is an address that encodes a *cross-chain intent*.  **When anyone sends funds to a global address on *any chain*, they are funding the intent and thereby triggering the intent on a *specific destination chain*.**  In other words, global address is *source-chain agnostic*, but *target-chain specific*.
 
 ## Common Use Cases
 
-- **Cross-chain deposits**: you can create a global address for your user for a specific chain.  Your user can then send funds to that address on any chain, and they will receive funds on the destination chain.
-  - This is especially powerful for **onboarding funds from CEXs and fiat onramps**, since most CEXs/onramps only support withdrawing funds to a few chains.
-
-- **Cross-chain transactions**: you can associate a global address with a specific transaction, so that the transaction is triggered on the destination chain when it receives funds on any chain.
-  - For example, if your user wants to deposit into a vault on Base but they don't have funds on Base, you can create a global address with an action that is "depositing into the Base vault", and when your user sends funds to that address from any chain (say Arbitrum), the transaction will be executed with the user's funds on Base.
+- Sending funds from CEXs directly to an L2/L3.
+- Using a fiat onramp with a L2/L3, even if the onramp doesn't directly support the L2/L3.
+- Depositing into a token vault with funds from another chain.
+- Cross-chain transfers.
 
 ## Try Global Address
 
 You can try using global address at [the official portal](https://global-address.zerodev.app/).
+
+## Supported chains
+
+You can see a list of chains Global Address supports [here](https://global-address.zerodev.app/).  If you want your chain supported, [get in touch](https://docs.google.com/forms/d/10W7IK1GIfMteblYXreFDH9USwfk5rRacSrsxJvZ6jz4/edit#responses).
 
 ## Installation
 
