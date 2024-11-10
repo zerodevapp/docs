@@ -5,7 +5,7 @@ Impatient?  Check out [complete examples here](https://github.com/zerodevapp/zer
 :::
 
 :::warning
-This feature only works with EntryPoint 0.6 (Kernel v2) for now.
+**Important:** Our ERC20 Paymaster currently supports USDC on Ethereum Mainnet, Polygon, Base, Optimism, and Arbitrum networks, including both their mainnet and testnet environments.
 :::
 
 A smart account can pay gas with ERC20 tokens.  As a result, your users don't have to own any native gas tokens (e.g. ETH) in order to use Web3.  Instead, they can just use stablecoins or even your project's own tokens.  When your users pay gas with ERC20 tokens, we add 5% to the exchange rate to make a profit.
@@ -20,7 +20,7 @@ On a high level, you need to do two things to enable a smart account to pay gas 
 - Ensure that enough ERC20 tokens have been approved for the ERC20 paymaster.
   - This step is necessary because the ERC20 paymaster needs to withdraw ERC20 tokens from the smart account.
 
-Let's go through these two steps next.  We will be using mainnet USDC in the following examples, but you can use any of [these supported tokens](https://docs.pimlico.io/infra/paymaster/erc20-paymaster/supported-tokens) thanks to our integration with Pimlico.
+Let's go through these two steps next.
 
 ## Set up Kernel Client
 
@@ -39,7 +39,7 @@ import { UserOperation } from "permissionless"
 
 // use whatever chain you want
 const chain = mainnet.id
-const entryPoint = ENTRYPOINT_ADDRESS_V06
+const entryPoint = ENTRYPOINT_ADDRESS_V07
 
 const paymasterClient = createZeroDevPaymasterClient({
   chain,
@@ -75,6 +75,7 @@ const userOpHash = await kernelClient.sendUserOperation({
       await getERC20PaymasterApproveCall(paymasterClient, {
         gasToken: gasTokenAddresses[chain.id]['USDC'],
         approveAmount: parseEther('0.1'),
+        entryPoint,
       }),
     ),
   },
@@ -91,6 +92,7 @@ const userOpHash = await kernelClient.sendUserOperation({
       await getERC20PaymasterApproveCall(paymasterClient, {
         gasToken: gasTokenAddresses[chain.id]['USDC'],
         approveAmount: parseEther('0.1'),
+        entryPoint,
       }),
       // The actual call
       {
@@ -103,7 +105,7 @@ const userOpHash = await kernelClient.sendUserOperation({
 })
 ```
 
-Note that you only have to approve once, as long as the approval amount is sufficient for many UserOps.  The [paymaster contract by Pimlico](https://github.com/pimlicolabs/erc20-paymaster/blob/main/src/ERC20PaymasterV06.sol) has been audited, it's widely used and generally considered safe.
+Note that you only have to approve once, as long as the approval amount is sufficient for many UserOps.  The [paymaster contract by Pimlico](https://github.com/pimlicolabs/erc20-paymaster/blob/main/src/ERC20PaymasterV07.sol) has been audited, it's widely used and generally considered safe.
 
 ## Estimate Gas in ERC20s
 
@@ -134,4 +136,32 @@ You can also see [a code example for estimating gas here](https://github.com/zer
 
 ## Supported Tokens
 
-We support [these tokens](https://docs.pimlico.io/infra/paymaster/erc20-paymaster/supported-tokens) thanks to our integration with Pimlico.
+Currently, our ERC20 Paymaster supports USDC on the following networks:
+
+- **Ethereum Mainnet**
+- **Polygon**
+- **Base**
+- **Optimism**
+- **Arbitrum**
+
+If you want to use a different token, you can either reach out to us or deploy your own Self-Funded ERC20 Paymaster.
+
+## Deploy Your Own ERC20 Paymaster
+
+If you want to support a custom ERC20 token, you can deploy and manage your own ERC20 paymaster contract. To do this:
+
+1. Visit the ZeroDev dashboard to deploy a self-funded ERC20 paymaster contract
+2. Fund the contract with the native currency (e.g., ETH)
+3. Set a conversion rate for the ERC20 token you would like to enable for the paymaster
+
+Once deployed, you can use your custom paymaster by copying the paymaster URL from the dashboard and using it as the `transport` parameter when creating the paymaster client:
+
+```typescript
+const paymasterClient = createZeroDevPaymasterClient({
+  chain,
+  entryPoint,
+  transport: http('YOUR_CUSTOM_PAYMASTER_URL'), // from the self-funded paymaster page on the dashboard
+})
+```
+
+The rest of the integration remains the same as described above.
