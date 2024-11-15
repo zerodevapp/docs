@@ -78,7 +78,7 @@ const txHash = await kernelClient.sendTransaction({
 
 You can learn more about the `sendUserOperation` API [here](/sdk/core-api/send-transactions#sending-raw-userops).
 
-To send a UserOp with batching, simply pass an array of calls into `encodeCallData`.
+To send a UserOp with batching, simply pass an array of calls into `encodeCalls`.
 
 ```typescript
 const userOpHash = await kernelClient.sendUserOperation({

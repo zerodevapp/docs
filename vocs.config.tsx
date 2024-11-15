@@ -78,7 +78,7 @@ export default defineConfig({
             "link": "https://github.com/zerodevapp/zerodev-examples"
           },
           {
-            "text": "Migration from 5.1.x",
+            "text": "Migration Guide",
             "link": "/sdk/getting-started/migration"
           },
         ],
