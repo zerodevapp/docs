@@ -27,20 +27,17 @@ Construct the Kernel client with Pimlico's paymaster client:
 import { http } from "viem"
 import { polygonMumbai } from 'viem/chains'
 import { createKernelAccountClient } from "@zerodev/sdk"
-import { createPimlicoPaymasterClient } from "permissionless/clients/pimlico"
+import { createPaymasterClient } from 'viem/account-abstraction'
+
+const paymaster = createPaymasterClient({
+  chain: polygonMumbai,
+  transport: http('PIMLICO_PAYMASTER_RPC'),
+})
 
 const kernelClient = createKernelAccountClient({
   account,
   chain: polygonMumbai,
-  transport: http('PIMLICO_BUNDLER_RPC'),
-  sponsorUserOperation: async ({ userOperation }) => {
-    const paymaster = createPimlicoPaymasterClient({
-      chain: polygonMumbai,
-      transport: http('PIMLICO_PAYMASTER_RPC'),
-    })
-    return paymaster.sponsorUserOperation({
-      userOperation
-    })
-  }
+  bundlerTransport: http('PIMLICO_BUNDLER_RPC'),
+  paymaster
 })
 ```

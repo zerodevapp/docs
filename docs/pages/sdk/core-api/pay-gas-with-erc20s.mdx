@@ -32,33 +32,27 @@ import {
   createKernelAccountClient,
   gasTokenAddresses,
 } from "@zerodev/sdk"
+import {
+  getEntryPoint
+} from "@zerodev/sdk/constants"
 
 import { mainnet } from "viem/chains"
 
-import { UserOperation } from "permissionless"
 
 // use whatever chain you want
 const chain = mainnet.id
-const entryPoint = ENTRYPOINT_ADDRESS_V07
+const entryPoint = getEntryPoint("0.7")
 
 const paymasterClient = createZeroDevPaymasterClient({
   chain,
-  entryPoint,
   transport: http('ZERODEV_PAYMASTER_RPC'), // get the RPC on ZeroDev dashboard
 })
 
 const kernelClient = createKernelAccountClient({
   // other options...
 
-  middleware: {
-    sponsorUserOperation: async ({ userOperation }) => {
-      return paymasterClient.sponsorUserOperation({
-        userOperation,
-        entryPoint,
-        gasToken: gasTokenAddresses[chain.id]['USDC'],
-      })
-    },
-  },
+  paymaster: paymasterClient,
+  paymasterContext: { token: gasTokenAddresses[chain.id]['USDC'] }
 })
 ```
 
@@ -70,15 +64,13 @@ Use the `getERC20PaymasterApproveCall` function to construct a call that approve
 import { getERC20PaymasterApproveCall } from "@zerodev/sdk"
 
 const userOpHash = await kernelClient.sendUserOperation({
-  userOperation: {
-    callData: await kernelClient.account.encodeCallData(
+    callData: await kernelClient.account.encodeCalls([
       await getERC20PaymasterApproveCall(paymasterClient, {
         gasToken: gasTokenAddresses[chain.id]['USDC'],
         approveAmount: parseEther('0.1'),
         entryPoint,
       }),
-    ),
-  },
+    ]),
 })
 ```
 
@@ -86,8 +78,7 @@ Thanks to [batching](/sdk/core-api/batch-transactions), it's possible to batch t
 
 ```typescript
 const userOpHash = await kernelClient.sendUserOperation({
-  userOperation: {
-    callData: await account.encodeCallData([
+    callData: await account.encodeCalls([
       // The approval
       await getERC20PaymasterApproveCall(paymasterClient, {
         gasToken: gasTokenAddresses[chain.id]['USDC'],
@@ -101,7 +92,6 @@ const userOpHash = await kernelClient.sendUserOperation({
         value: BigInt(0),
       },
     ]),
-  },
 })
 ```
 
@@ -112,16 +102,13 @@ Note that you only have to approve once, as long as the approval amount is suffi
 If you need to estimate gas in terms of a ERC20 token, do this:
 
 ```ts
-const userOperation = await kernelClient.prepareUserOperationRequest({
-    userOperation: {
+const userOperation = await kernelClient.prepareUserOperation({
         // replace this with your actual calldata
-        callData: await account.encodeCallData({
+        callData: await account.encodeCalls([{
             to: zeroAddress,
             value: BigInt(0),
             data: "0x"
-        })
-    },
-    account: kernelClient.account,
+        }])
 })
 
 const erc20Amount = await paymasterClient.estimateGasInERC20({
@@ -159,7 +146,6 @@ Once deployed, you can use your custom paymaster by copying the paymaster URL fr
 ```typescript
 const paymasterClient = createZeroDevPaymasterClient({
   chain,
-  entryPoint,
   transport: http('YOUR_CUSTOM_PAYMASTER_URL'), // from the self-funded paymaster page on the dashboard
 })
 ```

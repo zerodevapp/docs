@@ -67,7 +67,7 @@ const remoteSigner = await toRemoteSigner({
     mode: RemoteSignerMode.Create
 })
 
-const sessionKeySigner = toECDSASigner({
+const sessionKeySigner = await toECDSASigner({
   signer: remoteSigner,
 })
 ```
@@ -143,7 +143,7 @@ const remoteSignerWithGet = await toRemoteSigner({
     mode: RemoteSignerMode.Get
 })
 
-const sessionKeySigner = toECDSASigner({
+const sessionKeySigner = await toECDSASigner({
   signer: remoteSigner,
 })
 ```

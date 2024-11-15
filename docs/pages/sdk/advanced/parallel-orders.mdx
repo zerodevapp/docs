@@ -24,13 +24,11 @@ const nonceKey = getCustomNonceKeyFromString(
   entryPoint,
 )
 
-const nonce = await account.getNonce(nonceKey)
+const nonce = await account.getNonce({ key: nonceKey})
 
 await kernelClient.sendUserOperation({
-  userOperation: {
     callData,
     nonce: nonce,
-  },
 })
 
 // This UserOp won't wait for the previous one, because it uses
@@ -40,14 +38,12 @@ const nonceKey2 = getCustomNonceKeyFromString(
   entryPoint,
 )
 
-const nonce2 = await account.getNonce(nonceKey2)
+const nonce2 = await account.getNonce({ key: nonceKey2})
 
 
 await kernelClient.sendUserOperation({
-  userOperation: {
     callData,
     nonce: nonce2,
-  },
 })
 ```
 

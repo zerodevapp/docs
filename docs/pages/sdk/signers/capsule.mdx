@@ -33,29 +33,26 @@ Use the WalletClient from Capsule to create a smart account signer, which can be
 
 ```typescript
 import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
-import { KERNEL_V3_1 } from "@zerodev/sdk/constants"
-import { walletClientToSmartAccountSigner, ENTRYPOINT_ADDRESS_V07 } from 'permissionless';
+import { KERNEL_V3_1, getEntryPoint } from "@zerodev/sdk/constants"
 import { createCapsuleViemClient } from '@usecapsule/web-sdk';
 import { polygonAmoy } from 'viem/chains';
 import { createPublicClient } from "viem";
 
-// Convert a Capsule viem client to a SmartAccountSigner
 // Follow the Capsule docs for more instructions on creating the Viem client https://docs.usecapsule.com/integration-guide/signing-transactions
 const viemClient = createCapsuleViemClient(capsule, {
   chain: polygonAmoy,
   transport: http('https://rpc-amoy.polygon.technology'),
 });
-const smartAccountSigner = walletClientToSmartAccountSigner(viemClient);
 
 const publicClient = createPublicClient({
   transport: http('https://rpc-amoy.polygon.technology'),
   chain: polygonAmoy,
 })
 
-// Pass your `smartAccountSigner` to the validator
+// Pass your `viemClient` to the validator
 const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
-  signer: smartAccountSigner,
-  entryPoint: ENTRYPOINT_ADDRESS_V07,
+  signer: viemClient,
+  entryPoint: getEntryPoint("0.7"),
   kernelVersion: KERNEL_V3_1,
 })
 

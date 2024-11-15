@@ -10,7 +10,7 @@ import { toECDSASigner } from "@zerodev/permissions/signers"
 // Use any Viem account
 const signer = privateKeyToAccount(generatePrivateKey())
 
-const ecdsaSigner = toECDSASigner({
+const ecdsaSigner = await toECDSASigner({
   signer,
 })
 

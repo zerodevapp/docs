@@ -18,13 +18,10 @@ To send a UserOp that uses `delegatecall`, simply specify the `callType` of the 
 
 ```typescript
 const userOpHash = await kernelClient.sendUserOperation({
-  userOperation: {
-    callData: await kernelClient.account.encodeCallData({
+    callData: await kernelClient.account.encodeCalls([{
       to: targetAdress,
       data: callData,
       value: 0n,
-      callType: "delegatecall",
-    }),
-  },
+    }], "delegatecall"),
 })
 ```

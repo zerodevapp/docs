@@ -75,8 +75,7 @@ If you are testing on `localhost`, just leave the domain empty. If you are deplo
 
 ```ts
 import { toPasskeyValidator, toWebAuthnKey, WebAuthnMode, PasskeyValidatorContractVersion } from "@zerodev/passkey-validator"
-import { KERNEL_V3_1 } from "@zerodev/sdk/constants"
-import { ENTRYPOINT_ADDRESS_V07 } from "permissionless"
+import { KERNEL_V3_1, getEntryPoint } from "@zerodev/sdk/constants"
 
 const webAuthnKey = await toWebAuthnKey({
   passkeyName: "passkey name",
@@ -87,7 +86,7 @@ const webAuthnKey = await toWebAuthnKey({
 
 const passkeyValidator = await toPasskeyValidator(publicClient, {
   webAuthnKey,
-  entryPoint: ENTRYPOINT_ADDRESS_V07,
+  entryPoint: getEntryPoint("0.7"),
   kernelVersion: KERNEL_V3_1,
   validatorContractVersion: PasskeyValidatorContractVersion.V0_0_2
 })
@@ -99,8 +98,7 @@ const passkeyValidator = await toPasskeyValidator(publicClient, {
 
 ```ts
 import { toPasskeyValidator, toWebAuthnKey, WebAuthnMode, PasskeyValidatorContractVersion } from "@zerodev/passkey-validator"
-import { KERNEL_V3_1 } from "@zerodev/sdk/constants"
-import { ENTRYPOINT_ADDRESS_V07 } from "permissionless"
+import { KERNEL_V3_1, getEntryPoint } from "@zerodev/sdk/constants"
 
 const webAuthnKey = await toWebAuthnKey({
   passkeyName: "passkey name",
@@ -111,7 +109,7 @@ const webAuthnKey = await toWebAuthnKey({
 
 const passkeyValidator = await toPasskeyValidator(publicClient, {
   webAuthnKey,
-  entryPoint: ENTRYPOINT_ADDRESS_V07,
+  entryPoint: getEntryPoint("0.7"),
   kernelVersion: KERNEL_V3_1,
   validatorContractVersion: PasskeyValidatorContractVersion.V0_0_2
 })

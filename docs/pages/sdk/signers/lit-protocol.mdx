@@ -79,8 +79,7 @@ Use the provider from Lit Protocol to create a smart account signer, which can b
 
 ```typescript
 import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
-import { KERNEL_V3_1 } from "@zerodev/sdk/constants"
-import { providerToSmartAccountSigner, ENTRYPOINT_ADDRESS_V07 } from 'permissionless';
+import { KERNEL_V3_1, getEntryPoint } from "@zerodev/sdk/constants"
 import { createPublicClient } from "viem";
 import { polygonAmoy } from 'viem/chains';
 
@@ -91,10 +90,10 @@ const publicClient = createPublicClient({
   chain: polygonAmoy,
 })
 
-// Pass your `smartAccountSigner` to the validator
+// Pass your `pkpWallet` to the validator
 const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
-  signer: smartAccountSigner,
-  entryPoint: ENTRYPOINT_ADDRESS_V07,
+  signer: pkpWallet,
+  entryPoint: getEntryPoint("0.7"),
   kernelVersion: KERNEL_V3_1
 })
 

@@ -39,13 +39,9 @@ Use the WalletClient from Dynamic to create a smart account signer, which can be
 
 ```typescript
 import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
-import { KERNEL_V3_1 } from "@zerodev/sdk/constants"
-import { walletClientToSmartAccountSigner, ENTRYPOINT_ADDRESS_V07 } from 'permissionless';
+import { KERNEL_V3_1, getEntryPoint } from "@zerodev/sdk/constants"
 import { createPublicClient } from "viem";
 import { polygonAmoy } from 'viem/chains';
-
-// Use the WalletClient from Dynamic to create a SmartAccountSigner
-const smartAccountSigner = await walletClientToSmartAccountSigner(dynamicWalletClient);
 
 const publicClient = createPublicClient({
   transport: http('https://rpc-amoy.polygon.technology'),
@@ -54,8 +50,8 @@ const publicClient = createPublicClient({
 
 // Pass your `smartAccountSigner` to the validator
 const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
-  signer: smartAccountSigner,
-  entryPoint: ENTRYPOINT_ADDRESS_V07,
+  signer: dynamicWalletClient,
+  entryPoint: getEntryPoint("0.7"),
   kernelVersion: KERNEL_V3_1
 })
 

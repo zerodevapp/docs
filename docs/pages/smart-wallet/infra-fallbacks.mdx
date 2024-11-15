@@ -23,25 +23,26 @@ const BUNDLER_RPC_ALCHEMY = BUNDLER_RPC + '?provider=ALCHEMY'
 const PAYMASTER_RPC_PIMLICO = PAYMASTER_RPC + '?provider=PIMLICO'
 const BUNDLER_RPC_PIMLICO = BUNDLER_RPC + '?provider=PIMLICO'
 
+const zeroDevPaymasterClient1 = createZeroDevPaymasterClient({
+    chain,
+    transport: http(PAYMASTER_RPC_ALCHEMY),
+})
+
 // Create an account client with Alchemy as provider
 const kernelClient1 = createKernelAccountClient({
     account,
     chain,
     bundlerTransport: http(BUNDLER_RPC_ALCHEMY),
-    middleware: {
-        sponsorUserOperation: async ({ userOperation }) => {
-            const zeroDevPaymasterClient = createZeroDevPaymasterClient({
-                chain,
-                transport: http(PAYMASTER_RPC_ALCHEMY),
-                entryPoint
-            })
-            return zeroDevPaymasterClient.sponsorUserOperation({
-                userOperation,
-                entryPoint
-            })
+    paymaster: {
+        getPaymasterData(userOperation) {
+            return zeroDevPaymasterClient1.sponsorUserOperation({userOperation})
         }
     },
-    entryPoint
+})
+
+const zeroDevPaymasterClient2 = createZeroDevPaymasterClient({
+    chain,
+    transport: http(PAYMASTER_RPC_PIMLICO),
 })
 
 // Create an account client with pimlico as provider
@@ -49,20 +50,11 @@ const kernelClient2 = createKernelAccountClient({
     account,
     chain,
     bundlerTransport: http(BUNDLER_RPC_PIMLICO),
-    middleware: {
-        sponsorUserOperation: async ({ userOperation }) => {
-            const zeroDevPaymasterClient = createZeroDevPaymasterClient({
-                chain,
-                transport: http(PAYMASTER_RPC_PIMLICO),
-                entryPoint
-            })
-            return zeroDevPaymasterClient.sponsorUserOperation({
-                userOperation,
-                entryPoint
-            })
+    paymaster: {
+        getPaymasterData(userOperation) {
+            return zeroDevPaymasterClient2.sponsorUserOperation({userOperation})
         }
     },
-    entryPoint
 })
 ```
 
