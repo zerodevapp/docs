@@ -413,7 +413,7 @@ export default defineConfig({
           },
           {
             "text": "Code Examples",
-            "link": "https://github.com/zerodevapp/zerodev-examples"
+            "link": "https://github.com/zerodevapp/zerodev-examples/tree/v5.3.x"
           },
           {
             "text": "Migration Guide",
