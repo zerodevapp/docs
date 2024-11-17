@@ -78,23 +78,21 @@ import { encodeFunctionData } from "viem"
 import { ECDSA_VALIDATOR_ADDRESS } from "@zerodev/ecdsa-validator"
 
 const userOpHash = await kernelClient.sendUserOperation({
-  userOperation: {
     callData: encodeFunctionData({
       abi: parseAbi([recoveryExecutorFunction]),
       functionName: 'doRecovery',
       args: [ECDSA_VALIDATOR_ADDRESS, newSigner.address],
     })
-  },
 })
 ```
 
 ### Using account with the new owner
 
-After you update the account owner, the account address can no longer by computed from the new owner.  Therefore, you should use the `deployedAccountAddress` option to manually set the account address when you [create the account object](/sdk/core-api/create-account#create-a-kernel-account).  For example:
+After you update the account owner, the account address can no longer by computed from the new owner.  Therefore, you should use the `address` option to manually set the account address when you [create the account object](/sdk/core-api/create-account#create-a-kernel-account).  For example:
 
 ```ts
 const account = await createKernelAccount(publicClient, {
-  deployedAccountAddress: "the smart account address",
+ address: "the smart account address",
 
   // ...other options
 })

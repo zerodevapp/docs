@@ -1,0 +1,40 @@
+# Gas Policy
+
+The gas policy specifies how much gas the signer can use in total, across all UserOps it sends.  It can also enforce that the UserOps must use paymasters, or use a specific paymaster.
+
+## API
+
+```ts
+import { toGasPolicy } from "@zerodev/permissions/policies"
+
+// Set a total amount
+const gasPolicy = toGasPolicy({
+  allowed: parseEther('0.1'),
+})
+
+// Or enforce that a paymaster must be used
+const gasPolicy = toGasPolicy({
+  enforcePaymaster: true,
+})
+
+// Or enforce that a specific paymaster is used
+const gasPolicy = toGasPolicy({
+  allowedPaymaster: "PAYMASTER_ADDRESS",
+})
+
+const validator = toPermissionValidator(publicClient, {
+  entryPoint,
+  kernelVersion,
+  signer: someSigner,
+  policies: [
+    gasPolicy,
+    // ...other policies
+  ],
+})
+```
+
+`toGasPolicy` takes one or more of the following arguments:
+
+- `allowed`: an amount, in wei, of the ETH (or whatever native token) that the signer can spend on gas, in total across all UserOps it sends.
+- `enforcePaymaster`: a boolean value.  If set to true, enforce that a paymaster must be used.
+- `allowedPaymaster`: a paymaster address.  If set, enforce that the specific paymaster is used.

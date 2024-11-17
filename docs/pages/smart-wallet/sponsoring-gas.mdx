@@ -48,25 +48,23 @@ The `sponsorUserOperation` function essentially takes a UserOp and then returns 
 
 ```typescript
 import { http } from "viem"
-import { ENTRYPOINT_ADDRESS_V07 } from "permissionless"
 import { createZeroDevPaymasterClient, createKernelAccountClient } from "@zerodev/sdk"
+import { getEntryPoint } from "@zerodev/sdk/constants"
 
-const entryPoint = ENTRYPOINT_ADDRESS_V07
+const entryPoint = getEntryPoint("0.7")
 
 const kernelClient = createKernelAccountClient({
   // other options...
 
-  middleware: {
-    sponsorUserOperation: async ({ userOperation }) => {
+  paymaster: {
+    getPaymasterData:  (userOperation) => {
       const zerodevPaymaster = createZeroDevPaymasterClient({
         chain,
-        entryPoint,
         // Get this RPC from ZeroDev dashboard
         transport: http(PAYMASTER_RPC),
       })
       return zerodevPaymaster.sponsorUserOperation({
         userOperation,
-        entryPoint,
       })
     }
   }

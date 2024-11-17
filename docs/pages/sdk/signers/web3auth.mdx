@@ -35,8 +35,7 @@ Use the provider from Web3Auth to create a smart account signer, which can be pa
 
 ```typescript
 import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
-import { KERNEL_V3_1 } from "@zerodev/sdk/constants"
-import { providerToSmartAccountSigner, ENTRYPOINT_ADDRESS_V07 } from 'permissionless';
+import { KERNEL_V3_1, getEntryPoint } from "@zerodev/sdk/constants"
 import Web3 from "web3";
 import { type Hex, createPublicClient } from "viem"
 import { polygonAmoy } from 'viem/chains';
@@ -46,18 +45,15 @@ const web3authProvider = await web3auth.provider;
 const web3 = new Web3(provider as any);
 const [address] = await web3.eth.getAccounts();
 
-// Create the smart account signer from the provider and signer address
-const smartAccountSigner = await providerToSmartAccountSigner(web3authProvider, address as Hex);
-
 const publicClient = createPublicClient({
   transport: http('https://rpc-amoy.polygon.technology'),
   chain: polygonAmoy,
 })
 
-// Pass your `smartAccountSigner` to the validator
+// Pass your `web3authProvider` to the validator
 const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
-  signer: smartAccountSigner,
-  entryPoint: ENTRYPOINT_ADDRESS_V07,
+  signer: web3authProvider,
+  entryPoint: getEntryPoint("0.7"),
   kernelVersion: KERNEL_V3_1
 })
 

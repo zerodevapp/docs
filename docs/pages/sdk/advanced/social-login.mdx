@@ -92,33 +92,39 @@ initiateLogin({
 Gets a social validator for the specified entry point. Use this function after a successful login to create a [Kernel account](https://docs.zerodev.app/sdk/core-api/create-account#create-a-kernel-account) using the social validator as the sudo validator.
 
 ```ts
-getSocialValidator<entryPoint extends EntryPoint, TTransport extends Transport = Transport, TChain extends Chain | undefined = Chain | undefined>(
-  client: Client<TTransport, TChain, undefined>,
-  {
-    entryPoint: entryPointAddress,
-    projectId: string
-  }
-): Promise<KernelValidator<entryPoint, "SocialValidator">>
+export async function getSocialValidator<
+    entryPointVersion extends EntryPointVersion
+>(
+    client: Client,
+    {
+        entryPoint,
+        kernelVersion,
+        projectId
+    }: {
+        entryPoint: EntryPointType<entryPointVersion>
+        kernelVersion: GetKernelVersion<entryPointVersion>
+        projectId: string
+    }
+): Promise<KernelValidator<"SocialValidator">>
 ```
 
 #### Parameters
 - client (Client): The client instance.
-- entryPoint (entryPoint): The entry point address.
+- entryPoint (entryPoint): The entry point object.
 - projectId (string): Your ZeroDev project ID.
 
 #### Returns
-- `Promise<KernelValidator<entryPoint, "SocialValidator">>`: Resolves to a social validator object.
+- `Promise<KernelValidator<"SocialValidator">>`: Resolves to a social validator object.
 
 #### Example
 
 ```ts
 import { getSocialValidator } from "@zerodev/social-validator"
-import { ENTRYPOINT_ADDRESS_V07 } from "permissionless"
 
 const socialValidator = await getSocialValidator(
   publicClient,
   {
-    entryPoint: ENTRYPOINT_ADDRESS_V07,
+    entryPoint: getEntryPoint("0.7"),
     projectId: "your_project_id"
   }
 );

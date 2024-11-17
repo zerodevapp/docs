@@ -1,5 +1,157 @@
 # Migration Guide
 
+## SDK 5.3.x => 5.4.x
+
+In version **5.4.x** of the `@zerodev/sdk`, we've migrated to using `viem@2.18.x` with native Account Abstraction (AA) modules instead of the `permissionless` package. This change brings significant updates to types, imports, function signatures, and overall API usage.
+
+This guide will help you migrate your codebase to be compatible with the new version.
+
+### Update dependencies
+
+1. **Remove the `permissionless` package**:
+
+   ```bash
+   npm uninstall permissionless
+   ```
+
+2. **Ensure you have `viem@^2.21.40` version**
+
+### Update `permissionless` Account Abstractions
+
+Replace any imports from `permissionless` with the equivalent from `viem/account-abstraction` or `@zerodev/sdk` if applicable.
+
+### Update Type Definitions
+
+Replace `EntryPoint` Types
+
+```typescript
+import type { EntryPoint } from 'permissionless/types'; // [!code --]
+import type { EntryPointVersion } from 'viem/account-abstraction'; // [!code ++]
+```
+
+Replace `UserOperation` Types
+
+
+```typescript
+import type { UserOperation } from 'permissionless/types'; // [!code --]
+import type { UserOperation } from 'viem/account-abstraction'; // [!code ++] 
+```
+
+### Replaced `entryPoint: Address` with `entryPoint: { address: Address; version: EntryPointVersion}`
+
+For `createKernelAccount` and `signerToEcdsaValidator` among other plugins, replace the `entryPoint` parameter as shown:
+
+```typescript
+import { getEntryPoint } from "@zerodev/sdk/constants"; // [!code ++]
+createKernelAccount(publicClient, {
+  // ...
+  entryPoint: ENTRYPOINT_ADDRESS_V07, // [!code --]
+  entryPoint: getEntryPoint("0.7"), // [!code ++]
+})
+```
+
+```typescript
+signerToEcdsaValidator(publicClient, {
+  // ...
+  entryPoint: ENTRYPOINT_ADDRESS_V07, // [!code --]
+  entryPoint: getEntryPoint("0.7"), // [!code ++]
+})
+```
+
+### Removed `entryPoint` from `createKernelAccountClient`
+
+```typescript
+  const kernelClient = createKernelAccountClient({
+    entryPoint, // [!code --]
+    // ...
+  });
+```
+
+### Replaced `middleware.sponsorUserOperation` from `createKernelAccountClient` with `paymaster.getPaymasterData`
+
+```typescript
+  const kernelClient = createKernelAccountClient({
+    middleware: { // [!code --]
+		  sponsorUserOperation: paymasterClient.sponsorUserOperation, // [!code --]
+	  }, // [!code --]
+    paymaster: { // [!code ++]
+      getPaymasterData(userOperation) { // [!code ++]
+        return paymasterClient.sponsorUserOperation({ userOperation }) // [!code ++]
+      } // [!code ++]
+    } // [!code ++]
+    // ...
+  });
+```
+
+### `kernelClient.sendUserOperation` and `kernelClient.signUserOperation` now take `userOperation` properties directly
+
+```typescript
+await kernelClient.sendUserOperation({
+  userOperation: { sender, callData, nonce, ...rest }, // [!code --]
+  sender, // [!code ++]
+  callData, // [!code ++]
+  nonce, // [!code ++]
+  ...rest // [!code ++]
+});
+await kernelClient.signUserOperation({
+  userOperation: { sender, callData, nonce, ...rest }, // [!code --]
+  sender, // [!code ++]
+  callData, // [!code ++]
+  nonce, // [!code ++]
+  ...rest // [!code ++]
+});
+```
+
+### Replaced `account.encodeCallData` with `account.encodeCalls`
+
+```typescript
+    await account.encodeCallData( // [!code --]
+      {  // [!code --]
+        to: zeroAddress,  // [!code --]
+        value: BigInt(0), // [!code --]
+        data: "0x", // [!code --]
+        callType // [!code --]
+      }, // [!code --]
+    ), // [!code --]
+    await account.encodeCalls([ // [!code ++]
+      { // [!code ++]
+        to: zeroAddress, // [!code ++]
+        value: BigInt(0), // [!code ++]
+        data: "0x", // [!code ++]
+      }, // [!code ++]
+    ], callType), // [!code ++]
+```
+
+### Replaced `kernelClient.sendTransactions` with `kernelClient.sendTransaction`
+
+```typescript
+await kernelClient.sendTransactions({ // [!code --]
+    transactions: [ // [!code --]
+      // ... // [!code --]
+    ], // [!code --]
+}); // [!code --]
+await kernelClient.sendTransaction({ // [!code ++]
+    calls: [ // [!code ++]
+      // ... // [!code ++]
+    ], // [!code ++]
+}); // [!code ++]
+```
+
+### `KernelAccountClient` extends `bundlerActions` by default
+
+For example:
+```typescript
+const bundlerClient = kernelClient.extend(bundlerActions(entryPoint)); // [!code --]
+await bundlerClient.waitForUserOperationReceipt({ // [!code --]
+  hash: userOpHash, // [!code --]
+}); // [!code --]
+await kernelClient.waitForUserOperationReceipt({ hash }) // [!code ++]
+```
+
+### Merged `bundlerClient.sendUserOperation` and `kernelClient.sendUserOperation`
+
+`kernelClient.sendUserOperation` now prepares the `userOperation` if needed and directly calls `eth_sendUserOperation`.
+
 ## SDK 5.1.x => 5.2.x
 
 ### Most functions now take an `entryPoint` param

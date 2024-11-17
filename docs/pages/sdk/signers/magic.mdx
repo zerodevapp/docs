@@ -43,14 +43,12 @@ Use the provider from Magic to create a smart account signer, which can be passe
 
 ```typescript
 import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
-import { KERNEL_V3_1 } from "@zerodev/sdk/constants"
-import { providerToSmartAccountSigner, ENTRYPOINT_ADDRESS_V07 } from 'permissionless';
+import { KERNEL_V3_1, getEntryPoint } from "@zerodev/sdk/constants"
 import { createPublicClient } from "viem";
 import { polygonAmoy } from 'viem/chains';
 
-// Get the Provider from Magic and convert it to a SmartAccountSigner
+// Get the Provider from Magic 
 const magicProvider = await magic.wallet.getProvider();
-const smartAccountSigner = await providerToSmartAccountSigner(magicProvider);
 
 const publicClient = createPublicClient({
   transport: http('https://rpc-amoy.polygon.technology'),
@@ -59,8 +57,8 @@ const publicClient = createPublicClient({
 
 // Pass your `smartAccountSigner` to the validator
 const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
-  signer: smartAccountSigner,
-  entryPoint: ENTRYPOINT_ADDRESS_V07,
+  signer: magicProvider,
+  entryPoint: getEntryPoint("0.7"),
   kernelVersion: KERNEL_V3_1
 })
 

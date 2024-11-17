@@ -1,0 +1,62 @@
+# Use Particle Network with ZeroDev
+
+[Particle Network](https://particle.network/) is an intent-centric, modular wallet-as-a-service (WaaS). By utilizing MPC-TSS for key management, Particle can streamline onboarding via familiar Web2 methods such as Google, emails, and phone numbers.
+
+By combining ZeroDev with Particle, you can use Particle to enable a smooth social login experience, while using ZeroDev as the smart wallet to sponsor gas for users, batch transactions, and more.
+
+## Set up
+
+To use Particle Network with ZeroDev, first create an application that integrates with Particle Network.
+
+- Refer to the [Particle Network documentation site](https://docs.particle.network/) for instructions on setting up an application with the Particle Network.
+- For a quick start, Particle Network provides a guide, available [here](https://docs.particle.network/getting-started/get-started).
+
+## Integration
+Integrating ZeroDev with Particle Network is straightforward after setting up the project. Particle Network provides an Externally Owned Account (EOA) wallet to use as a signer with Kernel.
+
+### Create the Particle Network object
+After following the Particle Network documentation, you will have access to a `ParticleProvider` object as shown below:
+
+```typescript
+import { ParticleNetwork } from "@particle-network/auth";
+import { ParticleProvider } from "@particle-network/provider";
+
+// Param options here will be specific to your project.  See the Particle docs for more info.
+const particle = new ParticleNetwork({
+  projectId,
+  clientKey,
+  appId,
+  chainName,
+  chainId,
+});
+const particleProvider = new ParticleProvider(particle.auth)
+```
+
+### Use with ZeroDev
+
+Use the provider from Particle Network to create a smart account signer, which can be passed to a validator. For detailed guidance on using a validator, refer to our documentation on [creating accounts](/sdk/v5_3_x/core-api/create-account#api).
+
+```typescript
+import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
+import { KERNEL_V3_1 } from "@zerodev/sdk/constants"
+import { providerToSmartAccountSigner, ENTRYPOINT_ADDRESS_V07 } from 'permissionless';
+import { createPublicClient } from "viem";
+import { polygonAmoy } from 'viem/chains';
+
+// Convert the particleProvider to a SmartAccountSigner
+const smartAccountSigner = await providerToSmartAccountSigner(particleProvider);
+
+const publicClient = createPublicClient({
+  transport: http('https://rpc-amoy.polygon.technology'),
+  chain: polygonAmoy,
+})
+
+// Pass your `smartAccountSigner` to the validator
+const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
+  signer: smartAccountSigner,
+  entryPoint: ENTRYPOINT_ADDRESS_V07,
+  kernelVersion: KERNEL_V3_1
+})
+
+// You can now use this ECDSA Validator to create a Kernel account
+```

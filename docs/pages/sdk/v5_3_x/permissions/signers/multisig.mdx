@@ -1,0 +1,32 @@
+# Multisig Signer
+
+The weighted ECDSA (multisig) signer signs with a collection of ECDSA keys.  Each key is weighted, so that the signature will pass as long as enough signers with enough weight have signed.
+
+Read [the multisig doc](/sdk/v5_3_x/advanced/multisig) for more details.
+
+## API
+
+```typescript
+import { toWeightedECDSASigner } from "@zerodev/permissions/signers"
+
+const multisigSigner = await toWeightedECDSASigner(publicClient, {
+  config: {
+      threshold: 100,
+      delay: 0,
+      signers: [
+          { address: signer1.address, weight: 50 },
+          { address: signer2.address, weight: 50 }
+      ]
+  },
+  signers: [signer1, signer2]
+})
+
+const validator = toPermissionValidator(publicClient, {
+  entryPoint,
+  kernelVersion,
+  signer: multisigSigner,
+  policies: [
+    // ...
+  ],
+})
+```

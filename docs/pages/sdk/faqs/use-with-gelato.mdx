@@ -11,38 +11,24 @@ Integrating Gelato with our SDK necessitates specific configurations, diverging 
 ### Essentail Configurations
 - **Omit Paymaster**: Unlike other services, Gelato's transactions are sponsored without specifying a paymaster. Thus, your account will directly bear the gas fees incurred through Gelato's operations.
 
-Initialization with Preset Options
-```typescript
-const kernelClient = await createEcdsaKernelAccountClient({
-  // Mandatory fields
-  chain,
-  projectId,
-  signer,
-
-  // Gelato-specific optional fields
-  provider: "GELATO",
-  paymaster: 'NONE',  // Explicitly omit the use of a paymaster
-})
-```
-
-Manual Setup without Presets
-
-If opting for a manual configuration, ensure the sponsorUserOperation middleware is not used, as illustrated below (commented out for clarity):
 ```typescript
 const kernelClient = createKernelAccountClient({
   account,
   chain,
-  transport: http(process.env.BUNDLER_RPC),
+  bundlerTransport: http(process.env.BUNDLER_RPC),
   // The following is omitted for Gelato integration:
-  // sponsorUserOperation: async ({ userOperation }): Promise<UserOperation> => {
-  //   const paymasterClient = createZeroDevPaymasterClient({
-  //     chain,
-  //     transport: http(process.env.PAYMASTER_RPC),
-  //   })
-  //   return paymasterClient.sponsorUserOperation({
-  //     userOperation,
-  //  })
-  // },
+  // paymaster: {
+  //   getPaymasterData: (userOperation) => {
+  //     const zerodevPaymaster = createZeroDevPaymasterClient({
+  //       chain,
+  //       // Get this RPC from ZeroDev dashboard
+  //       transport: http(PAYMASTER_RPC),
+  //     })
+  //     return zerodevPaymaster.sponsorUserOperation({
+  //       userOperation,
+  //     })
+  //   }
+  // }
 })
 ```
 
@@ -56,24 +42,22 @@ const txnHash = await kernelClient.sendTransaction({
   to: zeroAddress,
   value: BigInt(0),
   data: "0x",
-  // Gelato-specific configurations (you may need to ignore typescript errors)
-  maxFeePerGas: "0x0",
-  maxPriorityFeePerGas: "0x0",
+  // Gelato-specific configurations 
+  maxFeePerGas: BigInt(0),
+  maxPriorityFeePerGas: BigInt(0),
 })
 ```
 
 - Dispatching a User Operation
 ```typescript
 const userOpHash = await kernelClient.sendUserOperation({
-  userOperation: {
-    callData: await account.encodeCallData({
+    callData: await account.encodeCalls([{
       to: zeroAddress,
       value: BigInt(0),
       data: "0x",
-    }),
-    // Gelato-specific configurations (you may need to ignore typescript errors)
-    maxFeePerGas: "0x0",
-    maxPriorityFeePerGas: "0x0",
-  },
+    }]),
+    // Gelato-specific configurations 
+    maxFeePerGas: BigInt(0),
+    maxPriorityFeePerGas: BigInt(0),
 })
 ```

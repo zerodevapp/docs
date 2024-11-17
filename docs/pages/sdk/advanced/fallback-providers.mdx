@@ -28,16 +28,14 @@ const kernelClient1 = createKernelAccountClient({
     account,
     chain,
     bundlerTransport: http(BUNDLER_RPC_ALCHEMY),
-    middleware: {
-        sponsorUserOperation: async ({ userOperation }) => {
+    paymaster: {
+        getPaymasterData: ( userOperation ) => {
             const zeroDevPaymasterClient = createZeroDevPaymasterClient({
                 chain,
                 transport: http(PAYMASTER_RPC_ALCHEMY),
-                entryPoint
             })
             return zeroDevPaymasterClient.sponsorUserOperation({
                 userOperation,
-                entryPoint
             })
         }
     },
@@ -49,20 +47,17 @@ const kernelClient2 = createKernelAccountClient({
     account,
     chain,
     bundlerTransport: http(BUNDLER_RPC_PIMLICO),
-    middleware: {
-        sponsorUserOperation: async ({ userOperation }) => {
+    paymaster: {
+        getPaymasterData: ( userOperation ) => {
             const zeroDevPaymasterClient = createZeroDevPaymasterClient({
                 chain,
                 transport: http(PAYMASTER_RPC_PIMLICO),
-                entryPoint
             })
             return zeroDevPaymasterClient.sponsorUserOperation({
                 userOperation,
-                entryPoint
             })
         }
     },
-    entryPoint
 })
 ```
 

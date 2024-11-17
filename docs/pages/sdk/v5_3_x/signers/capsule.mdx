@@ -1,0 +1,63 @@
+# Use Capsule with ZeroDev
+
+[Capsule](https://usecapsule.com/) offers a signing solution enabling the creation of secure, embedded MPC wallets accessible via email or social login. These wallets, compatible across different applications, offer portability, recoverability, and programmability, eliminating the need for users to establish separate signers or contract accounts for each application.
+
+## Set up
+
+To use Capsule with ZeroDev, first create an application that integrates with Capsule.
+
+- Refer to the [Capsule documentation site](https://docs.usecapsule.com/) for instructions on setting up an application with the Capsule.
+- For a quick start, Capsule provides an example hub, available [here](https://docs.usecapsule.com/getting-started/examples).
+
+## Integration
+
+:::info
+Check out [this example](https://github.com/zerodevapp/zerodev-signer-examples/tree/main/capsule) for custom integration with Capsule.
+:::
+
+Integrating ZeroDev with Capsule is straightforward after setting up the project. Capsule provides an Externally Owned Account (EOA) wallet to use as a signer with Kernel.
+
+### Create the Capsule object
+After following the Capsule documentation, you will have access to a `CapsuleWeb3Provider` object as shown below:
+
+```typescript
+import Capsule from "@usecapsule/web-sdk";
+
+// Param options here will be specific to your project.  See the Capsule docs for more info.
+const capsule = new Capsule(env, apiKey, opts);
+```
+
+### Use with ZeroDev
+
+Use the WalletClient from Capsule to create a smart account signer, which can be passed to a validator. For detailed guidance on using a validator, refer to our documentation on [creating accounts](/sdk/v5_3_x/core-api/create-account#api).
+
+```typescript
+import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
+import { KERNEL_V3_1 } from "@zerodev/sdk/constants"
+import { walletClientToSmartAccountSigner, ENTRYPOINT_ADDRESS_V07 } from 'permissionless';
+import { createCapsuleViemClient } from '@usecapsule/web-sdk';
+import { polygonAmoy } from 'viem/chains';
+import { createPublicClient } from "viem";
+
+// Convert a Capsule viem client to a SmartAccountSigner
+// Follow the Capsule docs for more instructions on creating the Viem client https://docs.usecapsule.com/integration-guide/signing-transactions
+const viemClient = createCapsuleViemClient(capsule, {
+  chain: polygonAmoy,
+  transport: http('https://rpc-amoy.polygon.technology'),
+});
+const smartAccountSigner = walletClientToSmartAccountSigner(viemClient);
+
+const publicClient = createPublicClient({
+  transport: http('https://rpc-amoy.polygon.technology'),
+  chain: polygonAmoy,
+})
+
+// Pass your `smartAccountSigner` to the validator
+const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
+  signer: smartAccountSigner,
+  entryPoint: ENTRYPOINT_ADDRESS_V07,
+  kernelVersion: KERNEL_V3_1,
+})
+
+// You can now use this ECDSA Validator to create a Kernel account
+```

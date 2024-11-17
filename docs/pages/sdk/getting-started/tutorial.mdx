@@ -121,24 +121,20 @@ Add the following code:
 const main = async () => {
   // ... other code
 
+  const zerodevPaymaster = createZeroDevPaymasterClient({
+    chain,
+    transport: http(PAYMASTER_RPC),
+  })
+
   const kernelClient = createKernelAccountClient({
     account,
     chain,
-    entryPoint,
     bundlerTransport: http(BUNDLER_RPC),
-    middleware: {
-      sponsorUserOperation: async ({ userOperation }) => {
-        const zerodevPaymaster = createZeroDevPaymasterClient({
-          chain,
-          entryPoint,
-          transport: http(PAYMASTER_RPC),
-        })
-        return zerodevPaymaster.sponsorUserOperation({
-          userOperation,
-          entryPoint,
-        })
-      }
-    }
+    paymaster: {
+        getPaymasterData(userOperation) {
+            return zerodevPaymaster.sponsorUserOperation({userOperation})
+        }
+    },
   })
 
   const accountAddress = kernelClient.account.address
@@ -161,8 +157,7 @@ const main = async () => {
   // ... other code
 
   const userOpHash = await kernelClient.sendUserOperation({
-    userOperation: {
-      callData: await kernelClient.account.encodeCallData({
+      callData: await kernelClient.account.encodeCalls([{
         to: contractAddress,
         value: BigInt(0),
         data: encodeFunctionData({
@@ -170,8 +165,7 @@ const main = async () => {
           functionName: "mint",
           args: [accountAddress],
         })
-      })
-    }
+      }])
   })
   console.log("Submitted UserOp:", userOpHash)
 }
@@ -191,14 +185,11 @@ Run the script again with `npx ts-node tutorial/template.ts` and confirm that it
 When you call `sendUserOperation`, the call returns as soon as the UserOp has been submitted to the bundler, but it doesn't wait for the UserOp to be "confirmed" on-chain.  To wait for the UserOp to be confirmed, add the following import and code:
 
 ```typescript
-import { bundlerActions } from "permissionless"
 
 const main = async () => {
   // ... other code
 
-  const bundlerClient = kernelClient.extend(bundlerActions(entryPoint))
-
-  const receipt = await bundlerClient.waitForUserOperationReceipt({
+  const receipt = await kernelClient.waitForUserOperationReceipt({
     hash: userOpHash,
   })
   console.log("UserOp confirmed:", receipt.userOpHash)
@@ -207,8 +198,8 @@ const main = async () => {
 
 Let's break down the code:
 
-- Since `waitForUserOperationReceipt` is a bundler action, we need to first `extend` the `kernelClient` with `bundlerActions`.  If you are unfamiliar with the concept of "actions," you can read more about it on [Viem's documentation](https://viem.sh/docs/actions/public/introduction).
-- Now, we can call `waitForUserOperationReceipt`.  This function returns a "receipt" object.  If you are curious, you can print the full object and see what it contains.
+- `waitForUserOperationReceipt` is a bundler action.  If you are unfamiliar with the concept of "actions," you can read more about it on [Viem's documentation](https://viem.sh/docs/actions/public/introduction).
+- This function returns a "receipt" object.  If you are curious, you can print the full object and see what it contains.
 
 ### Read contract state
 

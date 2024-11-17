@@ -1,0 +1,137 @@
+# WalletConnect
+
+## Overview
+
+The `@zerodev/walletconnect` Core SDK facilitates the connection between a WalletConnect-compatible wallet and a blockchain application, handling session proposals, requests, and responses. It leverages a kernel EIP1193 provider to sign transactions or messages.
+
+## Installation
+
+:::code-group
+
+```bash [npm]
+npm i @zerodev/walletconnect
+```
+
+```bash [yarn]
+yarn add @zerodev/walletconnect
+```
+
+```bash [pnpm]
+pnpm i @zerodev/walletconnect
+```
+
+```bash [bun]
+bun add @zerodev/walletconnect
+```
+
+:::
+
+
+## Initialization
+
+We will use the `WalletConnectKernelService` class to connect to the WalletConnect-compatible wallet.
+
+```typescript
+await walletConnectKernelService.init({
+    walletConnectProjectId: "your_project_id",
+    walletConnectMetadata: {
+        "name": "ZeroDev Wallet",
+        "url": "https://example.com",
+        "description": "Smart contract wallet for Ethereum",
+        "icons": [
+            "https://example.com/images/400x400.jpg"
+        ]
+    },
+    kernelClient: optionalKernelClient,
+    kernelProvider: optionalKernelProvider
+});
+```
+
+- `walletConnectProjectId`: Your WalletConnect project ID. You will get this from the [WalletConnect dashboard.](https://cloud.walletconnect.com/sign-in)
+- `walletConnectMetadata`: Metadata related to the WalletConnect session.
+- `kernelClient`: An optional kernel client for creating a kernel provider.
+    - For detailed information on kernel clients, see [the kernel clients documentation.](/sdk/v5_3_x/core-api/create-account#create-an-account-client)
+- `kernelProvider`: An optional pre-initialized kernel provider.
+    - If you are using wagmi with the capabilities pattern (for more information, see [the capabilities quickstart](/smart-wallet/quickstart-capabilities)), you can get the `kernelProvider` from wagmi.
+
+```typescript
+import { useAccount } from "wagmi";
+
+const { connector } = useAccount();
+
+// If using typescript you'll need to cast the provider to the correct type
+const kernelEIP1193Provider = (await connector.getProvider()) as unknown as KernelEIP1193Provider<EntryPoint>;
+```
+
+:::info
+You must either pass a `kernelProvider` or a `kernelClient` to the `init` method.
+:::
+
+## Connecting to a Wallet
+
+To start a session, use the `connect` method with a WalletConnect URI:
+
+```typescript
+await walletConnectKernelService.connect("wc:example_uri");
+```
+
+## Event Handling
+
+Subscribe to various session-related events:
+
+```typescript
+// Handle session request
+walletConnectKernelService.onSessionRequest((request) => {
+    // This request object is what will be passed to the approveSessionRequest method or rejectSessionRequest method
+});
+
+// Handle session proposal
+walletConnectKernelService.onSessionProposal((proposal) => {
+    // This proposal object is what will be passed to the approveSessionProposal method or rejectSessionProposal method
+});
+
+// Handle session addition
+walletConnectKernelService.onSessionAdd(() => {
+    // You can get the updated session using the getActiveSessions method
+    const sessions = walletConnectKernelService.getActiveSessions();
+});
+
+// Handle session deletion
+walletConnectKernelService.onSessionDelete(() => {
+    // You can get the updated session using the getActiveSessions method
+    const sessions = walletConnectKernelService.getActiveSessions();
+});
+```
+
+## Session Management
+
+### Approving or Rejecting Proposals
+
+Handle incoming session proposals by approving or rejecting them:
+
+```typescript
+await walletConnectKernelService.approveSessionProposal(proposal, chainId, address);
+await walletConnectKernelService.rejectSessionProposal(proposal);
+```
+
+### Handling Session Requests
+
+Approve or reject session requests based on business logic:
+
+```typescript
+await walletConnectKernelService.approveSessionRequest(request, chainId);
+await walletConnectKernelService.rejectSessionRequest(request);
+```
+
+## Disconnecting
+
+Terminate an active session using the `disconnect` method:
+
+```typescript
+const sessions = walletConnectKernelService.getActiveSessions();
+await walletConnectKernelService.disconnect(sessions[0]);
+```
+
+## Example: WalletConnect ZeroDev Example
+
+For an example of integrating the `@zerodev/walletconnect` Core SDK with a React app, check out [this example repo.](https://github.com/zerodevapp/walletconnect-example).

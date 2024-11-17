@@ -7,8 +7,10 @@ Impatient?  Check out [complete examples here](https://github.com/zerodevapp/zer
 To deploy smart contracts from your smart account, use the `deployContract` function:
 
 ```typescript
-const txnHash = await kernelClient.deployContract({
-  abi,
-  bytecode,
+const txnHash = await kernelClient.sendTransaction({
+  callData: await kernelClient.account.encodeDeployCallData({
+    abi,
+    bytecode,
+  })
 })
 ```

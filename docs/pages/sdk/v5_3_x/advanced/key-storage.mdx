@@ -1,0 +1,87 @@
+# Key Storage
+
+:::warning
+The remote signer feature is a paid add-on.  Please [contact us](https://t.me/derek_chiang) before you use this feature in production, in order to avoid service disruptions.
+:::
+
+Sometimes you might want to manage session keys or even actual private keys for your users, but you may not want to store the keys on your database.
+
+ZeroDev offers a key management API you can use to generate private keys and sign with them.  The private key is never transmitted to you or stored on your server -- the API executes the signing remotely.
+
+## Code Example
+
+Check out [a complete example here](https://github.com/zerodevapp/zerodev-examples/blob/main/remote-signer/main.ts).
+
+## Installation
+
+:::code-group
+
+```bash [npm]
+npm i @zerodev/remote-signer
+```
+
+```bash [yarn]
+yarn add @zerodev/remote-signer
+```
+
+```bash [pnpm]
+pnpm i @zerodev/remote-signer
+```
+
+```bash [bun]
+bun add @zerodev/remote-signer
+```
+
+:::
+
+## API
+
+First, obtain the ZeroDev API key from [your dashboard](https://dashboard.zerodev.app/account).  Remember: you must secure this API key.  Whoever has access to this API key effectively controls all the private keys you manage with the key management API.
+
+### Generating a private key
+
+```ts
+import { toRemoteSigner, RemoteSignerMode } from "@zerodev/remote-signer"
+
+const remoteSigner = await toRemoteSigner({
+    apiKey,
+    mode: RemoteSignerMode.Create
+})
+```
+
+`remoteSigner` is a [Viem account](https://viem.sh/docs/accounts/privateKey) which you can use for signing.
+
+Note that if you want to get this key later, you must store its "address" which is basically its public key: `remoteSigner.address`.
+
+### Getting an existing private key
+
+When getting an existing key, specify the "address" of the key.
+
+```ts
+import { toRemoteSigner, RemoteSignerMode } from "@zerodev/remote-signer"
+
+const remoteSigner = await toRemoteSigner({
+    apiKey,
+    keyAddress: remoteSignerAddress,
+    mode: RemoteSignerMode.Get
+})
+```
+
+### Signing with the key
+
+Since `remoteSigner` is a [Viem account](https://viem.sh/docs/accounts/privateKey), you can use it wherever a Viem account is expected.
+
+For example, to use the remote signer as a [session key](/sdk/v5_3_x/permissions/intro):
+
+```ts
+const ecdsaSigner = toECDSASigner({ signer: remoteSigner })
+
+const permissionPlugin = await toPermissionValidator(publicClient, {
+    entryPoint,
+    kernelVersion,
+    signer: ecdsaSigner,
+    policies: [
+      // ...
+    ]
+})
+```

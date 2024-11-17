@@ -1,0 +1,9 @@
+# Auth Providers
+
+Smart accounts, like EOAs, rely on signatures to validate transactions and messages.  The difference with smart accounts is that it can use arbitrary signatures schemes, such as multisig, passkeys, etc.
+
+It's possible to use third-party "wallet services" as signers for smart accounts.  The end result is that your users will be interacting with the wallet UIs provided by these services, while using a smart account powered by ZeroDev.
+
+ZeroDev has been integrated natively with many leading wallet services such as [Privy](https://docs.privy.io/guide/frontend/account-abstraction/zerodev), [Dynamic](https://docs.dynamic.xyz/account-abstraction/aa-providers/zerodev), [Portal](https://docs.portalhq.io/resources/account-abstraction-alpha), [JoyID](https://docs.joyid.dev/guide/evm/evm-aa), etc.  However, even when a native integration doesn't exist, it's generally very easy to integrate ZeroDev with a wallet service as long as it's able to sign messages.
+
+Check out the wallet services that are known to work with ZeroDev using the left sidebar.  If the wallet service you want to use is not listed, check out the general guide for [integrating with EOA signers](/sdk/v5_3_x/signers/eoa), or try [building your own integration](/sdk/v5_3_x/signers/custom-signer).

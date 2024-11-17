@@ -56,8 +56,7 @@ Use the WalletClient from Dfns to create a smart account signer, which can be pa
 
 ```typescript
 import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
-import { KERNEL_V3_1 } from "@zerodev/sdk/constants"
-import { walletClientToSmartAccountSigner, ENTRYPOINT_ADDRESS_V07 } from 'permissionless';
+import { KERNEL_V3_1, getEntryPoint } from "@zerodev/sdk/constants"
 import { toAccount } from 'viem/accounts';
 import { createWalletClient, createPublicClient } from 'viem';
 import { polygonAmoy } from 'viem/chains';
@@ -69,17 +68,16 @@ const walletClient = createWalletClient({
     account,
     transport: http('https://rpc-amoy.polygon.technology'),
 })
-const smartAccountSigner = walletClientToSmartAccountSigner(walletClient);
 
 const publicClient = createPublicClient({
   transport: http('https://rpc-amoy.polygon.technology'),
   chain: polygonAmoy,
 })
 
-// Pass your `smartAccountSigner` to the validator
+// Pass your `walletClient` to the validator
 const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
-  signer: smartAccountSigner,
-  entryPoint: ENTRYPOINT_ADDRESS_V07,
+  signer: walletClient,
+  entryPoint: getEntryPoint("0.7"),
   kernelVersion: KERNEL_V3_1
 })
 

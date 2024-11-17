@@ -15,19 +15,19 @@ We will be using a local private key, but the ECDSA validator also works with [t
 :::code-group
 
 ```bash [npm]
-npm i @zerodev/sdk @zerodev/ecdsa-validator permissionless
+npm i @zerodev/sdk @zerodev/ecdsa-validator
 ```
 
 ```bash [yarn]
-yarn add @zerodev/sdk @zerodev/ecdsa-validator permissionless
+yarn add @zerodev/sdk @zerodev/ecdsa-validator
 ```
 
 ```bash [pnpm]
-pnpm i @zerodev/sdk @zerodev/ecdsa-validator permissionless
+pnpm i @zerodev/sdk @zerodev/ecdsa-validator
 ```
 
 ```bash [bun]
-bun add @zerodev/sdk @zerodev/ecdsa-validator permissionless
+bun add @zerodev/sdk @zerodev/ecdsa-validator
 ```
 
 :::
@@ -43,9 +43,7 @@ If you are building a new application, we recommend using EntryPoint 0.7 (Kernel
 In this tutorial, we will use EntryPoint 0.7.  Start by selecting an EntryPoint:
 
 ```ts
-import { ENTRYPOINT_ADDRESS_V07 } from "permissionless"
-
-const entryPoint = ENTRYPOINT_ADDRESS_V07
+const entryPoint = getEntryPoint("0.7")
 ```
 
 ### Picking a Kernel version
@@ -134,7 +132,6 @@ import { base } from 'viem/chains'
 
 const kernelClient = createKernelAccountClient({
   account,
-  entryPoint,
 
   // Replace with your chain
   chain: base,
@@ -144,8 +141,10 @@ const kernelClient = createKernelAccountClient({
   bundlerTransport: http('BUNDLER_RPC'),
 
   // Optional -- only if you want to use a paymaster
-  middleware: {
-    sponsorUserOperation,  
+  paymaster: {
+    getPaymasterData(userOperation) {
+      return paymasterClient.sponsorUserOperation({userOperation})
+    }  
   },
 })
 ```
@@ -155,7 +154,7 @@ Note that:
 - You need to replace the `BUNDLER_RPC` with an actual bundler RPC.
   - For ZeroDev, you can find the RPC on your dashboard.
 - You need to make sure to set the right `chain`.
-- `sponsorUserOperation` only needs to be specified if you want to [use a paymaster](/sdk/core-api/sponsor-gas).
+- `paymaster` only needs to be specified if you want to [use a paymaster](/sdk/core-api/sponsor-gas).
 
 Now you are ready to do things with your smart account, like [sending UserOps](/sdk/core-api/send-transactions)!
 
@@ -201,7 +200,7 @@ You can do it like this:
 
 ```ts
 const account = await createKernelAccount(publicClient, {
-  deployedAccountAddress: "address",
+  address: "address",
   // ...other args
 })
 ```

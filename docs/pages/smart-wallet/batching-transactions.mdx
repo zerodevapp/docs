@@ -53,13 +53,13 @@ function App() {
 Impatient?  Check out [complete examples here](https://github.com/zerodevapp/zerodev-examples/tree/main/batch-transactions).
 :::
 
-There are two ways to send batched transactions.  `sendTransactions` is a simple API that's good enough for most use cases.  If you need fine-grained control over your UserOp, you can use `sendUserOperation`.
+There are two ways to send batched transactions.  `sendTransaction` is a simple API that's good enough for most use cases.  If you need fine-grained control over your UserOp, you can use `sendUserOperation`.
 
-### `sendTransactions`
+### `sendTransaction`
 
 ```typescript
-const txHash = await kernelClient.sendTransactions({
-  transactions: [
+const txHash = await kernelClient.sendTransaction({
+  calls: [
     {
       to: "0xADDRESS",
       value: value,
@@ -78,24 +78,22 @@ const txHash = await kernelClient.sendTransactions({
 
 You can learn more about the `sendUserOperation` API [here](/sdk/core-api/send-transactions#sending-raw-userops).
 
-To send a UserOp with batching, simply pass an array of calls into `encodeCallData`.
+To send a UserOp with batching, simply pass an array of calls into `encodeCalls`.
 
 ```typescript
 const userOpHash = await kernelClient.sendUserOperation({
-    userOperation: {
-        callData: account.encodeCallData([
-          {
-            to,
-            value,
-            data,
-          },
-          {
-            to,
-            value,
-            data,
-          },
-        ]),
-        // other UserOp params
-    },
+      callData: account.encodeCalls([
+        {
+          to,
+          value,
+          data,
+        },
+        {
+          to,
+          value,
+          data,
+        },
+      ]),
+      // other UserOp params
 })
 ```

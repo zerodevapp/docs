@@ -199,7 +199,7 @@ const sudoKernelClient = createKernelAccountClient({
 Now to revoke the session key by uninstalling its associated permission plugin, call `uninstallPlugin` on `sudoKernelClient`. 
 
 ```ts
-const txHash = await sudoKernelClient.uninstallPlugin({
+const userOpHash = await sudoKernelClient.uninstallPlugin({
     plugin: permissionPlugin,
 });
 ```

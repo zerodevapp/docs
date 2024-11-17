@@ -110,17 +110,14 @@ const createAccountAndClient = async (passkeyValidator: any) => {
     account: kernelAccount, // [!code focus]
     chain: CHAIN, // [!code focus]
     bundlerTransport: http(BUNDLER_URL), // [!code focus]
-    entryPoint, // [!code focus]
-    middleware: { // [!code focus]
-      sponsorUserOperation: async ({ userOperation }) => { // [!code focus]
+    paymaster: { // [!code focus]
+      getPaymasterData: (userOperation) => { // [!code focus]
         const zerodevPaymaster = createZeroDevPaymasterClient({ // [!code focus]
           chain: CHAIN, // [!code focus]
           transport: http(PAYMASTER_URL), // [!code focus]
-          entryPoint, // [!code focus]
         }) // [!code focus]
         return zerodevPaymaster.sponsorUserOperation({ // [!code focus]
           userOperation, // [!code focus]
-          entryPoint, // [!code focus]
         }) // [!code focus]
       } // [!code focus]
     } // [!code focus]
@@ -143,8 +140,7 @@ const handleSendUserOp = async () => {
   setUserOpStatus('Sending UserOp...')
 
   const userOpHash = await kernelClient.sendUserOperation({ // [!code focus]
-    userOperation: { // [!code focus]
-      callData: await kernelAccount.encodeCallData({ // [!code focus]
+      callData: await kernelAccount.encodeCalls([{ // [!code focus]
         to: contractAddress, // [!code focus]
         value: BigInt(0), // [!code focus]
         data: encodeFunctionData({ // [!code focus]
@@ -152,16 +148,12 @@ const handleSendUserOp = async () => {
           functionName: "mint", // [!code focus]
           args: [kernelAccount.address], // [!code focus]
         }), // [!code focus]
-      }), // [!code focus]
-    }, // [!code focus]
+      }]), // [!code focus]
   }) // [!code focus]
 
   setUserOpHash(userOpHash)
 
-  const bundlerClient = kernelClient.extend( // [!code focus]
-    bundlerActions(entryPoint) // [!code focus]
-  ) // [!code focus]
-  await bundlerClient.waitForUserOperationReceipt({ // [!code focus]
+  await kernelClient.waitForUserOperationReceipt({ // [!code focus]
     hash: userOpHash, // [!code focus]
   }) // [!code focus]
 

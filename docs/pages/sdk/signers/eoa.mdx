@@ -10,23 +10,19 @@ EIP-1193 is a standard interface for Ethereum providers, such as MetaMask or har
 
 ```typescript
 import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
-import { KERNEL_V3_1 } from "@zerodev/sdk/constants"
-import { providerToSmartAccountSigner, ENTRYPOINT_ADDRESS_V07 } from 'permissionless';
+import { KERNEL_V3_1, getEntryPoint } from "@zerodev/sdk/constants"
 import { createPublicClient } from "viem";
 import { polygonAmoy } from 'viem/chains';
-
-// `window.ethereum` is the provider object that is injected into the browser by a wallet, like metamask, that enables JSON RPC communication with the walelt.
-const smartAccountSigner = await providerToSmartAccountSigner(window.ethereum);
 
 const publicClient = createPublicClient({
   transport: http('https://rpc-amoy.polygon.technology'),
   chain: polygonAmoy,
 })
 
-// Pass your `smartAccountSigner` to the validator
+// Pass your `window.ethereum` to the validator
 const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
-  signer: smartAccountSigner,
-  entryPoint: ENTRYPOINT_ADDRESS_V07,
+  signer: window.ethereum,
+  entryPoint: getEntryPoint("0.7"),
   kernelVersion: KERNEL_V3_1
 })
 
@@ -39,20 +35,17 @@ A [Wallet Client](https://viem.sh/docs/clients/wallet.html) is an interface to i
 In this example, we assume that you have access to a WalletClient object.
 ```typescript
 import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
-import { KERNEL_V3_1 } from "@zerodev/sdk/constants"
-import { walletClientToSmartAccountSigner, ENTRYPOINT_ADDRESS_V07 } from 'permissionless';
-
-const smartAccountSigner = walletClientToSmartAccountSigner(walletClient);
+import { KERNEL_V3_1, getEntryPoint } from "@zerodev/sdk/constants"
 
 const publicClient = createPublicClient({
   transport: http('https://rpc-amoy.polygon.technology'),
   chain
 })
 
-// Pass your `smartAccountSigner` to the validator
+// Pass your `walletClient` to the validator
 const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
-  signer: smartAccountSigner,
-  entryPoint: ENTRYPOINT_ADDRESS_V07,
+  signer: walletClient,
+  entryPoint: getEntryPoint("0.7"),
   kernelVersion: KERNEL_V3_1
 })
 
@@ -64,8 +57,7 @@ A Local Account refers to an EOA where the private key is directly accessible on
 
 ```typescript
 import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
-import { KERNEL_V3_1 } from "@zerodev/sdk/constants"
-import { ENTRYPOINT_ADDRESS_V07 } from 'permissionless';
+import { KERNEL_V3_1, getEntryPoint } from "@zerodev/sdk/constants"
 import { privateKeyToAccount } from "viem/accounts"
 import { Hex } from "viem"
 
@@ -80,7 +72,7 @@ const publicClient = createPublicClient({
 // Pass your `smartAccountSigner` to the validator
 const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
   signer: smartAccountSigner,
-  entryPoint: ENTRYPOINT_ADDRESS_V07,
+  entryPoint: getEntryPoint("0.7"),
   kernelVersion: KERNEL_V3_1
 })
 

@@ -85,7 +85,7 @@ const multisigValidator = await createWeightedECDSAValidator(publicClient, {
 const account = await createKernelAccount(publicClient, {
   entryPoint,
   kernelVersion,
-  deployedAccountAddress: '<your multisig address>',
+  address: '<your multisig address>',
   plugins: {
     sudo: multisigValidator,
   }
