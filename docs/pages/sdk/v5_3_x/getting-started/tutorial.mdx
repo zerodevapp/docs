@@ -1,0 +1,242 @@
+# ZeroDev Tutorial
+
+:::info
+Impatient?  Check out [the complete example here](https://github.com/zerodevapp/zerodev-examples/tree/main/tutorial/completed.ts).
+:::
+
+In this tutorial, we will mint an NFT without paying gas. We assume that you have a high-level understanding of AA concepts such as bundlers, paymasters, and UserOp; if not, read [the introduction](/) first.
+
+## Create a ZeroDev Project
+
+For this tutorial, we will use [ZeroDev's AA infra](/meta-infra/intro), but you can use ZeroDev with any AA infra provider.
+
+Go to the [ZeroDev dashboard](https://dashboard.zerodev.app/) and create a project for Sepolia.
+
+<p align="center">
+  <img src="/img/dashboard_create_project.png" width="50%" />
+</p>
+
+<p align="center">
+  <img src="/img/dashboard_project_home.png" width="50%" />
+</p>
+
+We will be using the "Project ID" in the next steps.
+
+## Set up a gas policy
+
+With ZeroDev, by default you are not sponsoring UserOps.  To sponsor UserOps, you need to set up a gas policy.
+
+Go to the "Gas Policies" section of your dashboard and create a new "Project Policy":
+
+<p align="center">
+  <img src="/img/project_policy.png" width="80%" />
+</p>
+
+From now on, when you use the paymaster RPC from the previous step, the paymaster will sponsor UserOps according to the policy you just set up, which in this case is up to 100 UserOps per minute.
+
+## Write the code
+
+Clone the [ZeroDev examples repo](https://github.com/zerodevapp/zerodev-examples).  Then, inside the directory, install all dependencies:
+
+```bash
+npm install
+```
+
+Create a `.env` file with the following line:
+
+```
+ZERODEV_PROJECT_ID=<YOUR_PROJECT_ID>
+```
+
+Replacing `<YOUR_PROJECT_ID>` with your actual project ID from the dashboard, and make sure you are using a project ID for Sepolia.
+
+If all goes well, you should be able to run:
+
+```bash
+npx ts-node tutorial/completed.ts
+```
+
+Now open the [`tutorial/template.ts`](https://github.com/zerodevapp/zerodev-examples/blob/main/tutorial/template.ts) file in your editor.  This will be the template where you will write your code.  You can always refer to [`tutorial/completed.ts`](https://github.com/zerodevapp/zerodev-examples/blob/main/tutorial/completed.ts) to see the completed tutorial code.
+
+### Create a signer
+
+Kernel accounts support many different signing methods, including ECDSA keys and passkeys.  In this tutorial, we will use ECDSA keys which are the same type of keys that MetaMask and other Ethereum wallets use.
+
+Let's start by generating a random key.  Add the following code to the `main` function:
+
+```typescript
+import { generatePrivateKey, privateKeyToAccount } from "viem/accounts"
+
+const main = async () => {
+  const privateKey = generatePrivateKey()  // [!code focus]
+  const signer = privateKeyToAccount(privateKey)  // [!code focus]
+}
+```
+
+### Create a validator
+
+Each Kernel account handles validation through a smart contract known as a "validator."  In this case, we will be using the ECDSA validator.
+
+Add the following code to create the ECDSA validator:
+
+```typescript
+import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
+
+const main = async () => {
+  // other code...
+
+  const ecdsaValidator = await signerToEcdsaValidator(publicClient, { // [!code focus]
+    signer,  // [!code focus]
+    entryPoint,  // [!code focus]
+  })  // [!code focus]
+}
+```
+
+### Create an account
+
+We are now ready to create an account.  Add the following code:
+
+```typescript
+import { createKernelAccount } from "@zerodev/sdk"
+ 
+const main = async () => {
+  // other code...
+
+  const account = await createKernelAccount(publicClient, {  // [!code focus]
+    plugins: {  // [!code focus]
+      sudo: ecdsaValidator,  // [!code focus]
+    },  // [!code focus]
+    entryPoint,  // [!code focus]
+  })  // [!code focus]
+}
+```
+
+### Creating a Kernel client
+
+Finally, we are going to create an "account client" which serves as the connection between your account and some AA infra (i.e. bundlers and paymasters).  The connection is necessary for you to actually send UserOps.
+
+Add the following code:
+
+```typescript
+const main = async () => {
+  // ... other code
+
+  const kernelClient = createKernelAccountClient({
+    account,
+    chain,
+    entryPoint,
+    bundlerTransport: http(BUNDLER_RPC),
+    middleware: {
+      sponsorUserOperation: async ({ userOperation }) => {
+        const zerodevPaymaster = createZeroDevPaymasterClient({
+          chain,
+          entryPoint,
+          transport: http(PAYMASTER_RPC),
+        })
+        return zerodevPaymaster.sponsorUserOperation({
+          userOperation,
+          entryPoint,
+        })
+      }
+    }
+  })
+
+  const accountAddress = kernelClient.account.address
+  console.log("My account:", accountAddress)
+}
+```
+
+Run this script with `npx ts-node tutorial/template.ts` and confirm that it prints an address.
+
+### Send a UserOp
+
+Now that you have an account client, it's time to send your first UserOp!  For this tutorial, we will mint an NFT from a contract deployed on Sepolia.
+
+Add the following import and code:
+
+```typescript
+import { encodeFunctionData } from "viem"
+
+const main = async () => {
+  // ... other code
+
+  const userOpHash = await kernelClient.sendUserOperation({
+    userOperation: {
+      callData: await kernelClient.account.encodeCallData({
+        to: contractAddress,
+        value: BigInt(0),
+        data: encodeFunctionData({
+          abi: contractABI,
+          functionName: "mint",
+          args: [accountAddress],
+        })
+      })
+    }
+  })
+  console.log("Submitted UserOp:", userOpHash)
+}
+```
+
+There's quite a bit of code going on, so let's go through it.
+
+- We start by calling `kernelClient.sendUserOperation`, which takes a `userOperation` argument.
+- Inside `userOperation`, we specify a `callData` field.  This is the equivalent of the calldata field for a normal Ethereum transaction.
+- Since we want to call the `mint(address)` function on the NFT contract, we use Viem's helper function `encodeFunctionData` and give it the ABI, function name, and function argument.
+- `kernelClient.sendUserOperation` returns a "UserOperation hash."  This is the equivalent of a transaction hash but for a UserOp.
+
+Run the script again with `npx ts-node tutorial/template.ts` and confirm that it prints the UserOp hash.  At this point, you can go to a UserOp explorer such as [JiffyScan](https://jiffyscan.xyz/) and find your UserOp with the hash!
+
+### Waiting for the UserOp
+
+When you call `sendUserOperation`, the call returns as soon as the UserOp has been submitted to the bundler, but it doesn't wait for the UserOp to be "confirmed" on-chain.  To wait for the UserOp to be confirmed, add the following import and code:
+
+```typescript
+import { bundlerActions } from "permissionless"
+
+const main = async () => {
+  // ... other code
+
+  const bundlerClient = kernelClient.extend(bundlerActions(entryPoint))
+
+  const receipt = await bundlerClient.waitForUserOperationReceipt({
+    hash: userOpHash,
+  })
+  console.log("UserOp confirmed:", receipt.userOpHash)
+}
+```
+
+Let's break down the code:
+
+- Since `waitForUserOperationReceipt` is a bundler action, we need to first `extend` the `kernelClient` with `bundlerActions`.  If you are unfamiliar with the concept of "actions," you can read more about it on [Viem's documentation](https://viem.sh/docs/actions/public/introduction).
+- Now, we can call `waitForUserOperationReceipt`.  This function returns a "receipt" object.  If you are curious, you can print the full object and see what it contains.
+
+### Read contract state
+
+Now let's confirm that we actually minted an NFT.  Add the following import and code:
+
+```typescript
+import { publicActions } from "viem"
+
+const main = async () => {
+  // ... other code
+
+  const nftBalance = await publicClient.readContract({
+    address: contractAddress,
+    abi: contractABI,
+    functionName: 'balanceOf',
+    args: [accountAddress],
+  })
+  console.log(`NFT balance: ${nftBalance}`)
+}
+```
+
+Run the script again.  You should see that it prints `NFT balance: 1`, confirming that you have minted an NFT! 
+
+## Next steps
+
+In this tutorial, we were able to mint an NFT without paying gas, thanks to gas sponsorship.
+
+For next steps:
+
+- Check out [the core API](/sdk/v5_3_x/core-api/create-account) to learn more about the SDK
+- Read some [code examples](https://github.com/zerodevapp/zerodev-examples) of using ZeroDev

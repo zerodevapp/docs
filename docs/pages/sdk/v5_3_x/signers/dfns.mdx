@@ -1,0 +1,87 @@
+# Use Dfns with ZeroDev
+
+[Dfns](https://www.dfns.co/) is an MPC/TSS Wallet-as-a-Service API/SDK provider. Dfns aims to optimize the balance of security and UX by deploying key shares into a decentralized network on the backend while enabling wallet access via biometric open standards on the frontend like Webauthn. Reach out [here](https://www.dfns.co/learn-more) to set up a sandbox environment to get started.
+
+## Set up
+
+To use Dfns with ZeroDev, first create an application that integrates with Dfns.
+
+- Refer to the [Dfns documentation site](https://docs.dfns.co/d/) for instructions on setting up an application with the Dfns.
+
+## Integration
+Integrating ZeroDev with Dfns is straightforward after setting up the project. Dfns provides an Externally Owned Account (EOA) wallet to use as a signer with Kernel.
+
+### Set up Dfns
+After following the Dfns documentation, you will have access to a `dfnsWallet` object as shown below:
+
+```typescript
+import { DfnsWallet } from "@dfns/lib-viem";
+import { DfnsApiClient } from "@dfns/sdk";
+import { AsymmetricKeySigner } from "@dfns/sdk-keysigner";
+
+// See the Dfns example https://github.com/dfns/dfns-sdk-ts/tree/m/examples/libs/viem/alchemy-aa-gasless for details on populating the environment variables.
+const DFNS_PRIVATE_KEY = null;
+const DFNS_CRED_ID = null;
+const DFNS_APP_ORIGIN = null;
+const DFNS_APP_ID = null;
+const DFNS_AUTH_TOKEN = null;
+const DFNS_API_URL = null;
+const AMOY_WALLET_ID = null;
+
+const initDfnsWallet = (walletId: string) => {
+  const signer = new AsymmetricKeySigner({
+    privateKey: DFNS_PRIVATE_KEY!,
+    credId: DFNS_CRED_ID!,
+    appOrigin: DFNS_APP_ORIGIN!,
+  });
+
+  const dfnsClient = new DfnsApiClient({
+    appId: DFNS_APP_ID!,
+    authToken: DFNS_AUTH_TOKEN!,
+    baseUrl: DFNS_API_URL!,
+    signer,
+  });
+
+  return DfnsWallet.init({
+    walletId,
+    dfnsClient,
+    maxRetries: 10,
+  });
+};
+```
+
+### Use with ZeroDev
+
+Use the WalletClient from Dfns to create a smart account signer, which can be passed to a validator. For detailed guidance on using a validator, refer to our documentation on [creating accounts](/sdk/v5_3_x/core-api/create-account#api).
+
+```typescript
+import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
+import { KERNEL_V3_1 } from "@zerodev/sdk/constants"
+import { walletClientToSmartAccountSigner, ENTRYPOINT_ADDRESS_V07 } from 'permissionless';
+import { toAccount } from 'viem/accounts';
+import { createWalletClient, createPublicClient } from 'viem';
+import { polygonAmoy } from 'viem/chains';
+
+// Convert the dfns wallet to a SmartAccountSigner
+const amoyWallet = await initDfnsWallet(AMOY_WALLET_ID!);
+const account = toAccount(amoyWallet)
+const walletClient = createWalletClient({
+    account,
+    transport: http('https://rpc-amoy.polygon.technology'),
+})
+const smartAccountSigner = walletClientToSmartAccountSigner(walletClient);
+
+const publicClient = createPublicClient({
+  transport: http('https://rpc-amoy.polygon.technology'),
+  chain: polygonAmoy,
+})
+
+// Pass your `smartAccountSigner` to the validator
+const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
+  signer: smartAccountSigner,
+  entryPoint: ENTRYPOINT_ADDRESS_V07,
+  kernelVersion: KERNEL_V3_1
+})
+
+// You can now use this ECDSA Validator to create a Kernel account
+```

@@ -81,6 +81,10 @@ export default defineConfig({
             "text": "Migration Guide",
             "link": "/sdk/getting-started/migration"
           },
+          {
+            "text": "@zerodev/sdk v5.3.x",
+            "link": "/sdk/v5_3_x/"
+          },
         ],
       },
       {
@@ -385,6 +389,340 @@ export default defineConfig({
           },
         ],
       },
+    ],
+    "/sdk/v5_3_x": [
+      {
+        "text": "Getting Started",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Introduction",
+            "link": "/sdk/v5_3_x/"
+          },
+          {
+            "text": "Quickstart",
+            "link": "/sdk/v5_3_x/getting-started/quickstart"
+          },
+          {
+            "text": "Tutorial",
+            "link": "/sdk/v5_3_x/getting-started/tutorial"
+          },
+          {
+            "text": "Tutorial — Passkeys",
+            "link": "/sdk/v5_3_x/getting-started/tutorial-passkeys"
+          },
+          {
+            "text": "Code Examples",
+            "link": "https://github.com/zerodevapp/zerodev-examples"
+          },
+          {
+            "text": "Migration Guide",
+            "link": "/sdk/v5_3_x/getting-started/migration"
+          }
+        ],
+      },
+      {
+        "text": "Core API",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Create a Smart Account",
+            "link": "/sdk/v5_3_x/core-api/create-account"
+          },
+          {
+            "text": "Using Plugins",
+            "link": "/sdk/v5_3_x/core-api/using-plugins"
+          },
+          {
+            "text": "Send Transactions",
+            "link": "/sdk/v5_3_x/core-api/send-transactions"
+          },
+          {
+            "text": "Sponsor Gas",
+            "link": "/sdk/v5_3_x/core-api/sponsor-gas"
+          },
+          {
+            "text": "Pay Gas with ERC20s",
+            "link": "/sdk/v5_3_x/core-api/pay-gas-with-erc20s"
+          },
+          {
+            "text": "Batch Transactions",
+            "link": "/sdk/v5_3_x/core-api/batch-transactions"
+          },
+          {
+            "text": "Deploy Contracts",
+            "link": "/sdk/v5_3_x/core-api/deploy-contract"
+          },
+          {
+            "text": "Delegatecall",
+            "link": "/sdk/v5_3_x/core-api/delegatecall"
+          },
+          {
+            "text": "Sign and Verify Messages",
+            "link": "/sdk/v5_3_x/core-api/sign-and-verify"
+          },
+        ],
+      },
+      {
+        "text": "Advanced",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Chain Abstraction",
+            "link": "/sdk/v5_3_x/advanced/chain-abstraction"
+          },
+          {
+            "text": "Passkeys",
+            "link": "/sdk/v5_3_x/advanced/passkeys"
+          },
+          {
+            "text": "Social Login",
+            "link": "/sdk/v5_3_x/advanced/social-login"
+          },
+          {
+            "text": "Session Keys",
+            "link": "/sdk/v5_3_x/advanced/session-keys"
+          },
+          {
+            "text": "Multisig",
+            "link": "/sdk/v5_3_x/advanced/multisig"
+          },
+          {
+            "text": "Recovery",
+            "link": "/sdk/v5_3_x/advanced/recovery"
+          },
+          {
+            "text": "Multi-chain Signing",
+            "link": "/sdk/v5_3_x/advanced/multi-chain-signing"
+          },
+          {
+            "text": "Key Storage",
+            "link": "/sdk/v5_3_x/advanced/key-storage"
+          },
+          {
+            "text": "DeFi Integrations",
+            "link": "/sdk/v5_3_x/advanced/defi"
+          },
+          {
+            "text": "Parallel Transactions (2D Nonces)",
+            "link": "/sdk/v5_3_x/advanced/parallel-orders"
+          },
+          {
+            "text": "Connect Wallet with Other DApps",
+            "link": "/sdk/v5_3_x/advanced/wallet-connect"
+          },
+          {
+            "text": "Fallback Providers",
+            "link": "/sdk/v5_3_x/advanced/fallback-providers"
+          },
+        ],
+      },
+      {
+        "text": "Permissions (Session Keys)",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Introduction",
+            "link": "/sdk/v5_3_x/permissions/intro"
+          },
+          // {
+          //   "text": "Tutorial: 1-Click Trading",
+          //   "link": "/sdk/v5_3_x/permissions/1-click-trading"
+          // },
+          {
+            "text": "Tutorial: Transaction Automation",
+            "link": "/sdk/v5_3_x/permissions/transaction-automation"
+          },
+          {
+            "text": "Signers",
+            "collapsed": false,
+            "items": [
+              {
+                "text": "ECDSA",
+                "link": "/sdk/v5_3_x/permissions/signers/ecdsa"
+              },
+              {
+                "text": "Passkeys",
+                "link": "/sdk/v5_3_x/permissions/signers/passkeys"
+              },
+              {
+                "text": "Multisig",
+                "link": "/sdk/v5_3_x/permissions/signers/multisig"
+              },
+              {
+                "text": "Build your own signer",
+                "link": "/sdk/v5_3_x/permissions/signers/build-your-own"
+              },
+            ],
+          },
+          {
+            "text": "Policies",
+            "collapsed": false,
+            "items": [
+              {
+                "text": "Sudo policy",
+                "link": "/sdk/v5_3_x/permissions/policies/sudo"
+              },
+              {
+                "text": "Call policy",
+                "link": "/sdk/v5_3_x/permissions/policies/call"
+              },
+              {
+                "text": "Gas policy",
+                "link": "/sdk/v5_3_x/permissions/policies/gas"
+              },
+              {
+                "text": "Signature policy",
+                "link": "/sdk/v5_3_x/permissions/policies/signature"
+              },
+              {
+                "text": "Rate Limit policy",
+                "link": "/sdk/v5_3_x/permissions/policies/rate-limit"
+              },
+              {
+                "text": "Timestamp policy",
+                "link": "/sdk/v5_3_x/permissions/policies/timestamp"
+              },
+              {
+                "text": "Build your own policy",
+                "link": "/sdk/v5_3_x/permissions/policies/build-your-own"
+              },
+            ],
+          },
+          {
+            "text": "Actions",
+            "collapsed": true,
+            "items": [
+              {
+                "text": "Build your own action",
+                "link": "/sdk/v5_3_x/permissions/actions/build-your-own"
+              },
+            ],
+          },
+        ],
+      },
+      {
+        "text": "Auth Providers",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Introduction",
+            "link": "/sdk/v5_3_x/signers/intro"
+          },
+          {
+            link: '/sdk/v5_3_x/signers/dynamic',
+            text: 'Dynamic',
+          },
+          {
+            link: '/sdk/v5_3_x/signers/privy',
+            text: 'Privy',
+          },
+          {
+            link: '/sdk/v5_3_x/signers/magic',
+            text: 'Magic',
+          },
+          {
+            link: '/sdk/v5_3_x/signers/web3auth',
+            text: 'Web3Auth',
+          },
+          {
+            link: '/sdk/v5_3_x/signers/portal',
+            text: 'Portal',
+          },
+          {
+            link: '/sdk/v5_3_x/signers/turnkey',
+            text: 'Turnkey',
+          },
+          {
+            link: '/sdk/v5_3_x/signers/fireblocks',
+            text: 'Fireblocks',
+          },
+          {
+            link: '/sdk/v5_3_x/signers/capsule',
+            text: 'Capsule',
+          },
+          {
+            link: '/sdk/v5_3_x/signers/lit-protocol',
+            text: 'Lit Protocol',
+          },
+          {
+            link: '/sdk/v5_3_x/signers/particle',
+            text: 'Particle Network',
+          },
+          {
+            link: '/sdk/v5_3_x/signers/dfns',
+            text: 'Dfns',
+          },
+          {
+            link: '/sdk/v5_3_x/signers/arcana',
+            text: 'Arcana Auth',
+          },
+          {
+            link: '/sdk/v5_3_x/signers/eoa',
+            text: 'EOA Wallets (e.g. MetaMask)',
+          },
+          {
+            link: '/sdk/v5_3_x/signers/custom-signer',
+            text: 'Custom Signer Integration',
+          }
+        ],
+      },
+      {
+        "text": "Infra",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Introduction",
+            "link": "/sdk/v5_3_x/infra/intro"
+          },
+          {
+            "text": "ZeroDev",
+            "link": "/meta-infra/intro"
+          },
+          {
+            "text": "Pimlico",
+            "link": "/sdk/v5_3_x/infra/pimlico"
+          },
+          {
+            "text": "Coinbase",
+            "link": "/sdk/v5_3_x/infra/coinbase"
+          },
+        ],
+      },
+      {
+        "text": "FAQs",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Why chain abstraction?",
+            "link": "/sdk/v5_3_x/faqs/why-chain-abstraction"
+          },
+          {
+            "text": "What networks do you support?",
+            "link": "/sdk/v5_3_x/faqs/chains"
+          },
+          {
+            "text": "How to debug a UserOp?",
+            "link": "/sdk/v5_3_x/faqs/debug-userop"
+          },
+          {
+            "text": "Can I use a KernelClient with ethers.js?",
+            "link": "/sdk/v5_3_x/faqs/use-with-ethers"
+          },
+          {
+            "text": "Can you use ZeroDev with React Native?",
+            "link": "/sdk/v5_3_x/faqs/use-with-react-native"
+          },
+          {
+            "text": "Is ZeroDev Audited?",
+            "link": "/sdk/v5_3_x/faqs/audits"
+          },
+          {
+            "text": "How to use ZeroDev with Gelato",
+            "link": "/sdk/v5_3_x/faqs/use-with-gelato"
+          },
+        ],
+      }, 
     ],
     "/meta-infra": [
       {

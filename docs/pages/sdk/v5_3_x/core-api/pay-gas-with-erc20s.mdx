@@ -1,0 +1,167 @@
+# Paying Gas with ERC20s
+
+:::info
+Impatient?  Check out [complete examples here](https://github.com/zerodevapp/zerodev-examples/tree/main/pay-gas-with-erc20).
+:::
+
+:::warning
+**Important:** Our ERC20 Paymaster currently supports USDC on Ethereum Mainnet, Polygon, Base, Optimism, and Arbitrum networks, including both their mainnet and testnet environments.
+:::
+
+A smart account can pay gas with ERC20 tokens.  As a result, your users don't have to own any native gas tokens (e.g. ETH) in order to use Web3.  Instead, they can just use stablecoins or even your project's own tokens.  When your users pay gas with ERC20 tokens, we add 5% to the exchange rate to make a profit.
+
+:::warning
+Using your project's own tokens to pay for gas is a beta feature.  If you are interested, please reach out.
+:::
+
+On a high level, you need to do two things to enable a smart account to pay gas in a particular ERC20 token:
+
+- Set up the Kernel client with the ERC20 paymaster.
+- Ensure that enough ERC20 tokens have been approved for the ERC20 paymaster.
+  - This step is necessary because the ERC20 paymaster needs to withdraw ERC20 tokens from the smart account.
+
+Let's go through these two steps next.
+
+## Set up Kernel Client
+
+When you [set up an account](/sdk/v5_3_x/core-api/create-account#create-an-account-client), do this:
+
+```typescript
+import {
+  createZeroDevPaymasterClient,
+  createKernelAccountClient,
+  gasTokenAddresses,
+} from "@zerodev/sdk"
+
+import { mainnet } from "viem/chains"
+
+import { UserOperation } from "permissionless"
+
+// use whatever chain you want
+const chain = mainnet.id
+const entryPoint = ENTRYPOINT_ADDRESS_V07
+
+const paymasterClient = createZeroDevPaymasterClient({
+  chain,
+  entryPoint,
+  transport: http('ZERODEV_PAYMASTER_RPC'), // get the RPC on ZeroDev dashboard
+})
+
+const kernelClient = createKernelAccountClient({
+  // other options...
+
+  middleware: {
+    sponsorUserOperation: async ({ userOperation }) => {
+      return paymasterClient.sponsorUserOperation({
+        userOperation,
+        entryPoint,
+        gasToken: gasTokenAddresses[chain.id]['USDC'],
+      })
+    },
+  },
+})
+```
+
+## Approve ERC20 tokens for paymaster
+
+Use the `getERC20PaymasterApproveCall` function to construct a call that approves the paymaster with the ERC20 tokens:
+
+```typescript
+import { getERC20PaymasterApproveCall } from "@zerodev/sdk"
+
+const userOpHash = await kernelClient.sendUserOperation({
+  userOperation: {
+    callData: await kernelClient.account.encodeCallData(
+      await getERC20PaymasterApproveCall(paymasterClient, {
+        gasToken: gasTokenAddresses[chain.id]['USDC'],
+        approveAmount: parseEther('0.1'),
+        entryPoint,
+      }),
+    ),
+  },
+})
+```
+
+Thanks to [batching](/sdk/v5_3_x/core-api/batch-transactions), it's possible to batch the approval with the UserOp you want to send:
+
+```typescript
+const userOpHash = await kernelClient.sendUserOperation({
+  userOperation: {
+    callData: await account.encodeCallData([
+      // The approval
+      await getERC20PaymasterApproveCall(paymasterClient, {
+        gasToken: gasTokenAddresses[chain.id]['USDC'],
+        approveAmount: parseEther('0.1'),
+        entryPoint,
+      }),
+      // The actual call
+      {
+        to: '0x...'
+        data: "0x...",
+        value: BigInt(0),
+      },
+    ]),
+  },
+})
+```
+
+Note that you only have to approve once, as long as the approval amount is sufficient for many UserOps.  The [paymaster contract by Pimlico](https://github.com/pimlicolabs/erc20-paymaster/blob/main/src/ERC20PaymasterV07.sol) has been audited, it's widely used and generally considered safe.
+
+## Estimate Gas in ERC20s
+
+If you need to estimate gas in terms of a ERC20 token, do this:
+
+```ts
+const userOperation = await kernelClient.prepareUserOperationRequest({
+    userOperation: {
+        // replace this with your actual calldata
+        callData: await account.encodeCallData({
+            to: zeroAddress,
+            value: BigInt(0),
+            data: "0x"
+        })
+    },
+    account: kernelClient.account,
+})
+
+const erc20Amount = await paymasterClient.estimateGasInERC20({
+    userOperation,
+
+    // replace this with the token you want
+    gasTokenAddress: gasTokenAddresses[chain.id]["USDC"]
+})
+```
+
+You can also see [a code example for estimating gas here](https://github.com/zerodevapp/zerodev-examples/blob/main/pay-gas-with-erc20/estimate-gas.ts).
+
+## Supported Tokens
+
+Currently, our ERC20 Paymaster supports USDC on the following networks:
+
+- **Ethereum Mainnet**
+- **Polygon**
+- **Base**
+- **Optimism**
+- **Arbitrum**
+
+If you want to use a different token, you can either reach out to us or deploy your own Self-Funded ERC20 Paymaster.
+
+## Deploy Your Own ERC20 Paymaster
+
+If you want to support a custom ERC20 token, you can deploy and manage your own ERC20 paymaster contract. To do this:
+
+1. Visit the ZeroDev dashboard to deploy a self-funded ERC20 paymaster contract
+2. Fund the contract with the native currency (e.g., ETH)
+3. Set a conversion rate for the ERC20 token you would like to enable for the paymaster
+
+Once deployed, you can use your custom paymaster by copying the paymaster URL from the dashboard and using it as the `transport` parameter when creating the paymaster client:
+
+```typescript
+const paymasterClient = createZeroDevPaymasterClient({
+  chain,
+  entryPoint,
+  transport: http('YOUR_CUSTOM_PAYMASTER_URL'), // from the self-funded paymaster page on the dashboard
+})
+```
+
+The rest of the integration remains the same as described above.

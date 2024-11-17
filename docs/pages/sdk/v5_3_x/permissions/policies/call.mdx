@@ -1,0 +1,54 @@
+# Call Policy
+
+The call policy limits the target (either contract or EOA) that the UserOp can interact with.  If the target is a contract, then you can further specify the functions the UserOp can interact with, as well as putting constraints on the values of the function arguments.
+
+## API
+
+```ts
+import { ParamCondition, toCallPolicy, CallPolicyVersion } from "@zerodev/permissions/policies"
+
+const callPolicy = toCallPolicy({
+  policyVersion: CallPolicyVersion.V0_0_3,
+  permissions: [
+    {
+      // target address
+      target: contractAddress,
+      // Maximum value that can be transferred.  In this case we
+      // set it to zero so that no value transfer is possible.
+      valueLimit: BigInt(0),
+      // Contract abi
+      abi: contractABI,
+      // Function name
+      functionName: "mint",
+      // An array of conditions, each corresponding to an argument for
+      // the function.
+      args: [
+        {
+          condition: ParamCondition.EQUAL,
+          value: value,
+        },
+      ],
+    },
+  ],
+})
+
+const validator = toPermissionValidator(publicClient, {
+  entryPoint,
+  kernelVersion,
+  signer: someSigner,
+  policies: [
+    callPolicy,
+    // ...other policies
+  ],
+})
+```
+
+- `target`: the target contract to call or address to send ETH to.  If this is `zeroAddress`, then the target can be any contract as long as the ABI matches (or it can be any address if no ABI is specified).
+- `valueLimit`: the maximum value. that can be transmitted.
+- `abi`: the contract ABI
+- `functionName`: the function name
+- `selector`: if you have multiple functions with the same name, you can distinguish them with `selector`.  For example: `selector: toFunctionSelector("transfer(uint256, uint256)")`.
+- `args`: an array of conditions, each corresponding to an argument, in the order that the arguments are laid out.  use `null` to skip an argument.
+  - `operator`: this can be `EQUAL`, `GREATER_THAN`, `LESS_THAN`, `GREATER_THAN_OR_EQUAL`, `LESS_THAN_OR_EQUAL`, `NOT_EQUAL`.
+  - `value`: the value of the argument to use with the operator.  For instance, `operator = EQUAL` and `value = 2` would mean "the argument must be equal to 2".
+- `operation`: whether this is a call or a delegatecall.  Defaults to call.

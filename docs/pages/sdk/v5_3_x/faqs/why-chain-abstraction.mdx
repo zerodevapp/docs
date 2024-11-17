@@ -1,0 +1,68 @@
+# Why Chain Abstraction?
+
+What's the difference between chain abstraction and multi-chain?  Why should you prefer chain abstraction over bridges?  This document answers these questions.
+
+## What is chain abstraction?
+
+Chain abstraction is the idea that even when a user is interacting with multiple blockchains, they should somehow get a consistent experience.
+
+With ZeroDev, the focus of chain abstraction is on enabling a *chain-abstracted balance* (CAB).  Typically, a user's token balances are split across different chains.  As such, it's common for a user to find themselves in a position where they want to use an app on chain A, and yet their tokens are actually on chain B.  That's where *bridges* come in -- they help users move tokens between chains. 
+
+With a chain-abstracted balance (CAB), however, the user has a single unified balance that can be spent on any chain.  For example, if they deposit 100 USDC on Base to their CAB account, and 200 USDC on Arbitrum to the same account, the account will now hold a CAB that is 300 USDC.  The user can now spend the 300 USDC on any chain that CAB supports.
+
+As a result, your user doesn't need to think about "Arbitrum USDC" vs "Base USDC."  They just own USDC, which can be spent on any chain.  That's the way it should be.
+
+## How does ZeroDev implement chain abstraction?
+
+ZeroDev improves on a protocol known as "MagicSpend++," [which was originally proposed by Socket](https://ethresear.ch/t/magicspend-spend-now-debit-later/19678).  Here's a quick summary of how ZeroDev's CAB works:
+
+- When a user enables CAB for a ZeroDev account, they sign [a session key](/magic-account/usage/automating-transactions) for a watcher service that will automatically wrap the underlying tokens (e.g. USDC) into CAB tokens.  Therefore, any underlying tokens that a user receives on their account will be automatically turned into CAB tokens.
+
+- When a user sends a transaction, the ZeroDev SDK simulates the transaction to determine how much CAB token it needs.  For example, if the user tries to buy an NFT on Optimism which is worth 300 USDC, but the user doesn't own USDC on Optimism, then the user needs 300 USDC via CAB.
+
+- Now, the user sends a request to the CAB paymaster, which checks that the user indeed owns at least 300 USDC worth of CAB.  If so, the paymaster signs the request.
+
+- The user executes the target transaction through a [batch transaction](/magic-account/usage/batching-transactions), where the first call in the batch withdraws USDC from the CAB paymaster (which itself withdraws liquidity from solvers), and where the second call is the actual intended transaction.  This transaction also generates a *receipt* on-chain.
+
+- At a later point, the solver who provided the liquidity repays itself with the user's tokens on a chain where the user actually owns the token.  The solver does so by *proving* the existence of the receipt through a message bridge.
+
+
+## Why is chain abstraction better than bridges?
+
+We believe chain abstraction is the future of multi-chain UX, not bridges.  To be clear, bridges will continue to exist, but users won't directly interact with them.  Rather, as mentioned above, it will be the solvers (liquidity providers) that interact with bridges, not users.
+
+Here are five reasons why chain abstraction, and specifically ZeroDev's CAB, is better than bridges:
+
+### A single unified balance
+
+With CAB, your user owns not Arbitrum USDC vs Base USDC vs mainnet USDC -- they just own USDC.  The USDC is one *chain-abstracted balance* that can be spent on any chain, and the user can deposit into this USDC balance from any chain as well.  This is a vastly simpler mental model for users, as they don't have to manually track and manage their liquidity across chains.
+
+### No need for native gas tokens
+
+Since CAB is built on ERC-4337, it’s able to use the “paymasters” mechanism to achieve gas abstraction — the user is able to pay gas with chain-abstracted tokens (e.g. USDC), or let the DApp sponsor gas for them.
+
+The upshot is that the user can send transactions on any chain without owning the native gas tokens for that chain.
+
+### Lower latency
+
+Most bridges are very slow, sometimes taking hours for the transaction to complete.  Even with the newer intent-based bridges, you still have to at least wait for the source chain latency (to send funds into an escrow) and the target chain latency (to execute the user transaction).
+
+With CAB, your user only has to wait for the target chain latency -- the latency for executing the user transaction.  In other words, a CAB transaction is just as fast as a regular transaction.
+
+This is possible because, as aforementioned, CAB users don't interact with bridges directly.  Rather, solvers front liquidity for users, and it's the solvers that later go through bridges to get themselves repaid.
+
+### Lower failure rates
+
+The more transactions your users send, the more likely they encounter failures.  This is especially true when bridge transactions are involved, since bridges are famously fragile.  When bridge failures happen, your users waste gas in the best case, and lose funds in the worst case.
+
+Another form of failure is when the bridge transaction succeeds, but the user transaction fails.  This results in a weird state where your user has now moved their funds from one chain to another, but they can't actually execute their intended transaction.
+
+With CAB, your users don't interact with bridges directly, so all the risks and failures from bridges are handled by solvers.  Furthermore, your user gets "atomic execution" with respect to 1) getting funded by solvers, 2) executing their intended transaction.  That is, either the user gets funded AND executes the intended transaction, OR nothing happens.  There will never be a middle state where the user receives funds from the solver but fail to execute their intended action.
+
+### Lower fees
+
+While the economics of CAB will take time to fully play out, we know in theory that users should pay a lower fee with MagicSpend++ comparing to what they pay for bridges.  Here's why:
+
+- With bridges, every time a user bridges funds, they need to pay for the bridge transaction.  With CAB, however, the solver doesn't need to interact with a bridge every time the user spends its liquidity.  Rather, the solver can *batch-repay* itself after many user transactions.  The batching lowers the per-transaction overhead for the solver, and therefore the solver will charge the user lower fees.
+
+- With bridges, there are always [*reorg risks*](https://www.alchemy.com/overviews/what-is-a-reorg) where the source chain reorgs after the user funds have been locked in the bridge escrow, thus undoing the lock and allowing the user to double-spend the solvers.  With CAB, *the reorg risks are batched*, because user tokens are locked by default, instead of being locked for every bridge interaction.  Therefore, by the time the solver puts up liquidity for the user, the user's tokens have likely already been locked for a long time, so the solver doesn't need to deal with reorg risks as much.  Therefore, solvers for CAB can charge lower fees, because they take lower risks.

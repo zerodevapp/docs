@@ -1,0 +1,141 @@
+# Debugging UserOps with Tenderly
+
+In account abstraction (ERC-4337), the transactions sent by smart accounts are known as "UserOps."  UserOps are similar to but not the same as regular transactions, so it may not be clear how to debug them. 
+
+In this guide, we will be using [Tenderly](https://dashboard.tenderly.co/) to debug UserOps.  Make sure you have signed up and created a Tenderly account.
+
+## The UserOp Structure
+
+Let's begin by examining a typical UserOp example:
+
+```json
+{
+  "sender": "0xd2f1a28cc13c95ac4671cee806593c920d81c1f8",
+  "nonce": "330",
+  "initCode": "0x",
+  "callData": "0x51945447000000000000000000000000a02cddfa44b8c01b4257f54ac1c43f75801e81750000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+  "callGasLimit": "55000",
+  "verificationGasLimit": "1000000",
+  "preVerificationGas": "100000",
+  "maxFeePerGas": "39459600032",
+  "maxPriorityFeePerGas": "39459600000",
+  "paymasterAndData": "0x",
+  "signature": "0x00000000bb864a968f25011aeb6574bef934726c066e9b47c261f6e40a49a3065da7deb57b0b40fffe70ec9ff0c1572358cd09d14cf8e671fdb66facfae0cb0a2db3a9cb1c"
+}
+
+```
+
+This UserOp structure will be our reference point as we navigate through the process of simulating and debugging UserOps. Understanding the components of this example is key to effectively using Tenderly's tools for our debugging needs.
+
+## UserOp Lifecycle
+
+Before delving into the nuances of debugging UserOps, it's helpful to learn the lifecycle of a UserOp.  Here it is:
+
+<p align="center">
+  <img src="/img/userop_flow.png" width="100%" />
+</p>
+
+If this looks daunting, let's focus on only the high level:
+
+- A UserOp, with no gas estimates nor signature, is sent to a paymaster server, who simulates the UserOp and returns the gas estimates.
+  - If the UserOp has any errors in the validation or execution phase, the paymaster server will return an error since it can't properly simulate it.
+- Now, the UserOp, with gas estimates and a proper signature, is sent to the bundler.
+  - At this point, the UserOp is not expected to revert during the validation phase, but it may nevertheless revert during the execution phase due to the on-chain state having changed between when the UserOp was sent to the paymaster and when it's submitted by the bundler.
+
+## Understanding UserOp Failures
+
+A UserOp can fail at various stages, including during the paymaster call (if sponsored), the gas estimation call, or the final execution call. Identifying the failure point is straightforward by examining the method indicated in the error log of the failed UserOp. For instance:
+
+- **Paymaster Call Failures** might involve methods such as **`zd_sponsorUserOperation`** (ZeroDev meta-paymaster), **`pm_sponsorUserOperation`** (Pimlico), or **`alchemy_requestPaymasterAndData`** (Alchemy).
+- **Gas Estimation Call Failures** are indicated by the **`eth_estimateUserOperationGas`** method.
+- **Execution Call Failures** are marked by the **`eth_sendUserOperation`** method.
+
+Failures are generally classified into two categories:
+
+- **Validation Errors**: These occur during the validation phase when transactions are deemed invalid due to issues like incorrect signatures or nonce values. They typically present as EntryPoint error codes (e.g., AA23: XXXX).
+- **Execution Errors**: These occur during the execution phase when transactions are valid, but the contract interaction is reverted, often noted as **`execution reverted`**.
+
+## Using Tenderly for Simulation and Debugging
+
+### Adjusting Gas Limits for Simulation
+
+For failures during paymaster or gas estimation calls, the UserOp gas limits (**`preVerificationGas`**, **`callGasLimit`**, **`verificationGasLimit`**) may default to **`0x`**. Before simulating the UserOp, adjust these gas limits as shown below. Increase these values based on error feedback if the simulation fails:
+
+```json
+
+{
+ "preVerificationGas": "0x186A0",
+ "callGasLimit": "0xD6D8",
+ "verificationGasLimit": "0xF4240"
+}
+```
+
+If the failure occurs during **`eth_sendUserOperation`**, the UserOp should already contain all necessary values for accurate simulation.
+
+### Debugging Execution Errors
+
+To simulate a UserOp in Tenderly, follow these steps:
+
+1. Log in to your Tenderly account.
+
+<p align="center">
+  <img src="/img/tenderly_account.png" width="100%" />
+</p>
+    
+2. Navigate to **`Simulator`** and click **`New Simulation`**.
+
+<p align="center">
+  <img src="/img/new_simulation.png" width="100%" />
+</p>
+    
+3. Enter the EntryPoint contract address in `Insert any address` input and select the appropriate chain.
+    - The EntryPoint address is `0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789` for v0.6 (default for ZeroDev SDK v5.1.x or below) and `0x0000000071727De22E5E9d8BAf0edAc6f37da032` for v0.7 (default for ZeroDev SDK v5.2.x or above)
+4. Choose **`simulateHandleOp`**, input the UserOp into the tuple field, and commence the simulation.
+
+If the simulation fails, it typically indicates a problem with the end contract. Verify the initial calldata thoroughly.
+
+### Simulating End Contract Calls
+
+<p align="center">
+  <img src="/img/new_simulation_2.png" width="100%" />
+</p>
+
+To simulate an end contract call:
+
+1. Insert the Smart Contract Wallet address in `Insert any address` input (**`sender`** field from UserOp).
+2. Select the chain and enter the EntryPoint contract address in the **`From`** field.
+3. Enter the **`calldata`** field from UserOp into the **`Raw input data`** field and simulate the transaction.
+
+### Debugging Validation Errors
+
+For validation errors, simulate the validation process by:
+
+<p align="center">
+  <img src="/img/new_simulation_3.png" width="100%" />
+</p>
+
+1. Inserting the EntryPoint contract address and selecting the chain.
+2. Choosing **`simulateValidation`**, inputting the UserOp into the tuple field, and filling in the **`sender`** and **`calldata`** fields accordingly before simulating the transaction.
+
+When simulating the validation process for a UserOp in Tenderly, the output can provide insightful details into potential issues. For instance, after simulating a UserOp, you might receive a **`ValidationResult`** like the one below:
+
+```json
+ValidationResult[{"preOpGas":"437497","prefund":"2118037380807816","sigFailed":true,"validAfter":"0","validUntil":"1708466460","paymasterContext":"0x"},{"stake":"0","unstakeDelaySec":"0"},{"stake":"0","unstakeDelaySec":"0"},{"stake":"100000000000000000000","unstakeDelaySec":"86400"}]
+```
+
+On Tenderly, it might look like this:
+
+<p align="center">
+  <img src="/img/tenderly_error.png" width="100%" />
+</p>
+
+This result indicates various aspects of the validation process, with a particular focus on the failure due to signature validation (**`"sigFailed": true`**). Such output suggests that the UserOp failed validation because the signature did not match the expected parameters or was otherwise invalid.
+
+## Other resources
+
+There are some resources that we find helpful:
+
+- [StackUp's UserOp debugger](https://userop.dev/)
+- [Pimlico's UserOp debugger/simulator](https://dashboard.pimlico.io/debugging)
+- [StackUp docs on AA error codes](https://docs.stackup.sh/docs/entrypoint-errors)
+- [Pimlico error codes](https://docs.pimlico.io/bundler/reference/entrypoint-errors/aa10)

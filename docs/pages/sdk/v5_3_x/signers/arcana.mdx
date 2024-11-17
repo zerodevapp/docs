@@ -1,0 +1,55 @@
+# Use Arcana Auth with ZeroDev
+
+[Arcana Auth](https://www.arcana.network/) offers a self-custodial Web3 wallet embedded within applications, utilizing asynchronous distributed key generation algorithms for enhanced security and privacy. This wallet, accessible without the need for a browser extension, allows authenticated users to instantly access and sign blockchain transactions within the app environment.
+
+## Set up
+
+To use Arcana Auth with ZeroDev, first create an application that integrates with Arcana Auth.
+
+- Refer to the [Arcana Auth documentation site](https://docs.arcana.network/) for instructions on setting up an application with the Arcana Auth.
+- For a quick start, Arcana Auth provides a web app guide, available [here](https://docs.arcana.network/quick-start/web/).
+
+## Integration
+Integrating ZeroDev with Arcana Auth is straightforward after setting up the project. Arcana Auth provides an Externally Owned Account (EOA) wallet to use as a signer with Kernel.
+
+### Create the authProvider object
+After following the Arcana Auth documentation, you will have access to a `authProvider` object as shown below:
+
+```typescript
+import {
+  AuthProvider,
+  type ConstructorParams,
+} from "@arcana/auth";
+
+// Param options here will be specific to your project.  See the Arcana Auth docs for more info.
+const params: ConstructorParams = {};
+const authProvider = new AuthProvider(clientId, params);
+```
+
+### Use with ZeroDev
+
+Use the provider from Arcana to create a smart account signer, which can be passed to a validator. For detailed guidance on using a validator, refer to our documentation on [creating accounts](/sdk/v5_3_x/core-api/create-account#api).
+
+```typescript
+import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
+import { KERNEL_V3_1 } from "@zerodev/sdk/constants"
+import { providerToSmartAccountSigner, ENTRYPOINT_ADDRESS_V07 } from 'permissionless';
+import { createPublicClient } from "viem";
+
+// Convert the authProvider to a SmartAccountSigner
+const smartAccountSigner = await providerToSmartAccountSigner(authProvider.provider);
+
+const publicClient = createPublicClient({
+  transport: http('https://rpc-amoy.polygon.technology'),
+  chain
+})
+
+// Pass your `smartAccountSigner` to the validator
+const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
+  signer: smartAccountSigner,
+  entryPoint: ENTRYPOINT_ADDRESS_V07,
+  kernelVersion: KERNEL_V3_1,
+})
+
+// You can now use this ECDSA Validator to create a Kernel account
+```

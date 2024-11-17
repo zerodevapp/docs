@@ -1,0 +1,169 @@
+# Tutorial -- Transaction Automation
+
+In this tutorial, you will learn how to enable 1-click trading for your app using session keys.
+
+Refer to [this code example](https://github.com/zerodevapp/zerodev-examples/blob/main/session-keys/1-click-trading.ts) while you follow along the tutorial.  You can run the example by following instructions of [the examples repo](https://github.com/zerodevapp/zerodev-examples).
+
+## Installation
+
+The examples repo already installed this, but normally you would install permissions with:
+
+:::code-group
+
+```bash [npm]
+npm i @zerodev/permissions
+```
+
+```bash [yarn]
+yarn add @zerodev/permissions
+```
+
+```bash [pnpm]
+pnpm i @zerodev/permissions
+```
+
+```bash [bun]
+bun add @zerodev/permissions
+```
+
+:::
+
+## Owner-Agent Architecture
+
+There are multiple ways to use session keys.  In this tutorial, we will use the popular "owner-agent" pattern:
+
+- The "owner" is the owner of the master key.
+- The "agent" is the entity that wants to use the session key.
+
+In a typical setup, you might be wishing to automate transactions for your users from your server.
+
+your user's master key might be connected to your DApp frontend, in which case your frontend is the "owner."  You might be wishing 
+
+## API
+
+:::info
+You can reference this [complete code example](https://github.com/zerodevapp/zerodev-examples/blob/main/permissions/main.ts) as you go through the tutorial.
+:::
+
+With a permissions validator, you are putting together:
+
+- One signer
+- Any number of policies
+- (optionally) one action
+
+### Creating a signer
+
+Start by creating a [ECDSA signer](/sdk/v5_3_x/permissions/signers/ecdsa):
+
+```ts
+const sessionPrivateKey = generatePrivateKey()
+const sessionKeyAccount = privateKeyToAccount(sessionPrivateKey)
+
+const sessionKeySigner = await toECDSASigner({
+  signer: sessionKeyAccount,
+})
+```
+
+### Creating a number of policies
+
+Now, let's create two policies:
+
+- A "call policy" that checks that the user is minting an NFT.
+- A "rate limit policy" that checks that the user executes this action once per month.
+
+```ts
+const sessionPrivateKey = generatePrivateKey()
+const sessionKeyAccount = privateKeyToAccount(sessionPrivateKey)
+
+const callPolicy = toCallPolicy({
+  policyVersion: CallPolicyVersion.V0_0_2,
+  permissions: [
+    {
+      target: contractAddress,
+      valueLimit: BigInt(0),
+      abi: contractABI,
+      functionName: "mint",
+    },
+  ],
+})
+
+const rateLimitPolicy = toRateLimitPolicy({
+  count: 1,
+  interval: 60 * 60 * 24 * 30,  // month in seconds
+}),
+```
+
+### Composing signer and policies
+
+Here comes the fun part -- we "compose" the signer and policies together into a single validator:
+
+```ts
+const sessionKeyValidator = await toPermissionValidator(publicClient, {
+  entryPoint,
+  kernelVersion,
+  signer: sessionKeySigner,
+  policies: [
+    callPolicy,
+    rateLimitPolicy,
+  ],
+}),
+```
+
+Now, we have created a ECDSA session key that's subject to a call policy and a rate limit policy.  Just like that!
+
+### Using the session key
+
+Finally, we can set up the account with this session key as the signer.  Note that if this is the first time that the session key is used, we need to [enable the plugin](/sdk/v5_3_x/core-api/using-plugins#enabling-a-regular-validator).
+
+```ts
+const account = await createKernelAccount(publicClient, {
+  plugins: {
+    sudo: ecdsaValidator,
+    regular: sessionKeyValidator,
+  },
+  entryPoint,
+  kernelVersion,
+})
+```
+
+Now you can [set up a Kernel client](/sdk/v5_3_x/core-api/create-account#create-an-account-client) using this account, and start minting NFTs with this session key -- but only up to once a month!
+
+Try running [this script](https://github.com/zerodevapp/zerodev-examples/blob/main/permissions/main.ts) and see for yourself.
+
+## Storing Session Keys
+
+Session keys (and permission validators in general) can be stored, by serializing them and then deserializing them later.
+
+### Code examples
+
+There are two general patterns with storing session keys.
+
+- The owner creates a session key for another agent to store & use.  Check out [this example](https://github.com/zerodevapp/zerodev-examples/blob/main/session-keys/owner-created.ts).
+- The agent creates a session key and asks the owner to "approve" it as a session key.  Check out [this example](https://github.com/zerodevapp/zerodev-examples/blob/main/session-keys/agent-created.ts).
+  - In this flow, the owner never sees the private part of the session key, so it may be better for security.
+
+### Serializing a session key
+
+```ts
+const serializedSessionKey = await serializePermissionAccount(sessionKeyAccount, sessionPrivateKey)
+```
+
+Note that `sessionPrivateKey` is optional.  If the private key is not included, then you must provide the private key when you deserialize the session key.
+
+### De-serializing a session key
+
+```ts
+const sessionKeySigner = await toECDSASigner({
+  signer: privateKeyToAccount(sessionPrivateKey),
+})
+
+const sessionKeyAccount = await deserializePermissionAccount(
+  publicClient,
+  entryPoint,
+  kernelVersion,
+  serializedSessionKey,
+  sessionKeySigner,
+)
+```
+
+Note that `sessionKeySigner` is only needed if you did not include the private key in the serialized session key.
