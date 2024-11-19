@@ -82,7 +82,7 @@ export default defineConfig({
             "link": "/sdk/getting-started/migration"
           },
           {
-            "text": "@zerodev/sdk v5.3.x",
+            "text": "Docs for SDK v5.3.x",
             "link": "/sdk/v5_3_x/"
           },
         ],
@@ -722,7 +722,7 @@ export default defineConfig({
             "link": "/sdk/v5_3_x/faqs/use-with-gelato"
           },
         ],
-      }, 
+      },
     ],
     "/meta-infra": [
       {
