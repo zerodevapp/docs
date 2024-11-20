@@ -67,7 +67,8 @@ const main = async () => {
 
   // Construct a public client
   const publicClient = createPublicClient({
-    transport: http(BUNDLER_RPC),
+    // Use your own RPC provider (e.g. Infura/Alchemy).
+    transport: http(RPC_URL),
     chain,
   })
 

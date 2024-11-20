@@ -70,6 +70,7 @@ const walletClient = createWalletClient({
 })
 
 const publicClient = createPublicClient({
+  // Use your own RPC provider (e.g. Infura/Alchemy).
   transport: http('https://rpc-amoy.polygon.technology'),
   chain: polygonAmoy,
 })

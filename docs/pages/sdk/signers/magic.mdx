@@ -51,6 +51,7 @@ import { polygonAmoy } from 'viem/chains';
 const magicProvider = await magic.wallet.getProvider();
 
 const publicClient = createPublicClient({
+  // Use your own RPC provider (e.g. Infura/Alchemy).
   transport: http('https://rpc-amoy.polygon.technology'),
   chain: polygonAmoy,
 })

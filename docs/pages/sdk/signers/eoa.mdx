@@ -15,6 +15,7 @@ import { createPublicClient } from "viem";
 import { polygonAmoy } from 'viem/chains';
 
 const publicClient = createPublicClient({
+  // Use your own RPC provider (e.g. Infura/Alchemy).
   transport: http('https://rpc-amoy.polygon.technology'),
   chain: polygonAmoy,
 })
@@ -38,6 +39,7 @@ import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
 import { KERNEL_V3_1, getEntryPoint } from "@zerodev/sdk/constants"
 
 const publicClient = createPublicClient({
+  // Use your own RPC provider (e.g. Infura/Alchemy).
   transport: http('https://rpc-amoy.polygon.technology'),
   chain
 })

@@ -46,6 +46,7 @@ const web3 = new Web3(provider as any);
 const [address] = await web3.eth.getAccounts();
 
 const publicClient = createPublicClient({
+  // Use your own RPC provider (e.g. Infura/Alchemy).
   transport: http('https://rpc-amoy.polygon.technology'),
   chain: polygonAmoy,
 })

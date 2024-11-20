@@ -36,6 +36,7 @@ import { KERNEL_V3_1, getEntryPoint } from "@zerodev/sdk/constants"
 import { createPublicClient } from "viem";
 
 const publicClient = createPublicClient({
+  // Use your own RPC provider (e.g. Infura/Alchemy).
   transport: http('https://rpc-amoy.polygon.technology'),
   chain
 })
