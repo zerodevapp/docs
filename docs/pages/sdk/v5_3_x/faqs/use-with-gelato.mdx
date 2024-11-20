@@ -1,3 +1,7 @@
+import VersionWarning from "../VersionWarning"
+
+<VersionWarning version="5.3.x" /> 
+
 # Using ZeroDev with Gelato
 
 Gelato's has a unique approach to handling transaction fees without the need for an EntryPoint deposit or an on-chain paymaster. Instead, transaction fees are settled post-execution via [1Balance](https://docs.gelato.network/web3-services/relay/subscriptions-and-payments/1balance-and-relay) across all supported networks, ensuring accurate charging of gas consumed without necessitating per-chain user deposits. This method relies on setting `maxFeePerGas=0`, thereby eliminating the need for upfront fee payments (`requiredPrefund=0`).

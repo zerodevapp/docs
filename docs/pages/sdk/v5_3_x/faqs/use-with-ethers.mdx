@@ -1,3 +1,7 @@
+import VersionWarning from "../VersionWarning"
+
+<VersionWarning version="5.3.x" /> 
+
 # Can I Use a KernelClient with Ethers?
 
 Our KernelClient implements the Viem WalletClient interface. Although it is not directly compatible with Ethers.js, we have developed an EIP1193Provider that accepts a KernelClient as a constructor parameter. This provider enables the use of KernelClient with Ethers.js in a similar manner to how window.ethereum is utilized with Ethers.js.

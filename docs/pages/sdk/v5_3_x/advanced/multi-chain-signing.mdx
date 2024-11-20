@@ -1,3 +1,7 @@
+import VersionWarning from "../VersionWarning"
+
+<VersionWarning version="5.3.x" /> 
+
 # Multi-chain Signing
 
 You can use Kernel with a "multi-chain validator" which can sign multiple UserOps in one signature, even if the UserOps are on different chains.  For example, if you want to bridge some assets from chain A, and then execute a transaction on chain B with the bridged assets, you can sign both the bridging transaction and the target transaction in a single signature.
