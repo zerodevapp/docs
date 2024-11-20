@@ -50,6 +50,7 @@ const [address] = await web3.eth.getAccounts();
 const smartAccountSigner = await providerToSmartAccountSigner(web3authProvider, address as Hex);
 
 const publicClient = createPublicClient({
+  // Use your own RPC provider (e.g. Infura/Alchemy).
   transport: http('https://rpc-amoy.polygon.technology'),
   chain: polygonAmoy,
 })

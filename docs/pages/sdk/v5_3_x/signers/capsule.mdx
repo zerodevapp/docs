@@ -48,6 +48,7 @@ const viemClient = createCapsuleViemClient(capsule, {
 const smartAccountSigner = walletClientToSmartAccountSigner(viemClient);
 
 const publicClient = createPublicClient({
+  // Use your own RPC provider (e.g. Infura/Alchemy).
   transport: http('https://rpc-amoy.polygon.technology'),
   chain: polygonAmoy,
 })

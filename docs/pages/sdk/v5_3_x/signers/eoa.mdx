@@ -19,6 +19,7 @@ import { polygonAmoy } from 'viem/chains';
 const smartAccountSigner = await providerToSmartAccountSigner(window.ethereum);
 
 const publicClient = createPublicClient({
+  // Use your own RPC provider (e.g. Infura/Alchemy).
   transport: http('https://rpc-amoy.polygon.technology'),
   chain: polygonAmoy,
 })
@@ -45,6 +46,7 @@ import { walletClientToSmartAccountSigner, ENTRYPOINT_ADDRESS_V07 } from 'permis
 const smartAccountSigner = walletClientToSmartAccountSigner(walletClient);
 
 const publicClient = createPublicClient({
+  // Use your own RPC provider (e.g. Infura/Alchemy).
   transport: http('https://rpc-amoy.polygon.technology'),
   chain
 })
@@ -73,6 +75,7 @@ import { Hex } from "viem"
 const smartAccountSigner = privateKeyToAccount(process.env.PRIVATE_KEY as Hex)
 
 const publicClient = createPublicClient({
+  // Use your own RPC provider (e.g. Infura/Alchemy).
   transport: http('https://rpc-amoy.polygon.technology'),
   chain
 })
