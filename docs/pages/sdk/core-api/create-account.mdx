@@ -69,8 +69,8 @@ import { createPublicClient, http } from "viem"
 import { base } from 'viem/chains'
 
 const publicClient = createPublicClient({
-  // Use your own RPC provider (e.g. Infura/Alchemy).
-  transport: http("RPC_URL"),
+  // In production, you will want to set your RPC provider here (e.g. Infura/Alchemy).
+  transport: http(),
   chain: base,
 })
 ```
