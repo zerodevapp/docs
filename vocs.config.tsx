@@ -276,12 +276,12 @@ export default defineConfig({
             "link": "/sdk/signers/intro"
           },
           {
-            link: '/sdk/signers/dynamic',
-            text: 'Dynamic',
-          },
-          {
             link: '/sdk/signers/privy',
             text: 'Privy',
+          },
+          {
+            link: '/sdk/signers/dynamic',
+            text: 'Dynamic',
           },
           {
             link: '/sdk/signers/magic',
