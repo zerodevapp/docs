@@ -8,19 +8,21 @@ To utilize custom gas policies, you'll need to configure a webhook endpoint on y
 
 ### Setting up Your Webhook Endpoint
 
-Endpoint Requirements: 
+**Endpoint Requirements:**
+
 - Must accept `POST` requests.
-- The `POST` request will incude the `userOp`, `projectId`, and `chainId` in the body (see example below).
-- The request must return a `200` status with a `proceed` boolean (see example below).
+- The `POST` request will include the `userOp`, `projectId`, and `chainId` in the body (see example below).
+- The request must return a `200` status with a JSON body indicating whether to proceed (see example below).
 
 ## Configuring Your Custom Policy
+
 Sign in to your ZeroDev dashboard and navigate to the Gas Policies page. At the bottom of the page, you will find the Custom Policy form as shown below.
 
 <p align="center">
   <img src="/img/custom_gas_policy.png" width="80%" />
 </p>
 
-Enter the following options
+Enter the following options:
 
 - **Webhook URL**: The full URL that the ZeroDev policy engine will make a POST request to.
 - **Timeout Settings**: The amount of time the policy engine will wait for a response from your webhook URL. It's important to keep response times low to decrease latency for your end-users.
@@ -28,9 +30,14 @@ Enter the following options
 - **Enabling the Policy**: Toggle this option when you are ready to enable the policy for your project.
 
 ## Webhook Payload
-The `POST` that is sent to your webhook url will include the `projectId`, `userOp`, and `chainId`.
 
-Here is an example request body.
+The `POST` request sent to your webhook URL will include the following:
+
+- **`projectId`**: The ID of your project.
+- **`userOp`**: The `UserOperation` object.
+- **`chainId`**: The ID of the chain where the operation is being performed.
+
+Here is an example request body:
 ```JSON
 {
   "projectId": "<THE PROJECT ID FOR THE GIVEN USEROP>",
@@ -52,19 +59,63 @@ Here is an example request body.
 ```
 
 ## Expected Webhook Response
-Your webhook should respond with a `200` status code and a JSON body like below
 
-Return `true` to sponser the `userOp` and `false` otherwise.
-```JSON
+Your webhook should respond with a `200` status code and a JSON body indicating whether to proceed with the transaction. Additionally, you can specify how the webhook's decision interacts with ZeroDev's internal policy checks using an optional `logicalOperator` field.
+
+### Response Fields:
+
+- **`proceed`** (boolean, required): Indicates whether to sponsor the `userOp` (`true`) or not (`false`).
+- **`logicalOperator`** (string, optional): Defines how to combine the webhook's `proceed` value with ZeroDev's policy checks.
+
+  - Accepted values:
+    - `'and'`: Proceed only if both ZeroDev's policy checks and `proceed` are `true`.
+    - `'or'`: Proceed if either ZeroDev's policy checks or `proceed` is `true`.
+  - Default: `'and'` (if the field is omitted).
+
+### Example Webhook Responses:
+
+#### Proceed using logical AND (default):
+
+```json
 {
   "proceed": true
 }
 ```
 
-## Example Webhook Server
-To help you get started with implementing your custom gas policies, we've provided an example webhook server. This server is designed to demonstrate how you might receive and handle incoming webhook requests from ZeroDev.
+In this case, the transaction will proceed only if both ZeroDev's internal policy checks and the webhook return `true`.
 
-The repository includes a basic server setup using Express.js, which listens for POST requests on a specified route. It logs the incoming data to the console and responds with a JSON object indicating a successful transaction sponsorship.
+#### Proceed using logical OR:
+
+```json
+{
+  "proceed": true,
+  "logicalOperator": "or"
+}
+```
+
+With the `logicalOperator` set to `'or'`, the transaction will proceed if either ZeroDev's policy checks or the webhook approve it.
+
+## Behavior of Transaction Approval
+
+When a transaction is submitted, ZeroDev performs internal policy checks to determine if the transaction meets the predefined criteria (e.g., gas policies, rate limits). The result of these checks is combined with the webhook's `proceed` value based on the `logicalOperator`.
+
+- **Logical AND (`'and'`):**
+
+  The transaction proceeds only if both ZeroDev's policy checks and the webhook approve (`true`).
+
+- **Logical OR (`'or'`):**
+
+  The transaction proceeds if either ZeroDev's policy checks or the webhook approve (`true`).
+
+**Note:** If the `logicalOperator` field is omitted or contains an invalid value, it defaults to `'and'`.
+
+## Example Webhook Server
+
+To help you get started with implementing your custom gas policies, we've provided an example webhook server. This server demonstrates how you might receive and handle incoming webhook requests from ZeroDev.
+
+The repository includes a basic server setup using Express.js, which listens for POST requests on a specified route. It logs the incoming data to the console and responds with a JSON object indicating whether to sponsor the transaction.
 
 You can find the example server [here](https://github.com/zerodevapp/example-webhook-server/tree/main).
+
+**Note:** If you wish to implement the new `logicalOperator` functionality, make sure to update the example server to include the `logicalOperator` field in the response as needed.
 
