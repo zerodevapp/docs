@@ -41,12 +41,6 @@ import { KERNEL_V3_1, getEntryPoint } from "@zerodev/sdk/constants"
 import { createWalletClient, createPublicClient } from "viem";
 import { polygonAmoy } from 'viem/chains';
 
-// Create a walletClient from the turnkeyAccount
-const walletClient = createWalletClient({
-  account: turnkeyAccount,
-  transport: http('https://rpc-amoy.polygon.technology'),
-})
-
 const publicClient = createPublicClient({
   // Use your own RPC provider (e.g. Infura/Alchemy).
   transport: http('https://rpc-amoy.polygon.technology'),
@@ -55,7 +49,7 @@ const publicClient = createPublicClient({
 
 // Pass your `walletClient` to the validator
 const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
-  signer: walletClient,
+  signer: turnkeyAccount,
   entryPoint: getEntryPoint("0.7"),
   kernelVersion: KERNEL_V3_1
 })
