@@ -130,11 +130,17 @@ const main = async () => {
     account,
     chain,
     bundlerTransport: http(BUNDLER_RPC),
+    client: publicClient,
     paymaster: {
         getPaymasterData(userOperation) {
             return zerodevPaymaster.sponsorUserOperation({userOperation})
         }
     },
+    userOperation: {
+      estimateFeesPerGas: async ({bundlerClient}) => {
+          return getUserOperationGasPrice(bundlerClient)
+      }
+    }
   })
 
   const accountAddress = kernelClient.account.address

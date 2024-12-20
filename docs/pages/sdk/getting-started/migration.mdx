@@ -83,6 +83,33 @@ signerToEcdsaValidator(publicClient, {
   });
 ```
 
+### Added `client` to `createKernelAccountClient`
+
+`client` is now required in `createKernelAccountClient`.
+
+```typescript
+  const kernelClient = createKernelAccountClient({
+    client: publicClient, // [!code ++]
+    // ...
+  });
+```
+
+### Added `estimateFeesPerGas` to `userOperation` in `createKernelAccountClient`
+
+`estimateFeesPerGas` is now required in `userOperation` in `createKernelAccountClient` to estimate the gas price for the user operation.
+The default gas prices might be too high, so it's recommended to use this function to estimate the gas price.
+
+```typescript
+  const kernelClient = createKernelAccountClient({
+    userOperation: { // [!code ++]
+      estimateFeesPerGas: async ({bundlerClient}) => { // [!code ++]
+        return getUserOperationGasPrice(bundlerClient) // [!code ++]
+      } // [!code ++]
+    }, // [!code ++]
+    // ...
+  });
+```
+
 ### `kernelClient.sendUserOperation` and `kernelClient.signUserOperation` now take `userOperation` properties directly
 
 ```typescript

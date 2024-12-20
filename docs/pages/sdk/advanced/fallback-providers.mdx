@@ -28,6 +28,7 @@ const kernelClient1 = createKernelAccountClient({
     account,
     chain,
     bundlerTransport: http(BUNDLER_RPC_ALCHEMY),
+    client: publicClient,
     paymaster: {
         getPaymasterData: ( userOperation ) => {
             const zeroDevPaymasterClient = createZeroDevPaymasterClient({
@@ -39,6 +40,11 @@ const kernelClient1 = createKernelAccountClient({
             })
         }
     },
+    userOperation: {
+        estimateFeesPerGas: async ({bundlerClient}) => {
+            return getUserOperationGasPrice(bundlerClient)
+        }
+    },
     entryPoint
 })
 
@@ -47,6 +53,7 @@ const kernelClient2 = createKernelAccountClient({
     account,
     chain,
     bundlerTransport: http(BUNDLER_RPC_PIMLICO),
+    client: publicClient,
     paymaster: {
         getPaymasterData: ( userOperation ) => {
             const zeroDevPaymasterClient = createZeroDevPaymasterClient({
@@ -56,6 +63,11 @@ const kernelClient2 = createKernelAccountClient({
             return zeroDevPaymasterClient.sponsorUserOperation({
                 userOperation,
             })
+        }
+    },
+    userOperation: {
+        estimateFeesPerGas: async ({bundlerClient}) => {
+            return getUserOperationGasPrice(bundlerClient)
         }
     },
 })

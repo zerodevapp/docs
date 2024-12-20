@@ -139,12 +139,22 @@ const kernelClient = createKernelAccountClient({
   // For ZeroDev, you can find the RPC on your dashboard.
   bundlerTransport: http('BUNDLER_RPC'),
 
+  // Required - the public client
+  client: publicClient,
+
   // Optional -- only if you want to use a paymaster
   paymaster: {
     getPaymasterData(userOperation) {
       return paymasterClient.sponsorUserOperation({userOperation})
     }  
   },
+
+  // Required - the default gas prices might be too high
+  userOperation: {
+    estimateFeesPerGas: async ({bundlerClient}) => {
+      return getUserOperationGasPrice(bundlerClient)
+    }
+  }
 })
 ```
 
