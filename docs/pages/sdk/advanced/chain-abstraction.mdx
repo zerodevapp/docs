@@ -1,14 +1,16 @@
-# Chain Abstraction
+# Cross-chain transactions
 
 :::info
-Chain Abstraction is in public alpha and undergoing audit.  Please [contact us](https://t.me/derek_chiang) if you plan on going live with it.
+This feature is in public beta and undergoing audit.  Please [contact us](https://t.me/derek_chiang) if you plan on going live with it.
 :::
 
-ZeroDev is the first smart account solution to support *chain abstraction*.
+ZeroDev is the first smart account solution to support *cross-chain transactions*.  Sometimes this is also referred to as "chain abstraction."
 
-With ZeroDev, you can turn a token balance into a "**chain-abstracted balance**" (CAB).  Instead of thinking about "USDC on Ethereum" vs "USDC on Arbitrum," your user can just look at their "USDC balance" as a single balance that can be spent on any chain.
+More specifically, a ZeroDev smart account can use its tokens from one chain on another chain, without bridging.  Some examples are:
 
-This guide is for using CAB directly through the ZeroDev SDK, which allows for fine-grained control.  To learn more about how CAB works, [read this](/sdk/faqs/why-chain-abstraction).
+- Stake ETH on Ethereum mainnet using ETH on Polygon.
+- Spend USDC on Base to purchase an NFT sold in USDT on Arbitrum.
+- Execute a transaction on Blast by paying gas in DAI from Optimism.
 
 ## Demo
 
@@ -16,177 +18,161 @@ This guide is for using CAB directly through the ZeroDev SDK, which allows for f
 
 ## Features
 
-### One unified balance
+### Cross-chain without bridging
 
-As aforementioned, CAB (chain-abstracted balance) is a single balance that can be spent on any chain.
+Don't ask your users to visit a bridge.  With ZeroDev, your users can make cross-chain transactions just like how they make normal transactions, without ever leaving your app.
 
-For example, if you deposit 100 USDC to a ZeroDev account on Base, then deposit 200 USDC to the account on Polygon, the account will now hold 300 "chain-abstracted USDC" that can be spent on any chain.
+### Unparalleled speed
 
-### No bridging latency
+Cross-chain transactions with ZeroDev are very fast, thanks to *intents* -- solvers compete on the destination chain to fill your intents as quickly as possible.
 
-Amazingly, CAB can be spent at the speed of the destination chain -- just like a regular transaction. This is unlike a traditional bridge where the user has to wait for confirmations on both the source chain and the destination chain.  To learn more about chain abstraction, visit [Magic Account](/magic-account).
+### Deep liquidity
 
-### Spending as any tokens
-
-CAB can be spent as any supported tokens; ZeroDev automatically handles the swapping.  For example, if you have 500 USDC in CAB but you need to spend 500 USDT, you can do that.
-
-Currently, we support swapping USDC to USDT/DAI/WETH/WBTC.  Contact us if you are looking to support any specific tokens.
+Most "chain abstraction" solutions on the market are toys that fail under any real amount of traffic.  ZeroDev's cross-chain transactions network is built on top of protocols with the deepest liquidity, such as Across, Relay, and Meson.
 
 ## Code example
 
-Here are [complete code examples](https://github.com/zerodevapp/zerodev-examples/blob/main/chain-abstraction) for using CAB.  To run the example you need to set the environment variable `CAB_PAYMASTER_URL` which you can find [here](#setting-up-the-cab-client).
+Here is a [complete code example](https://github.com/zerodevapp/zerodev-examples/blob/feat/intent/intent/main.ts) for using CAB.  You can run the example by cloning the repo.
 
 ## Usage
+
+:::info
+We highly recommend that you use the code example above as a reference as you follow this guide.
+:::
 
 ### Installation
 
 :::code-group
 
 ```bash [npm]
-npm i @zerodev/cab
+npm i @zerodev/intent
 ```
 
 ```bash [yarn]
-yarn add @zerodev/cab
+yarn add @zerodev/intent
 ```
 
 ```bash [pnpm]
-pnpm i @zerodev/cab
+pnpm i @zerodev/intent
 ```
 
 ```bash [bun]
-bun add @zerodev/cab
+bun add @zerodev/intent
 ```
 
 :::
 
 ### Setting up the Kernel account
 
-Skip to the next section if your ZeroDev app is already live.  This section is for developers who can still change how they set up their Kernel accounts.
+First, make sure you know how to [create ZeroDev accounts](/sdk/core-api/create-account).
 
-For the best experience with CAB, we recommend setting up your Kernel account with a *multi-chain validator*, which is a [validator](https://docs.zerodev.app/sdk/core-api/using-plugins) that can sign messages for multiple chains in one signature.  This is useful for CAB because CAB needs to be enabled for each chain, so with a multi-chain validator you can enable CAB with just one signature, whereas with a regular validator you'd need to sign once per chain.
+The flow for creating a chain-abstracted ZeroDev account is the same, with the following exceptions:
 
-To set up a multi-chain ECDSA validator ([code example](https://github.com/zerodevapp/zerodev-examples/blob/main/chain-abstraction/multichain-validator.ts)):
+- For your `kernelVersion`, make sure to use `KERNEL_V3_2`.
 
-```tsx
-import { toMultiChainECDSAValidator } from "@zerodev/multi-chain-validator"
+```ts
+const kernelVersion = KERNEL_V3_2;
+```
 
-const ecdsaValidator = await toMultiChainECDSAValidator(publicClient, {
-  signer,
-  entryPoint,
+- When setting up a `kernelAccount`, use the following configuration:
+
+```ts
+
+import { installIntentExecutor } from '@zerodev/intent'
+
+const kernelAccount = await createKernelAccount(publicClient, {
+  plugins: {
+    sudo: ecdsaValidator,
+  },
   kernelVersion,
+  entryPoint,
+  initConfig: [installIntentExecutor],
+  useReplayableSignature: true,
 })
 ```
 
-To set up a multi-chain passkeys validator, check out [this example](https://gist.github.com/derekchiang/4e458e299d833166dcded2d4b9180f5a#file-passkey-cab-ts-L55-L84).
+- Instead of using the normal `createKernelAccountClient`, use `createIntentClient` instead:
 
-Once you have created a validator, you can [set up a Kernel client with this validator as usual](https://docs.zerodev.app/sdk/core-api/create-account#create-a-kernel-account).
-
-### Setting up the CAB client
-
-To use CAB, wrap the [kernel client](/sdk/core-api/create-account#create-an-account-client) into a CAB client:
-
-```tsx
-import { createKernelCABClient } from "@zerodev/cab"
-
-const cabClient = createKernelCABClient(kernelClient, {
-  transport: http(CAB_PAYMASTER_URL),
+```ts
+const intentClient = createIntentClient({
+  chain,
+  account: kernelAccount,
+  bundlerTransport: http(bundlerRpc),
 })
 ```
 
-For testing, you can use `https://cab-paymaster-service.onrender.com/paymaster/api` as the `CAB_PAYMASTER_URL`.  You need to [contact us](https://t.me/derek_chiang) to obtain a CAB paymaster URL for production.
+### Sending cross-chain transactions
 
-### Enabling chain-abstracted balance
+The `intentClient` supports all regular APIs that a regular ZeroDev client supports, such as `sendUserOperation` and `sendTransaction` for sending transactions on the same chain.
 
-Before using CAB, you need to enable CAB for the smart account, by specifying a list of tokens you wish to support.  Currently, CAB supports USDC only.  Please let us know if there are specific tokens you wish us to support.
+For cross-chain transactions, the `intentClient` implements an API that is beautifully simple:
 
-```tsx
-await cabClient.enableCAB({
-  tokens: [{
-    name: "USDC",
-    // networks: [arbitrum.id, base.id],
-  }]
+```ts
+const result = await intentClient.sendUserIntent({
+  calls: [
+    // ...
+  ],
+  inputTokens: [
+    // ...
+  ],
+  outputTokens: [
+    // ...
+  ],
 })
 ```
 
-You can optionally specify the list of networks to enable CAB for.  If you don't specify it, CAB is enabled for all supported networks.
+- `calls` is a batch of calls to be executed atomically on the target chain.  Each `call` specifies a `to`, `value`, and `data`.
 
-If you are not using a multi-chain validator, you need to enableCAB for each network, one at a time:
+- `inputTokens` is a list of input tokens to be debited (spent by the user) from the source chain(s).
 
-```tsx
-await cabClient.enableCAB({
-  tokens: [{
-    name: "USDC",
-    networks: [arbitrum.id],
-  }]
+- `outputTokens` is a list of output tokens to be credited (provided by a solver) on the target chain.
+
+Here's a real example for using USDC on Arbitrum to execute a transaction on Base:
+
+```ts
+const result = await intentClient.sendUserIntent({
+  calls: [
+    {
+      // USDC on base
+      to: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+      value: BigInt(0),
+      data: encodeFunctionData({
+        abi: erc20Abi,
+        functionName: 'transfer',
+        args: [account.address, parseUnits('1', 6)],
+      }),
+    },
+  ],
+  inputTokens: [
+    {
+      chainId: arbitrum.id,
+      address: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831', // USDC on arb
+    },
+  ],
+  outputTokens: [
+    {
+      chainId: base.id,
+      address: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC on base
+      amount: parseUnits('1', 6), // 1 USDC
+    },
+  ],
 })
 ```
 
-### Spending chain-abstracted balance
+Two important things to note:
 
-There are three steps to spending CAB:
+- You do NOT need to explicitly pay gas when you send a cross-chain transaction.  The gas is automatically accounted for as a part of your input tokens.
 
-- Construct the calls
-- Prepare the CAB UserOp and token info
-- Send the UserOp
-
-First, start by constructing the calls.  You can include multiple calls if you'd like to send a batch.
-
-```tsx
-// In this example, we are performing a USDC transfer
-const calls = [
-  {
-    to: usdcContractAddress,
-    data: encodeFunctionData({
-      abi: erc20Abi,
-      functionName: "transfer",
-      args: [account.address, BigInt(1000)]
-    }),
-    value: BigInt(0),
-  }
-]
-```
-
-Then, prepare the CAB UserOp by specifying the calls and repay tokens.  Note that the call can spend a different token than the repay token.  Currently the repay token can only be USDC, but the call can spend USDC/USDT/DAI/WETH/WBTC.  If the repay token and the spent token are different, the ZeroDev SDK automatically performs the swapping.
-
-```tsx
-const { userOperation, repayTokensInfo, sponsorTokensInfo } =
-  await cabClient.prepareUserOperationRequestCAB({
-    calls,
-    repayTokens: ['USDC'],
-  })
-```
-
-Here you have three pieces of data which you can display to users for them to confirm the transaction, if you wish:
-
-- `userOperation` is the full UserOp that will be sent.
-- `repayTokensInfo` is information for the repay tokens (the tokens the user is paying solvers)
-- `sponsorTokensInfo` is information for the sponsor tokens (the tokens the user is spending, aka the tokens paid by solvers)
-
-Finally, send the CAB UserOp:
-
-```tsx
-const userOpHash = await cabClient.sendUserOperationCAB({
-  userOperation,
-})
-```
-
-### Reading chain-abstracted balance
-
-To read the CAB balance for an account:
-
-```tsx
-const cabBalance = await cabClient.getCabBalance({
-  address: account.address,
-  token: 'USDC',
-})
-```
+- You do NOT need to specify an amount for your `inputTokens`.  Your input token amount is estimated from your output token amount, plus gas.
+  - For example, if you specify your input token as `USDC` and you want to spend (output) 100 USDC, and the gas fee is worth 0.1 USDC, then your input token will be automatically set to 100.1 USDC, plus a little fees for the solver.
 
 ## Supported tokens and networks
 
+Feel free to reach out to us with the link on top of this page if you want to see more tokens or networks supported.
+
 ### Mainnet
 
-In the beta testing phase, we support only **USDC** for chain abstraction, on the following networks:
+In the beta testing phase, we support only **USDC, USDT, and ETH** for cross-chain transactions, on the following networks:
 
 - Ethereum mainnet
 - Arbitrum
@@ -199,13 +185,7 @@ We will support all popular tokens when we enter production.
 
 ### Testnet
 
-On testnet, we support the following networks with a test token called `6TEST` instead of USDC:
+We support **USDC and ETH** on the following testnets:
 
 - Ethereum Sepolia
-- Polygon Amoy
-- Optimism Sepolia
-- Arbitrum Sepolia
 - Base Sepolia
-
-You can mint `6TEST` tokens by following [these instructions](https://docs.stackup.sh/docs/erc20-paymaster-example#%E2%91%A4-get-6test-tokens).
-
