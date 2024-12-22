@@ -16,7 +16,17 @@ If you are impatient, head straight to [the API](#api).  Otherwise, read on to l
 
 ## Understanding ERC-1271 and ERC-6492
 
-TODO
+  [ERC-1271](https://eips.ethereum.org/EIPS/eip-1271), which more popular, defines a standard function `isValidSignature`, which a verifier can call to validate a signature. However, ERC-1271 is limited to verifying signatures of deployed smart accounts. 
+  ERC-4337 implements counterfactual deployment, an optimization that allows the computation of the address of the smart account before the account is deployed. As a result, in practice a pre-deployed smart account might generate a signature which cannot be properly verified by ERC-1271. 
+
+  [ERC-6492](https://eips.ethereum.org/EIPS/eip-6492) uses a `[UniversalSigValidator contract](https://eips.ethereum.org/EIPS/eip-6492#reference-implementation)` that validates the signature as described; 
+
+  - Check if the signature ends with a sequence of bytes that indicates that the signature is by a predeployed smart account;
+    - If yes, the deployment of the contract is simulated using `[eth-call](https://docs.alchemy.com/reference/eth-call)` and then `isValidSignature` is called to validate the signature. 
+  - If the signature does not indicate that it is a predeployed smart account;
+    - `ERC-1271` is called if a smart account is found at the address provided.
+    - Otherwise, it is assumed that the signature is from an EOA and the signature is verified by `ecrecover`
+
 
 ## API
 
