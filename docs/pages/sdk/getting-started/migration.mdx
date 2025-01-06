@@ -1,5 +1,82 @@
 # Migration Guide
 
+## (beta) ERC-4337 UserOps => ERC-7683 Intents
+
+This is a beta feature.  Only use this if you are in touch with the ZeroDev team.
+
+```ts
+import { createIntentClient, installIntentExecutor } from "@zerodev/intent" // [!code ++]
+
+const main = async () => {
+  // Construct a Kernel account
+  const account = await createKernelAccount(publicClient, {
+    plugins: {
+      sudo: ecdsaValidator,
+    },
+    entryPoint,
+    kernelVersion,
+    initConfig: [installIntentExecutor], // [!code ++]
+  })
+
+  // Construct a paymaster client
+  const zerodevPaymaster = createZeroDevPaymasterClient({ // [!code --]
+    chain, // [!code --]
+    transport: http(PAYMASTER_RPC), // [!code --]
+  }) // [!code --]
+
+  // Construct a Kernel account client
+  const kernelClient = createKernelAccountClient({ // [!code --]
+    account, // [!code --]
+    chain, // [!code --]
+    bundlerTransport: http(BUNDLER_RPC), // [!code --]
+    client: publicClient, // [!code --]
+    paymaster: { // [!code --]
+        getPaymasterData(userOperation) { // [!code --]
+            return zerodevPaymaster.sponsorUserOperation({userOperation}) // [!code --]
+        } // [!code --]
+    }, // [!code --]
+
+    userOperation: { // [!code --]
+      estimateFeesPerGas: async ({bundlerClient}) => { // [!code --]
+          return getUserOperationGasPrice(bundlerClient) // [!code --]
+      } // [!code --]
+    } // [!code --]
+  }) // [!code --]
+
+  // Construct an intent client
+  const intentClient = createIntentClient({ // [!code ++]
+    account: kernelAccount, // [!code ++]
+    chain, // [!code ++]
+    bundlerTransport: http(bundlerRpc, { timeout }), // [!code ++]
+  }) // [!code ++]
+
+  // Send a UserOp
+  const userOpHash = await kernelClient.sendUserOperation({ // [!code --]
+      callData: await kernelClient.account.encodeCalls([{ // [!code --]
+        // ... // [!code --]
+      }]), // [!code --]
+  }) // [!code --]
+
+  // Send an intent
+  const result = await intentClient.sendUserIntent({ // [!code ++]
+    calls: [ // [!code ++]
+      // ... // [!code ++]
+    ], // [!code ++]
+  }) // [!code ++]
+
+  // Wait for the userop
+  await kernelClient.waitForUserOperationReceipt({ // [!code --]
+    hash: userOpHash, // [!code --]
+    timeout: 1000 * 15, // [!code --]
+  }) // [!code --]
+
+  // Wait for the intent
+  const receipt = await intentClient.waitForUserIntentExecutionReceipt({ // [!code ++]
+    uiHash: result.uiHash, // [!code ++]
+  }) // [!code ++]
+}
+```
+
 ## SDK 5.3.x => 5.4.x
 
 In version **5.4.x** of the `@zerodev/sdk`, we've migrated to using `viem@2.18.x` with native Account Abstraction (AA) modules instead of the `permissionless` package. This change brings significant updates to types, imports, function signatures, and overall API usage.
