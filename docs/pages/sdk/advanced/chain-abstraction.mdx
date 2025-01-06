@@ -12,10 +12,6 @@ More specifically, a ZeroDev smart account can use its tokens from one chain on 
 - Spend USDC on Base to purchase an NFT sold in USDT on Arbitrum.
 - Execute a transaction on Blast by paying gas in DAI from Optimism.
 
-## Demo
-
-[Try this demo of chain abstraction](https://demo.magicaccount.io/).
-
 ## Features
 
 ### Cross-chain without bridging
@@ -32,7 +28,7 @@ Most "chain abstraction" solutions on the market are toys that fail under any re
 
 ## Code example
 
-Here is a [complete code example](https://github.com/zerodevapp/zerodev-examples/blob/feat/intent/intent/main.ts) for using CAB.  You can run the example by cloning the repo.
+Here is a [complete code example](https://github.com/zerodevapp/zerodev-examples/blob/main/intent/main.ts) for using CAB.  You can run the example by cloning the repo.
 
 ## Usage
 
@@ -86,8 +82,7 @@ const kernelAccount = await createKernelAccount(publicClient, {
   },
   kernelVersion,
   entryPoint,
-  initConfig: [installIntentExecutor],
-  useReplayableSignature: true,
+  initConfig: [installIntentExecutor]
 })
 ```
 
