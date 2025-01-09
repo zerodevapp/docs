@@ -165,7 +165,7 @@ Two important things to note:
 
 You can get the aggregated balance of any tokens across chains.  This is known as a "chain-abstracted balance" or CAB.
 
-```
+```ts
 const cab = await intentClient.getCAB({
   // Specify any networks you want to aggregate.
   // If you skip this flag, it will aggregate from all the networks we support, but it may be slower.
