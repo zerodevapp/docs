@@ -161,6 +161,22 @@ Two important things to note:
 - You do NOT need to specify an amount for your `inputTokens`.  Your input token amount is estimated from your output token amount, plus gas.
   - For example, if you specify your input token as `USDC` and you want to spend (output) 100 USDC, and the gas fee is worth 0.1 USDC, then your input token will be automatically set to 100.1 USDC, plus a little fees for the solver.
 
+### Getting Chain-abstracted Balances (CAB)
+
+You can get the aggregated balance of any tokens across chains.  This is known as a "chain-abstracted balance" or CAB.
+
+```ts
+const cab = await intentClient.getCAB({
+  // Specify any networks you want to aggregate.
+  // If you skip this flag, it will aggregate from all the networks we support, but it may be slower.
+  networks: [arbitrum.id, base.id],
+
+  // Specify the tokens you want to aggregate balances for.
+  // If you skip this flag, it will return all the tokens we support, but it may be slower.
+  tokenTickers: ["USDC", "WETH"],
+})
+```
+
 ## Supported tokens and networks
 
 Feel free to reach out to us with the link on top of this page if you want to see more tokens or networks supported.
