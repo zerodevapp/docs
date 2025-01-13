@@ -12,10 +12,10 @@ Here's [the complete code example](https://github.com/zerodevapp/zerodev-example
 
 ## Install packages
 
-You will be using the following packages:
+You will be using the following packages (note that you are installing the `alpha` version of the ZeroDev SDK):
 
 ```bash
-npm i @zerodev/sdk @zerodev/ecdsa-validator viem
+npm i @zerodev/sdk@alpha @zerodev/ecdsa-validator viem
 ```
 
 ## Create a project for a 7702-compatible network
@@ -93,6 +93,10 @@ const account = await createKernelAccount(publicClient, {
   },
   entryPoint,
   kernelVersion,
+
+  // Set the 7702 authorization
+  eip7702auth: authorization,
+
   // Set the address of the smart account to the EOA address
   address: signer.address,
 })
@@ -113,8 +117,6 @@ const kernelClient = createKernelAccountClient({
       return getUserOperationGasPrice(bundlerClient);
     },
   },
-  // Set the 7702 authorization
-  eip7702auth: authorization,
 })
 ```
 
@@ -122,9 +124,9 @@ Don't worry if the code doesn't make too much sense -- you can read more about t
 
 Comparing to the normal setup process, there are two main differences:
 
-- When you set up the `account`, you specify `address: signer.address` to explicitly set the address of the smart account to the EOA address.  Otherwise, the SDK would compute the smart account address from its init data, which is how smart accounts normally work.  With 7702 however, the account address is the EOA address.
+- When you set up the Kernel account, specify `eip7702auth: authorization` so that the SDK can handle the upgrade using your authorization.
 
-- When you set up the account client, specify `eip7702auth: authorization` so that the SDK can handle the upgrade using the authorization.
+- When you set up the Kernel account, you specify `address: signer.address` to explicitly set the address of the smart account to the EOA address.  Otherwise, the SDK would compute the smart account address from its init data, which is how smart accounts normally work.  With 7702 however, the account address is the EOA address.
 
 ## Using the ZeroDev SDK
 
