@@ -66,6 +66,10 @@ export default defineConfig({
             "link": "/sdk/getting-started/quickstart"
           },
           {
+            "text": "Quickstart — 7702",
+            "link": "/sdk/getting-started/quickstart-7702"
+          },
+          {
             "text": "Tutorial",
             "link": "/sdk/getting-started/tutorial"
           },
