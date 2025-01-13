@@ -2,7 +2,7 @@
 
 EIP-7702 is an upcoming Ethereum upgrade that will allow for attaching a piece of EVM code to a EOA, effectively turning it into a "dual account" that can function simultaneously as a EOA and a smart account.
 
-In practical terms, this means that existing EOA users can now enjoy most of the benefits of AA, such as gas sponsorship, transaction batching, session keys, chain abstraction, and more.  Note that since the account is both a smart account and a EOA, true "key rotation" is not possible since the EOA key will always maintain root access to the account.
+In practical terms, this means that EOA users can now enjoy most of the benefits of AA, such as gas sponsorship, transaction batching, session keys, chain abstraction, and more.  Note that since the account is both a smart account and a EOA, true "key rotation" is not possible since the EOA key will always maintain root access to the account.
 
 In this example, we will upgrade a EOA into a ZeroDev smart account ([Kernel](https://github.com/zerodevapp/kernel)) and send a gasless batched transaction from it.
 
