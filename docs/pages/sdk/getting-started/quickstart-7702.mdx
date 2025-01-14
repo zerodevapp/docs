@@ -32,11 +32,13 @@ BUNDLER_RPC=
 PAYMASTER_RPC=
 ```
 
-Use the bundler/paymaster RPCs from your project home.  For the private key, use any testing EOA key.  We will be upgrading this EOA to a smart account.
+Use the bundler/paymaster RPCs from your project home.  The private key can be any test EOA key.
 
 ## Sign a 7702 authorization
 
 To upgrade a EOA into a smart account, the first step is to produce a "7702 authorization," which is a signed message that specifies the address of a smart contract that should be "copied" into the EOA.  In practice, to minimize the cost of copying, this smart contract will be a proxy that points to the actual smart account implementation, which in our case is Kernel.
+
+In this example, we will be upgrading an EOA generated from the private key, but it can be any EOA (such as an existing wallet) so long as the EOA is able to sign 7702 authorizations.  If you are the developer of an existing EOA wallet and you don't know how to update your signing logic to support 7702, please reach out.
 
 To produce the authorization, we use [Viem](https://viem.sh/experimental/eip7702):
 
