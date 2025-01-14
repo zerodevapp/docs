@@ -13,8 +13,9 @@ export default defineConfig({
     pattern: 'https://github.com/zerodevapp/docs/edit/main/docs/pages/:path',
     text: 'Edit on GitHub',
   },
+  title: "ZeroDev",
   titleTemplate: '%s – ZeroDev',
-  description: "Build amazing Web3 UX with ZeroDev's smart account platform.",
+  description: "The most powerful smart account development platform.",
   head: (
     <>
       <meta property="og:type" content="website" />
