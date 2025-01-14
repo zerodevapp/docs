@@ -7,7 +7,7 @@ export default defineConfig({
     light: '/logo-black.svg'
   },
   ogImageUrl: {
-    '/': 'https://vocs-og-rouge.vercel.app/api/og?title=%title&description=%description',
+    '/': 'https://vocs.dev/api/og?logo=%logo&title=%title&description=%description',
   },
   editLink: {
     pattern: 'https://github.com/zerodevapp/docs/edit/main/docs/pages/:path',
