@@ -1,0 +1,116 @@
+---
+authors:
+    - "[derek](https://twitter.com/decentrek)"
+date: 2025-01-15
+layout: minimal
+---
+
+# Account abstraction beyond ERC-4337 -- how intents (ERC-7683) can make AA cheaper & faster
+
+::authors
+
+<i>
+[This article was originally published on X.](https://x.com/decentrek/status/1879575439011979563)
+</i>
+
+<br/>
+
+ERC-4337 has been in production for over two years.  Over that time, we at ZeroDev have helped hundreds of teams go live with smart accounts, and we have witnessed firsthand the challenges they faced.
+
+Of these challenges, two major ones stand out:
+
+## ERC-4337 is expensive
+
+AA transactions (aka "UserOps") are more expensive than regular transactions.  In fact, UserOps are so expensive that they are basically impractical on Ethereum L1, which is why practically all AA adoption has happened on L2s.
+
+On L2s, UserOps are on average 2x as expensive as regular transactions, but since the base number is small (e.g. $0.01 vs $0.005), users don't notice it as much.  However, for DApps that sponsor a lot of UserOps, the gas overhead adds up very quickly.  Our larger customers "lose" thousands and sometimes tens of thousands of dollars every month due to the overhead.
+
+## ERC-4337 is slow
+
+Today, more than 98% of all UserOps are sponsored through paymasters.  However, the interactions between bundlers, paymasters, and users are very complex.  In practice, a user needs to perform 4 API calls before they can send a sponsored transaction, sometimes causing the UserOp to miss a block.
+
+On fast L2s like Arbitrum/Base, the latency difference between regular transactions and UserOps is very noticeable.  A transaction that takes 3s to execute on Base usually takes 5-6 secs when sent as a UserOp.
+
+## The root cause of ERC-4337's inefficiencies
+
+ERC-4337 is authored by some of the brightest minds in Web3, including Vitalik himself.  So why couldn't they make ERC-4337 more efficient?
+
+The reason is that ERC-4337 was designed with a specific goal in mind: to enable a decentralized & trustless mempool of UserOps.  To quote Vitalik from this thread (https://x.com/VitalikButerin/status/1576199517434949634):
+
+"You should be able to send an op into a public mempool, and if it pays enough fees, reliably expect it to get included. This should NOT depend on ANY centralized actors...
+
+This is the gold standard that the existing public mempool provides. And we absolutely need to provide the same guarantees for smart contract wallets, or else we risk worsening centralization and censorship."
+
+In other words, ERC-4337's primary goal is to ensure that smart account transactions, aka UserOps, can be included on-chain in a way that doesn't require any trust assumptions between wallets, relayers (aka "bundlers"), and gas sponsors (aka "paymasters").
+
+To achieve this trust minification, ERC-4337 processes UserOps through a global contract known as the "EntryPoint," which performs fine-grained gas metering to ensure that different entities can't grief each other.  This gas metering is at the source of ERC-4337's inefficiencies, because it both makes UserOps very large (higher L1 cost), and makes processing UserOps very computationally expensive (higher L2 cost).
+
+So, if we want to be more efficient than ERC-4337, the right question to ask is not "how can we optimize ERC-4337," but rather "can we gain efficiency by introducing some trust?"
+
+## Introducing UltraRelay -- Optimized Relay for Sponsored Transactions
+
+ERC-4337 is a general-purpose AA protocol.  In practice, however, most AA use cases today follow a very specific pattern: DApps sponsoring gas for embedded wallets.
+
+UltraRelay is our attempt at building an optimized relay protocol for sponsored transactions.  It achieves significant gas savings & lower latency comparing to ERC-4337, by leveraging a few trust assumptions that already exist in today's sponsorship flow.
+
+Today, a DApp sets up gas sponsorship by first configuring its embedded wallet to use a specific smart account implementation (ZeroDev Kernel).  Then, the DApp sponsors gas by forwarding transactions to bundlers & paymasters through ZeroDev.
+
+With this pattern, there's already a high degree of trust between various components of the system:
+
+- We know that users won't be using malicious smart accounts, because their embedded wallets are created through the ZeroDev SDK.
+- We know that both the bundlers and the paymasters are managed by the same entity (ZeroDev).
+
+Given these two trust assumptions, how does UltraRelay optimize the transactions?
+
+## Trusting the account -- merging validation with execution
+
+One core idea of ERC-4337 is "validation-execution separation," which means that UserOps are processed in two phases -- validation and execution.  This prevents malicious accounts from causing bundlers to lose gas, but it adds to the size of the UserOp (since it must include gas limits for both validation and execution), as well as making processing the UserOp more computationally expensive.
+
+But since we can trust the smart account, we can remove all the gas limits related to the validation phase (less L1 cost), as well as the logic for processing the validation phase (less L2 cost).
+
+## Trusting the sponsor -- merging bundlers & paymasters
+
+Similarly, ERC-4337 separates the bundlers and paymasters and performs complex gas metering to make sure they can't grief one another, but as we see, in our case the relayers and sponsors are actually the same entity.
+
+Therefore, if we merge the relayer (bundler) and the sponsor (paymaster), we can remove all gas limits related to paymasters (less L1 cost), as well as the logic for handling the interactions between bundlers and paymasters (less L2 cost).
+
+Importantly, since the wallet no longer needs to talk to both the bundler and the paymaster, but rather simply talks to a single relayer, the number of RPC calls that the wallet has to make is reduced from 4 to 2, thereby reducing latency.
+
+## Building on ERC-7683 intents
+
+For all it's flaws, ERC-4337 is supported by all AA infra providers, making it seamless for developers to move between infra providers.  Using a custom relay loses out on this interoperablity.
+
+As a remedy, we decided to build UltraRelay on top of ERC-7683, an intent framework first proposed by 
+Across and Uniswap.  In other words, UltraRelay is a ERC-7683 filler, so any ERC-7683 fillers can technically relay transactions for smart accounts that support UltraRelay.
+
+Most importantly, a developer doesn't have to choose between ERC-4337 and UltraRelay.  By using ZeroDev, the smart account will be compatible with both, so the developer can still use a ERC-4337 bundler when it needs interoperability, but use UltraRelay when it needs efficiency.
+
+## One more thing... cross-chain transactions
+
+Since UltraRelay is a ERC-7683 filler, it also naturally supports cross-chain transactions.  Using UltraRelay, your users will be able to spend tokens across chains, without bridging!
+
+## Benchmarks
+
+We have built a simple demo to showcase the latency & gas savings of UltraRelay comparing to ERC-4337: https://ultra-relay-demo.zerodev.app
+
+As you can see, UltraRelay boasts significant improvements for both latency and gas -- around 40% faster and 30% cheaper on 
+Base.
+
+Note that the gas savings are largely constant regardless of the workload, so the percentage would be lower if the workload itself is more expensive.
+
+In practice, this means that for our highest-usage customers, UltraRelay will save them anywhere from $1k to $10k per month -- a great deal for just changing a few lines of code!
+
+## The role of 4337
+
+ERC-4337 remains the gold standard for interoperable & trustless account abstraction.  We see ERC-4337 serving the same function that the Ethereum public mempool serves today -- something that you can rely on when nothing else works.
+
+However, just like how a large part of the Ethereum traffic are flowing through private mempools these days, we think a sizable part of the smart account traffic will also flow through non-standard mempools such as UltraRelay, for use cases that prioritize other factors (such as gas savings) over trust minification.
+
+## Getting started with UltraRelay
+
+UltraRelay works with all modular ERC-4337 accounts.  By simply installing a plugin, your account will be able to send transactions through UltraRelay and start saving on gas & latency.
+
+Today, UltraRelay is available in private beta.  To get started:
+
+- If you are already a ZeroDev user, ping us and we will get you set up.
+- If you are not a ZeroDev user, what are you waiting for?  Start building amazing Web3 experiences with the most powerful smart account platform today: https://docs.zerodev.app
