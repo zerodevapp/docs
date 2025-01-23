@@ -10,9 +10,48 @@ Impatient?  Check out [complete examples here](https://github.com/zerodevapp/zer
 
 A smart account can pay gas with ERC20 tokens.  As a result, your users don't have to own any native gas tokens (e.g. ETH) in order to use Web3.  Instead, they can just use stablecoins or even your project's own tokens.  When your users pay gas with ERC20 tokens, we add 5% to the exchange rate to make a profit.
 
-:::warning
-Using your project's own tokens to pay for gas is a beta feature.  If you are interested, please reach out.
-:::
+ZeroDev supports USDC paymasters through two APIs: the Circle API and the Legacy API.  Generally, the Circle API gives you better exchange rates, while the Legacy API is available on more networks.
+
+## Circle API
+
+Start by signing a USDC permit for the paymaster.  The permit specifies the maximum amount of USDC that the signing account wants to spent on gas.
+
+```ts
+import {
+  constructUSDCPermitForCirclePaymaster
+} from "@zerodev/sdk"
+
+const { signature: permit } = await account.signTypedData(
+  await constructUSDCPermitForCirclePaymaster({
+    ownerAddress: account.address,
+    // Allow $10 USDC maximum to be spent on gas
+    value: 10000000
+  })
+)
+```
+
+Next, you can create a Circle paymaster client:
+
+```ts
+import {
+  createCircleUSDCPaymasterClient
+} from "@zerodev/sdk"
+
+const paymasterClient = createCircleUSDCPaymasterClient({
+  chain,
+  transport: http('ZERODEV_PAYMASTER_RPC'),
+  permit: permit,
+})
+
+const kernelClient = createKernelAccountClient({
+  // other options...
+  paymaster: paymasterClient,
+})
+```
+
+Now you can use the Kernel client as usual, and you will be paying gas with USDC!
+
+## Legacy API
 
 On a high level, you need to do two things to enable a smart account to pay gas in a particular ERC20 token:
 
@@ -22,7 +61,7 @@ On a high level, you need to do two things to enable a smart account to pay gas 
 
 Let's go through these two steps next.
 
-## Set up Kernel Client
+### Set up Kernel Client
 
 When you [set up an account](/sdk/core-api/create-account#create-an-account-client), do this:
 
@@ -37,7 +76,6 @@ import {
 } from "@zerodev/sdk/constants"
 
 import { mainnet } from "viem/chains"
-
 
 // use whatever chain you want
 const chain = mainnet.id
@@ -56,7 +94,7 @@ const kernelClient = createKernelAccountClient({
 })
 ```
 
-## Approve ERC20 tokens for paymaster
+### Approve ERC20 tokens for paymaster
 
 Use the `getERC20PaymasterApproveCall` function to construct a call that approves the paymaster with the ERC20 tokens:
 
@@ -97,7 +135,7 @@ const userOpHash = await kernelClient.sendUserOperation({
 
 Note that you only have to approve once, as long as the approval amount is sufficient for many UserOps.  The [paymaster contract by Pimlico](https://github.com/pimlicolabs/erc20-paymaster/blob/main/src/ERC20PaymasterV07.sol) has been audited, it's widely used and generally considered safe.
 
-## Estimate Gas in ERC20s
+### Estimate Gas in ERC20s
 
 If you need to estimate gas in terms of a ERC20 token, do this:
 
@@ -121,7 +159,7 @@ const erc20Amount = await paymasterClient.estimateGasInERC20({
 
 You can also see [a code example for estimating gas here](https://github.com/zerodevapp/zerodev-examples/blob/main/pay-gas-with-erc20/estimate-gas.ts).
 
-## Supported Tokens
+### Supported Tokens
 
 Currently, our ERC20 Paymaster supports USDC on the following networks:
 
@@ -133,7 +171,7 @@ Currently, our ERC20 Paymaster supports USDC on the following networks:
 
 If you want to use a different token, you can either reach out to us or deploy your own Self-Funded ERC20 Paymaster.
 
-## Deploy Your Own ERC20 Paymaster
+### Deploy Your Own ERC20 Paymaster
 
 If you want to support a custom ERC20 token, you can deploy and manage your own ERC20 paymaster contract. To do this:
 

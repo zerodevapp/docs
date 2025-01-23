@@ -19,6 +19,10 @@ In this example, assuming the user did not have DAI to start with, the first two
 To send parallel UserOps, use "nonce keys" to compute nonces:
 
 ```ts
+import { getCustomNonceKeyFromString } from "@zerodev/sdk"
+
+const entryPoint = "0.7"
+
 const nonceKey = getCustomNonceKeyFromString(
   "nonce key",
   entryPoint,
