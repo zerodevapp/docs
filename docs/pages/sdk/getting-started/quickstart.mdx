@@ -44,13 +44,13 @@ import { KERNEL_V3_1, getEntryPoint } from "@zerodev/sdk/constants"
 import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
 import { http, createPublicClient, zeroAddress } from "viem"
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts"
-import { sepolia } from "viem/chains"
+import { baseSepolia } from "viem/chains"
 
-const PROJECT_ID = '98fd43a8-fb2f-4948-a7ae-069f53969f73'
+const PROJECT_ID = 'c5c1e190-8845-40e9-b6b8-9ec3fadc4e8f'
 const BUNDLER_RPC = `https://rpc.zerodev.app/api/v2/bundler/${PROJECT_ID}`
 const PAYMASTER_RPC = `https://rpc.zerodev.app/api/v2/paymaster/${PROJECT_ID}`
 
-const chain = sepolia
+const chain = baseSepolia 
 const entryPoint = getEntryPoint("0.7")
 const kernelVersion = KERNEL_V3_1
 
@@ -128,7 +128,9 @@ const main = async () => {
     timeout: 1000 * 15,
   })
 
-  console.log("View completed UserOp here: https://jiffyscan.xyz/userOpHash/" + userOpHash)
+  console.log("UserOp completed: https://base-sepolia.blockscout.com/op/" + userOpHash)
+
+  process.exit()
 }
 
 main()
