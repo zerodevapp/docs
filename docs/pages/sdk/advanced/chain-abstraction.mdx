@@ -1,10 +1,10 @@
-# Cross-chain transactions
+# Chain abstraction
 
 :::info
 This feature is in public beta and undergoing audit.  Please [contact us](https://t.me/derek_chiang) if you plan on going live with it.
 :::
 
-ZeroDev is the first smart account solution to support *cross-chain transactions*.  Sometimes this is also referred to as "chain abstraction."
+ZeroDev is the first smart account solution to support *cross-chain transactions,* also sometimes known as "chain abstraction."
 
 More specifically, a ZeroDev smart account can use its tokens from one chain on another chain, without bridging.  Some examples are:
 
@@ -24,13 +24,13 @@ Cross-chain transactions with ZeroDev are very fast, thanks to *intents* -- solv
 
 ### Deep liquidity
 
-Most "chain abstraction" solutions on the market are toys that fail under any real amount of traffic.  ZeroDev's cross-chain transactions network is built on top of protocols with the deepest liquidity, such as Across, Relay, and Meson.
+Most "chain abstraction" solutions on the market are toys that fail under any real amount of traffic.  ZeroDev's cross-chain transactions network is built on top of protocols with the deepest liquidity, such as Across and Relay.
 
 ## Code example
 
 Here is a [complete code example](https://github.com/zerodevapp/zerodev-examples/blob/main/intent/main.ts) for using CAB.  You can run the example by cloning the repo.
 
-## Usage
+## Setting up chain abstraction
 
 :::info
 We highly recommend that you use the code example above as a reference as you follow this guide.
@@ -64,17 +64,16 @@ First, make sure you know how to [create ZeroDev accounts](/sdk/core-api/create-
 
 The flow for creating a chain-abstracted ZeroDev account is the same, with the following exceptions:
 
-- For your `kernelVersion`, make sure to use `KERNEL_V3_2`.
+- For your `kernelVersion`, make sure to use `KERNEL_V3_2` or above.
 
 ```ts
 const kernelVersion = KERNEL_V3_2;
 ```
 
-- When setting up a `kernelAccount`, use the following configuration:
+- When setting up the `kernelAccount`, set up the `initConfig` to install the intent executor:
 
 ```ts
-
-import { installIntentExecutor } from '@zerodev/intent'
+import { installIntentExecutor, INTENT_V0_1 } from '@zerodev/intent'
 
 const kernelAccount = await createKernelAccount(publicClient, {
   plugins: {
@@ -82,7 +81,7 @@ const kernelAccount = await createKernelAccount(publicClient, {
   },
   kernelVersion,
   entryPoint,
-  initConfig: [installIntentExecutor]
+  initConfig: [installIntentExecutor(INTENT_V0_1)]
 })
 ```
 
@@ -96,11 +95,68 @@ const intentClient = createIntentClient({
 })
 ```
 
-### Sending cross-chain transactions
+## Using chain abstraction
 
-The `intentClient` supports all regular APIs that a regular ZeroDev client supports, such as `sendUserOperation` and `sendTransaction` for sending transactions on the same chain.
+At the core of chain abstraction is the idea of a "chain-abstracted balance" (CAB), which is a unified balance across all the chains.  For example, if you have 100 USDC on Base and 200 on Arbitrum, then you have 300 "chain-abstracted USDC" which you can spend on any chain.
 
-For cross-chain transactions, the `intentClient` implements an API that is beautifully simple:
+### Getting Chain-abstracted Balances
+
+To get your account's chain abstracted balances, use `getCAB`:
+
+
+```ts
+const cab = await intentClient.getCAB({
+  // Specify any networks you want to aggregate.
+  // If you skip this flag, it will aggregate from all the networks we support, but it may be slower.
+  networks: [arbitrum.id, base.id],
+
+  // Specify the tokens you want to aggregate balances for.
+  // If you skip this flag, it will return all the tokens we support, but it may be slower.
+  tokenTickers: ["USDC", "WETH"],
+})
+```
+
+This will return not just the unified balance, but also the breakdown of the balance across chains, so that you know on which chains you actually have the tokens.
+
+### Spending chain-abstracted balance
+
+To spend your CAB on a transaction, use `sendUserIntent`:
+
+```ts
+const result = await intentClient.sendUserIntent({
+  // You can batch any number of calls here
+  calls: [
+    {
+      // USDC on base
+      to: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+      value: BigInt(0),
+      data: encodeFunctionData({
+        abi: erc20Abi,
+        functionName: 'transfer',
+        args: [account.address, parseUnits('1', 6)],
+      }),
+    },
+  ],
+  outputTokens: [
+    {
+      chainId: base.id,
+      address: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC on base
+      amount: parseUnits('1', 6), // 1 USDC
+    },
+  ],
+})
+```
+
+Here:
+
+- `calls` is a [batch](/sdk/core-api/batch-transactions) of calls to execute atomically.
+- `outputTokens` is the chain-abstracted token that your calls require.  For example, if your calls are looking to spend 500 USDC to buy an NFT, then you'd specify 500 USDC with the `outputTokens`.
+
+Note that in this example, it doesn't matter whether you actually have USDC on Base.  So long as you have enough USDC across all the chains, the transaction will execute.
+
+### Specifying input tokens
+
+By default, when you spend CAB, the SDK uses tokens from chains with the highest balance.  If you need more fine-grained control, you can manually specify the input tokens with `sendUserInput`, which makes the API look like this:
 
 ```ts
 const result = await intentClient.sendUserIntent({
@@ -115,12 +171,6 @@ const result = await intentClient.sendUserIntent({
   ],
 })
 ```
-
-- `calls` is a batch of calls to be executed atomically on the target chain.  Each `call` specifies a `to`, `value`, and `data`.
-
-- `inputTokens` is a list of input tokens to be debited (spent by the user) from the source chain(s).
-
-- `outputTokens` is a list of output tokens to be credited (provided by a solver) on the target chain.
 
 Here's a real example for using USDC on Arbitrum to execute a transaction on Base:
 
@@ -154,58 +204,16 @@ const result = await intentClient.sendUserIntent({
 })
 ```
 
-Two important things to note:
+Note that you do NOT need to specify an amount for your `inputTokens`.  Your input token amount is estimated from your output token amount, plus gas (assuming you want to pay gas with the input tokens -- see below).
 
-- You do NOT need to explicitly pay gas when you send a cross-chain transaction.  The gas is automatically accounted for as a part of your input tokens.
+### Gas configurations
 
-- You do NOT need to specify an amount for your `inputTokens`.  Your input token amount is estimated from your output token amount, plus gas.
-  - For example, if you specify your input token as `USDC` and you want to spend (output) 100 USDC, and the gas fee is worth 0.1 USDC, then your input token will be automatically set to 100.1 USDC, plus a little fees for the solver.
+When using intents, you may use the `gasToken` flag to configure how to pay gas.
 
-### Getting Chain-abstracted Balances (CAB)
-
-You can get the aggregated balance of any tokens across chains.  This is known as a "chain-abstracted balance" or CAB.
-
-```ts
-const cab = await intentClient.getCAB({
-  // Specify any networks you want to aggregate.
-  // If you skip this flag, it will aggregate from all the networks we support, but it may be slower.
-  networks: [arbitrum.id, base.id],
-
-  // Specify the tokens you want to aggregate balances for.
-  // If you skip this flag, it will return all the tokens we support, but it may be slower.
-  tokenTickers: ["USDC", "WETH"],
-})
-```
-
-### Spending chain-abstracted balance
-
-In the "cross-chain transactions" example, you were explicitly specifying the chains for your input tokens.  If you don't care which chains to spend from, you can simply skip `inputTokens`, and the SDK will automatically figure out which chains to spend from.  This essentially enables you to spend from your chain-abstracted balance (CAB):
-
-```ts
-const result = await intentClient.sendUserIntent({
-  calls: [
-    {
-      // USDC on base
-      to: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
-      value: BigInt(0),
-      data: encodeFunctionData({
-        abi: erc20Abi,
-        functionName: 'transfer',
-        args: [account.address, parseUnits('1', 6)],
-      }),
-    },
-  ],
-  outputTokens: [
-    {
-      chainId: base.id,
-      address: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', // USDC on base
-      amount: parseUnits('1', 6), // 1 USDC
-    },
-  ],
-})
-```
-
-By default, the SDK pulls input tokens from chains with the highest balance, if you would like to use a different logic, get in touch.
+- By default (with no `gasToken` specified), gas is paid in CAB (input tokens) itself.
+- If you specify `gasToken: 'NATIVE'`, the account will pay gas with the native token (e.g. ETH).
+- If you specify `gasToken: 'SPONSORED'`, you will be [sponsoring gas](/sdk/core-api/sponsor-gas) for the account.
+- If you specify `gasToken: '0x...'` where the string is a ERC20 token address, you will be paying gas with the specified ERC20 token.
 
 ## Supported tokens and networks
 
