@@ -190,7 +190,7 @@ const account = createKernelAccount(publicClient, {
 })
 ```
 
-### How do I compute the smart account address from the EOA signer address?
+### How do I get the smart account address from the EOA signer address?
 
 Sometimes you only know the address of the EOA signer but you don't have the signer itself.  In that case, you can still compute the address of the smart account with this helper function:
 
@@ -199,6 +199,32 @@ import { getKernelAddressFromECDSA } from "@zerodev/ecdsa-validator"
 
 // index is 0 by default
 const smartAccountAddress = await getKernelAddressFromECDSA(publicClient, eoaAddress, index)
+```
+
+### How do I get the EOA signer address from the smart account address?
+
+You can query it on-chain like this:
+
+```ts
+import { getValidatorAddress } from "@zerodev/ecdsa-validator"
+
+const ecdsaValidatorContract = getContract({
+  abi: [
+    {
+      type: "function",
+      name: "ecdsaValidatorStorage",
+      inputs: [{ name: "", type: "address", internalType: "address" }],
+      outputs: [{ name: "owner", type: "address", internalType: "address" }],
+      stateMutability: "view",
+    },
+  ],
+  address: getValidatorAddress(entryPoint, kernelVersion),
+  client: publicClient,
+})
+
+const owner = await ecdsaValidatorContract.read.ecdsaValidatorStorage([
+  account.address,
+])
 ```
 
 ### How do I create a Kernel account object with a specific address?
