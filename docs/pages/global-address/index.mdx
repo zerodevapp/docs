@@ -134,14 +134,25 @@ Once you have created a global address, you can send tokens to it on any of the 
 
 ## Pricing
 
-- Paid by the developer
-  - Base pricing: $2000/month, which includes 5000 active addresses.
-  - Additional usage:
-    - $200 for each additional 1000 active addresses.
+### Monthly Pricing
 
-- Paid by the user
-    - 0.10% (10 basis points) of transferred volume (paid through transferred tokens).
+- Base pricing (paid by the developer)
+    - $2000/month, which includes 5000 active addresses.
+        - $200 for each additional 1000 active addresses.
+- Usage pricing (paid by the user with their transferred tokens):
+    - 20 basis points (0.20%) for transfers below $500
+    - 10 basis points (0.10%) for transfers above $500
 
-An "active address" is defined as a global address that was created or used during a given month.
+### Annual Pricing
 
-Pricing can be negotiated.  Feel free to reach out.
+- Base pricing (paid by the developer)
+    - $20000/year, with unlimited active addresses.
+- Usage pricing (paid by the user with their transferred tokens):
+    - 15 basis points (0.15%) for transfers below $500
+    - 5 basis points (0.05%) for transfers above $500
+
+### Notes
+
+- An "active address" is defined as a global address that was created or used during a given month.
+- Global Address integrates with bridges under the hood, so the usage pricing is on top of the underlying bridge fees.
+- Pricing can be negotiated.  Feel free to reach out.
