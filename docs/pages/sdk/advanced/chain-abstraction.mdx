@@ -38,22 +38,50 @@ We highly recommend that you use the code example above as a reference as you fo
 
 ### Installation
 
+Chain abstraction is implemented with the `@zerodev/intent` package:
+
 :::code-group
 
 ```bash [npm]
-npm i @zerodev/intent
+npm i @zerodev/intent @zerodev/sdk
 ```
 
 ```bash [yarn]
-yarn add @zerodev/intent
+yarn add @zerodev/intent @zerodev/sdk
 ```
 
 ```bash [pnpm]
-pnpm i @zerodev/intent
+pnpm i @zerodev/intent @zerodev/sdk
 ```
 
 ```bash [bun]
-bun add @zerodev/intent
+bun add @zerodev/intent @zerodev/sdk
+```
+
+:::
+
+### Choosing a validator
+
+While chain abstraction works with any validator, we highly recommend using a multi-chain validator like `@zerodev/multi-chain-ecdsa-validator` for new projects. Multi-chain validators are optimized for cross-chain transactions because they can sign for multiple input chains with a single signature, making the process more efficient.
+
+If you're starting a new project, you can install the multi-chain ECDSA validator:
+
+:::code-group
+
+```bash [npm]
+npm i @zerodev/multi-chain-ecdsa-validator
+```
+
+```bash [yarn]
+yarn add @zerodev/multi-chain-ecdsa-validator
+```
+
+```bash [pnpm]
+pnpm i @zerodev/multi-chain-ecdsa-validator
+```
+
+```bash [bun]
+bun add @zerodev/multi-chain-ecdsa-validator
 ```
 
 :::
@@ -73,7 +101,7 @@ const kernelVersion = KERNEL_V3_2;
 - When setting up the `kernelAccount`, set up the `initConfig` to install the intent executor:
 
 ```ts
-import { installIntentExecutor, INTENT_V0_3 } from '@zerodev/intent'
+import { installIntentExecutor, INVENT_V0_3 }
 
 const kernelAccount = await createKernelAccount(publicClient, {
   plugins: {
@@ -92,6 +120,7 @@ const intentClient = createIntentClient({
   chain,
   account: kernelAccount,
   bundlerTransport: http(bundlerRpc),
+  version: INTENT_V0_3
 })
 ```
 
@@ -145,6 +174,12 @@ const result = await intentClient.sendUserIntent({
     },
   ],
 })
+
+// Wait for the intent to be executed on the destination chain
+const receipt = await intentClient.waitForUserIntentExecutionReceipt({
+  uiHash: result.outputUiHash.uiHash,
+});
+console.log(`Intent executed on chain: ${receipt?.executionChainId}`);
 ```
 
 Here:
@@ -156,7 +191,7 @@ Note that in this example, it doesn't matter whether you actually have USDC on B
 
 ### Specifying input tokens
 
-By default, when you spend CAB, the SDK uses tokens from chains with the highest balance.  If you need more fine-grained control, you can manually specify the input tokens with `sendUserInput`, which makes the API look like this:
+By default, when you spend CAB, the SDK uses tokens from chains with the highest balance. If you need more fine-grained control, you can manually specify the input tokens with `inputTokens`, which makes the API look like this:
 
 ```ts
 const result = await intentClient.sendUserIntent({
@@ -214,6 +249,42 @@ When using intents, you may use the `gasToken` flag to configure how to pay gas.
 - If you specify `gasToken: 'NATIVE'`, the account will pay gas with the native token (e.g. ETH).
 - If you specify `gasToken: 'SPONSORED'`, you will be [sponsoring gas](/sdk/core-api/sponsor-gas) for the account.
 - If you specify `gasToken: '0x...'` where the string is a ERC20 token address, you will be paying gas with the specified ERC20 token.
+
+### Waiting for intents to resolve
+
+Cross-chain transactions happen in multiple steps: first opening on the input chains (where your tokens come from), then executing on the destination chain. The `sendUserIntent` function returns hash identifiers that let you track both steps:
+
+```ts
+// Send the intent
+const result = await intentClient.sendUserIntent({
+  // ... your intent configuration ...
+});
+
+
+// Wait for the intent to be opened on all input chains
+// NOTE: if you just want to wait for the intent to fully resolve, you don't need to wait
+// for the input intents.  Just wait for the execution intent.
+await Promise.all(
+  result.inputsUiHash.map(async (data) => {
+    const openReceipts = await intentClient.waitForUserIntentOpenReceipt({
+      uiHash: data.uiHash,
+    });
+    console.log(
+      `Intent opened on chain ${openReceipts?.openChainId} with transaction hash: ${openReceipts?.receipt.transactionHash}`
+    );
+  })
+);
+
+// Wait for final execution on the destination chain
+const receipt = await intentClient.waitForUserIntentExecutionReceipt({
+  uiHash: result.outputUiHash.uiHash,
+});
+console.log(
+  `Intent executed on chain: ${receipt?.executionChainId} with transaction hash: ${receipt?.receipt.transactionHash}`
+);
+```
+
+This tracking system ensures you have complete visibility into your cross-chain transaction's progress, from initiation through to final execution.  If you simply want to wait until the intent fully resolves, just waiting for the execution receipt is enough.
 
 ## Supported tokens and networks
 
