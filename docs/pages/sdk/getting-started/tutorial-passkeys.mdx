@@ -24,6 +24,7 @@ Open `app/page.tsx`.  We will be working on this file for the rest of the tutori
 ## Create a ZeroDev project
 
 For this tutorial, [create a ZeroDev project](https://dashboard.zerodev.app) for Sepolia.
+If doesn't work for Sepolia , try to creating a BaseSepolia Project in the dashboard, is the best option tested.
 
 On `app/page.tsx`, fill out these variables with the URLs found on your dashboard.
 
@@ -31,6 +32,12 @@ On `app/page.tsx`, fill out these variables with the URLs found on your dashboar
 const BUNDLER_URL = ""
 const PAYMASTER_URL = ""
 const PASSKEY_SERVER_URL = ""
+```
+
+Add on the top of the NextJs Template:
+
+```ts
+  import { getUserOperationGasPrice } from "@zerodev/sdk/actions";
 ```
 
 ## Create a smart account using passkeys
