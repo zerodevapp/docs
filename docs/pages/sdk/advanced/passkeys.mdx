@@ -25,7 +25,7 @@ The biggest value-add of passkeys, in the context of Web3, is **saving users fro
 
 ZeroDev/Kernel supports using passkeys as signers. The support comes in two flavors:
 
-- **Native passkeys** using the [ERC-7212 precompile](https://eips.ethereum.org/EIPS/eip-7212). Native passkeys are the best option when available, since it uses the least amount of gas (only 3450 gas for verifying a P256 signature). Currently only a small number of networks support ERC-7212, but it's expected that most networks will support it over time.
+- **Native passkeys** using the [ERC-7212 precompile](https://github.com/ethereum/RIPs/blob/master/RIPS/rip-7212.md). Native passkeys are the best option when available, since it uses the least amount of gas (only 3450 gas for verifying a P256 signature). Currently only a small number of networks support ERC-7212, but it's expected that most networks will support it over time.
 
 - **Smart contract passkeys** using either the [Daimo](https://github.com/daimo-eth/p256-verifier) or [FCL](https://github.com/rdubois-crypto/FreshCryptoLib) implementation. Smart contract passkeys can work on all EVM networks, but they are expensive (300-400k gas for verifying a P256 signature).
 
