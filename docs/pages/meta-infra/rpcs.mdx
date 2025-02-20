@@ -1,8 +1,15 @@
 # Bundler & Paymaster RPCs
 
-ZeroDev proxies traffic to AA infra providers including Alchemy, Gelato and Pimlico.  Our RPCs support all standard methods defined in the [ERC-4337 spec](https://eips.ethereum.org/EIPS/eip-4337).
+To ensure utmost reliability for our customers, our RPCs use multiple bundlers under the hood, including: 
 
-By default, ZeroDev proxies traffic to a provider that's known to work well on the given network.  However, you can configure which specific provider to proxy traffic to, as described below.
+- [UltraRelay](/sdk/core-api/sponsor-gas#ultrarelay), ZeroDev's own bundler optimized for sponsored transactions
+- Alchemy
+- Gelato
+- Pimlico
+
+Our RPCs support all standard methods defined in the [ERC-4337 spec](https://eips.ethereum.org/EIPS/eip-4337).
+
+By default, ZeroDev sends traffic to a provider that's known to work well on the given network.  However, you can configure which specific provider to proxy traffic to, as described below.
 
 You can find the bundler & paymaster RPCs for a specific ZeroDev project on the [ZeroDev dashboard](https://dashboard.zerodev.app/).
 
@@ -17,6 +24,7 @@ While you can in principle use a paymaster from one provider with a bundler from
 You can append the following query params (i.e. `?param=value`) to the RPC:
 
 - `provider`, which specifies the underlying bundler to use.  Possible values include:
+  - `ULTRA_RELAY`
   - `ALCHEMY`
   - `GELATO`
   - `PIMLICO`
@@ -28,6 +36,7 @@ You can append the following query params (i.e. `?param=value`) to the RPC:
 You can append the following query params (i.e. `?param=value`) to the RPC:
 
 - `provider`, which specifies the underlying paymaster to use.  Possible values include:
+  - `ULTRA_RELAY`
   - `ALCHEMY`
   - `GELATO`
   - `PIMLICO`

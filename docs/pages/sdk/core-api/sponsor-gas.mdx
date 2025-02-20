@@ -29,57 +29,43 @@ import { getEntryPoint } from "@zerodev/sdk/constants"
 
 const entryPoint = getEntryPoint("0.7")
 
-const kernelClient = createKernelAccountClient({
-  // other options...
+const paymasterClient = createZeroDevPaymasterClient({
+  chain,
+  // Get this RPC from ZeroDev dashboard
+  transport: http(PAYMASTER_RPC),
+})
 
+const kernelClient = createKernelAccountClient({
   paymaster: {
     getPaymasterData: (userOperation) => {
-      const zerodevPaymaster = createZeroDevPaymasterClient({
-        chain,
-        // Get this RPC from ZeroDev dashboard
-        transport: http(PAYMASTER_RPC),
-      })
-      return zerodevPaymaster.sponsorUserOperation({
+      return paymasterClient.sponsorUserOperation({
         userOperation,
       })
     }
   }
+
+  // other args...
 })
 ```
 
-## UltraRelay
+### What happens when you reach the sponsorship limit?
 
-:::info
-UltraRelay is being gradually rolled out to all networks.  It currently supports: Base.
-:::
+If you have reached the sponsorship limit, either because of the policies you set up or because you have reached an account-level limit, sending UserOp will fail.
 
-UltraRelay is a new relay solution that functions as a combination of ERC-4337 bundlers and paymasters, as a single entity.  UltraRelay is significantly more efficient than regular ERC-4337 bundlers and paymasters.  In our benchmarks, UltraRelay uses:
-
-- 30% less gas than ERC-4337
-- 20% lower latency than ERC-4337
-
-This makes UltraRelay the best solution for gas sponsorship.
-
-### API
-
-To use UltraRelay, simply update your `createKernelAccountClient` config as follows:
-
-- Append `?provider=ULTRA_RELAY` to your bundler RPC.
-- Do NOT set the [paymaster middleware](#api).
-- (optional) Set a no-op gas estimation middleware, which will save you even more latency.
-
-Here's how it looks like in code:
+If, instead of failing, you want the UserOp to proceed but use the user's own native tokens (e.g. ETH), then you can set up your `paymaster` middleware like this:
 
 ```ts
+import { GetPaymasterDataReturnType } from "viem/account-abstraction"
+
 const kernelClient = createKernelAccountClient({
-  account,
-  chain,
-  bundlerTransport: http(BUNDLER_RPC+`?provider=ULTRA_RELAY`),
-  userOperation: {
-    estimateFeesPerGas: async ({ bundlerClient }) => {
-      return {
-        maxFeePerGas: BigInt(0),
-        maxPriorityFeePerGas: BigInt(0),
+  // other args...
+
+  paymaster: {
+    getPaymasterData: async (userOperation) => {
+      try {
+        return await paymasterClient.sponsorUserOperation({ userOperation })
+      } catch (error) {
+        return {} as GetPaymasterDataReturnType
       }
     },
   },
