@@ -1,0 +1,45 @@
+# Run code when creating an account
+
+:::info
+Impatient?  Check out [a complete example here](https://github.com/zerodevapp/zerodev-examples/blob/main/emit-event-when-creating-account/main.ts).
+:::
+
+Sometimes, you might want to execute some custom code when you create an account.  One common use case is when you want to emit an event whenever a user creates an account.
+
+Running custom code during initialization can be done via plugins.  Specifically you can follow this process:
+
+- Write a custom validator that executes your custom code during initialization.
+- Install the validator to your account during account initialization.
+
+## Developing a custom validator
+
+Kernel implements the [ERC-7579 interface](https://eips.ethereum.org/EIPS/eip-7579), so you can write a 7579 validator.
+
+[Here's an example of a validator that simply emits an event](https://github.com/zerodevapp/kernel/blob/ab30532763de3cdbe05dab7821652f11cc0a01c7/src/validator/EmitIdentifierValidator.sol).  Note that [the `onInstall` function](https://github.com/zerodevapp/kernel/blob/ab30532763de3cdbe05dab7821652f11cc0a01c7/src/validator/EmitIdentifierValidator.sol#L12) accepts an initialization data, which you can use to run customized code per account.
+
+Once you have developed the custom validator, deploy it using `CREATE2` so that it has the same address across all chains.
+
+## Install the validator
+
+Once you have deployed the validator, the easiest way to install it is like this:
+
+```ts
+const account = await createKernelAccount(publicClient, {
+  plugins: {
+    sudo: ecdsaValidator,
+  },
+  entryPoint,
+  kernelVersion,
+  pluginMigrations: [ // [!code ++]
+    { // [!code ++]
+      // This is the deployed validator address // [!code ++]
+      address: "0x43C757131417c5a245a99c4D5B7722ec20Cb0b31", // [!code ++]
+      type: PLUGIN_TYPE.VALIDATOR, // [!code ++]
+      // this is the data passed to `onInstall` // [!code ++]
+      data: "0x",  // [!code ++]
+    }, // [!code ++]
+  ], // [!code ++]
+})
+```
+
+Now, your validator's `onInstall` function will run whenever an account is created.

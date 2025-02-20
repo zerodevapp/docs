@@ -187,6 +187,10 @@ export default defineConfig({
             "link": "/sdk/advanced/fallback-providers"
           },
           {
+            "text": "Run code on account creation",
+            "link": "/sdk/advanced/run-solidity-code-on-init"
+          },
+          {
             "text": "Upgrading Kernel",
             "link": "/sdk/advanced/upgrade-kernel"
           },
