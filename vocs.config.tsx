@@ -186,6 +186,10 @@ export default defineConfig({
             "text": "Fallback Providers",
             "link": "/sdk/advanced/fallback-providers"
           },
+          {
+            "text": "Upgrading Kernel",
+            "link": "/sdk/advanced/upgrade-kernel"
+          },
         ],
       },
       {
