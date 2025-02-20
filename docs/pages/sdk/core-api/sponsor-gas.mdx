@@ -50,7 +50,7 @@ const kernelClient = createKernelAccountClient({
 
 ### What happens when you reach the sponsorship limit?
 
-If you have reached the sponsorship limit, either because of the policies you set up or because you have reached an account-level limit, sending UserOp will fail.
+If you have reached the sponsorship limit, either because of the [policies](/meta-infra/gas-policies) you set up or because you have reached an account-level limit, sending UserOp will fail.
 
 If, instead of failing, you want the UserOp to proceed but use the user's own native tokens (e.g. ETH), then you can set up your `paymaster` middleware like this:
 
