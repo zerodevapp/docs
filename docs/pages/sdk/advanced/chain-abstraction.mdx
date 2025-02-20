@@ -248,7 +248,6 @@ When using intents, you may use the `gasToken` flag to configure how to pay gas.
 - By default (with no `gasToken` specified), gas is paid in CAB (input tokens) itself.
 - If you specify `gasToken: 'NATIVE'`, the account will pay gas with the native token (e.g. ETH).
 - If you specify `gasToken: 'SPONSORED'`, you will be [sponsoring gas](/sdk/core-api/sponsor-gas) for the account.
-- If you specify `gasToken: '0x...'` where the string is a ERC20 token address, you will be paying gas with the specified ERC20 token.
 
 ### Waiting for intents to resolve
 
@@ -312,11 +311,11 @@ We support **USDC and ETH** on the following testnets:
 
 ## Pricing
 
-- Developer pricing
+- Developer pricing (charged to the developer)
   - Chain Abstraction is rate limited for projects on the free or Growth plans.
   - To use Chain Abstraction in production, please subscribe to the Scale or Enterprise plan.
 
-- User pricing
+- User pricing (charged to the user by the input token)
   - For projects on the Scale plan, we charge:
     - 20 basis points (0.2%) for cross-chain transactions below $500.
     - 10 basis points (0.1%) for cross-chain transactions worth $500 or above.
