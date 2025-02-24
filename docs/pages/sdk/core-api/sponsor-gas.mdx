@@ -71,3 +71,42 @@ const kernelClient = createKernelAccountClient({
   },
 })
 ```
+
+## UltraRelay
+
+:::info
+UltraRelay is being gradually rolled out to all networks.  It currently supports: Base.
+:::
+
+UltraRelay is a new relay solution that functions as a combination of ERC-4337 bundlers and paymasters, as a single entity.  UltraRelay is significantly more efficient than regular ERC-4337 bundlers and paymasters.  In our benchmarks, UltraRelay achieves:
+
+- 30% less gas than ERC-4337 bundlers
+- 20% lower latency than ERC-4337 bundlers
+
+This makes UltraRelay the best solution for gas sponsorship.
+
+### API
+
+To use UltraRelay, simply update your `createKernelAccountClient` config as follows:
+
+- Append `?provider=ULTRA_RELAY` to your bundler RPC.
+- (optional) Do NOT set the [paymaster middleware](#api), which will save you some latency.
+- (optional) Set a no-op gas estimation middleware, which will save you even more latency.
+
+Here's how it looks like in code:
+
+```ts
+const kernelClient = createKernelAccountClient({
+  account,
+  chain,
+  bundlerTransport: http(BUNDLER_RPC+`?provider=ULTRA_RELAY`),
+  userOperation: {
+    estimateFeesPerGas: async ({ bundlerClient }) => {
+      return {
+        maxFeePerGas: BigInt(0),
+        maxPriorityFeePerGas: BigInt(0),
+      }
+    },
+  },
+})
+```
