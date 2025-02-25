@@ -186,6 +186,7 @@ Here:
 
 - `calls` is a [batch](/sdk/core-api/batch-transactions) of calls to execute atomically.
 - `outputTokens` is the chain-abstracted token that your calls require.  For example, if your calls are looking to spend 500 USDC to buy an NFT, then you'd specify 500 USDC with the `outputTokens`.
+  - If you want to use ETH as the output token, set the address to `zeroAddress`.
 
 Note that in this example, it doesn't matter whether you actually have USDC on Base.  So long as you have enough USDC across all the chains, the transaction will execute.
 
