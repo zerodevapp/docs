@@ -47,8 +47,9 @@ import { createWalletClient, Hex, http } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import { odysseyTestnet } from 'viem/chains'
 import { eip7702Actions } from 'viem/experimental'
-import { KERNEL_7702_DELEGATION_ADDRESS } from '@zerodev/sdk'
+import { KERNEL_V3_3_BETA, KernelVersionToAddressesMap } from '@zerodev/sdk'
 
+const kernelVersion = KERNEL_V3_3_BETA
 const signer = privateKeyToAccount(process.env.PRIVATE_KEY as Hex)
 console.log("EOA Address:", signer.address)
 
@@ -59,7 +60,7 @@ const walletClient = createWalletClient({
 }).extend(eip7702Actions())
 
 const authorization = await walletClient.signAuthorization({
-  contractAddress: KERNEL_7702_DELEGATION_ADDRESS,
+  contractAddress: KernelVersionToAddressesMap[kernelVersion].accountImplementationAddress,
   delegate: true,
 })
 ```
