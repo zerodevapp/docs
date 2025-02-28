@@ -20,7 +20,7 @@ npm i @zerodev/sdk @zerodev/ecdsa-validator viem
 
 ## Create a project for a 7702-compatible network
 
-In this example, we will use [the Odyssey testnet](https://hub.conduit.xyz/odyssey), but you can use any 7702-compatible network.
+In this example, we will use [the Odyssey testnet](https://hub.conduit.xyz/odyssey), but you can use any 7702-compatible network such as Holesky.
 
 Go to [the ZeroDev dashboard](https://dashboard.zerodev.app) and create a project for `Odyssey Testnet`.  Create a gas policy so that we can send sponsored transactions later.  A simple "project policy" for "100 requests per minute" will do.
 
@@ -28,11 +28,10 @@ Create a `.env` file as follows:
 
 ```env
 PRIVATE_KEY=
-BUNDLER_RPC=
-PAYMASTER_RPC=
+PROJECT_ID=
 ```
 
-Use the bundler/paymaster RPCs from your project home.  The private key can be any test EOA key.
+Use the project ID from the dashboard.  The private key can be any test EOA key.
 
 ## Sign a 7702 authorization
 
