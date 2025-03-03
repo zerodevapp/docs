@@ -187,7 +187,7 @@ export default defineConfig({
             "link": "/sdk/advanced/fallback-providers"
           },
           {
-            "text": "Run code on account creation",
+            "text": "Track deployed smart accounts",
             "link": "/sdk/advanced/run-solidity-code-on-init"
           },
           {
