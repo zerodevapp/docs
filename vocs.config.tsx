@@ -11,6 +11,24 @@ export default defineConfig({
     pattern: 'https://github.com/zerodevapp/docs/edit/main/docs/pages/:path',
     text: 'Edit on GitHub',
   },
+  theme: {
+   variables:{
+    color:{
+      textAccent: {
+        light: '#5753c6',
+        dark: '#b1a9ff'
+      },
+      textAccentHover:{
+        light: '#272962',
+        dark: '#6e6ade'
+      },
+      link: {
+        light: '#5753c6',
+        dark: '#b1a9ff'
+      }
+    }
+   } 
+  },
   title: "ZeroDev",
   titleTemplate: '%s – ZeroDev',
   description: "The most powerful smart account.",
