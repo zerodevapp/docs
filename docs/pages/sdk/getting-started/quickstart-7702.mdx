@@ -33,6 +33,12 @@ PROJECT_ID=
 
 Use the project ID from the dashboard.  The private key can be any test EOA key.
 
+If you are using the Holesky testnet, also set an RPC for holeskey, e.g.:
+
+```env
+RPC_URL=https://holesky.drpc.org
+```
+
 ## Sign a 7702 authorization
 
 To upgrade a EOA into a smart account, the first step is to produce a "7702 authorization," which is a signed message that specifies the address of a smart contract that should be "copied" into the EOA.  In practice, to minimize the cost of copying, this smart contract will be a proxy that points to the actual smart account implementation, which in our case is Kernel.
