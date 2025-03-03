@@ -1,7 +1,7 @@
 import { defineConfig } from 'vocs'
 
 export default defineConfig({
-  iconUrl: '/logo-white.svg',
+  iconUrl: '/favicon.ico',
   logoUrl: {
     dark: '/logo-white.svg',
     light: '/logo-black.svg'
