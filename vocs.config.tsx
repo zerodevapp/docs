@@ -2,6 +2,7 @@ import * as React from 'react'
 import { defineConfig } from 'vocs'
 
 export default defineConfig({
+  iconUrl: '/logo-white.svg',
   logoUrl: {
     dark: '/logo-white.svg',
     light: '/logo-black.svg'
