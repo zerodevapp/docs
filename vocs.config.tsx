@@ -7,7 +7,7 @@ export default defineConfig({
     light: '/logo-black.svg'
   },
   ogImageUrl: {
-    '/': 'https://vocs.dev/api/og?logo=https://zerodev.app/logo_dark.svg&description=The%20most%20powerful%20smart%20account%20development%20platform.'
+    '/': 'https://vocs-og-nine.vercel.app/api/og?logo=%logo&title=%title&description=%description',
   },
   editLink: {
     pattern: 'https://github.com/zerodevapp/docs/edit/main/docs/pages/:path',
@@ -15,7 +15,7 @@ export default defineConfig({
   },
   title: "ZeroDev",
   titleTemplate: '%s – ZeroDev',
-  description: "The most powerful smart account development platform.",
+  description: "The most powerful smart account.",
   head: (
     <>
       <meta property="og:type" content="website" />
