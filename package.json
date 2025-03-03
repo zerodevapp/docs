@@ -1,18 +1,18 @@
 {
   "name": "zerodev-docs",
   "type": "module",
-  "devDependencies": {
-    "bun-types": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
-  },
-  "dependencies": {
-    "vocs": "1.0.1"
-  },
   "scripts": {
     "dev": "vocs dev",
     "build": "vocs build",
     "preview": "vocs preview"
+  },
+  "dependencies": {
+    "react": "latest",
+    "react-dom": "latest",
+    "vocs": "latest"
+  },
+  "devDependencies": {
+    "@types/react": "latest",
+    "typescript": "latest"
   }
 }
