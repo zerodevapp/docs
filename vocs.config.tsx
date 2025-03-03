@@ -1,4 +1,3 @@
-import * as React from 'react'
 import { defineConfig } from 'vocs'
 
 export default defineConfig({
