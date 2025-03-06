@@ -20,11 +20,12 @@ npm i @zerodev/sdk @zerodev/ecdsa-validator viem
 
 ## Create a project for a 7702-compatible network
 
-In this example, we will use [the Odyssey testnet](https://hub.conduit.xyz/odyssey), but you can use any 7702-compatible network such as Holesky.
+In this example, we will use the Sepolia testnet, but you can use any 7702-compatible network such as Holesky and Odyssey.
 
-Go to [the ZeroDev dashboard](https://dashboard.zerodev.app) and create a project for `Odyssey Testnet`.  Create a gas policy so that we can send sponsored transactions later.  A simple "project policy" for "100 requests per minute" will do.
-
-Create a `.env` file as follows:
+- Go to [the ZeroDev dashboard](https://dashboard.zerodev.app) and create a project for `Ethereum Sepolia`.
+- Create a gas policy so that we can send sponsored transactions later.
+  - A simple "project policy" for "100 requests per minute" will do.
+- Create a `.env` file as follows:
 
 ```env
 PRIVATE_KEY=
@@ -32,12 +33,6 @@ PROJECT_ID=
 ```
 
 Use the project ID from the dashboard.  The private key can be any test EOA key.
-
-If you are using the Holesky testnet, also set an RPC for holeskey, e.g.:
-
-```env
-RPC_URL=https://holesky.drpc.org
-```
 
 ## Sign a 7702 authorization
 
@@ -50,17 +45,18 @@ To produce the authorization, we use [Viem](https://viem.sh/experimental/eip7702
 ```ts
 import { createWalletClient, Hex, http } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
-import { odysseyTestnet } from 'viem/chains'
+import { sepolia } from 'viem/chains'
 import { eip7702Actions } from 'viem/experimental'
 import { KERNEL_V3_3_BETA, KernelVersionToAddressesMap } from '@zerodev/sdk'
 
 const kernelVersion = KERNEL_V3_3_BETA
 const signer = privateKeyToAccount(process.env.PRIVATE_KEY as Hex)
+const chain = sepolia
 console.log("EOA Address:", signer.address)
 
 const walletClient = createWalletClient({
+  chain,
   account: signer,
-  chain: odysseyTestnet,
   transport: http(),
 }).extend(eip7702Actions())
 
@@ -85,8 +81,8 @@ import { signerToEcdsaValidator } from '@zerodev/ecdsa-validator'
 const entryPoint = getEntryPoint("0.7")
 const kernelVersion = KERNEL_V3_1
 const publicClient = createPublicClient({
+  chain,
   transport: http(process.env.BUNDLER_RPC),
-  chain: odysseyTestnet,
 })
 
 const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
@@ -110,13 +106,13 @@ const account = await createKernelAccount(publicClient, {
 })
 
 const paymasterClient = createZeroDevPaymasterClient({
-  chain: odysseyTestnet,
+  chain,
   transport: http(process.env.PAYMASTER_RPC),
 })
 
 const kernelClient = createKernelAccountClient({
   account,
-  chain: odysseyTestnet,
+  chain,
   bundlerTransport: http(process.env.BUNDLER_RPC),
   paymaster: paymasterClient,
   client: publicClient,
@@ -163,6 +159,6 @@ await kernelClient.waitForUserOperationReceipt({
 console.log("UserOp completed")
 ```
 
-Congratulations!  You just sent your first gasless, batched transaction using a EOA.  You can see it by looking up your EOA account with [the Odyssey block explorer](https://odyssey-explorer.ithaca.xyz/).  Note that you have to look under "Internal Transactions" because UserOps do not appear as regular transactions.
+Congratulations!  You just sent your first gasless, batched transaction using a EOA.  You can see it by looking up your account on [the Sepolia explorer](https://sepolia.etherscan.io/).  Note that you may need to look under "Internal Transactions" because UserOps do not appear as regular transactions.
 
 Easy, right?  Now explore the rest of the ZeroDev docs and see what you can do with your "smart EOA."
