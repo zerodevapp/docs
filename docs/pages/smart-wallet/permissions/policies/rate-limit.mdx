@@ -31,9 +31,14 @@ Arguments to `toRateLimitPolicy`:
   - If not specified, then the interval is infinite, which means that you can use `count` to specify the number of times the signer can send UserOps in total.
 - (optional) `startAt`: the starting UNIX timestamp for when the rate limit should take effect.  Before that, the signer cannot send any UserOps.
 
-# Rate Limit Policy with reset
+## Using RateLimitPolicy with reset
 
-## API
+### API
+
+The Rate Limit Policy with reset allows you to define a recurring allowance of UserOps that refreshes after each interval period. This is useful for creating recurring permissions that automatically renew, such as monthly subscription payments or regular administrative actions.
+
+Unlike the standard Rate Limit Policy which counts down a total number of allowed operations, the reset version gives the signer a fresh allocation of operations after each interval passes.
+
 
 ```ts
 import { toRateLimitPolicy, RATE_LIMIT_POLICY_WITH_RESET_CONTRACT } from "@zerodev/permissions/policies"
@@ -44,6 +49,7 @@ const rateLimitPolicy = toRateLimitPolicy({
   interval: 60 * 60 * 24 * 30,  // one month in seconds
 })
 
+// only difference from non-reset is using RATE_LIMIT_POLICY_WITH_RESET_CONTRACT for policyAddress
 const validator = toPermissionValidator(publicClient, {
   policyAddress : RATE_LIMIT_POLICY_WITH_RESET_CONTRACT,
   entryPoint,
@@ -56,7 +62,7 @@ const validator = toPermissionValidator(publicClient, {
 })
 ```
 
-## Comparison with Rate Limit Policy without reset
+### Comparison with Rate Limit Policy without reset
 
 - With reset
   - userOps can be called up to `count` times within a given `interval`.
@@ -66,7 +72,7 @@ const validator = toPermissionValidator(publicClient, {
   - userOps can be called a total of `count` times, and the available amount only decreases with use (no reset over time).
   - Each userOps call must have at least an `interval` of time between it and the next call.
 
-### example
+#### example
 
 if you want to set recurring payment logic for every month without reset and expect to live for next 2 years, paramters will be
 
@@ -84,6 +90,6 @@ if you want to set it with reset, parameters will be
   startAt : 0 or undefined
 ```
 
-## Notice
+### Notice
 
 Although RateLimitWithReset is powerful, it violates erc4337 opcode rule to access `block.timestamp` this will only work with bundlers that accepts this opcode
