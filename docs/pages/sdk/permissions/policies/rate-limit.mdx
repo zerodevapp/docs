@@ -30,3 +30,60 @@ Arguments to `toRateLimitPolicy`:
 - (optional) `interval`: the length of the interval, in seconds.
   - If not specified, then the interval is infinite, which means that you can use `count` to specify the number of times the signer can send UserOps in total.
 - (optional) `startAt`: the starting UNIX timestamp for when the rate limit should take effect.  Before that, the signer cannot send any UserOps.
+
+# Rate Limit Policy with reset
+
+## API
+
+```ts
+import { toRateLimitPolicy, RATE_LIMIT_POLICY_WITH_RESET_CONTRACT } from "@zerodev/permissions/policies"
+
+// In this example, the signer can send one UserOp per month
+const rateLimitPolicy = toRateLimitPolicy({
+  count: 1,
+  interval: 60 * 60 * 24 * 30,  // one month in seconds
+})
+
+const validator = toPermissionValidator(publicClient, {
+  policyAddress : RATE_LIMIT_POLICY_WITH_RESET_CONTRACT,
+  entryPoint,
+  kernelVersion,
+  signer: someSigner,
+  policies: [
+    rateLimitPolicy,
+    // ...other policies
+  ],
+})
+```
+
+## Comparison with Rate Limit Policy without reset
+
+- With reset
+  - userOps can be called up to `count` times within a given `interval`.
+  - The amount of available userOps resets when the current `interval` expires (meaning you get `count` uses again).
+
+- Without reset
+  - userOps can be called a total of `count` times, and the available amount only decreases with use (no reset over time).
+  - Each userOps call must have at least an `interval` of time between it and the next call.
+
+### example
+
+if you want to set recurring payment logic for every month without reset and expect to live for next 2 years, paramters will be
+
+```
+  count : 24,
+  interval : 60 * 60 * 24 * 30 // 30 days for month
+  startAt : <Current timestamp in UNIX timestamp format>
+```
+
+if you want to set it with reset, parameters will be
+
+```
+  count : 1,
+  interval : 60 * 60 * 24 * 30 // 30 days for month
+  startAt : 0 or undefined
+```
+
+## Notice
+
+Although RateLimitWithReset is powerful, it violates erc4337 opcode rule to access `block.timestamp` this will only work with bundlers that accepts this opcode
