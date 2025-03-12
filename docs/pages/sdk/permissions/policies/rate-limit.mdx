@@ -2,7 +2,16 @@
 
 The rate limit policy specifies the frequency at which the signer is allowed to send UserOps.
 
-## API
+We have two types of rate limit policies:
+
+- **Rate limits with no reset**: send one UserOp per `interval`, for up to `count` times.
+- **Rate limits with reset**: send `count` UserOps within an `interval`, for an indefinite number of intervals.
+
+## Rate limit with no reset
+
+Send one UserOp per `interval`, for up to `count` times.  Each UserOp call must have at least an `interval` of time between it and the next call.
+
+### API
 
 ```ts
 import { toRateLimitPolicy } from "@zerodev/permissions/policies"
@@ -26,19 +35,19 @@ const validator = toPermissionValidator(publicClient, {
 
 Arguments to `toRateLimitPolicy`:
 
-- `count`: the number of times the signer can send UserOps in the given internal.
-- (optional) `interval`: the length of the interval, in seconds.
-  - If not specified, then the interval is infinite, which means that you can use `count` to specify the number of times the signer can send UserOps in total.
+- `count`: the number of intervals.
+- (optional) `interval`: the length of an interval.
 - (optional) `startAt`: the starting UNIX timestamp for when the rate limit should take effect.  Before that, the signer cannot send any UserOps.
 
-## Using RateLimitPolicy with reset
+## Rate limit with reset
 
-### API
+Send `count` UserOps within an `interval`, for an indefinite number of intervals.
 
 The Rate Limit Policy with reset allows you to define a recurring allowance of UserOps that refreshes after each interval period. This is useful for creating recurring permissions that automatically renew, such as monthly subscription payments or regular administrative actions.
 
-Unlike the standard Rate Limit Policy which counts down a total number of allowed operations, the reset version gives the signer a fresh allocation of operations after each interval passes.
+### API
 
+Unlike the standard Rate Limit Policy which counts down a total number of allowed operations, the reset version gives the signer a fresh allocation of operations after each interval passes.
 
 ```ts
 import { toRateLimitPolicy, RATE_LIMIT_POLICY_WITH_RESET_CONTRACT } from "@zerodev/permissions/policies"
@@ -62,19 +71,9 @@ const validator = toPermissionValidator(publicClient, {
 })
 ```
 
-### Comparison with Rate Limit Policy without reset
+## Examples
 
-- With reset
-  - userOps can be called up to `count` times within a given `interval`.
-  - The amount of available userOps resets when the current `interval` expires (meaning you get `count` uses again).
-
-- Without reset
-  - userOps can be called a total of `count` times, and the available amount only decreases with use (no reset over time).
-  - Each userOps call must have at least an `interval` of time between it and the next call.
-
-#### example
-
-if you want to set recurring payment logic for every month without reset and expect to live for next 2 years, paramters will be
+If you want to do a monthly payment for 2 years (no reset after two years), the parameters will be:
 
 ```
   count : 24,
@@ -82,14 +81,16 @@ if you want to set recurring payment logic for every month without reset and exp
   startAt : <Current timestamp in UNIX timestamp format>
 ```
 
-if you want to set it with reset, parameters will be
+If you want to do a monthly payment indefinitely, the parameters will be:
 
 ```
+  policyAddress : RATE_LIMIT_POLICY_WITH_RESET_CONTRACT,
   count : 1,
   interval : 60 * 60 * 24 * 30 // 30 days for month
   startAt : 0 or undefined
 ```
 
-### Notice
+## Notes
 
-Although RateLimitWithReset is powerful, it violates erc4337 opcode rule to access `block.timestamp` this will only work with bundlers that accepts this opcode
+- We are aware that the semantics of `count` and `interval` changes completely between the `no reset` version and the `reset` version and it's very confusing; this is technical debt we intend to clean up.
+- The `reset` version technically violates ERC-4337 storage rules since it needs to access `block.timestamp`, so it won't work with all bundler, but it's known to work with [UltraRelay](https://docs.zerodev.app/sdk/core-api/sponsor-gas#ultrarelay) and Pimlico.
