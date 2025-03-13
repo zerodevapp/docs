@@ -1,0 +1,157 @@
+---
+authors:
+    - "[derek](https://twitter.com/decentrek)"
+date: 2025-03-13
+layout: minimal
+---
+
+# What does EIP-7702 mean for YOU?  Part 2 -- DApp Developers
+
+::authors
+
+<i>
+[This article was originally published on X.](https://x.com/decentrek/status/1900231172640432580)
+</i>
+
+<br/>
+
+In [part one](https://x.com/decentrek/status/1846216581979734156) of this series, we explored how the adoption of EIP-7702 will play out.
+
+In part two, I’d like to zoom in on how EIP-7702 will impact *DApps*, and what you can do as a DApp developer to take advantage of EIP-7702.
+
+# Quick overview of EIP-7702
+
+First, a quick recap.  EIP-7702 is one of the EIPs slated to go live with Ethereum's next upgrade (Pectra), scheduled for April 2025.
+
+With EIP-7702, an EOA can "upgrade" itself into a smart account, while simultaneously remaining an EOA and keeping the same address.
+
+Once the account has been upgraded, the user can then experience most of the benefits of AA such as gas sponsorship, transaction batching, passkeys, etc.
+
+# Two types of DApps
+
+For the purpose of this article, we will differentiate between two types of dapps, which I call “open dapps” and “closed dapps.”
+
+- “Open dapps” are dapps where users bring their own wallets.  This is the type of dapps we are most used to.
+    - Examples include Uniswap, AAVE, etc.
+- “Closed dapps” are dapps that work primarily (or exclusively) through an embedded wallet.  In a sense, a closed dapp is a wallet with a DApp-specific UI, but I refer to them as dapps to distinguish them from general-purpose wallets like MetaMask.
+    - Examples from ZeroDev customers include Infinex, DeFi.app, and Nekodex
+
+# EIP-7702 for Open DApps
+
+Recently, MetaMask publicly [committed to supporting EIP-7702](https://metamask.io/news/metamask-roadmap-2025), and it’s only reasonable to expect that other major wallets will soon follow.  Therefore, developers of open dapps must adjust to a new reality: **the wallet your user connects to your dapp MAY be a smart wallet, and increasingly more likely so**.
+
+This leads to two questions:
+
+- How do you know if a connected wallet is a smart wallet?
+- If your user connects with a smart wallet, what do you do?
+
+### Detecting a smart wallet
+
+Detecting a smart wallet is simple — [ERC-5792](https://eips.ethereum.org/EIPS/eip-5792) defines a standard RPC `wallet_getCapabilities` which returns a list of “capabilities” that the wallet supports.  For example, a wallet might respond with the following:
+
+```tsx
+{
+  "0x0": {
+    "permissions": {
+      "supported": true
+    }
+  },
+  "0x2105": {
+    "paymasterService": {
+      "supported": true
+    },
+  },
+}
+```
+
+Here, the special value `0x0` indicates that the wallet supports the capability `permissions` (transaction delegation) on all networks, whereas it supports `paymasterService` (gas sponsorship) only on chain ID `0x2105` (Base).
+
+Therefore, if your DApp intends to use smart wallet features, it should call [`wallet_getCapabilities`](https://eips.ethereum.org/EIPS/eip-5792#wallet_getcapabilities) after wallet connection (or use [ERC-7846](https://github.com/ethereum/ERCs/blob/abd1c9f4eda2d6ad06ade0e3af314637a27d1ee7/ERCS/erc-7846.md) to batch wallet connection with capabilities discovery), so it knows which capabilities the connected wallet supports.
+
+Luckily, [Viem](https://viem.sh/experimental/eip5792/getCapabilities) and [Wagmi](https://wagmi.sh/core/api/actions/getCapabilities) already support `wallet_getCapabilities`, so you are just one function/hook away from using this RPC.
+
+### Using a smart wallet
+
+Once you discover the capabilities of the smart wallet, you need to decide whether to *use* the capabilities.
+
+Generally, you should decide whether a capability is *required* or *optional* for your dapp.
+
+- *Required* means your dapp cannot function without the capability:
+    - For example, if you are building an AI agent that automates trading for the user, you might *require* that the user’s wallet supports the `permissions` capability, which allows the user to delegate transactions for the AI agent to execute.  Without this capability, your dapp can’t function as intended, so your dapp simply *refuses to work* if the connected wallet does not support `permissions`.
+- *Optional* means your dapp can function without the capability:
+    - For example, if you are building a Web3 game, you might decide that you’d like to sponsor gas for users whose wallet supports gas sponsorship (the `paymasterService` capability).  But if a user’s wallet does NOT support gas sponsorship, they will just pay for their own gas as usual.
+
+Whether you want to require a capability, or keep it optional, is ultimately a product decision.  Is the capability *essential* to your app experience?  Do you have the *engineering bandwidth* to build a *fallback* in case the capability is not supported?  These are all questions that will determine how you handle capabilities (or the lack thereof).
+
+### How to use capabilities
+
+Since smart accounts are smart contracts, they are infinitely flexible and can in theory support an infinite number of capabilities.  **In practice, capabilities follow a 80-20 rule where a few capabilities are able to satisfy most use cases**.  In our experience at ZeroDev, the most useful capabilities are:
+
+- Transaction batching
+- Gas sponsorship
+- Permissions (sometimes known as “session keys”)
+- Chain abstraction
+
+For each of these capabilities, there is or will be a standard wallet interface for DApp developers to use.
+
+Right now, the interface for transaction batching has been standardized with [ERC-5792](https://eips.ethereum.org/EIPS/eip-5792)
+
+For gas sponsorship, [ERC-7677](https://eips.ethereum.org/EIPS/eip-7677) has defined an interface for using ERC-4337 paymasters, though there are other possible approaches to sponsoring gas that don’t depend on ERC-4337.
+
+For permissions, standardization is much harder because there are so many possible approaches, including session keys, session accounts ([ERC-7710](https://eips.ethereum.org/EIPS/eip-7710)), and sub accounts ([ERC-7895](https://github.com/ethereum/ERCs/blob/3d950152b5e3765208b0d63aa5c92f70a07a0cc7/ERCS/erc-7895.md)).  One attempt at unifying these approaches is [ERC-7715](https://eips.ethereum.org/EIPS/eip-7715) but it’s an ongoing effort.
+
+“Chain abstraction” is a rapidly developing area with even more competing approaches, but the good news is that it doesn’t require any complicated wallet interface, which makes standardization easier.  Right now there are at least two ERCs ([ERC-7682](https://eips.ethereum.org/EIPS/eip-7682) and [ERC-7811](https://github.com/ethereum/ERCs/blob/dcb49741ca3e036f32549a67dac8bcedb46a5f41/ERCS/erc-7811.md)) that address chain abstraction, but they are still at an early stage of adoption.
+
+# Do I need to know 100 different ERCs to use EIP-7702?
+
+If you have read this far, you may be thinking to yourself — I sure wish I don’t need to learn about 100 different ERCs just to use EIP-7702!
+
+Well, good news and bad news.  The bad news is that there will indeed be a bunch of different ERCs specifying different capabilities for smart wallets.  The good news is that, with the right tooling, you won’t have to know about most of these ERCs — the library will just take care of it for you.  And you guessed it — ZeroDev is one such library!  We do the hard work of staying at the cutting edge of wallet standardization efforts so you don’t have to.
+
+Now let’s move on to “closed dapps,” where the story is much simpler.
+
+# EIP-7702 for Closed DApps
+
+A “closed dapp” is a dapp that works primarily or exclusively through an embedded wallet.  Most AA applications today are closed dapps, because only embedded wallets support smart accounts, not standalone wallets.  As mentioned above, that will change once existing standalone wallets become smart wallets by adopting EIP-7702.
+
+The story of EIP-7702 for closed dapps is quite a bit simpler, because the dapp doesn’t need to deal with a myriad of wallets with different capabilities.  Rather, the dapp is programmed against a single wallet — the embedded wallet — and has full control over the capabilities that the wallet offers.
+
+Therefore, the only decision a closed dapp has to make is this: should the embedded wallet be using a regular smart account, or a EIP-7702 account (smart EOA)?
+
+### Smart EOAs vs regular smart accounts
+
+A regular smart account — that is, a smart account that is only a smart contract and NOT a EOA — has a number of advantages over a smart EOA:
+
+- A regular smart account can use a non-ECDSA key, e.g. a passkey, as the primary key.  Therefore, the smart account does not need to depend on the user securing a seed phrase or using a third-party key storage system (such as an MPC system).  Rather, the key can be secured through consumer security enclaves such as the iPhone.
+- Since a regular smart account is NOT tied to a ECDSA key, it can revoke/rotate keys.  In contrast, with a EIP-7702 account, it’s impossible to revoke/rotate the root ECDSA key — it will ALWAYS has root access to the account.
+
+On the other hand, a smart EOA also has a number of advantages:
+
+- Not dependent on smart account infra: Since a EIP-7702 account is also a EOA, it can send transactions without relying on any “smart account infrastructure” such as ERC-4337 bundlers.  This is especially important if you want your account to work on new networks, which may only support regular node RPCs but not bundler RPCs.
+- No lock-in with any smart account implementation.
+    - A regular smart account is typically deployed through `CREATE2` via a particular contract factory.  Therefore, even if the account was later updated to using another implementation, it will always be deployed with the original implementation on a new network.  Keystores would solve this problem, but they are not production-ready yet.
+    - On the other hand, since the address of a smart EOA is derived solely from its private key, the address is not tied to any specific smart account implementation.  Rather, you can easily re-delegate a smart EOA to a different smart account implementation.
+- Interoperability with EOA wallets: since a smart EOA is just a EOA, the user can import it into any EOA wallets by importing the private key.  In contrast, a regular smart account cannot be easily imported into existing wallets.
+
+To sum up, regular smart accounts and smart EOAs (EIP-7702 accounts) both have their advantages.  To choose between them, follow these general guidelines:
+
+- You will likely want to build on regular smart accounts if:
+    - You want to build exclusively on passkeys because 1) you want to save users from having to manage seed phrases, or 2) you do not want to pay for a third-party MPC system to manage EOA keys for users.
+    - You want your users to have the ability to revoke/rotate all their keys.
+- You will likely want to build on EIP-7702 accounts if:
+    - You do NOT want to be tied to any specific smart account implementation.
+    - You want your DApp to work on new networks that may or may not have smart account infra (e.g. bundlers).
+    - You expect your users to send a lot of regular transactions without using any smart account features (batching, sponsorship, permissions, etc.).
+    - You want your users to be able to import their accounts to other wallets.
+
+# Conclusion
+
+EIP-7702 holds incredible promise for DApp developers to build Web3 experiences that were not possible before.  However, it comes with a unique set of challenges, notably *capability fragmentation* — many capabilities have not been sufficiently standardized, so DApps may have to write different code for different smart wallets.
+
+However, with the right tools, it won’t be so hard to build on EIP-7702 as a DApp developer.
+
+- ZeroDev is partnering with all leading embedded wallet providers (e.g. Privy/Dynamic/Turnkey) so you can turn your embedded wallets into EIP-7702 smart EOAs with just a few lines of code.
+
+- With the ZeroDev SDK, you can easily build on any capabilities, from the basics such as transaction batching and gas sponsorship, to the advanced such as permissions and chain abstraction.  The ZeroDev SDK will always be compatible with the latest standards, so you can rest assured that the code you write today will continue to work tomorrow, as more and more wallets become smart.
+
+If you are ready to get your feet wet with EIP-7702, head to [this tutorial](https://docs.zerodev.app/sdk/getting-started/quickstart-7702) now!
