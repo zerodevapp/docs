@@ -1,8 +1,6 @@
 # Pimlico
 
-[Pimlico](https://www.pimlico.io/) is a leading AA infra provider with a wide coverage of networks.
-
-Note that ZeroDev is built on top of Pimlico's [Permissionless](https://docs.pimlico.io/permissionless/reference) SDK, so if you were already using Permissionless, it's easy to switch to ZeroDev to take full advantage of the power of [Kernel](https://github.com/zerodevapp/kernel).
+You can use the ZeroDev SDK with Pimlico bundlers.
 
 ## Using Pimlico bundler
 
