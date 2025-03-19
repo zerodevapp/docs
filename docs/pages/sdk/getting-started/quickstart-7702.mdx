@@ -47,7 +47,7 @@ import { createWalletClient, Hex, http } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import { sepolia } from 'viem/chains'
 import { eip7702Actions } from 'viem/experimental'
-import { KERNEL_V3_3_BETA, KernelVersionToAddressesMap } from '@zerodev/sdk'
+import { KERNEL_V3_3_BETA, KernelVersionToAddressesMap } from '@zerodev/sdk/constants'
 
 const kernelVersion = KERNEL_V3_3_BETA
 const signer = privateKeyToAccount(process.env.PRIVATE_KEY as Hex)
