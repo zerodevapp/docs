@@ -99,7 +99,7 @@ const account = await createKernelAccount(publicClient, {
   kernelVersion,
 
   // Set the 7702 authorization
-  eip7702auth: authorization,
+  eip7702Auth: authorization,
 
   // Set the address of the smart account to the EOA address
   address: signer.address,
@@ -128,7 +128,7 @@ Don't worry if the code doesn't make too much sense -- you can read more about t
 
 Comparing to the normal setup process, there are two main differences:
 
-- When you set up the Kernel account, specify `eip7702auth: authorization` so that the SDK can handle the upgrade using your authorization.
+- When you set up the Kernel account, specify `eip7702Auth: authorization` so that the SDK can handle the upgrade using your authorization.
 
 - When you set up the Kernel account, you specify `address: signer.address` to explicitly set the address of the smart account to the EOA address.  Otherwise, the SDK would compute the smart account address from its init data, which is how smart accounts normally work.  With 7702 however, the account address is the EOA address.
 
