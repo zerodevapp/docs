@@ -153,17 +153,12 @@ To spend your CAB on a transaction, use `sendUserIntent`:
 
 ```ts
 const result = await intentClient.sendUserIntent({
-  // You can batch any number of calls here
+  // Execute any number of calls in a batch
   calls: [
     {
-      // USDC on base
-      to: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
-      value: BigInt(0),
-      data: encodeFunctionData({
-        abi: erc20Abi,
-        functionName: 'transfer',
-        args: [account.address, parseUnits('1', 6)],
-      }),
+      to: ...,
+      value: ...,
+      data: ...,
     },
   ],
   outputTokens: [
@@ -212,16 +207,12 @@ Here's a real example for using USDC on Arbitrum to execute a transaction on Bas
 
 ```ts
 const result = await intentClient.sendUserIntent({
+  // Execute any number of calls in a batch
   calls: [
     {
-      // USDC on base
-      to: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
-      value: BigInt(0),
-      data: encodeFunctionData({
-        abi: erc20Abi,
-        functionName: 'transfer',
-        args: [account.address, parseUnits('1', 6)],
-      }),
+      to: ...,
+      value: ...,
+      data: ...,
     },
   ],
   inputTokens: [
