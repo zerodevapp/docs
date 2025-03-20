@@ -79,7 +79,6 @@ import { createKernelAccount } from '@zerodev/sdk/accounts'
 import { signerToEcdsaValidator } from '@zerodev/ecdsa-validator'
 
 const entryPoint = getEntryPoint("0.7")
-const kernelVersion = KERNEL_V3_1
 const publicClient = createPublicClient({
   chain,
   transport: http(process.env.BUNDLER_RPC),
