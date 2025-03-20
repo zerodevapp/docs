@@ -197,13 +197,13 @@ By default, when you spend CAB, the SDK uses tokens from chains with the highest
 ```ts
 const result = await intentClient.sendUserIntent({
   calls: [
-    // ...
+    // execute any number of calls in an atomic batch
   ],
   inputTokens: [
-    // ...
+    // tokens from source chains
   ],
   outputTokens: [
-    // ...
+    // tokens for the target chain
   ],
 })
 ```
