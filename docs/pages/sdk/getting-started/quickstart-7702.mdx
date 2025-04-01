@@ -73,7 +73,6 @@ Now that you have the authorization, you can proceed to set up the ZeroDev SDK.
 import { createPublicClient } from 'viem'
 import { getEntryPoint, KERNEL_V3_1 } from '@zerodev/sdk/constants'
 import { createKernelAccountClient } from '@zerodev/sdk'
-import { getUserOperationGasPrice } from '@zerodev/sdk/actions'
 import { createKernelAccount } from '@zerodev/sdk/accounts'
 import { signerToEcdsaValidator } from '@zerodev/ecdsa-validator'
 
@@ -114,11 +113,6 @@ const kernelClient = createKernelAccountClient({
   bundlerTransport: http(process.env.BUNDLER_RPC),
   paymaster: paymasterClient,
   client: publicClient,
-  userOperation: {
-    estimateFeesPerGas: async ({ bundlerClient }) => {
-      return getUserOperationGasPrice(bundlerClient);
-    },
-  },
 })
 ```
 

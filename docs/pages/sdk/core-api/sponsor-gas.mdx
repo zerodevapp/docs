@@ -34,7 +34,7 @@ const entryPoint = getEntryPoint("0.7")
 const paymasterClient = createZeroDevPaymasterClient({
   chain,
   // Get this RPC from ZeroDev dashboard
-  transport: http(PAYMASTER_RPC),
+  transport: http(ZERODEV_RPC),
 })
 
 const kernelClient = createKernelAccountClient({
@@ -91,7 +91,7 @@ This makes UltraRelay the best solution for gas sponsorship.
 
 To use UltraRelay, simply update your `createKernelAccountClient` config as follows:
 
-- Append `?provider=ULTRA_RELAY` to your bundler RPC.
+- Append `?provider=ULTRA_RELAY` to your ZeroDev RPC.
 - (optional) Do NOT set the [paymaster middleware](#api), which will save you some latency.
 - (optional) Set a no-op gas estimation middleware, which will save you even more latency.
 
@@ -101,7 +101,7 @@ Here's how it looks like in code:
 const kernelClient = createKernelAccountClient({
   account,
   chain,
-  bundlerTransport: http(BUNDLER_RPC+`?provider=ULTRA_RELAY`),
+  bundlerTransport: http(ZERODEV_RPC+`?provider=ULTRA_RELAY`),
   userOperation: {
     estimateFeesPerGas: async ({ bundlerClient }) => {
       return {

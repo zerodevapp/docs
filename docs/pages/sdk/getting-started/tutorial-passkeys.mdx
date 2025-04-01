@@ -122,11 +122,6 @@ const createAccountAndClient = async (passkeyValidator: any) => {
         }) // [!code focus]
       } // [!code focus]
     }, // [!code focus]
-    userOperation: { // [!code focus]
-      estimateFeesPerGas: async ({bundlerClient}) => { // [!code focus]
-        return getUserOperationGasPrice(bundlerClient) // [!code focus]
-      } // [!code focus]
-    } // [!code focus]
   }) // [!code focus]
 
   setIsKernelClientReady(true) // [!code focus]

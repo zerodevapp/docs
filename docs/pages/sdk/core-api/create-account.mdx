@@ -135,9 +135,8 @@ const kernelClient = createKernelAccountClient({
   // Replace with your chain
   chain: base,
 
-  // Replace with your bundler RPC.
-  // For ZeroDev, you can find the RPC on your dashboard.
-  bundlerTransport: http('BUNDLER_RPC'),
+  // Find the RPC in your ZeroDev dashboard
+  bundlerTransport: http('ZERODEV_RPC'),
 
   // Required - the public client
   client: publicClient,
@@ -148,20 +147,12 @@ const kernelClient = createKernelAccountClient({
       return paymasterClient.sponsorUserOperation({userOperation})
     }  
   },
-
-  // Required - the default gas prices might be too high
-  userOperation: {
-    estimateFeesPerGas: async ({bundlerClient}) => {
-      return getUserOperationGasPrice(bundlerClient)
-    }
-  }
 })
 ```
 
 Note that:
 
-- You need to replace the `BUNDLER_RPC` with an actual bundler RPC.
-  - For ZeroDev, you can find the RPC on your dashboard.
+- You need to replace the `ZERODEV_RPC` with the RPC found on your ZeroDev dashboard.
 - You need to make sure to set the right `chain`.
 - `paymaster` only needs to be specified if you want to [use a paymaster](/sdk/core-api/sponsor-gas).
 

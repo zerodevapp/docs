@@ -39,7 +39,7 @@ Create the following `tsconfig.json` (TypeScript config):
 Create a script `index.ts` with the following code:
 
 ```ts
-import { createKernelAccount, createKernelAccountClient, createZeroDevPaymasterClient, getUserOperationGasPrice } from "@zerodev/sdk"
+import { createKernelAccount, createKernelAccountClient, createZeroDevPaymasterClient } from "@zerodev/sdk"
 import { KERNEL_V3_1, getEntryPoint } from "@zerodev/sdk/constants"
 import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
 import { http, createPublicClient, zeroAddress } from "viem"
@@ -97,13 +97,6 @@ const main = async () => {
             return zerodevPaymaster.sponsorUserOperation({userOperation})
         }
     },
- 
-    // Required - the default gas prices might be too high
-    userOperation: {
-      estimateFeesPerGas: async ({bundlerClient}) => {
-          return getUserOperationGasPrice(bundlerClient)
-      }
-    }
   })
  
   const accountAddress = kernelClient.account.address

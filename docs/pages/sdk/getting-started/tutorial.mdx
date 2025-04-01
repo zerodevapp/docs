@@ -132,11 +132,6 @@ const main = async () => {
             return zerodevPaymaster.sponsorUserOperation({userOperation})
         }
     },
-    userOperation: {
-      estimateFeesPerGas: async ({bundlerClient}) => {
-          return getUserOperationGasPrice(bundlerClient)
-      }
-    }
   })
 
   const accountAddress = kernelClient.account.address

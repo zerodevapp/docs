@@ -38,11 +38,6 @@ const kernelClient1 = createKernelAccountClient({
             })
         }
     },
-    userOperation: {
-        estimateFeesPerGas: async ({bundlerClient}) => {
-            return getUserOperationGasPrice(bundlerClient)
-        }
-    },
     entryPoint
 })
 
@@ -61,11 +56,6 @@ const kernelClient2 = createKernelAccountClient({
             return zeroDevPaymasterClient.sponsorUserOperation({
                 userOperation,
             })
-        }
-    },
-    userOperation: {
-        estimateFeesPerGas: async ({bundlerClient}) => {
-            return getUserOperationGasPrice(bundlerClient)
         }
     },
 })
