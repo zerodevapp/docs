@@ -4,7 +4,7 @@
 Impatient?  Check out [the complete example here](https://github.com/zerodevapp/zerodev-examples/tree/main/tutorial/completed.ts).
 :::
 
-In this tutorial, we will mint an NFT without paying gas. We assume that you have a high-level understanding of AA concepts such as bundlers, paymasters, and UserOp; if not, read [the introduction](/) first.
+In this tutorial, we will mint an NFT without paying gas.
 
 ## Create a ZeroDev Project
 
@@ -16,23 +16,15 @@ Go to the [ZeroDev dashboard](https://dashboard.zerodev.app/) and create a proje
   <img src="/img/dashboard_create_project.png" width="50%" />
 </p>
 
-<p align="center">
-  <img src="/img/dashboard_project_home.png" width="50%" />
-</p>
-
-We will be using the "Project ID" in the next steps.
-
 ## Set up a gas policy
 
-With ZeroDev, by default you are not sponsoring UserOps.  To sponsor UserOps, you need to set up a gas policy.
+To sponsor transactions (UserOps), you need to set up a gas sponsorship policy.
 
-Go to the "Gas Policies" section of your dashboard and create a new "Project Policy":
+Go to the `Gas Policies` section of your dashboard, select `Sepolia`, and toggle `Sponsor all transactions`.
 
 <p align="center">
   <img src="/img/project_policy.png" width="80%" />
 </p>
-
-From now on, when you use the paymaster RPC from the previous step, the paymaster will sponsor UserOps according to the policy you just set up, which in this case is up to 100 UserOps per minute.
 
 ## Write the code
 
@@ -45,10 +37,14 @@ npm install
 Create a `.env` file with the following line:
 
 ```
-ZERODEV_PROJECT_ID=<YOUR_PROJECT_ID>
+ZERODEV_RPC=<YOUR_RPC>
 ```
 
-Replacing `<YOUR_PROJECT_ID>` with your actual project ID from the dashboard, and make sure you are using a project ID for Sepolia.
+Replace `<YOUR_RPC>` with the RPC you copy from the dashboard:
+
+<p align="center">
+  <img src="/img/dashboard_project_home.png" width="80%" />
+</p>
 
 If all goes well, you should be able to run:
 
@@ -123,13 +119,13 @@ const main = async () => {
 
   const zerodevPaymaster = createZeroDevPaymasterClient({
     chain,
-    transport: http(PAYMASTER_RPC),
+    transport: http(ZERODEV_RPC),
   })
 
   const kernelClient = createKernelAccountClient({
     account,
     chain,
-    bundlerTransport: http(BUNDLER_RPC),
+    bundlerTransport: http(ZERODEV_RPC),
     client: publicClient,
     paymaster: {
         getPaymasterData(userOperation) {
