@@ -1,81 +1,33 @@
 # Migration Guide
 
-## (beta) ERC-4337 UserOps => ERC-7683 Intents
+## API v2 => API v3
 
-This is a beta feature.  Only use this if you are in touch with the ZeroDev team.
+With API v3, the notable changes are:
+
+- A ZeroDev project can now support multiple networks.
+- The same RPC can be used for both bundler and paymaster.
+
+Here's what a v3 RPC looks like:
+
+```txt
+https://rpc.zerodev.app/api/v3/55569f2d-5bbf-43e5-90cc-75d43c26e007/chain/42161
+```
+
+Note that the last part `42161` is the chain ID.  Therefore, if you'd like to programmatically use the RPC for different chains, you can do something like:
 
 ```ts
-import { createIntentClient, installIntentExecutor } from "@zerodev/intent" // [!code ++]
-
-const main = async () => {
-  // Construct a Kernel account
-  const account = await createKernelAccount(publicClient, {
-    plugins: {
-      sudo: ecdsaValidator,
-    },
-    entryPoint,
-    kernelVersion,
-    initConfig: [installIntentExecutor], // [!code ++]
-  })
-
-  // Construct a paymaster client
-  const zerodevPaymaster = createZeroDevPaymasterClient({ // [!code --]
-    chain, // [!code --]
-    transport: http(PAYMASTER_RPC), // [!code --]
-  }) // [!code --]
-
-  // Construct a Kernel account client
-  const kernelClient = createKernelAccountClient({ // [!code --]
-    account, // [!code --]
-    chain, // [!code --]
-    bundlerTransport: http(BUNDLER_RPC), // [!code --]
-    client: publicClient, // [!code --]
-    paymaster: { // [!code --]
-        getPaymasterData(userOperation) { // [!code --]
-            return zerodevPaymaster.sponsorUserOperation({userOperation}) // [!code --]
-        } // [!code --]
-    }, // [!code --]
-
-    userOperation: { // [!code --]
-      estimateFeesPerGas: async ({bundlerClient}) => { // [!code --]
-          return getUserOperationGasPrice(bundlerClient) // [!code --]
-      } // [!code --]
-    } // [!code --]
-  }) // [!code --]
-
-  // Construct an intent client
-  const intentClient = createIntentClient({ // [!code ++]
-    account: kernelAccount, // [!code ++]
-    chain, // [!code ++]
-    bundlerTransport: http(bundlerRpc, { timeout }), // [!code ++]
-  }) // [!code ++]
-
-  // Send a UserOp
-  const userOpHash = await kernelClient.sendUserOperation({ // [!code --]
-      callData: await kernelClient.account.encodeCalls([{ // [!code --]
-        // ... // [!code --]
-      }]), // [!code --]
-  }) // [!code --]
-
-  // Send an intent
-  const result = await intentClient.sendUserIntent({ // [!code ++]
-    calls: [ // [!code ++]
-      // ... // [!code ++]
-    ], // [!code ++]
-  }) // [!code ++]
-
-  // Wait for the userop
-  await kernelClient.waitForUserOperationReceipt({ // [!code --]
-    hash: userOpHash, // [!code --]
-    timeout: 1000 * 15, // [!code --]
-  }) // [!code --]
-
-  // Wait for the intent
-  const receipt = await intentClient.waitForUserIntentExecutionReceipt({ // [!code ++]
-    uiHash: result.uiHash, // [!code ++]
-  }) // [!code ++]
-}
+// replace the prefix with your own RPC prefix
+const rpcPrefix = `https://rpc.zerodev.app/api/v3/55569f2d-5bbf-43e5-90cc-75d43c26e007/chain/`
+const rpc = rpcPrefix + chain.id
 ```
+
+Of course, you can also simply copy the RPC for different chains from the dashboard.
+
+<p align="center">
+  <img src="/img/multichain-project.png" width="50%" />
+</p>
+
+The same RPC can then be used as both the bundler RPC and the paymaster RPC.  See [the tutorial](/sdk/getting-started/tutorial#creating-a-kernel-client) for an example.
 
 ## SDK 5.3.x => 5.4.x
 
