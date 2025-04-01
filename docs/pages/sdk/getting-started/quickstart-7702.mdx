@@ -22,17 +22,16 @@ npm i @zerodev/sdk @zerodev/ecdsa-validator viem
 
 In this example, we will use the Sepolia testnet, but you can use any 7702-compatible network such as Holesky and Odyssey.
 
-- Go to [the ZeroDev dashboard](https://dashboard.zerodev.app) and create a project for `Ethereum Sepolia`.
-- Create a gas policy so that we can send sponsored transactions later.
-  - A simple "project policy" for "100 requests per minute" will do.
+- Go to [the ZeroDev dashboard](https://dashboard.zerodev.app) and create a project for `Sepolia`.
+- Enable gas sponsorship for Sepolia under `Gas Policies`.
 - Create a `.env` file as follows:
 
 ```env
 PRIVATE_KEY=
-PROJECT_ID=
+ZERODEV_RPC=
 ```
 
-Use the project ID from the dashboard.  The private key can be any test EOA key.
+Use the ZeroDev RPC from the dashboard.  The private key can be any test EOA key.
 
 ## Sign a 7702 authorization
 

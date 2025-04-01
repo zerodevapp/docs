@@ -28,8 +28,8 @@ For this tutorial, [create a ZeroDev project](https://dashboard.zerodev.app) for
 On `app/page.tsx`, fill out these variables with the URLs found on your dashboard.
 
 ```ts
-const BUNDLER_URL = ""
-const PAYMASTER_URL = ""
+const ZERODEV_RPC = ""
+const ZERODEV_RPC = ""
 const PASSKEY_SERVER_URL = ""
 ```
 
@@ -109,13 +109,13 @@ const createAccountAndClient = async (passkeyValidator: any) => {
   kernelClient = createKernelAccountClient({ // [!code focus]
     account: kernelAccount, // [!code focus]
     chain: CHAIN, // [!code focus]
-    bundlerTransport: http(BUNDLER_URL), // [!code focus]
+    bundlerTransport: http(ZERODEV_RPC), // [!code focus]
     client: publicClient, // [!code focus]
     paymaster: { // [!code focus]
       getPaymasterData: (userOperation) => { // [!code focus]
         const zerodevPaymaster = createZeroDevPaymasterClient({ // [!code focus]
           chain: CHAIN, // [!code focus]
-          transport: http(PAYMASTER_URL), // [!code focus]
+          transport: http(ZERODEV_RPC), // [!code focus]
         }) // [!code focus]
         return zerodevPaymaster.sponsorUserOperation({ // [!code focus]
           userOperation, // [!code focus]
