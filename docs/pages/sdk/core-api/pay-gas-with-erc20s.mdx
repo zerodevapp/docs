@@ -10,7 +10,7 @@ Impatient?  Check out [complete examples here](https://github.com/zerodevapp/zer
 
 A smart account can pay gas with ERC20 tokens.  As a result, your users don't have to own any native gas tokens (e.g. ETH) in order to use Web3.  Instead, they can just use stablecoins or even your project's own tokens.  When your users pay gas with ERC20 tokens, we add 5% to the exchange rate to make a profit.
 
-ZeroDev supports two USDC paymasters: the Circle paymaster and the Legacy paymaster.  Generally, the Circle paymaster gives you better exchange rates, while the Legacy paymaster is available on more networks.
+ZeroDev supports two USDC paymasters: the Circle paymaster and the ZeroDev paymaster.  Generally, the Circle paymaster gives you better exchange rates, while the ZeroDev paymaster is available on more networks.
 
 ## Circle Paymaster
 
@@ -51,7 +51,7 @@ const kernelClient = createKernelAccountClient({
 
 Now you can use the Kernel client as usual, and you will be paying gas with USDC!
 
-## Legacy Paymaster
+## ZeroDev Paymaster
 
 On a high level, you need to do two things to enable a smart account to pay gas in a particular ERC20 token:
 
@@ -169,7 +169,7 @@ Currently, our ERC20 Paymaster supports USDC on the following networks:
 - **Optimism**
 - **Arbitrum**
 
-If you want to use a different token, you can either reach out to us or deploy your own Self-Funded ERC20 Paymaster.
+If you want to use a different token or support a new network, you can either reach out to us or deploy your own Self-Funded ERC20 Paymaster.
 
 ### Deploy Your Own ERC20 Paymaster
 
