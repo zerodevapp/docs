@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "vocs dev",
     "build": "vocs build",
-    "preview": "vocs preview"
+    "preview": "vocs preview",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "react": "19",
@@ -13,6 +14,7 @@
   },
   "devDependencies": {
     "@types/react": "19",
+    "prettier": "^3.5.3",
     "typescript": "5"
   }
 }
