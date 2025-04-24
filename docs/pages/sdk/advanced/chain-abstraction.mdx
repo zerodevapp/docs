@@ -101,7 +101,7 @@ const kernelVersion = KERNEL_V3_2;
 - When setting up the `kernelAccount`, set up the `initConfig` to install the intent executor:
 
 ```ts
-import { installIntentExecutor, INTENT_V0_3 } from '@zerodev/intent'
+import { installIntentExecutor, INTENT_V0_4 } from '@zerodev/intent'
 
 const kernelAccount = await createKernelAccount(publicClient, {
   plugins: {
@@ -109,7 +109,7 @@ const kernelAccount = await createKernelAccount(publicClient, {
   },
   kernelVersion,
   entryPoint,
-  initConfig: [installIntentExecutor(INTENT_V0_3)]
+  initConfig: [installIntentExecutor(INTENT_V0_4)]
 })
 ```
 
@@ -120,7 +120,7 @@ const intentClient = createIntentClient({
   chain,
   account: kernelAccount,
   bundlerTransport: http(bundlerRpc),
-  version: INTENT_V0_3
+  version: INTENT_V0_4
 })
 ```
 
@@ -240,6 +240,41 @@ When using intents, you may use the `gasToken` flag to configure how to pay gas.
 - By default (with no `gasToken` specified), gas is paid in CAB (input tokens) itself.
 - If you specify `gasToken: 'NATIVE'`, the account will pay gas with the native token (e.g. ETH).
 - If you specify `gasToken: 'SPONSORED'`, you will be [sponsoring gas](/sdk/core-api/sponsor-gas) for the account.
+
+### Parallel intent execution
+
+:::info
+Parallel intent execution requires `INTENT_V0_4` or above.
+:::
+
+ZeroDev supports executing multiple intents simultaneously, enabling you to batch multiple cross-chain transactions in parallel. This is particularly useful when you need to execute several independent transactions at the same time.
+
+To execute intents in parallel, you'll need to use different nonce keys for each intent:
+
+```ts
+import { getCustomNonceKeyFromString } from '@zerodev/intent'
+
+const sendIntent = async (nonceKey: bigint) => {
+  // send intent
+  const result = await intentClient.sendUserIntent({
+    calls: [
+      {
+        to: zeroAddress,
+        value: BigInt(0),
+        data: '0x',
+      },
+    ],
+    chainId: chain.id,
+    nonceKey,
+  });
+}
+
+const nonceKey = getCustomNonceKeyFromString('nonce');
+const nonceKey2 = getCustomNonceKeyFromString('nonce2');
+
+// send intents in parallel
+await Promise.all([sendIntent(nonceKey), sendIntent(nonceKey2)]);
+```
 
 ### Waiting for intents to resolve
 
