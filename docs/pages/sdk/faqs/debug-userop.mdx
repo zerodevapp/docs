@@ -82,15 +82,15 @@ To simulate a UserOp in Tenderly, follow these steps:
   <img src="/img/tenderly_account.png" width="100%" />
 </p>
     
-2. Navigate to **`Simulator`** and click **`New Simulation`**.
+1. Navigate to **`Simulator`** and click **`New Simulation`**.
 
 <p align="center">
   <img src="/img/new_simulation.png" width="100%" />
 </p>
     
-3. Enter the EntryPoint contract address in `Insert any address` input and select the appropriate chain.
+1. Enter the EntryPoint contract address in `Insert any address` input and select the appropriate chain.
     - The EntryPoint address is `0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789` for v0.6 (default for ZeroDev SDK v5.1.x or below) and `0x0000000071727De22E5E9d8BAf0edAc6f37da032` for v0.7 (default for ZeroDev SDK v5.2.x or above)
-4. Choose **`simulateHandleOp`**, input the UserOp into the tuple field, and commence the simulation.
+2. Choose **`simulateHandleOp`**, input the UserOp into the tuple field, and commence the simulation.
 
 If the simulation fails, it typically indicates a problem with the end contract. Verify the initial calldata thoroughly.
 
