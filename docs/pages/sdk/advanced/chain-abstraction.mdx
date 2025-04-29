@@ -240,6 +240,7 @@ When using intents, you may use the `gasToken` flag to configure how to pay gas.
 - By default (with no `gasToken` specified), gas is paid in CAB (input tokens) itself.
 - If you specify `gasToken: 'NATIVE'`, the account will pay gas with the native token (e.g. ETH).
 - If you specify `gasToken: 'SPONSORED'`, you will be [sponsoring gas](/sdk/core-api/sponsor-gas) for the account.
+- If you specify `gasToken: 'USDC'` or `gasToken: 'USDT'`, you will pay gas with the specified stablecoin.
 
 ### Parallel intent execution
 
