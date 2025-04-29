@@ -10,6 +10,8 @@ In this example, we will upgrade a EOA into a ZeroDev smart account ([Kernel](ht
 
 Here's [the complete code example](https://github.com/zerodevapp/zerodev-examples/blob/main/7702/7702.ts) for you to reference as you follow along.
 
+You can run the example with `npx ts-node 7702/7702.ts` after you [set up the repo](https://github.com/zerodevapp/zerodev-examples?tab=readme-ov-file#zerodev-examples).
+
 ## Install packages
 
 You will be using the following packages:
@@ -27,102 +29,58 @@ In this example, we will use the Sepolia testnet, but you can use any 7702-compa
 - Create a `.env` file as follows:
 
 ```env
-PRIVATE_KEY=
 ZERODEV_RPC=
 ```
 
-Use the ZeroDev RPC from the dashboard.  The private key can be any test EOA key.
+Use the ZeroDev RPC for Sepolia from the dashboard.
 
-## Sign a 7702 authorization
-
-To upgrade a EOA into a smart account, the first step is to produce a "7702 authorization," which is a signed message that specifies the address of a smart contract that should be "copied" into the EOA.  In practice, to minimize the cost of copying, this smart contract will be a proxy that points to the actual smart account implementation, which in our case is Kernel.
-
-In this example, we will be upgrading an EOA generated from the private key, but it can be any EOA (such as an existing wallet) so long as the EOA is able to sign 7702 authorizations.  If you are the developer of an existing EOA wallet and you don't know how to update your signing logic to support 7702, please reach out.
-
-To produce the authorization, we use [Viem](https://viem.sh/experimental/eip7702):
-
-```ts
-import { createWalletClient, Hex, http } from 'viem'
-import { privateKeyToAccount } from 'viem/accounts'
-import { sepolia } from 'viem/chains'
-import { eip7702Actions } from 'viem/experimental'
-import { KERNEL_V3_3_BETA, KernelVersionToAddressesMap } from '@zerodev/sdk/constants'
-
-const kernelVersion = KERNEL_V3_3_BETA
-const signer = privateKeyToAccount(process.env.PRIVATE_KEY as Hex)
-const chain = sepolia
-console.log("EOA Address:", signer.address)
-
-const walletClient = createWalletClient({
-  chain,
-  account: signer,
-  transport: http(),
-}).extend(eip7702Actions())
-
-const authorization = await walletClient.signAuthorization({
-  contractAddress: KernelVersionToAddressesMap[kernelVersion].accountImplementationAddress,
-  delegate: true,
-})
-```
 
 ## Set up the ZeroDev SDK
 
-Now that you have the authorization, you can proceed to set up the ZeroDev SDK.
+Set up a ZeroDev account using the 7702 helper functions: 
 
 ```ts
-import { createPublicClient } from 'viem'
-import { getEntryPoint, KERNEL_V3_1 } from '@zerodev/sdk/constants'
-import { createKernelAccountClient } from '@zerodev/sdk'
-import { createKernelAccount } from '@zerodev/sdk/accounts'
-import { signerToEcdsaValidator } from '@zerodev/ecdsa-validator'
+import { create7702KernelAccount, create7702KernelAccountClient } from "@zerodev/ecdsa-validator";
+import { createZeroDevPaymasterClient } from "@zerodev/sdk";
+import { KERNEL_V3_3 } from "@zerodev/sdk/constants";
 
-const entryPoint = getEntryPoint("0.7")
+const kernelVersion = KERNEL_V3_3;
+
+const signer = privateKeyToAccount(generatePrivateKey());
+
 const publicClient = createPublicClient({
+  transport: http(),
   chain,
-  transport: http(process.env.BUNDLER_RPC),
-})
+});
 
-const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
+const account = await create7702KernelAccount(publicClient, {
   signer,
   entryPoint,
-  kernelVersion,
-})
-
-const account = await createKernelAccount(publicClient, {
-  plugins: {
-    sudo: ecdsaValidator,
-  },
-  entryPoint,
-  kernelVersion,
-
-  // Set the 7702 authorization
-  eip7702Auth: authorization,
-
-  // Set the address of the smart account to the EOA address
-  address: signer.address,
+  kernelVersion
 })
 
 const paymasterClient = createZeroDevPaymasterClient({
   chain,
-  transport: http(process.env.PAYMASTER_RPC),
-})
+  transport: http(ZERODEV_RPC),
+});
 
-const kernelClient = createKernelAccountClient({
+const kernelClient = create7702KernelAccountClient({
   account,
   chain,
-  bundlerTransport: http(process.env.BUNDLER_RPC),
+  bundlerTransport: http(ZERODEV_RPC),
   paymaster: paymasterClient,
   client: publicClient,
+  userOperation: {
+    estimateFeesPerGas: async ({ bundlerClient }) => {
+      return getUserOperationGasPrice(bundlerClient)
+    }
+  }
 })
 ```
 
 Don't worry if the code doesn't make too much sense -- you can read more about the setup process [here](/sdk/core-api/create-account).
 
-Comparing to the normal setup process, there are two main differences:
-
-- When you set up the Kernel account, specify `eip7702Auth: authorization` so that the SDK can handle the upgrade using your authorization.
-
-- When you set up the Kernel account, you specify `address: signer.address` to explicitly set the address of the smart account to the EOA address.  Otherwise, the SDK would compute the smart account address from its init data, which is how smart accounts normally work.  With 7702 however, the account address is the EOA address.
+Comparing to the normal setup process, the only differences are that you are using `create7702KernelAccount` and `create7702KernelAccountClient`, instead of the normal `createKernelAccount` and `createKernelAccountClient`.
 
 ## Using the ZeroDev SDK
 
