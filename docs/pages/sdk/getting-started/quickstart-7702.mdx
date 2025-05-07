@@ -29,13 +29,16 @@ In this example, we will use the Sepolia testnet, but you can use any 7702-compa
 - Create a `.env` file as follows:
 
 ```env
-ZERODEV_RPC=
+ZERODEV_RPC=<YOUR_RPC_FROM_DASHBOARD>
 ```
 
-Use the ZeroDev RPC for Sepolia from the dashboard.
+Use the ZeroDev RPC on your project page from the dashboard.
 
+## Upgrade EOA to smart account
 
-## Set up the ZeroDev SDK
+To upgrade a EOA to a smart account, you need to sign an "authorization."  You can create this authorization manually and pass it to the ZeroDev SDK, or you can let ZeroDev create this authorization automatically. 
+
+### Automatically create the authorization
 
 Set up a ZeroDev account using the 7702 helper functions: 
 
@@ -46,6 +49,7 @@ import { KERNEL_V3_3 } from "@zerodev/sdk/constants";
 
 const kernelVersion = KERNEL_V3_3;
 
+// This is the EOA you want to upgrade
 const signer = privateKeyToAccount(generatePrivateKey());
 
 const publicClient = createPublicClient({
@@ -78,13 +82,35 @@ const kernelClient = create7702KernelAccountClient({
 })
 ```
 
-Don't worry if the code doesn't make too much sense -- you can read more about the setup process [here](/sdk/core-api/create-account).
+Note that in this example, `signer` is the EOA you want to upgrade.  We are using a random EOA in this example but you should replace this with the actual EOA.
 
-Comparing to the normal setup process, the only differences are that you are using `create7702KernelAccount` and `create7702KernelAccountClient`, instead of the normal `createKernelAccount` and `createKernelAccountClient`.
+Comparing to [how you normally set up ZeroDev](/sdk/core-api/create-account), the only differences are that you are using `create7702KernelAccount` and `create7702KernelAccountClient`, instead of the normal `createKernelAccount` and `createKernelAccountClient`.
 
-## Using the ZeroDev SDK
+### Manually create the authorization
 
-Now you can use the ZeroDev SDK as usual.  For example, to send a gasless batched UserOp:
+You can create the authorization manually with [Viem's `signAuthorization` function](https://viem.sh/docs/eip7702/signAuthorization), then pass the authorization to the ZeroDev SDK.
+
+When you create the authorization, make sure you are specifying [Kernel](https://github.com/zerodevapp/kernel) as the smart account.
+
+```
+import { KERNEL_V3_3 } from "@zerodev/sdk/constants";
+
+const authorization = await walletClient.signAuthorization({
+  account: signer,
+  contractAddress: KERNEL_V3_3,
+})
+
+const account = await create7702KernelAccount(publicClient, {
+  signer,
+  entryPoint,
+  kernelVersion,
+  eip7702Auth: authorization
+})
+```
+
+## Sending UserOps from the smart account
+
+Once you have upgraded the EOA to a smart account, you can use the ZeroDev SDK as usual.  For example, to send a gasless batched UserOp:
 
 ```ts
 const userOpHash = await kernelClient.sendUserOperation({
