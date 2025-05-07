@@ -12,22 +12,22 @@ export default defineConfig({
     text: 'Edit on GitHub',
   },
   theme: {
-   variables:{
-    color:{
-      textAccent: {
-        light: '#5753c6',
-        dark: '#b1a9ff'
-      },
-      textAccentHover:{
-        light: '#272962',
-        dark: '#6e6ade'
-      },
-      link: {
-        light: '#5753c6',
-        dark: '#b1a9ff'
+    variables: {
+      color: {
+        textAccent: {
+          light: '#5753c6',
+          dark: '#b1a9ff'
+        },
+        textAccentHover: {
+          light: '#272962',
+          dark: '#6e6ade'
+        },
+        link: {
+          light: '#5753c6',
+          dark: '#b1a9ff'
+        }
       }
     }
-   } 
   },
   title: "ZeroDev",
   titleTemplate: '%s – ZeroDev',
@@ -83,10 +83,6 @@ export default defineConfig({
             "link": "/sdk/getting-started/quickstart"
           },
           {
-            "text": "Quickstart — 7702",
-            "link": "/sdk/getting-started/quickstart-7702"
-          },
-          {
             "text": "Tutorial",
             "link": "/sdk/getting-started/tutorial"
           },
@@ -105,6 +101,20 @@ export default defineConfig({
           {
             "text": "Docs for SDK v5.3.x",
             "link": "/sdk/v5_3_x/"
+          },
+        ],
+      },
+      {
+        "text": "EIP-7702",
+        "collapsed": false,
+        "items": [
+          {
+            "text": "Quickstart",
+            "link": "/sdk/getting-started/quickstart-7702"
+          },
+          {
+            "text": "Examples",
+            "link": "https://7702.zerodev.app/"
           },
         ],
       },
