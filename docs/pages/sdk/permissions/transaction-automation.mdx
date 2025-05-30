@@ -203,3 +203,39 @@ const txHash = await sudoKernelClient.uninstallPlugin({
 ### Creating multiple session keys on multiple chains in one signature
 
 [Refer to this page.](/sdk/advanced/multi-chain-signing)
+
+### Using session keys with 7702
+
+If you want to create session keys for a session key account, instead of doing this:
+
+```ts
+const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
+  entryPoint,
+  kernelVersion,
+  signer,
+})
+
+const sessionKeyAccount = await createKernelAccount(publicClient, {
+  entryPoint,
+  kernelVersion,
+  plugins: {
+    sudo: ecdsaValidator,
+    regular: permissionPlugin,
+  },
+})
+```
+
+Do this instead:
+
+```ts
+const sessionKeyAccount = await createKernelAccount(publicClient, {
+    entryPoint,
+    kernelVersion
+    eip7702Account: signer,
+    plugins: {
+        regular: permissionPlugin
+    },
+})
+```
+
+That is, instead of creating a ECDSA validator, simply pass the EOA (the 7702 account) as `eip7702Account` into `createKernelAccount`, and don't set a `sudo` validator.
