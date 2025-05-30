@@ -43,22 +43,21 @@ To upgrade a EOA to a smart account, you need to sign an "authorization."  You c
 Set up a ZeroDev account using the 7702 helper functions: 
 
 ```ts
-import { create7702KernelAccount, create7702KernelAccountClient } from "@zerodev/ecdsa-validator";
-import { createZeroDevPaymasterClient } from "@zerodev/sdk";
+import { createKernelAccount, createKernelAccountClient, createZeroDevPaymasterClient } from "@zerodev/sdk";
 import { KERNEL_V3_3 } from "@zerodev/sdk/constants";
 
 const kernelVersion = KERNEL_V3_3;
 
 // This is the EOA you want to upgrade
-const signer = privateKeyToAccount(generatePrivateKey());
+const eip7702Account = privateKeyToAccount(generatePrivateKey());
 
 const publicClient = createPublicClient({
   transport: http(),
   chain,
 });
 
-const account = await create7702KernelAccount(publicClient, {
-  signer,
+const account = await createKernelAccount(publicClient, {
+  eip7702Account,
   entryPoint,
   kernelVersion
 })
@@ -68,7 +67,7 @@ const paymasterClient = createZeroDevPaymasterClient({
   transport: http(ZERODEV_RPC),
 });
 
-const kernelClient = create7702KernelAccountClient({
+const kernelClient = createKernelAccountClient({
   account,
   chain,
   bundlerTransport: http(ZERODEV_RPC),
@@ -82,9 +81,7 @@ const kernelClient = create7702KernelAccountClient({
 })
 ```
 
-Note that in this example, `signer` is the EOA you want to upgrade.  We are using a random EOA in this example but you should replace this with the actual EOA.
-
-Comparing to [how you normally set up ZeroDev](/sdk/core-api/create-account), the only differences are that you are using `create7702KernelAccount` and `create7702KernelAccountClient`, instead of the normal `createKernelAccount` and `createKernelAccountClient`.
+Note that in this example, `eip7702Account` is the EOA you want to upgrade.  We are using a random EOA in this example but you should replace this with the actual EOA.
 
 ### Manually create the authorization
 
@@ -100,7 +97,7 @@ const authorization = await walletClient.signAuthorization({
   contractAddress: KERNEL_V3_3,
 })
 
-const account = await create7702KernelAccount(publicClient, {
+const account = await createKernelAccount(publicClient, {
   signer,
   entryPoint,
   kernelVersion,

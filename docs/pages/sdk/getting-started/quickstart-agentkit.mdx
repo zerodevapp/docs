@@ -1,0 +1,157 @@
+# Quickstart — ZeroDev × AgentKit (LangChain chatbot)
+
+> **Goal**: build a minimal LangChain chatbot whose on-chain wallet is a ZeroDev smart account, all in 50 lines of code.
+
+The tutorial is a trimmed-down version of the full example that ships with AgentKit — `typescript/examples/langchain-zerodev-chatbot`. Here we swap the CDP MPC wallet for a local private key (via **Viem**) to keep things lightweight and dependency-free.
+
+---
+
+## 1. Prerequisites & install
+
+• Node 18+  
+• An **OpenAI** key (for the LLM)  
+• A **ZeroDev Project ID** (grab one from the dashboard — Base Sepolia is perfect for testing)
+
+```bash
+mkdir zerodev-agentkit-bot && cd zerodev-agentkit-bot
+npm init -y
+
+# Core runtime deps
+npm i @coinbase/agentkit @coinbase/agentkit-langchain viem @langchain/core @langchain/openai @langchain/langgraph dotenv
+
+# Nice-to-have for TypeScript
+npm i -D ts-node typescript @types/node
+```
+
+---
+
+## 2. Environment variables
+
+Create a `.env` file (or export vars however you prefer):
+
+```env
+OPENAI_API_KEY=
+ZERODEV_PROJECT_ID=
+# Any *testnet* private key will work here
+PRIVATE_KEY=
+# optional – defaults to base-sepolia
+NETWORK_ID=base-sepolia
+```
+
+---
+
+## 3. The code (index.ts)
+
+```ts title="index.ts"
+import {
+  AgentKit,
+  ViemWalletProvider,
+  ZeroDevWalletProvider,
+  NETWORK_ID_TO_VIEM_CHAIN,
+  walletActionProvider,
+} from "@coinbase/agentkit";
+
+import { getLangChainTools } from "@coinbase/agentkit-langchain";
+import { ChatOpenAI } from "@langchain/openai";
+import { createReactAgent } from "@langchain/langgraph/prebuilt";
+import { HumanMessage } from "@langchain/core/messages";
+
+import { privateKeyToAccount } from "viem/accounts";
+import { createWalletClient, http } from "viem";
+
+import * as dotenv from "dotenv";
+dotenv.config();
+
+function mustGet(name: string) {
+  const v = process.env[name];
+  if (!v) throw new Error(`Missing env var ${name}`);
+  return v;
+}
+
+async function main() {
+  /* 1️⃣  Wallet setup (Viem → ZeroDev smart account) */
+  const networkId = process.env.NETWORK_ID ?? "base-sepolia";
+
+  const signerAccount = privateKeyToAccount(mustGet("PRIVATE_KEY") as `0x${string}`);
+
+  const viemWalletProvider = new ViemWalletProvider(
+    createWalletClient({
+      account: signerAccount,
+      chain: NETWORK_ID_TO_VIEM_CHAIN[networkId],
+      transport: http(),
+    }),
+  );
+
+  const zeroDevWalletProvider = await ZeroDevWalletProvider.configureWithWallet({
+    signer: viemWalletProvider.toSigner(),
+    projectId: mustGet("ZERODEV_PROJECT_ID"),
+    entryPointVersion: "0.7",
+    networkId,
+  });
+
+  /* 2️⃣  AgentKit instance */
+  const agentkit = await AgentKit.from({
+    walletProvider: zeroDevWalletProvider,
+    actionProviders: [walletActionProvider()],
+  });
+
+  /* 3️⃣  LangChain agent */
+  const llm = new ChatOpenAI({
+    openAIApiKey: mustGet("OPENAI_API_KEY"),
+    model: "gpt-4o-mini",
+  });
+
+  const tools = await getLangChainTools(agentkit);
+
+  const lcAgent = createReactAgent({ llm, tools });
+
+  console.log("Smart-account address:", zeroDevWalletProvider.getAddress());
+  console.log("Ask me to do something on-chain (type ‘exit’ to quit)…\n");
+
+  const rl = require("readline").createInterface({ input: process.stdin, output: process.stdout });
+  for await (const line of rl) {
+    const prompt = line.trim();
+    if (prompt.toLowerCase() === "exit") break;
+
+    const stream = await lcAgent.stream({ messages: [new HumanMessage(prompt)] });
+    for await (const chunk of stream) {
+      if ("agent" in chunk) process.stdout.write(chunk.agent.messages[0].content);
+      else if ("tools" in chunk) console.log("\n[tool]", chunk.tools.messages[0].content);
+    }
+    console.log("\n---\n");
+  }
+}
+
+main().catch(err => console.error(err));
+```
+
+Run it:
+
+```bash
+npx ts-node --env-file=.env index.ts
+```
+
+### Example session
+
+```txt
+Smart-account address: 0xAAc5…eF32
+Ask me to do something on-chain (type ‘exit’ to quit)…
+
+Prompt: transfer 0.001 eth to 0x000000000000000000000000000000000000dEaD
+✅  Sent a gas-sponsored transaction – hash 0x9eab…1d3a
+---
+
+Prompt: what’s my eth balance?
+Your smart-account holds ~0.42 ETH on Base Sepolia.
+---
+```
+
+---
+
+## 4. Next steps
+
+• Swap the local key for a **CDP** or **Privy** wallet for MPC security.  
+• Add more `actionProviders` (ERC-20, ERC-721, DeFi, …) so the agent can do *real* work.  
+• Explore the [full chatbot example](https://github.com/coinbase/agentkit/tree/main/typescript/examples/langchain-zerodev-chatbot) for persistence, autonomous mode, and more advanced prompts.
+
+Happy hacking 🚀
