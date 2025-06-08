@@ -85,7 +85,7 @@ const main = async () => {
   const ecdsaValidator = await signerToEcdsaValidator(publicClient, { // [!code focus]
     signer,  // [!code focus]
     entryPoint,  // [!code focus]
-    kernelVersion, // [!code focus]
+    kernelVersion: KERNEL_V3_1, // [!code focus]
   })  // [!code focus]
 }
 ```
