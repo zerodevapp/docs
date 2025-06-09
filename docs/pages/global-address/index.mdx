@@ -134,6 +134,53 @@ The options are:
 
 Once you have created a global address, you can send tokens to it on any of the chains specified in `srcTokens`, and the `actions` will happen on the `destChain`.  It's really that simple.
 
+## Fee Sponsorship
+
+By default, Global Address deducts usage fees from the user's transferred tokens. However, as a developer, you can sponsor these fees so your users receive the full amount they deposit. 
+
+**Example**: When a user deposits 10 USDC to their global address, they will receive exactly 10 USDC on the destination chain, while your dapp pays the usage fees separately.
+
+### Sponsored Fee Configuration
+
+To set up fee sponsorship, configure the global address with your ZeroDev project ID:
+
+```tsx
+import { 
+  createGlobalAddress,
+  createCall,
+  ActionType,
+  FLEX,
+  CreateGlobalAddressParams,
+  GLOBAL_ADDRESS_SERVER_URL 
+} from '@zerodev/global-address'
+
+const { globalAddress, estimatedFees } = await createGlobalAddress({
+  destChain,
+  owner,
+  slippage,
+  actions: {
+    'USDC': {
+      action: [erc20Call],
+      fallBack: [],
+    },
+    'WRAPPED_NATIVE': {
+      action: [erc20Call],
+      fallBack: [],
+    },
+    'NATIVE': {
+      action: [nativeCall],
+      fallBack: [],
+    }
+  },
+  srcTokens,
+  config: {
+    baseUrl: `${GLOBAL_ADDRESS_SERVER_URL}/${ZERODEV_PROJECT_ID}`
+  }
+})
+```
+
+When fee sponsorship is enabled, the usage fees will be charged to your ZeroDev account instead of being deducted from the user's transferred tokens. This ensures users receive the full amount they deposit.
+
 ## Pricing
 
 ### Monthly Pricing
