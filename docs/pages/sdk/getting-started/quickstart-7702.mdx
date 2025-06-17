@@ -98,7 +98,7 @@ const authorization = await walletClient.signAuthorization({
 })
 
 const account = await createKernelAccount(publicClient, {
-  signer,
+  eip7702Account: signer,
   entryPoint,
   kernelVersion,
   eip7702Auth: authorization
