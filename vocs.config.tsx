@@ -399,10 +399,6 @@ export default defineConfig({
         "collapsed": false,
         "items": [
           {
-            "text": "Why chain abstraction?",
-            "link": "/sdk/faqs/why-chain-abstraction"
-          },
-          {
             "text": "What networks do you support?",
             "link": "/sdk/faqs/chains"
           },
