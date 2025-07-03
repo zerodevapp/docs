@@ -1,0 +1,40 @@
+# Installing Permissions During Account Creation
+
+You can install permission plugins during account creation using `initConfig`. This approach allows you to set up permissions right when the account is deployed.
+
+:::note
+The counterfactual account address is tied to the permission plugin configuration. If you modify the permission plugin's configuration after account creation and reinstall it, you'll need to explicitly specify the account address using the `address` parameter when calling `createKernelAccount`.
+:::
+
+## Example
+
+Here's how to install a permission plugin during account creation:
+
+```typescript
+import { 
+    toInitConfig
+} from "@zerodev/permissions"
+import { privateKeyToAccount, generatePrivateKey } from "viem/accounts"
+
+// Create a permission plugin
+const permissionPlugin = await toPermissionValidator(publicClient, {
+    entryPoint,
+    signer: ecdsaModularSigner,
+    kernelVersion,
+    policies: [toSudoPolicy({})]
+})
+
+// Create the account with the permission plugin in initConfig using the `toInitConfig` utility
+const account = await createKernelAccount(publicClient, {
+    entryPoint,
+    plugins: {
+        sudo: ecdsaValidatorPlugin
+    },
+    kernelVersion,
+    initConfig: await toInitConfig(permissionPlugin)
+})
+```
+
+## Starter Template
+
+An example of a starter template for installing permissions during account creation is available [here](https://github.com/zerodevapp/zerodev-examples/blob/main/session-keys/install-permissions-with-init-config.ts).

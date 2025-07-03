@@ -1,0 +1,36 @@
+# Use a Smart Wallet as a Signer
+
+ZeroDev supports using one smart wallet (kernel account) as a signer for another kernel account.
+
+## Integration Example
+
+Here's how to use one kernel account as a validator for another kernel account:
+
+```typescript
+import { signerToSmartAccountValidator } from "@zerodev/smart-account-validator"
+
+
+// Create the first kernel account (this will be our signer)
+const signerKernelAccount = await createKernelAccount(publicClient, {
+  // Configure with your preferred validator (e.g., ECDSA, WebAuthn, etc.)
+  plugins: {
+    sudo: ecdsaValidator,
+  },
+  entryPoint,
+  kernelVersion
+})
+
+// Create a validator using the first kernel account as a signer
+const validator = await signerToSmartAccountValidator(publicClient, {
+  entryPoint,
+  kernelVersion,
+  signer: signerKernelAccount,
+  smartAccountType: "OTHER"
+})
+
+// You can now use this Validator to create a Kernel account
+```
+
+## Starter Template
+
+An example of a starter template for using a Safe smart wallet as a signer is available [here](https://github.com/zerodevapp/safe-as-owner-example).

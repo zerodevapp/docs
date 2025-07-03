@@ -239,6 +239,10 @@ export default defineConfig({
             "link": "/sdk/permissions/transaction-automation"
           },
           {
+            "text": "Install Permissions with initConfig",
+            "link": "/sdk/permissions/install-with-init-config"
+          },
+          {
             "text": "Signers",
             "collapsed": false,
             "items": [
@@ -329,6 +333,10 @@ export default defineConfig({
           {
             link: '/sdk/signers/web3auth',
             text: 'Web3Auth',
+          },
+          {
+            link: '/sdk/signers/smart-wallet',
+            text: 'Smart Wallet',
           },
           {
             link: '/sdk/signers/portal',
