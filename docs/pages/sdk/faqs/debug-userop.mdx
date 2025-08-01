@@ -131,6 +131,58 @@ On Tenderly, it might look like this:
 
 This result indicates various aspects of the validation process, with a particular focus on the failure due to signature validation (**`"sigFailed": true`**). Such output suggests that the UserOp failed validation because the signature did not match the expected parameters or was otherwise invalid.
 
+## Decoding Error Messages
+
+When a UserOp reverts with encoded error data, you can decode the error message to understand what went wrong. Here's how to decode error messages like:
+
+```
+UserOperation reverted during simulation with reason:
+0x08c379a0000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000
+0000000000000000000000000001d5472616e73616374696f6e20616c726561647920636f6e6669726d6564000000
+```
+
+### Step 1: Identify the Error Signature
+
+1. Go to [https://openchain.xyz/signatures](https://openchain.xyz/signatures)
+2. Search for the error signature (first 4 bytes): `0x08c379a0`
+3. This will show you the error type - in this case, it's the standard Solidity `Error(string)` function
+
+### Step 2: Decode the Error Message
+
+Use Viem's `decodeErrorResult` function to decode the full error data:
+
+```javascript
+import { decodeErrorResult } from 'viem'
+
+const error = decodeErrorResult({
+  data: "0x08c379a0000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000001d5472616e73616374696f6e20616c726561647920636f6e6669726d6564000000",
+  abi: [
+    {
+      name: "Error",
+      type: "error",
+      inputs: [{ name: "message", type: "string" }],
+    },
+  ],
+})
+
+console.log(error)
+// Output:
+// {
+//   abiItem: { name: 'Error', type: 'error', inputs: [ [Object] ] },
+//   args: [ 'Transaction already confirmed' ],
+//   errorName: 'Error'
+// }
+```
+
+In this example, the decoded error message is "Transaction already confirmed", which indicates that the transaction you're trying to execute has already been processed.
+
+### Common Error Signatures
+
+- `0x08c379a0` - Standard Solidity `Error(string)` revert
+- Custom errors will have different signatures that you can look up on openchain.xyz
+
+Understanding these decoded error messages helps you quickly identify and fix issues with your UserOps.
+
 ## Other resources
 
 There are some resources that we find helpful:
