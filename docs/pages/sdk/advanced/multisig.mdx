@@ -50,8 +50,9 @@ To set up a new multisig account, start by creating a validator. Here are exampl
 
 ```ts
 import { createWeightedValidator } from "@zerodev/weighted-validator"
-import { toECDSASigner } from "@zerodev/weighted-validator"
+import { toECDSASigner, WeightedValidatorContractVersion } from "@zerodev/weighted-validator"
 
+const validatorContractVersion = WeightedValidatorContractVersion.V0_0_2_PATCHED
 // Create ECDSA signers from private keys
 const ecdsaSigner1 = await toECDSASigner({ signer: eoaAccount1 })
 const ecdsaSigner2 = await toECDSASigner({ signer: eoaAccount2 })
@@ -59,6 +60,7 @@ const ecdsaSigner2 = await toECDSASigner({ signer: eoaAccount2 })
 const multiSigValidator = await createWeightedValidator(publicClient, {
   entryPoint,
   kernelVersion,
+  validatorContractVersion,
   signer: ecdsaSigner1, // The current signer being used
   config: {
     threshold: 100,
@@ -104,6 +106,7 @@ const passKeySigner2 = await toWebAuthnSigner(publicClient, {
 const multiSigValidator = await createWeightedValidator(publicClient, {
   entryPoint,
   kernelVersion,
+  validatorContractVersion,
   signer: passKeySigner1, // The current signer being used
   config: {
     threshold: 100,
@@ -145,34 +148,48 @@ When using a multisig account, sending transactions requires gathering enough si
 Here's how to implement this flow:
 
 ```ts
-// First, create the UserOperation that needs to be signed
-const userOp = await client.prepareUserOperation({
-  userOperation: {
-    target: targetAddress,
-    data: encodeFunctionData(...),
-    value: 0n,
-  }
-})
+// First, create the callData that needs to be signed
+const callData = await client.account.encodeCalls([
+    {
+      target: targetAddress,
+      data: encodeFunctionData(...),
+      value: 0n,
+    }
+])
 
 // Each signer can approve the UserOperation
 // This can be done by different signers at different times/places
 // For example, with two different passkey signers:
-const sig1 = await client1.approveUserOperation(userOp)
-const sig2 = await client2.approveUserOperation(userOp)
+const sig1 = await client1.approveUserOperation({
+  callData,
+  validatorContractVersion
+})
+const sig2 = await client2.approveUserOperation({
+  callData,
+  validatorContractVersion
+})
 
 // Or with ECDSA signers:
-const sig1 = await ecdsaClient1.approveUserOperation(userOp)
-const sig2 = await ecdsaClient2.approveUserOperation(userOp)
+const sig1 = await ecdsaClient1.approveUserOperation({
+  callData,
+  validatorContractVersion
+})
+const sig2 = await ecdsaClient2.approveUserOperation({
+  callData,
+  validatorContractVersion
+})
 
 // Once you have enough signatures to meet the threshold,
 // you can send the UserOperation with all collected signatures
-const hash = await client.sendUserOperationWithSignatures(
-  userOp,
-  [sig1, sig2]
-)
+const hash = await client.sendUserOperationWithSignatures({
+  callData,
+  signatures: [sig1, sig2]
+})
 
 // You can wait for the UserOperation to be included in a block
-const receipt = await client.waitForUserOperationReceipt(hash)
+const receipt = await client.waitForUserOperationReceipt({
+  hash: userOpHash
+})
 ```
 
 Note that:
