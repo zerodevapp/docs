@@ -8,6 +8,7 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "dotenv": "^17.2.3",
     "react": "19",
     "react-dom": "19",
     "vocs": "1.0.1"
