@@ -230,6 +230,10 @@ export default defineConfig({
             text: "Upgrading Kernel",
             link: "/sdk/advanced/upgrade-kernel",
           },
+          {
+            text: "Go SDK",
+            link: "/sdk/advanced/go-sdk",
+          },
         ],
       },
       {

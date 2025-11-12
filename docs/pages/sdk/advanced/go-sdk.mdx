@@ -1,0 +1,60 @@
+# ZeroDev Go SDK Documentation
+
+## Overview
+
+:::info
+The Go SDK and UserOp Builder API is only available for users on the Enterprise plan.
+:::
+
+ZeroDev Go SDK works with the user operation builder API to help developers build and send User Operations (UserOps) on Ethereum and compatible networks using Go.
+
+The user operation builder API is also accessible for self-hosting via Docker. Get in touch with the ZeroDev team for more details.
+
+The ZeroDev Go SDK enables developers to:
+
+- Build and send EIP-7702 User Operations (UserOps)
+- Sign EIP-7702 authorizations from private keys
+- Batch multiple blockchain calls in a single User Operation
+- Poll for User Operation receipts
+
+## Installation
+
+Install the SDK using Go modules:
+
+```bash
+go get github.com/zerodevapp/sdk-go
+```
+
+**Requirements:**
+
+- Active ZeroDev Project ID from [ZeroDev Dashboard](https://dashboard.zerodev.app)
+- Gas sponsorship policy configured for your ZeroDev project
+
+## Prerequisites
+
+### Get Your Credentials
+
+Obtain your Project ID and API Key from the [ZeroDev Dashboard](https://dashboard.zerodev.app).
+
+## Quick Start
+
+Refer to the complete example code on GitHub:
+
+- [EIP-7702 Example](https://github.com/zerodevapp/go-sdk/blob/1ae0da013afac3aba48bc17e40f3a9542ed7c44a/example/example.go)
+
+```bash
+# Copy environment template
+cp .env.example .env
+
+# Edit .env and add your credentials
+# Then run examples:
+
+# EIP-7702 example
+go run ./example -e 7702
+
+# Show available commands
+go run ./example help
+
+# Edit the API URL in example/example.go if needed
+baseURL := https://build-userop-api.zerodev.app
+```
