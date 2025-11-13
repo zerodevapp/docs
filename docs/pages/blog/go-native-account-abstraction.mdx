@@ -51,17 +51,16 @@ First, install the SDK using Go modules:
 
 ```bash
 go get [github.com/zerodevapp/sdk-go](https://github.com/zerodevapp/sdk-go)
-
+```
 Here is an illustrative, streamlined example of how the SDK enables you to leverage ZeroDev's hosted API to build and send an EIP-7782 UserOp:
 
-```go
+```Go
 package main
 
 import (
     "context"
     "fmt"
-    // Note: The actual path should be used without link formatting in Go code
-    "github.com/zerodevapp/sdk-go" 
+    "github.com/zerodevapp/sdk-go"
 )
 
 func main() {
@@ -98,7 +97,7 @@ func main() {
 
     fmt.Printf("UserOperation executed in transaction: %s\n", receipt.TransactionHash)
 }
-
+```
 ---
 
 ## The ZeroDev Enterprise Advantage: Performance is Exclusive
