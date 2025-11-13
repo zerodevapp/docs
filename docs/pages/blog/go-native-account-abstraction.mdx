@@ -51,3 +51,69 @@ First, install the SDK using Go modules:
 
 ```bash
 go get [github.com/zerodevapp/sdk-go](https://github.com/zerodevapp/sdk-go)
+
+Here is an illustrative, streamlined example of how the SDK enables you to leverage ZeroDev's hosted API to build and send an EIP-7782 UserOp:
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    // Note: The actual path should be used without link formatting in Go code
+    "github.com/zerodevapp/sdk-go" 
+)
+
+func main() {
+    // 1. Initialize the ZeroDev Client
+    baseURL := "https://build-userop-api.zerodev.app"
+    projectID := "YOUR_PROJECT_ID" // From ZeroDev Dashboard
+    privateKey := "YOUR_PRIVATE_KEY" // Signing key for the smart account
+
+    client, err := zerodev.NewClient(baseURL, projectID, privateKey)
+    if err != nil {
+        panic(err)
+    }
+
+    // 2. Define the transaction call(s)
+    call := zerodev.Call{
+        To:   "0xTargetContractAddress",
+        Data: []byte{ /* encoded transaction data */ },
+        Value: 0,
+    }
+
+    // 3. Build and Send the UserOp
+    userOpHash, err := client.SendUserOperation(context.Background(), []zerodev.Call{call})
+    if err != nil {
+        panic(err)
+    }
+
+    fmt.Printf("UserOperation sent! Hash: %s\n", userOpHash)
+
+    // 4. Poll for the receipt for guaranteed transaction finality
+    receipt, err := client.WaitForUserOperationReceipt(context.Background(), userOpHash)
+    if err != nil {
+        panic(err)
+    }
+
+    fmt.Printf("UserOperation executed in transaction: %s\n", receipt.TransactionHash)
+}
+
+---
+
+## The ZeroDev Enterprise Advantage: Performance is Exclusive
+
+The ZeroDev Go SDK and hosted UserOp Builder API are powerful, mission-critical tools exclusively available for users on a **ZeroDev Enterprise plan**.
+
+This exclusivity ensures our highest-volume clients receive the dedicated performance, throughput, and tier-1 support needed for the most demanding applications. For organizations requiring absolute data control, flexibility, and maximum concurrency, the User Operation Builder API is also accessible for **self-hosting via Docker**.
+
+**Your Path to Mission-Critical Infrastructure Starts Now.**
+
+Don't just integrate AA — deploy it at Go-speed and enterprise scale.
+
+---
+
+[Contact Sales for a Dedicated Go-SDK Technical Deep-Dive & Architecture Review](https://calendly.com/zerodev/30min)
+
+* Access Full Documentation: [https://docs.zerodev.app/sdk/advanced/go-sdk](https://docs.zerodev.app/sdk/advanced/go-sdk)
+* If you are an existing Enterprise client, contact your account representative directly for immediate access.
