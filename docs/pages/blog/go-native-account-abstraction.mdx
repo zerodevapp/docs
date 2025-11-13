@@ -1,0 +1,116 @@
+---
+authors:
+    - [ZeroDev](https://x.com/zerodev_app)
+date: 2025-11-12
+layout: minimal
+---
+
+# The Performance Leap: ZeroDev Unlocks Go-Native Account Abstraction for Mission-Critical Web3 Scale.
+
+::authors
+
+The **long-awaited native Account Abstraction solution** for mission-critical, Go-powered infrastructure is finally here.
+
+For decades, **Go** has been the uncompromised backbone of high-performance, concurrent, and scalable enterprise infrastructure. Today, that unmatched performance and reliability arrive in web3. Elite engineering teams have long been forced to work around a developer tool ecosystem that has exclusively focused on TypeScript and JavaScript, creating a crippling bottleneck for Go-powered systems.
+
+ZeroDev changes the game.
+
+We are thrilled to announce the launch of the **ZeroDev Go SDK** and a dedicated, new **User Operation Builder API**. This launch makes ZeroDev the first smart account provider to offer native, high-integrity support for sending **UserOps** directly from a **Go backend**. This is more than just a library. This is a massive, performance-driven opportunity for enterprise clients to deploy sophisticated, gasless, and batched transaction experiences at **Go speed** within their existing infrastructure.
+
+---
+
+### The Go-Native AA Powerhouse: Reliability Through Dual Architecture
+
+We’ve engineered a new, two-part architecture designed specifically for backend scale, reliability, and EIP-4337/7702 compliance.
+
+* **ZeroDev Go SDK:** A lightweight, idiomatic Go library for secure UserOp creation, signing, and lifecycle management. It feels like Go, because it is Go.
+* **UserOp Builder API (The Resilience Layer):** A dedicated, resilient, and dockerized backend service that handles the heavy lifting of UserOp construction, gas estimation, and the complexities of the EIP-4337/7702 standards. This offloads all mission-critical AA infrastructure complexity from your core application.
+
+The `/build-userop` API is now live and accessible at: <https://build-userop-api.zerodev.app>. The Go SDK source code can be found on GitHub: <https://github.com/zerodevapp/go-sdk>.
+
+---
+
+### The Strategic Impact: Why Go-Native AA Matters for Your Business 💡
+
+For CTOs and VPs of Engineering, this launch provides a clear competitive advantage by eliminating the last engineering trade-off in web3 integration.
+
+* **Maximum Uptime & Reliability:** Offload the complexity of EIP-4337/7702 standards to a dedicated, resilient, and optionally self-hostable backend service.
+* **Unmatched Transaction Throughput:** Leverage **Go's native concurrency** to process UserOps with significantly lower latency and higher transaction volume than comparable non-Go solutions.
+* **De-Risking the Roadmap:** The solution is built on a Standards-First principle, ensuring your backend is **EIP-7702 Native** and future-proofed for the next generation of smart accounts.
+* **Superior User Experience:** Seamlessly deliver features like **Gas Sponsorship Integration** and **batching** multiple complex blockchain calls into a single, atomic UserOp.
+
+---
+
+### Code Meets Scale: Sending Your First Go UserOp
+
+Integrating the SDK is straightforward, letting your developers start building a scalable backend in minutes.
+
+First, install the SDK using Go modules:
+
+```bash
+go get [github.com/zerodevapp/sdk-go](https://github.com/zerodevapp/sdk-go)
+```
+Here is an illustrative, streamlined example of how the SDK enables you to leverage ZeroDev's hosted API to build and send an EIP-7782 UserOp:
+
+```Go
+package main
+
+import (
+    "context"
+    "fmt"
+    "github.com/zerodevapp/sdk-go"
+)
+
+func main() {
+    // 1. Initialize the ZeroDev Client
+    baseURL := "https://build-userop-api.zerodev.app"
+    projectID := "YOUR_PROJECT_ID" // From ZeroDev Dashboard
+    privateKey := "YOUR_PRIVATE_KEY" // Signing key for the smart account
+
+    client, err := zerodev.NewClient(baseURL, projectID, privateKey)
+    if err != nil {
+        panic(err)
+    }
+
+    // 2. Define the transaction call(s)
+    call := zerodev.Call{
+        To:   "0xTargetContractAddress",
+        Data: []byte{ /* encoded transaction data */ },
+        Value: 0,
+    }
+
+    // 3. Build and Send the UserOp
+    userOpHash, err := client.SendUserOperation(context.Background(), []zerodev.Call{call})
+    if err != nil {
+        panic(err)
+    }
+
+    fmt.Printf("UserOperation sent! Hash: %s\n", userOpHash)
+
+    // 4. Poll for the receipt for guaranteed transaction finality
+    receipt, err := client.WaitForUserOperationReceipt(context.Background(), userOpHash)
+    if err != nil {
+        panic(err)
+    }
+
+    fmt.Printf("UserOperation executed in transaction: %s\n", receipt.TransactionHash)
+}
+```
+---
+
+## The ZeroDev Enterprise Advantage: Performance is Exclusive
+
+The ZeroDev Go SDK and hosted UserOp Builder API are powerful, mission-critical tools exclusively available for users on a **ZeroDev Enterprise plan**.
+
+This exclusivity ensures our highest-volume clients receive the dedicated performance, throughput, and tier-1 support needed for the most demanding applications. For organizations requiring absolute data control, flexibility, and maximum concurrency, the User Operation Builder API is also accessible for **self-hosting via Docker**.
+
+**Your Path to Mission-Critical Infrastructure Starts Now.**
+
+Don't just integrate AA — deploy it at Go-speed and enterprise scale.
+
+---
+
+[Contact Sales for a Dedicated Go-SDK Technical Deep-Dive & Architecture Review](https://calendly.com/zerodev/30min)
+
+* Access Full Documentation: <https://docs.zerodev.app/sdk/advanced/go-sdk>
+* If you are an existing Enterprise client, contact your account representative directly for immediate access.
