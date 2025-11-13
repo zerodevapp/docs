@@ -59,3 +59,21 @@ const userOpHash = await kernelClient.sendUserOperation({
         // other UserOp params
 })
 ```
+
+### Execute a batch without reverting if some of the calls fail
+
+By default, batching is atomic -- if any of the calls fails, the whole batch will fail.
+
+If you want to execute the batch such that even if some of the calls fail, the other calls will still execute, you can execute it with the `TRY` mode:
+
+```typescript
+import {
+    EXEC_TYPE,
+} from "@zerodev/sdk/constants"
+
+const userOpHash = await kernelClient.sendUserOperation({
+    callData: await kernelClient.account.encodeCalls([
+        // ... your calls
+    ], "call", EXEC_TYPE.TRY_EXEC),
+})
+```
