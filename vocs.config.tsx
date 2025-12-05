@@ -52,7 +52,11 @@ export default defineConfig({
   ),
   topNav: [
     { text: "SDK", link: "/", match: "/sdk" },
-    { text: "On/offramp", link: "/global-address", match: "/global-address" },
+    {
+      text: "On/offramp",
+      link: "/smart-routing-address",
+      match: "/smart-routing-address",
+    },
     { text: "Infra", link: "/meta-infra/intro", match: "/meta-infra" },
     {
       link: "https://dashboard.zerodev.app/",

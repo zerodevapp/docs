@@ -1,0 +1,291 @@
+# Smart Routing Address
+
+**Smart Routing Address** enables users to easily deposit funds to a L2/L3 from any CEXs, fiat onramps, and chains, by simply sending funds to a unique deposit address on any chain.
+
+Technically, **Smart Routing Address** is an address that encodes a _cross-chain intent_. **When anyone sends funds to a smart routing address on _any chain_, they are funding the intent and thereby triggering the intent on a _specific destination chain_.** In other words, smart routing address is _source-chain agnostic_, but _target-chain specific_.
+
+## Common Use Cases
+
+- Sending funds from CEXs directly to an L2/L3.
+- Using a fiat onramp with a L2/L3, even if the onramp doesn't directly support the L2/L3.
+- Depositing into a token vault with funds from another chain.
+- Cross-chain transfers.
+
+## Try Smart Routing Address
+
+You can try using smart routing address at [the official portal](https://smart-routing-address.zerodev.app/).
+
+Should your users send the wrong tokens to their smart routing address, they can also use the portal to retrieve their funds.
+
+## Installation
+
+:::code-group
+
+```bash [npm]
+npm i @zerodev/smart-routing-address
+```
+
+```bash [yarn]
+yarn add @zerodev/smart-routing-address
+```
+
+```bash [pnpm]
+pnpm i @zerodev/smart-routing-address
+```
+
+```bash [bun]
+bun add @zerodev/smart-routing-address
+```
+
+:::
+
+## Usage
+
+Smart routing address has a beautifully simple API: just `createSmartRoutingAddress` and then send funds to it. That's really it.
+
+### Code Example
+
+We recommend that you take a look at [our code example](https://github.com/zerodevapp/smart-routing-address-example) (even better if you try running it) as you follow along the docs.
+
+### Creating a smart routing address
+
+In the following example, we are going to create a smart routing address that, when receiving funds on any chain, will transfer the funds to a specific address on Base. This is helpful when, for instance, you want to create a deposit address for your user, so that they can send funds to the address on any chain (possibly from a CEX), and then they will receive funds in their wallet on the chain that your app runs on.
+
+First import some types and functions:
+
+```tsx
+import {
+  createSmartRoutingAddress,
+  createCall,
+  FLEX,
+} from "@zerodev/smart-routing-address";
+```
+
+Then set up some values (explained below):
+
+```tsx
+// Replace with your own address
+const owner = "0x244b33858733aab5307B0919D31f73878cAF617B";
+
+const destChain = base;
+const slippage = 5000;
+
+// This is the call that will be executed on the destination chain
+const call = createCall({
+  target: FLEX.TOKEN_ADDRESS, // any tokens
+  value: 0n,
+  abi: erc20Abi,
+  functionName: "transfer",
+  args: [owner, FLEX.AMOUNT], // any amount
+});
+```
+
+Finally, create a smart routing address:
+
+```tsx
+const { smartRoutingAddress } = await createSmartRoutingAddress({
+  owner,
+  destChain,
+  // Source tokens (any ERC20 on arbitrum, ETH on mainnet, USDC on optimism)
+  srcTokens: [
+    {
+      tokenType: "ERC20",
+      chain: arbitrum,
+    },
+    {
+      tokenType: "NATIVE",
+      chain: mainnet,
+    },
+    {
+      tokenType: "USDC",
+      chain: optimism,
+    },
+  ],
+  actions: {
+    USDC: {
+      action: [call],
+      fallBack: [],
+    },
+  },
+  slippage,
+});
+```
+
+The options are:
+
+- `owner` is an address that is authorized to recover funds from the smart routing address, in case the smart routing address fails to execute the target action for whatever reason. Typically you would set this to your user's EOA wallet, but you could also set it to your own address if you want to recover funds for users.
+
+- `destChain` is the chain on which the `actions` are supposed to happen. This is presumably the chain that your app runs on.
+
+- `srcTokens` is a list of tokens that the smart routing address should be able to receive. Only tokens listed in `srcTokens` will trigger actions on the destination. The other tokens sent to the address will have to be manually recovered by the `owner`.
+
+- `actions` is a map that records which action will be triggered by which token. In the example above, we specified an action that will be triggered when the smart routing address receives `USDC`.
+
+- `slippage` is the _maximum_ slippage that the user can expect. `slippage` is an integer, where 1 is equal to 0.01% (so 100 would mean 1% slippage). You can skip this param if you are unsure what to set, and the SDK will estimate a reasonable slippage based on your other settings.
+
+Once you have created a smart routing address, you can send tokens to it on any of the chains specified in `srcTokens`, and the `actions` will happen on the `destChain`. It's really that simple.
+
+## Fee Sponsorship
+
+By default, Smart Routing Address deducts usage fees from the user's transferred tokens. However, as a developer, you can sponsor these fees so your users receive the full amount they deposit.
+
+**Example**: When a user deposits 10 USDC to their smart routing address, they will receive exactly 10 USDC on the destination chain, while your dapp pays the usage fees separately.
+
+### Sponsored Fee Configuration
+
+To set up fee sponsorship, configure the smart routing address with your ZeroDev project ID:
+
+```tsx
+import {
+  createSmartRoutingAddress,
+  createCall,
+  FLEX,
+  SMART_ROUTING_ADDRESS_SERVER_URL,
+} from "@zerodev/smart-routing-address";
+
+const { smartRoutingAddress, estimatedFees } = await createSmartRoutingAddress({
+  destChain,
+  owner,
+  slippage,
+  actions: {
+    USDC: {
+      action: [erc20Call],
+      fallBack: [],
+    },
+    WRAPPED_NATIVE: {
+      action: [erc20Call],
+      fallBack: [],
+    },
+    NATIVE: {
+      action: [nativeCall],
+      fallBack: [],
+    },
+  },
+  srcTokens,
+  config: {
+    baseUrl: `${SMART_ROUTING_ADDRESS_SERVER_URL}/${ZERODEV_PROJECT_ID}`,
+  },
+});
+```
+
+When fee sponsorship is enabled, the usage fees will be charged to your ZeroDev account instead of being deducted from the user's transferred tokens. This ensures users receive the full amount they deposit.
+
+## Pricing
+
+### Monthly Pricing
+
+- Base pricing (paid by the developer)
+  - $500/month.
+- Usage pricing (paid by the user with their transferred tokens):
+  - 20 basis points (0.20%) for transfers below $500
+  - 10 basis points (0.10%) for transfers above $500
+
+### Annual Pricing
+
+- Base pricing (paid by the developer)
+  - $4000/year.
+- Usage pricing (paid by the user with their transferred tokens):
+  - 15 basis points (0.15%) for transfers below $500
+  - 5 basis points (0.05%) for transfers above $500
+
+### Notes
+
+- Smart Routing Address integrates with bridges under the hood, so the usage pricing is on top of the underlying bridge fees.
+- Pricing can be negotiated. Feel free to reach out.
+
+## Supported chains
+
+If you want your chain supported, [get in touch](https://forms.gle/sxpsSKnmKuFatm8x8).
+
+### Ethereum
+
+- **ETH**: `Native`
+- **WETH**: `0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2`
+- **USDC**: `0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48`
+- **USDT**: `0xdAC17F958D2ee523a2206206994597C13D831ec7`
+- **DAI**: `0x6B175474E89094C44Da98b954EedeAC495271d0F`
+- **WBTC**: `0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599`
+
+### Optimism
+
+- **ETH**: `Native`
+- **WETH**: `0x4200000000000000000000000000000000000006`
+- **USDC**: `0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85`
+- **USDT**: `0x94b008aA00579c1307B0EF2c499aD98a8ce58e58`
+- **DAI**: `0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1`
+- **WBTC**: `0x68f180fcCe6836688e9084f035309E29Bf0A2095`
+
+### Arbitrum
+
+- **ETH**: `Native`
+- **WETH**: `0x82aF49447D8a07e3bd95BD0d56f35241523fBab1`
+- **USDC**: `0xaf88d065e77c8cC2239327C5EDb3A432268e5831`
+- **USDT**: `0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9`
+- **DAI**: `0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1`
+- **WBTC**: `0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f`
+
+### Base
+
+- **ETH**: `Native`
+- **WETH**: `0x4200000000000000000000000000000000000006`
+- **USDC**: `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`
+- **USDT**: `0xfde4C96c8593536E31F229EA8f37b2ADa2699bb2`
+- **DAI**: `0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb`
+
+### Binance Smart Chain (BSC)
+
+- **WETH**: `0x2170Ed0880ac9A755fd29B2688956BD959F933F8`
+- **USDC**: `0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d`
+- **USDT**: `0x55d398326f99059fF775485246999027B3197955`
+
+### Polygon
+
+- **WETH**: `0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619`
+- **USDC**: `0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359`
+- **USDT**: `0xc2132D05D31c914a87C6611C10748AEb04B58e8F`
+- **DAI**: `0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063`
+- **WBTC**: `0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6`
+
+### World Chain
+
+- **ETH**: `Native`
+- **WETH**: `0x4200000000000000000000000000000000000006`
+- **USDC**: `0x79A02482A880bCE3F13e09Da970dC34db4CD24d1`
+- **WBTC**: `0x03C7054BCB39f7b2e5B2c7AcB37583e32D70Cfa3`
+
+### Unichain
+
+- **ETH**: `Native`
+- **WETH**: `0x4200000000000000000000000000000000000006`
+- **USDC**: `0x078D782b760474a361dDA0AF3839290b0EF57AD6`
+
+### Mode
+
+- **ETH**: `Native`
+- **WETH**: `0x4200000000000000000000000000000000000006`
+- **USDC**: `0xd988097fb8612cc24eeC14542bC03424c656005f`
+- **USDT**: `0xf0F161fDA2712DB8b566946122a5af183995e2eD`
+- **WBTC**: `0xcDd475325D6F564d27247D1DddBb0DAc6fA0a5CF`
+
+### Scroll
+
+- **ETH**: `Native`
+- **WETH**: `0x5300000000000000000000000000000000000004`
+- **USDC**: `0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4`
+- **USDT**: `0xf55BEC9cafDbE8730f096Aa55dad6D22d44099Df`
+- **WBTC**: `0x3C1BCa5a656e69edCD0D4E36BEbb3FcDAcA60Cf1`
+
+### Blast
+
+- **WBTC**: `0xF7bc58b8D8f97ADC129cfC4c9f45Ce3C0E1D2692`
+
+### Zora
+
+- **ETH**: `Native`
+- **WETH**: `0x4200000000000000000000000000000000000006`
+
+### Soneium
+
+- **ETH**: `Native`
+- **WETH**: `0x4200000000000000000000000000000000000006`
+- **USDC**: `0xbA9986D2381edf1DA03B0B9c1f8b00dc4AacC369`
