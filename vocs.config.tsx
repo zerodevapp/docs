@@ -53,7 +53,7 @@ export default defineConfig({
   topNav: [
     { text: "SDK", link: "/", match: "/sdk" },
     {
-      text: "On/offramp",
+      text: "Smart Routing",
       link: "/smart-routing-address",
       match: "/smart-routing-address",
     },
