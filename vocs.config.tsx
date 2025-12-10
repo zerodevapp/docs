@@ -57,14 +57,14 @@ export default defineConfig({
       link: "/smart-routing-address",
       match: "/smart-routing-address",
     },
-    { text: "Infra", link: "/meta-infra/intro", match: "/meta-infra" },
+    { text: "API", link: "https://zerodev-api.readme.io" },
     {
       link: "https://dashboard.zerodev.app/",
       text: "Dashboard",
     },
     {
-      link: "https://t.me/derek_chiang",
-      text: "Contact us",
+      link: "https://calendly.com/zerodev/30min",
+      text: "Contact Us",
     },
     { text: "Blog", link: "/blog", match: "/blog" },
   ],
