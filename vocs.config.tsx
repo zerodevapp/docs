@@ -919,6 +919,10 @@ posthog.init('${process.env.VITE_POSTHOG}', {
     defaults: '2025-05-24',
     cookieless_mode: "always",
 })</script>
+
+<!-- Start of HubSpot Embed Code -->
+  <script type="text/javascript" id="hs-script-loader" async defer src="//js-na1.hs-scripts.com/50627473.js"></script>
+<!-- End of HubSpot Embed Code -->
 </head>`,
           );
         },
