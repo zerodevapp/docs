@@ -1,0 +1,315 @@
+# UserOp Builder API
+
+The UserOp Builder API provides a server-side solution for building and sending ERC-7702 User Operations with [Kernel smart accounts](https://docs.zerodev.app/sdk/core-api/create-account). It handles gas estimation, paymaster integration, and bundler submission—perfect for backend services that need to construct user operations without client-side SDKs.
+
+:::info
+The UserOp Builder API is only available for users on the Enterprise plan.
+:::
+
+## Overview
+
+The UserOp Builder API supports:
+
+- **EIP-7702** — EOA to smart account delegation
+- **Gas sponsorship** — Automatic paymaster integration
+- **Kernel versions** — `0.3.1`, `0.3.2`, `0.3.3`
+
+## Quick Start
+
+```typescript
+// 1. Build the user operation
+const buildResponse = await fetch(
+  `${BASE_URL}/${projectId}/${chainId}/build-userop`,
+  {
+    method: "POST",
+    headers: {
+      "X-API-KEY": apiKey,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      entrypoint: "0.7",
+      kernelVersion: "0.3.1",
+      account: "0xYourSmartAccountAddress",
+      calls: [{ to: "0xRecipient", value: "1000000000000000000" }],
+    }),
+  },
+);
+const userOp = await buildResponse.json();
+
+// 2. Sign the userOpHash with your account's private key
+const signature = await signMessage(userOp.userOpHash);
+
+// 3. Send the signed user operation
+const sendResponse = await fetch(
+  `${BASE_URL}/${projectId}/${chainId}/send-userop`,
+  {
+    method: "POST",
+    headers: {
+      "X-API-KEY": apiKey,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      ...userOp,
+      entryPointVersion: "0.7",
+      signature,
+    }),
+  },
+);
+const { userOpHash } = await sendResponse.json();
+```
+
+## Authentication
+
+:::info
+Get your API key from the [ZeroDev Dashboard](https://dashboard.zerodev.app).
+:::
+
+All endpoints require authentication via API key headers. Either one of the following headers must be included:
+
+| Header           | Format | Description          |
+| ---------------- | ------ | -------------------- |
+| `X-API-KEY`      | UUID   | Your project API key |
+| `X-TEAM-API-KEY` | UUID   | Team-level API key   |
+
+## Path Parameters
+
+All endpoints use the following path structure:
+
+```
+POST /:projectId/:chainId/<endpoint>
+```
+
+| Parameter   | Type   | Description                 |
+| ----------- | ------ | --------------------------- |
+| `projectId` | UUID   | Your ZeroDev project ID     |
+| `chainId`   | number | Target chain (e.g., 1, 137) |
+
+## API Reference
+
+### Build User Operation
+
+Builds an unsigned ERC-7702 user operation with gas estimation and paymaster data.
+
+```
+POST /:projectId/:chainId/build-userop
+```
+
+#### Request
+
+```typescript
+interface BuildUserOpRequest {
+  // Required
+  entrypoint: "0.7";
+  kernelVersion: "0.3.1" | "0.3.2" | "0.3.3";
+  account: Address;
+  calls: Array<{
+    to: Address;
+    value?: string; // Wei amount
+    data?: Hex;
+  }>;
+
+  // Optional
+  nonce?: string; // Auto-fetched if omitted
+  authorization?: SignedAuthorization; // Required for EIP-7702
+  isEip7702Account?: boolean;
+  callGasLimit?: string;
+  maxFeePerGas?: string;
+  maxPriorityFeePerGas?: string;
+}
+```
+
+#### Response
+
+```typescript
+interface BuildUserOpResponse {
+  sender: Address;
+  nonce: Hex;
+  callData: Hex;
+  callGasLimit: Hex;
+  verificationGasLimit: Hex;
+  preVerificationGas: Hex;
+  maxFeePerGas: Hex;
+  maxPriorityFeePerGas: Hex;
+  paymaster: Address;
+  paymasterData: Hex;
+  paymasterVerificationGasLimit: Hex;
+  paymasterPostOpGasLimit: Hex;
+  factory: Address;
+  factoryData: Hex;
+  userOpHash: Hex; // Sign this hash
+}
+```
+
+> **Important:** The `userOpHash` in the response is what you need to sign with your account's private key.
+
+---
+
+### Send User Operation
+
+Submits a signed user operation to the bundler.
+
+```
+POST /:projectId/:chainId/send-userop
+```
+
+#### Request
+
+```typescript
+interface SendUserOpRequest {
+  // Required
+  entryPointVersion: "0.7";
+  sender: Address;
+  nonce: string;
+  callData: Hex;
+  signature: Hex; // Your signature of userOpHash
+  callGasLimit: string;
+  verificationGasLimit: string;
+  preVerificationGas: string;
+  maxFeePerGas: string;
+  maxPriorityFeePerGas: string;
+  userOpHash: Hex;
+
+  // Optional (from build response)
+  paymaster?: Address;
+  paymasterData?: Hex;
+  paymasterVerificationGasLimit?: string;
+  paymasterPostOpGasLimit?: string;
+  factory?: Address;
+  factoryData?: Hex;
+  // Required for EIP-7702 accounts
+  authorization?: SignedAuthorization;
+}
+```
+
+#### Response
+
+```typescript
+// 201 Created
+{
+  userOpHash: Hex;
+}
+```
+
+:::info
+Use the returned `userOpHash` to poll for the receipt.
+:::
+
+---
+
+### Get User Operation Receipt
+
+Retrieves the receipt for a submitted user operation.
+
+```
+POST /:projectId/:chainId/get-userop-receipt
+```
+
+#### Request
+
+```typescript
+{
+  userOpHash: Hex;
+}
+```
+
+#### Response
+
+```typescript
+interface UserOpReceipt {
+  userOpHash: Hex;
+  entryPoint: Address;
+  sender: Address;
+  nonce: Hex;
+  paymaster: Address;
+  actualGasCost: Hex;
+  actualGasUsed: Hex;
+  success: boolean;
+  reason: string;
+  logs: Log[];
+  receipt: TransactionReceipt;
+}
+```
+
+> **Tip:** Poll this endpoint until you get a successful response. The user operation may take a few seconds to be included in a block.
+
+---
+
+### Initialize Kernel Client
+
+Pre-warms the kernel client cache for a project/chain. Optional but recommended for reducing latency on first request.
+
+```
+POST /:projectId/:chainId/init-kernel-client
+```
+
+#### Response
+
+```typescript
+// 200 OK
+{
+  success: true;
+}
+```
+
+## Types
+
+```typescript
+type Address = `0x${string}`; // 42-character hex address
+type Hex = `0x${string}`;
+
+// EIP-7702 authorization for EOA delegation
+interface SignedAuthorization {
+  address: Address; // Kernel implementation to delegate to
+  chainId: number;
+  nonce: number;
+  r: Hex;
+  s: Hex;
+  yParity: number;
+  v?: bigint;
+}
+```
+
+## Using with EIP-7702
+
+[EIP-7702](https://docs.zerodev.app/sdk/advanced/eip7702) allows EOAs to temporarily delegate to a smart contract. To use an EOA as a Kernel smart account:
+
+```typescript
+const response = await fetch(
+  `${BASE_URL}/${projectId}/${chainId}/build-userop`,
+  {
+    method: "POST",
+    headers: {
+      "X-API-KEY": apiKey,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      entrypoint: "0.7",
+      kernelVersion: "0.3.1",
+      account: "0xYourEOAAddress", // Your EOA, not a smart account
+      isEip7702Account: true,
+      authorization: {
+        address: "0xKernelImplementation",
+        chainId: 1,
+        nonce: 0,
+        r: "0x...",
+        s: "0x...",
+        yParity: 0,
+      },
+      calls: [{ to: "0xRecipient", value: "1000000000000000000" }],
+    }),
+  },
+);
+```
+
+## Supported Chains
+
+The API supports any chain configured in your ZeroDev project:
+
+See [ZeroDev's supported networks](https://docs.zerodev.app/sdk/faqs/chains) for the full list.
+
+## Related Resources
+
+- [Kernel Smart Accounts](https://docs.zerodev.app/sdk/core-api/create-account)
+- [EIP-7702 Guide](https://docs.zerodev.app/sdk/advanced/eip7702)
+- [Gas Sponsorship](https://docs.zerodev.app/sdk/core-api/sponsor-gas)
+- [ZeroDev Dashboard](https://dashboard.zerodev.app)

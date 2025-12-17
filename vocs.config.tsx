@@ -238,6 +238,10 @@ export default defineConfig({
             text: "Go SDK",
             link: "/sdk/advanced/go-sdk",
           },
+          {
+            text: "UserOp Builder API",
+            link: "/sdk/advanced/userop-builder-api",
+          },
         ],
       },
       {
