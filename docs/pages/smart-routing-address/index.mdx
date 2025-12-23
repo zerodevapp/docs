@@ -133,7 +133,10 @@ By default, Smart Routing Address deducts usage fees from the user's transferred
 
 ### Sponsored Fee Configuration
 
-To set up fee sponsorship, configure the smart routing address with your ZeroDev project ID:
+To set up fee sponsorship, you must perform two steps:
+
+1. **Configure SDK with Project ID**: Add your ZeroDev project ID to the `baseUrl` in your smart routing address configuration.
+2. **Select Tokens in Dashboard**: Go to the [Smart Routing Address Dashboard](https://dashboard.zerodev.app/projects/smart-routing-address) and select the tokens you wish to sponsor for your project.
 
 ```tsx
 import {
@@ -168,7 +171,7 @@ const { smartRoutingAddress, estimatedFees } = await createSmartRoutingAddress({
 });
 ```
 
-When fee sponsorship is enabled, the usage fees will be charged to your ZeroDev account instead of being deducted from the user's transferred tokens. This ensures users receive the full amount they deposit.
+Only tokens that are **both** configured with the project ID in the code **and** selected in the dashboard will be sponsored. For these tokens, usage fees are charged to your ZeroDev account, ensuring users receive the full deposit amount.
 
 ## Pricing
 
