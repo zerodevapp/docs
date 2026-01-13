@@ -1,19 +1,19 @@
 # Smart Routing Address
 
-**Smart Routing Address** enables users to easily deposit funds to a L2/L3 from any CEXs, fiat onramps, and chains, by simply sending funds to a unique deposit address on any chain.
+**Smart Routing Address** enables users to easily deposit funds from any source—CEX, fiat onramp, or any chain—to any destination chain, simply by sending funds to a unique deposit address.
 
-Technically, **Smart Routing Address** is an address that encodes a _cross-chain intent_. **When anyone sends funds to a smart routing address on _any chain_, they are funding the intent and thereby triggering the intent on a _specific destination chain_.** In other words, smart routing address is _source-chain agnostic_, but _target-chain specific_.
+Technically, **Smart Routing Address** is an address that encodes a _cross-chain intent_. **When someone sends funds to a smart routing address on _any chain_, they are funding the intent and thereby triggering the intent on a _specific destination chain_.** In other words, Smart Routing Address is _source-chain agnostic_, but _destination-chain specific_.
 
 ## Common Use Cases
 
-- Sending funds from CEXs directly to an L2/L3.
-- Using a fiat onramp with a L2/L3, even if the onramp doesn't directly support the L2/L3.
-- Depositing into a token vault with funds from another chain.
-- Cross-chain transfers.
+- Sending funds from any CEX directly to any chain
+- Using a fiat onramp with any chain, even if the onramp doesn't directly support that chain
+- Depositing into a token vault on one chain using funds from another
+- Cross-chain transfers
 
 ## Try Smart Routing Address
 
-You can try using smart routing address at [the official portal](https://smart-routing-address.zerodev.app/).
+You can try using Smart Routing Address at [the official portal](https://smart-routing-address.zerodev.app/).
 
 Should your users send the wrong tokens to their smart routing address, they can also use the portal to retrieve their funds.
 
@@ -41,7 +41,7 @@ bun add @zerodev/smart-routing-address
 
 ## Usage
 
-Smart routing address has a beautifully simple API: just `createSmartRoutingAddress` and then send funds to it. That's really it.
+Smart Routing Address has a beautifully simple API: just `createSmartRoutingAddress` and then send funds to it. That's really it.
 
 ### Code Example
 
@@ -135,7 +135,7 @@ By default, Smart Routing Address deducts usage fees from the user's transferred
 
 To set up fee sponsorship, you must perform two steps:
 
-1. **Configure SDK with Project ID**: Add your ZeroDev project ID to the `baseUrl` in your smart routing address configuration.
+1. **Configure SDK with Project ID**: Add your ZeroDev project ID to the `baseUrl` in your Smart Routing Address configuration.
 2. **Select Tokens in Dashboard**: Go to the [Smart Routing Address Dashboard](https://dashboard.zerodev.app/projects/smart-routing-address) and select the tokens you wish to sponsor for your project.
 
 ```tsx
