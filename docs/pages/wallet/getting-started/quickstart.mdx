@@ -1,0 +1,141 @@
+# Quickstart
+
+In this tutorial, we will set up a React + Wagmi app where users can log into their wallets with email magic links.
+
+## Prerequisites
+
+- Obtain a ZeroDev project ID from [the ZeroDev dashboard](https://dashboard.zerodev.app/)
+
+## 1. Create the project
+
+```bash
+npm create vite@latest zerodev-wallet -- --template react-ts
+cd zerodev-wallet
+```
+
+## 2. Install dependencies
+
+```bash
+npm i @zerodev/wallet-react @zerodev/wallet-core wagmi viem
+```
+
+## 3. Configure Wagmi + ZeroDev
+
+ZeroDev Wallet integrates with Wagmi through a connector:
+
+```ts
+import { createConfig, http } from "wagmi";
+import { sepolia } from "wagmi/chains";
+import { zeroDevWallet } from "@zerodev/wallet-react";
+
+const ZERODEV_PROJECT_ID = "YOUR_PROJECT_ID"
+
+export const config = createConfig({
+  chains: [sepolia],
+  connectors: [
+    zeroDevWallet({
+      projectId: ZERODEV_PROJECT_ID,
+      chains: [sepolia],
+    }),
+  ],
+  transports: {
+    [sepolia.id]: http(),
+  },
+});
+```
+
+Make sure to use your actual project ID obtained from the ZeroDev dashboard.
+
+## 5. Wrap providers
+
+Create a Wagmi provider like you normally would:
+
+```tsx
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { WagmiProvider } from "wagmi";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { config } from "./wagmi";
+import App from "./App";
+
+const queryClient = new QueryClient();
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <App />
+      </QueryClientProvider>
+    </WagmiProvider>
+  </React.StrictMode>
+);
+```
+
+## 6. Send a magic link and verify
+
+In your component, use `useSendOTP` and `useVerifyOTP` to send and verify magic links.
+
+```tsx
+import { useEffect, useState } from "react";
+import { useAccount } from "wagmi";
+import { useSendOTP, useVerifyOTP } from "@zerodev/wallet-react";
+
+export default function App() {
+  const { address, status } = useAccount();
+  const sendOTP = useSendOTP();
+  const verifyOTP = useVerifyOTP();
+  const [email, setEmail] = useState("");
+
+  const handleSendMagicLink = async () => {
+    const { otpId, subOrganizationId } = await sendOTP.mutateAsync({
+      email,
+      emailCustomization: {
+        // %s will be replaced by the token
+        magicLinkTemplate: `${window.location.origin}/verify?otp=%s`,
+      },
+    });
+    localStorage.setItem("otpId", otpId);
+    localStorage.setItem("subOrganizationId", subOrganizationId);
+    alert("Magic link sent! Check your email.");
+  };
+
+  // Automatically verify when returning from the magic link
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("otp");
+    const otpId = localStorage.getItem("otpId");
+    const subOrganizationId = localStorage.getItem("subOrganizationId");
+    if (!code || !otpId || !subOrganizationId) return;
+
+    verifyOTP.mutateAsync({ code, otpId, subOrganizationId }).then(() => {
+      window.history.replaceState({}, "", "/");
+    });
+  }, [verifyOTP]);
+
+  return (
+    <div>
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="you@example.com"
+      />
+      <button onClick={handleSendMagicLink} disabled={sendOTP.isPending}>
+        {sendOTP.isPending ? "Sending..." : "Send magic link"}
+      </button>
+      <p>Status: {status}</p>
+      <p>Address: {address}</p>
+    </div>
+  );
+}
+```
+
+That is all you need to spin up an email-based ZeroDev Wallet in React. Once verified, the SDK saves the session and automatically connects the Wagmi connector, so you can call standard Wagmi hooks (`useSendTransaction`, `useSignMessage`, etc.) without extra wiring.
+
+## Next Steps
+
+Use the sidebar to check out other ZeroDev wallet features, such as:
+
+- More authentication methods including [social login](/wallet/authentication/google-oauth).
+
+- Powerful smart account features such as [sending gasless transactions](/wallet/wallet-api/send-transaction).

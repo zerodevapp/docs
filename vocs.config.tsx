@@ -52,6 +52,7 @@ export default defineConfig({
   ),
   topNav: [
     { text: "SDK", link: "/", match: "/sdk" },
+    { text: "Wallet", link: "/wallet", match: "/wallet" },
     { text: "On/offramp", link: "/global-address", match: "/global-address" },
     { text: "Infra", link: "/meta-infra/intro", match: "/meta-infra" },
     {
@@ -809,94 +810,58 @@ export default defineConfig({
         ],
       },
     ],
-    "/react": [
+    "/wallet": [
       {
-        text: "Getting Started",
-        link: "/react/getting-started",
-      },
-      {
-        text: "Code Examples",
-        link: "https://github.com/zerodevapp/waas-examples",
-      },
-      {
-        text: "Hooks",
+        text: "Getting started",
         collapsed: false,
         items: [
           {
-            text: "useBalance",
-            link: "/react/use-balance",
+            text: "Introduction",
+            link: "/wallet",
           },
           {
-            text: "useChainId",
-            link: "/react/use-chainid",
+            text: "Quickstart",
+            link: "/wallet/getting-started/quickstart",
+          },
+        ],
+      },
+      {
+        text: "Authentication",
+        collapsed: false,
+        items: [
+          {
+            text: "Google OAuth",
+            link: "/wallet/authentication/google-oauth",
           },
           {
-            text: "useChains",
-            link: "/react/use-chains",
+            text: "Passkey (WebAuthn)",
+            link: "/wallet/authentication/passkey-webauthn",
           },
           {
-            text: "useCreateBasicSession",
-            link: "/react/use-create-basic-session",
+            text: "Email (OTP & magic link)",
+            link: "/wallet/authentication/email-otp",
+          },
+        ],
+      },
+      {
+        text: "Wallet API",
+        collapsed: false,
+        items: [
+          {
+            text: "Send a transaction",
+            link: "/wallet/wallet-api/send-transaction",
           },
           {
-            text: "useCreateSession",
-            link: "/react/use-create-session",
+            text: "Sign a message",
+            link: "/wallet/wallet-api/sign-message",
           },
           {
-            text: "useCreateKernelClientEOA",
-            link: "/react/use-create-kernelclient-eoa",
+            text: "Sign a typed message",
+            link: "/wallet/wallet-api/sign-typed-message",
           },
           {
-            text: "useCreateKernelClientPasskey",
-            link: "/react/use-create-kernelclient-passkey",
-          },
-          {
-            text: "useCreateKernelClientSocial",
-            link: "/react/use-create-kernelclient-social",
-          },
-          {
-            text: "useDisconnectKernelClient",
-            link: "/react/use-disconnect-kernelclient",
-          },
-          {
-            text: "useKernelClient",
-            link: "/react/use-kernelclient",
-          },
-          {
-            text: "useSendTransaction",
-            link: "/react/use-send-transaction",
-          },
-          {
-            text: "useSendTransactionWithSession",
-            link: "/react/use-send-transaction-with-session",
-          },
-          {
-            text: "useSendUserOperation",
-            link: "/react/use-send-useroperation",
-          },
-          {
-            text: "useSendUserOperationWithSession",
-            link: "/react/use-send-useroperation-with-session",
-          },
-          {
-            text: "useSessions",
-            link: "/react/use-sessions",
-          },
-          {
-            text: "useSessionKernelClient",
-            link: "/react/use-session-kernelclient",
-          },
-          {
-            text: "useSetKernelClient",
-            link: "/react/use-set-kernelclient",
-          },
-          {
-            text: "useSwitchChain",
-            link: "/react/use-switch-chain",
-          },
-          {
-            text: "useWalletConnect",
-            link: "/react/use-wallet-connect",
+            text: "Export wallet seed phrase",
+            link: "/wallet/wallet-api/export-wallet-seed-phrase",
           },
         ],
       },

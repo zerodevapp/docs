@@ -1,0 +1,64 @@
+# Passkey (WebAuthn)
+
+ZeroDev Wallet supports WebAuthn passkeys for passwordless login.
+
+## Configure RP ID (optional)
+
+Set `rpId` on the connector if you need a custom relying party identifier (defaults to the current origin):
+
+```ts
+zeroDevWallet({
+  projectId: process.env.NEXT_PUBLIC_ZERODEV_PROJECT_ID!,
+  aaUrl: process.env.NEXT_PUBLIC_ZERODEV_AA_URL,
+  chains: [sepolia],
+  rpId: "example.com",
+});
+```
+
+## Register a passkey
+
+```tsx
+import { useRegisterPasskey } from "@zerodev/wallet-react";
+
+export function RegisterPasskey() {
+  const registerPasskey = useRegisterPasskey();
+
+  return (
+    <button
+      onClick={() =>
+        registerPasskey.mutateAsync({
+          email: "user@example.com",
+        })
+      }
+      disabled={registerPasskey.isPending}
+    >
+      {registerPasskey.isPending ? "Registering..." : "Create passkey"}
+    </button>
+  );
+}
+```
+
+## Log in with a passkey
+
+```tsx
+import { useLoginPasskey } from "@zerodev/wallet-react";
+
+export function LoginPasskey() {
+  const loginPasskey = useLoginPasskey();
+
+  return (
+    <button
+      onClick={() =>
+        loginPasskey.mutateAsync({
+          email: "user@example.com",
+        })
+      }
+      disabled={loginPasskey.isPending}
+    >
+      {loginPasskey.isPending ? "Authenticating..." : "Login with passkey"}
+    </button>
+  );
+}
+```
+
+After either mutation completes, the SDK refreshes the session and auto-connects the Wagmi connector so `useAccount` reflects the authenticated wallet.

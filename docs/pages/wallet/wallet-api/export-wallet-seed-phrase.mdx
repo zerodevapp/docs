@@ -1,0 +1,40 @@
+# Export wallet seed phrase
+
+ZeroDev Wallet can export the underlying seed phrase through a secure iframe flow. You must render a DOM container and call the provided hook.
+
+```tsx
+import { useState } from "react";
+import { useExportWallet } from "@zerodev/wallet-react";
+
+const IFRAME_CONTAINER_ID = "export-wallet-iframe";
+
+export function ExportSeedPhrase() {
+  const exportWallet = useExportWallet();
+  const [showIframe, setShowIframe] = useState(false);
+
+  const handleExport = async () => {
+    setShowIframe(true);
+    await exportWallet.mutateAsync({
+      iframeContainerId: IFRAME_CONTAINER_ID,
+    });
+    // The Turnkey iframe injects the seed phrase UI into the container.
+  };
+
+  return (
+    <div>
+      <button onClick={handleExport} disabled={exportWallet.isPending}>
+        {exportWallet.isPending ? "Exporting..." : "Export seed phrase"}
+      </button>
+
+      {showIframe && (
+        <div
+          id={IFRAME_CONTAINER_ID}
+          style={{ minHeight: 320, border: "1px solid #e5e7eb", marginTop: 12 }}
+        />
+      )}
+
+      {exportWallet.error && <p>Export failed: {exportWallet.error.message}</p>}
+    </div>
+  );
+}
+```

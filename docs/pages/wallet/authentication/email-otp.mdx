@@ -1,0 +1,121 @@
+# Email (OTP codes and magic links)
+
+ZeroDev supports email-based auth in two flavors: numeric OTP codes and magic links. Both start with `useSendOTP`; you can choose whether to send a code or a link via `emailCustomization.magicLinkTemplate`.
+
+## Send a numeric OTP
+
+```tsx
+import { useSendOTP } from "@zerodev/wallet-react";
+
+export function SendOtpButton({ email }: { email: string }) {
+  const sendOTP = useSendOTP();
+
+  const handleSend = async () => {
+    const { otpId, subOrganizationId } = await sendOTP.mutateAsync({
+      email,
+    });
+
+    localStorage.setItem("otpId", otpId);
+    localStorage.setItem("subOrganizationId", subOrganizationId);
+  };
+
+  return (
+    <button onClick={handleSend} disabled={sendOTP.isPending}>
+      {sendOTP.isPending ? "Sending..." : "Send OTP"}
+    </button>
+  );
+}
+```
+
+### Verify the code
+
+```tsx
+import { useState } from "react";
+import { useVerifyOTP } from "@zerodev/wallet-react";
+
+export function VerifyOtpForm() {
+  const verifyOTP = useVerifyOTP();
+  const [code, setCode] = useState("");
+  const otpId = localStorage.getItem("otpId")!;
+  const subOrganizationId = localStorage.getItem("subOrganizationId")!;
+
+  const handleVerify = async () => {
+    await verifyOTP.mutateAsync({
+      code,
+      otpId,
+      subOrganizationId,
+    });
+    // Wagmi is auto-connected after verification.
+  };
+
+  return (
+    <div>
+      <input value={code} onChange={(e) => setCode(e.target.value)} />
+      <button onClick={handleVerify} disabled={verifyOTP.isPending}>
+        {verifyOTP.isPending ? "Verifying..." : "Verify code"}
+      </button>
+    </div>
+  );
+}
+```
+
+## Send a magic link
+
+```tsx
+import { useSendOTP } from "@zerodev/wallet-react";
+
+export function SendMagicLink({ email }: { email: string }) {
+  const sendOTP = useSendOTP();
+
+  const handleSend = async () => {
+    const { otpId, subOrganizationId } = await sendOTP.mutateAsync({
+      email,
+      emailCustomization: {
+        // %s is replaced with the token
+        magicLinkTemplate: `${window.location.origin}/verify?otp=%s`,
+      },
+    });
+
+    localStorage.setItem("otpId", otpId);
+    localStorage.setItem("subOrganizationId", subOrganizationId);
+  };
+
+  return (
+    <button onClick={handleSend} disabled={sendOTP.isPending}>
+      {sendOTP.isPending ? "Sending..." : "Send magic link"}
+    </button>
+  );
+}
+```
+
+### Verify from the link
+
+```tsx
+import { useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { useVerifyOTP } from "@zerodev/wallet-react";
+
+export default function VerifyPage() {
+  const params = useSearchParams();
+  const router = useRouter();
+  const verifyOTP = useVerifyOTP();
+
+  useEffect(() => {
+    const code = params.get("otp");
+    const otpId = localStorage.getItem("otpId");
+    const subOrganizationId = localStorage.getItem("subOrganizationId");
+    if (!code || !otpId || !subOrganizationId) return;
+
+    verifyOTP
+      .mutateAsync({ code, otpId, subOrganizationId })
+      .then(() => router.push("/dashboard"));
+  }, [params, router, verifyOTP]);
+
+  return <p>Verifying magic link...</p>;
+}
+```
+
+Notes:
+
+- Both flows require storing `otpId` and `subOrganizationId` from the send step so the verification call can succeed.
+- After verification, the SDK fetches the session/EOA and auto-connects the Wagmi connector, so downstream hooks like `useAccount` update immediately.

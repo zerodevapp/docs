@@ -1,0 +1,57 @@
+# Google OAuth
+
+Use the built-in OAuth popup to authenticate users with Google.
+
+## Configure OAuth
+
+Add `oauthConfig` to the connector:
+
+```ts
+import { zeroDevWallet } from "@zerodev/wallet-react";
+import { createConfig } from "wagmi";
+import { sepolia } from "wagmi/chains";
+
+export const config = createConfig({
+  chains: [sepolia],
+  connectors: [
+    zeroDevWallet({
+      projectId: process.env.NEXT_PUBLIC_ZERODEV_PROJECT_ID!,
+      aaUrl: process.env.NEXT_PUBLIC_ZERODEV_AA_URL,
+      chains: [sepolia],
+      oauthConfig: {
+        googleClientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+        redirectUri: process.env.NEXT_PUBLIC_OAUTH_REDIRECT_URI!, // e.g. http://localhost:3000
+      },
+    }),
+  ],
+});
+```
+
+Make sure the redirect URI is registered in your Google OAuth client.
+
+## Start the popup flow
+
+```tsx
+import {
+  useAuthenticateOAuth,
+  OAUTH_PROVIDERS,
+} from "@zerodev/wallet-react";
+
+export function GoogleButton() {
+  const authenticateOAuth = useAuthenticateOAuth();
+
+  return (
+    <button
+      onClick={() =>
+        authenticateOAuth.mutateAsync({
+          provider: OAUTH_PROVIDERS.GOOGLE,
+        })
+      }
+    >
+      Continue with Google
+    </button>
+  );
+}
+```
+
+The hook opens a centered popup, polls for the ID token, exchanges it with ZeroDev Wallet, stores the session, and automatically connects the Wagmi connector. You can override the client ID per-call by passing `clientId` to `mutateAsync` if you need dynamic projects/tenants.

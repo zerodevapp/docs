@@ -1,0 +1,27 @@
+# Sign a message
+
+To sign a message, use Wagmi’s `useSignMessage` hook:
+
+```tsx
+import { useSignMessage } from "wagmi";
+
+export function SignMessage() {
+  const { signMessage, data, isPending, error } = useSignMessage();
+
+  const handleSign = () =>
+    signMessage({
+      message: "Hello from ZeroDev Wallet",
+    });
+
+  return (
+    <div>
+      <button onClick={handleSign} disabled={isPending}>
+        {isPending ? "Signing..." : "Sign message"}
+      </button>
+
+      {data && <p>Signature: {data}</p>}
+      {error && <p>Signing failed: {error.message}</p>}
+    </div>
+  );
+}
+```

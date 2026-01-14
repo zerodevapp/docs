@@ -1,0 +1,71 @@
+# Send a transaction
+
+Use standard Wagmi hooks to send transactions. The ZeroDev connector turns transactions into user operations (AA transactions) behind the scenes, achieving gas abstraction automatically so long as you have set it up on the ZeroDev dashboard.
+
+## `useSendTransaction`
+
+```tsx
+import { useState } from "react";
+import { parseEther } from "viem";
+import { useAccount, useSendTransaction } from "wagmi";
+
+export function SendEth() {
+  const { address, isConnected } = useAccount();
+  const { sendTransaction, data, isPending } = useSendTransaction();
+  const [to, setTo] = useState("0x...");
+  const [amount, setAmount] = useState("0.001");
+
+  const handleSend = () => {
+    if (!isConnected) return;
+    sendTransaction({
+      to,
+      value: parseEther(amount),
+    });
+  };
+
+  return (
+    <div>
+      <p>From: {address}</p>
+      <input value={to} onChange={(e) => setTo(e.target.value)} />
+      <input value={amount} onChange={(e) => setAmount(e.target.value)} />
+      <button onClick={handleSend} disabled={isPending}>
+        {isPending ? "Sending..." : "Send"}
+      </button>
+      {data && <p>Tx hash: {data}</p>}
+    </div>
+  );
+}
+```
+
+## `useWriteContract`
+
+```tsx
+import { useWriteContract } from "wagmi";
+import { parseAbi } from "viem";
+
+const NFT_ABI = parseAbi([
+  "function mint(address _to) public",
+]);
+
+export function MintNftGasless({ recipient }: { recipient: `0x${string}` }) {
+  const { writeContract, data, isPending, error } = useWriteContract();
+
+  const mint = () =>
+    writeContract({
+      address: "0xYourNftAddress",
+      abi: NFT_ABI,
+      functionName: "mint",
+      args: [recipient],
+    });
+
+  return (
+    <div>
+      <button onClick={mint} disabled={isPending}>
+        {isPending ? "Minting..." : "Mint NFT (gasless)"}
+      </button>
+      {data && <p>Tx hash: {data}</p>}
+      {error && <p>Mint failed: {error.message}</p>}
+    </div>
+  );
+}
+```
