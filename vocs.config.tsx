@@ -53,15 +53,19 @@ export default defineConfig({
   topNav: [
     { text: "SDK", link: "/", match: "/sdk" },
     { text: "Wallet", link: "/wallet", match: "/wallet" },
-    { text: "On/offramp", link: "/global-address", match: "/global-address" },
-    { text: "Infra", link: "/meta-infra/intro", match: "/meta-infra" },
+    {
+      text: "Smart Routing",
+      link: "/smart-routing-address",
+      match: "/smart-routing-address",
+    },
+    { text: "API", link: "https://zerodev-api.readme.io" },
     {
       link: "https://dashboard.zerodev.app/",
       text: "Dashboard",
     },
     {
-      link: "https://t.me/derek_chiang",
-      text: "Contact us",
+      link: "https://calendly.com/zerodev/30min",
+      text: "Contact Us",
     },
     { text: "Blog", link: "/blog", match: "/blog" },
   ],
@@ -234,6 +238,10 @@ export default defineConfig({
           {
             text: "Go SDK",
             link: "/sdk/advanced/go-sdk",
+          },
+          {
+            text: "UserOp Builder API",
+            link: "/sdk/advanced/userop-builder-api",
           },
         ],
       },
@@ -823,6 +831,10 @@ export default defineConfig({
             text: "Quickstart",
             link: "/wallet/getting-started/quickstart",
           },
+          {
+            text: "Demo",
+            link: "https://zerodev-signer-demo.vercel.app/",
+          }
         ],
       },
       {
@@ -880,6 +892,10 @@ posthog.init('${process.env.VITE_POSTHOG}', {
     defaults: '2025-05-24',
     cookieless_mode: "always",
 })</script>
+
+<!-- Start of HubSpot Embed Code -->
+  <script type="text/javascript" id="hs-script-loader" async defer src="//js-na1.hs-scripts.com/50627473.js"></script>
+<!-- End of HubSpot Embed Code -->
 </head>`,
           );
         },

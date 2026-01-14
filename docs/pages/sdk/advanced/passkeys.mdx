@@ -25,7 +25,7 @@ The biggest value-add of passkeys, in the context of Web3, is **saving users fro
 
 ZeroDev/Kernel supports using passkeys as signers. The support comes in two flavors:
 
-- **Native passkeys** using the [ERC-7212 precompile](https://github.com/ethereum/RIPs/blob/master/RIPS/rip-7212.md). Native passkeys are the best option when available, since it uses the least amount of gas (only 3450 gas for verifying a P256 signature). Currently only a small number of networks support ERC-7212, but it's expected that most networks will support it over time.
+- **Native passkeys** using precompiles via [RIP-7212](https://github.com/ethereum/RIPs/blob/master/RIPS/rip-7212.md) on rollups and [EIP-7951](https://eips.ethereum.org/EIPS/eip-7951) on Ethereum. Native passkeys are the best option when available, since it uses the least amount of gas (only 3450 gas for verifying a P256 signature).  [See here](#chains-with-native-passkey-precompiles) for a list of chains that support native passkey precompiles.
 
 - **Smart contract passkeys** using either the [Daimo](https://github.com/daimo-eth/p256-verifier) or [FCL](https://github.com/rdubois-crypto/FreshCryptoLib) implementation. Smart contract passkeys can work on all EVM networks, but they are expensive (300-400k gas for verifying a P256 signature).
 
@@ -289,3 +289,74 @@ Synchronization and recovery are both supported natively by Apple and Google:
 - With Apple, Passkeys created on one device are synced through [iCloud Keychain](https://support.apple.com/en-us/109016) as long as the user is logged in with their Apple ID. Apple covers both syncing and recovery in ["About the security of passkeys"](https://support.apple.com/en-us/102195). For some additional detail, see [this Q&A with the passkey team](https://developer.apple.com/news/?id=21mnmxow). Apple's account recovery process is documented in [this support page](https://support.apple.com/en-us/HT204921).
 
 - With Google, [Google Password Manager](https://passwords.google/) syncs passkeys across devices seamlessly. Google has plans to support syncing more broadly across different operating systems, see [this support summary](https://developers.google.com/identity/passkeys/supported-environments#chrome-passkey-support-summary). Recovery is covered in [this FAQ ("What happens if a user loses their device?")](https://developers.google.com/identity/passkeys/faq#what_happens_if_a_user_loses_their_device): it relies on Google's overall [account recovery process](https://support.google.com/accounts/answer/7682439?hl=en) because passkeys are attached to Google accounts.
+
+## Chains with Native Passkey Precompiles
+
+This is an incomplete list of chains that support native passkey precompiles via RIP-7212 or EIP-7951:
+
+### Mainnet
+- Ethereum
+- OP Mainnet
+- BNB Smart Chain
+- Unichain Mainnet
+- Polygon
+- Monad Mainnet
+- Ethernity Mainnet
+- Mint Mainnet
+- opBNB
+- ZKsync Era
+- Shape
+- Flow
+- Perennial
+- Story
+- Abstract
+- Edge Mainnet
+- Mantle
+- ZetaChain Mainnet
+- Polynomial Mainnet
+- B3 Mainnet
+- Base
+- Warden Protocol
+- Apechain
+- mode-mainnet
+- Arbitrum One
+- Arbitrum Nova
+- Celo
+- Hemi Network
+- Avalanche
+- Ink
+- Linea Mainnet
+- BOB
+- Onyx
+- plume
+- Scroll
+- Katana
+- Degen
+
+### Testnet
+- Binance Smart Chain Testnet
+- Ethernity Testnet
+- prod-testnet
+- mode-sepolia
+- Unichain Sepolia
+- Story Aeneid
+- vector-chain
+- Mantle Sepolia Testnet
+- MegaETH Testnet v2
+- Monad Testnet
+- Ethereum Holesky Testnet
+- Incentiv Testnet
+- Curtis Testnet
+- Avalanche Fuji
+- Linea Sepolia Testnet
+- Polygon Amoy
+- Base Sepolia
+- plume-testnet
+- Arbitrum Sepolia
+- Scroll Sepolia
+- Open Campus Codex
+- Hemi Sepolia
+- Ink Sepolia
+- Sepolia
+- OP Sepolia
+- Arbitrum Blueberry
