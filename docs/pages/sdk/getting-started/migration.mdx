@@ -10,14 +10,14 @@ With API v3, the notable changes are:
 Here's what a v3 RPC looks like:
 
 ```txt
-https://rpc.zerodev.app/api/v3/55569f2d-5bbf-43e5-90cc-75d43c26e007/chain/42161
+https://rpc.zerodev.app/api/v3/xxxxxf2d-xxxx-xxxx-90cc-xxxxxxxxx007/chain/42161
 ```
 
 Note that the last part `42161` is the chain ID.  Therefore, if you'd like to programmatically use the RPC for different chains, you can do something like:
 
 ```ts
 // replace the prefix with your own RPC prefix
-const rpcPrefix = `https://rpc.zerodev.app/api/v3/55569f2d-5bbf-43e5-90cc-75d43c26e007/chain/`
+const rpcPrefix = `https://rpc.zerodev.app/api/v3/xxxxxf2d-xxxx-xxxx-90cc-xxxxxxxxx007/chain/`
 const rpc = rpcPrefix + chain.id
 ```
 
