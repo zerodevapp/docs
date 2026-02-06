@@ -172,6 +172,10 @@ export default defineConfig({
             text: "Sign and Verify Messages",
             link: "/sdk/core-api/sign-and-verify",
           },
+          {
+            text: "Status & Uptime API",
+            link: "/sdk/core-api/status",
+          },
         ],
       },
       {

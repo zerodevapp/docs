@@ -1,0 +1,81 @@
+# Status API
+
+ZeroDev provides a status API for monitoring uptime and performance metrics of RPC endpoints across different chains.
+
+## API Documentation
+
+### 1. Get Uptime & Chain List
+**Endpoint**: `GET /uptime`
+
+Returns the service's overall uptime status and a list of supported chains. This is the primary endpoint for checking general service health.
+This returns uptime as a list of boolean values indicating health status for last 24 hours per minute. 
+Additionally this returns a list of chains supported by our bundler service.
+
+**Response Format**:
+```json
+{
+  "uptime": {
+    "uptimePercent": 99.9,
+    "perMinute": [
+      {
+        "tsIso": "2023-10-27T10:00:00.000Z",
+        "ts": 1698400800,
+        "up": true
+      }
+      // ... list of boolean status per minute (last 24h window)
+    ]
+  },
+  "chains": [
+    {
+      "networkId": "42161",
+      "networkName": "Arbitrum One"
+    }
+    // ... list of all supported chains
+  ]
+}
+```
+
+---
+
+### 2. Get Chain Performance
+**Endpoint**: `GET /performance/:chainId`
+
+Returns detailed performance metrics for a specific chain. (for last 6 hours)
+This endpoint gives the error rate, and latency performance data for the specific chain for every minute, and also for major RPC methods
+
+**Parameters**:
+- `chainId` (path parameter): The numeric ID of the network (e.g., `42161`).
+
+**Response Format**:
+```json
+{
+  "networkName": "Arbitrum One",
+  "networkId": "42161",
+  "perMinute": [
+    {
+      "minuteTs": 1698400800,
+      "minuteISO": "2023-10-27T10:00:00.000Z",
+      "requestCount": 1500,
+      "errorCount": 5,
+      "errorRatePercent": 0.33,
+      "p95Ms": 120,
+      "maxMs": 450,
+      "p99Ms": 200,
+      "perRPC": {
+            "eth_call": {
+              "requestCount": 1000,
+              "errorCount": 2,
+              "errorRatePercent": 0.2,
+              "p95Ms": 110,
+              "maxMs": 300,
+              "p99Ms": 150
+            }
+            // ... metrics breakdown by RPC method
+          }
+    }
+  ]
+}
+```
+
+**Errors**:
+- `400 Bad Request`: If `chainId` is not a number.
