@@ -1,0 +1,120 @@
+import VersionWarning from "../VersionWarning"
+
+<VersionWarning version="5.3.x" /> 
+
+# Use Openfort with ZeroDev
+
+[Openfort](https://www.openfort.io/) is a wallet infrastructure platform that provides embedded wallets with built-in account abstraction support. It offers passkey authentication, social login, and seamless onboarding experiences for both web and mobile applications. Openfort's embedded wallets are non-custodial by design and support ERC-4337 smart accounts with features like gas sponsorship, transaction batching, and session keys.
+
+## Set up
+
+To use Openfort with ZeroDev, first create an application that integrates with Openfort.
+
+- Refer to the [Openfort documentation site](https://www.openfort.io/docs) for instructions on setting up an application.
+- For a quick start, Openfort provides a demo application, available [here](https://demo.openfort.io/).
+
+## Integration
+
+Integrating ZeroDev with Openfort is straightforward after setting up your project. Openfort provides an EIP-1193 compatible provider that can be used as a signer with Kernel.
+
+### Create the Openfort client and get the provider
+
+After following the Openfort documentation, you will have access to an Openfort client. Here's how to set it up:
+
+```typescript
+import { Openfort } from '@openfort/openfort-js'
+
+// Initialize Openfort with your keys
+const openfort = new Openfort({
+  baseConfiguration: {
+    publishableKey: "YOUR_OPENFORT_PUBLISHABLE_KEY"
+  },
+  shieldConfiguration: {
+    shieldPublishableKey: "YOUR_SHIELD_PUBLISHABLE_KEY"
+  }
+})
+
+// Authenticate the user (e.g., with email, social login, or passkeys)
+// See Openfort docs for authentication options
+
+// Get the EIP-1193 provider
+const openfortProvider = await openfort.embeddedWallet.getEthereumProvider()
+```
+
+### Use with ZeroDev
+
+Use the provider from Openfort to create a smart account signer, which can be passed to a validator. For detailed guidance on using a validator, refer to our documentation on [creating accounts](/sdk/v5_3_x/core-api/create-account#api).
+
+```typescript
+import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
+import { KERNEL_V3_1 } from "@zerodev/sdk/constants"
+import { providerToSmartAccountSigner, ENTRYPOINT_ADDRESS_V07 } from 'permissionless'
+import { createPublicClient, http } from "viem"
+import { polygonAmoy } from 'viem/chains'
+
+const publicClient = createPublicClient({
+  // Use your own RPC provider (e.g. Infura/Alchemy).
+  transport: http('https://rpc-amoy.polygon.technology'),
+  chain: polygonAmoy,
+})
+
+// Create a SmartAccountSigner from the Openfort provider
+const smartAccountSigner = await providerToSmartAccountSigner(openfortProvider)
+
+// Pass your smartAccountSigner to the validator
+const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
+  signer: smartAccountSigner,
+  entryPoint: ENTRYPOINT_ADDRESS_V07,
+  kernelVersion: KERNEL_V3_1
+})
+
+// You can now use this ECDSA Validator to create a Kernel account
+```
+
+### Using with Viem
+
+Openfort's provider is also compatible with Viem's `createWalletClient`:
+
+```typescript
+import { createWalletClient, custom } from 'viem'
+import { walletClientToSmartAccountSigner } from 'permissionless'
+import { polygonAmoy } from 'viem/chains'
+
+// Create a wallet client from the Openfort provider
+const walletClient = createWalletClient({
+  chain: polygonAmoy,
+  transport: custom(openfortProvider)
+})
+
+// Convert to a SmartAccountSigner
+const smartAccountSigner = walletClientToSmartAccountSigner(walletClient)
+
+// Use with ZeroDev as shown above
+```
+
+## React Integration
+
+If you're using React, Openfort provides hooks for easier integration:
+
+```typescript
+import { useOpenfort } from '@openfort/openfort-react'
+
+function App() {
+  const { embeddedWallet, user } = useOpenfort()
+
+  const getProvider = async () => {
+    if (!user) {
+      throw new Error("User not authenticated")
+    }
+    return await embeddedWallet.getEthereumProvider()
+  }
+
+  // Use the provider with ZeroDev as shown above
+}
+```
+
+## Additional Resources
+
+- [Openfort Documentation](https://www.openfort.io/docs)
+- [Openfort Demo](https://demo.openfort.io/)
+- [Openfort GitHub](https://github.com/openfort-xyz)
