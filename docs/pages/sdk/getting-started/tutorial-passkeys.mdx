@@ -54,8 +54,8 @@ const handleRegister = async () => {
   const passkeyValidator = await toPasskeyValidator(publicClient, {  // [!code focus]
     webAuthnKey,   // [!code focus]
     entryPoint,   // [!code focus]
-    kernelVersion: KERNEL_V3_1,   // [!code focus]
-    validatorContractVersion: PasskeyValidatorContractVersion.V0_0_2 // [!code focus]
+    kernelVersion: KERNEL_V3_3,   // [!code focus]
+    validatorContractVersion: PasskeyValidatorContractVersion.V0_0_3_PATCHED // [!code focus]
   })   // [!code focus]
 
   await createAccountAndClient(passkeyValidator)  // [!code focus]
@@ -81,8 +81,8 @@ const handleLogin = async () => {
   const passkeyValidator = await toPasskeyValidator(publicClient, { // [!code focus]
     webAuthnKey,  // [!code focus]
     entryPoint, // [!code focus]
-    kernelVersion: KERNEL_V3_1,   // [!code focus]
-    validatorContractVersion: PasskeyValidatorContractVersion.V0_0_2 // [!code focus]
+    kernelVersion: KERNEL_V3_3,   // [!code focus]
+    validatorContractVersion: PasskeyValidatorContractVersion.V0_0_3_PATCHED // [!code focus]
   })  // [!code focus]
 
   await createAccountAndClient(passkeyValidator)  // [!code focus]

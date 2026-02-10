@@ -79,7 +79,7 @@ If you are testing on `localhost`, just leave the domain empty. If you are deplo
 
 ```ts
 import { toPasskeyValidator, toWebAuthnKey, WebAuthnMode, PasskeyValidatorContractVersion } from "@zerodev/passkey-validator"
-import { KERNEL_V3_1 } from "@zerodev/sdk/constants"
+import { KERNEL_V3_3 } from "@zerodev/sdk/constants"
 import { ENTRYPOINT_ADDRESS_V07 } from "permissionless"
 
 const webAuthnKey = await toWebAuthnKey({
@@ -92,8 +92,8 @@ const webAuthnKey = await toWebAuthnKey({
 const passkeyValidator = await toPasskeyValidator(publicClient, {
   webAuthnKey,
   entryPoint: ENTRYPOINT_ADDRESS_V07,
-  kernelVersion: KERNEL_V3_1,
-  validatorContractVersion: PasskeyValidatorContractVersion.V0_0_2
+  kernelVersion: KERNEL_V3_3,
+  validatorContractVersion: PasskeyValidatorContractVersion.V0_0_3_PATCHED
 })
 ```
 
@@ -103,7 +103,7 @@ const passkeyValidator = await toPasskeyValidator(publicClient, {
 
 ```ts
 import { toPasskeyValidator, toWebAuthnKey, WebAuthnMode, PasskeyValidatorContractVersion } from "@zerodev/passkey-validator"
-import { KERNEL_V3_1 } from "@zerodev/sdk/constants"
+import { KERNEL_V3_3 } from "@zerodev/sdk/constants"
 import { ENTRYPOINT_ADDRESS_V07 } from "permissionless"
 
 const webAuthnKey = await toWebAuthnKey({
@@ -116,8 +116,8 @@ const webAuthnKey = await toWebAuthnKey({
 const passkeyValidator = await toPasskeyValidator(publicClient, {
   webAuthnKey,
   entryPoint: ENTRYPOINT_ADDRESS_V07,
-  kernelVersion: KERNEL_V3_1,
-  validatorContractVersion: PasskeyValidatorContractVersion.V0_0_2
+  kernelVersion: KERNEL_V3_3,
+  validatorContractVersion: PasskeyValidatorContractVersion.V0_0_3_PATCHED
 })
 ```
 
@@ -281,8 +281,8 @@ const webAuthnKey = await toWebAuthnKey({
 const passkeyValidator = await toPasskeyValidator(publicClient, {
   webAuthnKey,
   entryPoint: ENTRYPOINT_ADDRESS_V07,
-  kernelVersion: KERNEL_V3_1,
-  validatorContractVersion: PasskeyValidatorContractVersion.V0_0_2
+  kernelVersion: KERNEL_V3_3,
+  validatorContractVersion: PasskeyValidatorContractVersion.V0_0_3_PATCHED
 })
 ```
 
