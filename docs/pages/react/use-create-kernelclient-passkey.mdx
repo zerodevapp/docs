@@ -41,7 +41,7 @@ import { type UseCreateKernelClientPasskeyParameters } from '@zerodev/waas';
 
 `v2 | v3`
 
-The version of kernel account.
+The version of the kernel account.
 ```tsx
 import { useCreateKernelClientPasskey } from '@zerodev/waas';
 
@@ -66,7 +66,7 @@ import { type UseCreateKernelClientPasskeyReturnType } from '@zerodev/waas'
 ### connectRegister
 `(variables: CreateKernelClientPasskeyVariables) => void`
 
-The mutation function to register passkey and create the kernel smart account.
+The mutation function registers the passkey and creates the kernel smart account.
 
 - #### variables 
   - ##### username
@@ -86,7 +86,7 @@ Similar to [connectRegister](#connectregister) but returns a promise.
 ### connectLogin
 `() => void`
 
-The mutation function to login created passkey and create the kernel smart account.
+The mutation function for login creates a passkey and creates the kernel smart account.
 
 ### connectLoginAsync
 `() => Promise<CreateKernelClientPasskeyData>`
@@ -96,10 +96,10 @@ Similar to [connectLogin](#connectlogin) but returns a promise.
 ### data
 `CreateKernelClientPasskeyData | undefined`
   - ##### validator
-    `KernelValidator<EntryPoint>` The object of kernel validator.
+    `KernelValidator<EntryPoint>`: The object of the kernel validator.
   - ##### kernelAccount
-    `KernelSmartAccount<EntryPoint>` The object of kernel account.
+    `KernelSmartAccount<EntryPoint>`: The object of the kernel account.
   - ##### entryPoint
-    `EntryPoint` The entrypoint address of kernel account.
+    `EntryPoint`: The entrypoint address of the kernel account.
 
 <MutationResult />
