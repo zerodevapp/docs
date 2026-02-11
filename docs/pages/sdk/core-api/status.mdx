@@ -4,16 +4,16 @@ ZeroDev provides a status API for monitoring uptime and performance metrics of R
 
 You can also find the status page here: https://status.zerodev.app/
 
-## API Documentation
+## API documentation
 
 You can find the base URL at: https://status-api.zerodev.app/
 
-### 1. Get Uptime & Chain List
+### 1. Get uptime & chain list
 **Endpoint**: `GET /uptime`
 
-Returns the service's overall uptime status and a list of supported chains. This is the primary endpoint for checking general service health.
-This returns uptime as a list of boolean values indicating health status for last 24 hours per minute. 
-Additionally this returns a list of chains supported by our bundler service.
+- Returns the service’s overall uptime status and a list of supported chains. - This is the primary endpoint for checking general service health.
+- This returns uptime as a list of boolean values indicating the health status for the last 24 hours, per minute.
+- Additionally, this returns a list of chains supported by our bundler service.
 
 **Response Format**:
 ```json
@@ -39,13 +39,10 @@ Additionally this returns a list of chains supported by our bundler service.
 }
 ```
 
----
-
-### 2. Get Chain Performance
+### 2. Get chain performance
 **Endpoint**: `GET /performance/:chainId`
 
-Returns detailed performance metrics for a specific chain. (for last 6 hours)
-This endpoint gives the error rate, and latency performance data for the specific chain for every minute, and also for major RPC methods
+Returns detailed performance metrics for a specific chain (for the last six hours). This endpoint provides error rate and latency performance data for the specific chain every minute, as well as for major RPC methods.
 
 **Parameters**:
 - `chainId` (path parameter): The numeric ID of the network (e.g., `42161`).

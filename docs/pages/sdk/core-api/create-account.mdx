@@ -1,14 +1,16 @@
-# Creating a Smart Account
+# Creating a smart account
 
 :::info
-Impatient?  Check out [a complete example here](https://github.com/zerodevapp/zerodev-examples/blob/main/create-account/main.ts).
+
+Impatient? Check out [a complete example here](https://github.com/zerodevapp/zerodev-examples/blob/main/create-account/main.ts).
+
 :::
 
-At the core of account abstraction is the *smart account* -- an account powered by a smart contract.  ZeroDev is built on [Kernel](https://github.com/zerodevapp/kernel), a *modular smart account* that can be customized with plugins.
+At the core of account abstraction is the _smart account_—an account powered by a smart contract. ZeroDev is built on [Kernel](https://github.com/zerodevapp/kernel), a _modular smart account_, which allows for customization with plugins.
 
-When you create a Kernel account, you set it up with a *validator*, which is a type of plugin that handles how the account validates UserOps.  In this tutorial, we will be using the ECDSA validator, which works like a normal EOA by validating signatures from a ECDSA private key.  ZeroDev supports other validators such as [passkeys](/sdk/advanced/passkeys) and [multisig](/sdk/advanced/multisig).
+When you create a Kernel account, you set it up with a validator, which is a type of plugin that handles how the account validates UserOps. In this tutorial, we will use the ECDSA validator, which works like a normal EOA by validating ECDSA signatures from a private key. ZeroDev supports other validators such as [passkeys](/sdk/advanced/passkeys) and [multisig](/sdk/advanced/multisig).
 
-We will be using a local private key, but the ECDSA validator also works with [third-party auth providers](/sdk/signers/intro).
+We will be using a local private key, but the ECDSA validator also supports [third-party authentication providers](/sdk/signers/intro).
 
 ## Installation
 
@@ -36,11 +38,11 @@ bun add @zerodev/sdk @zerodev/ecdsa-validator
 
 ### Picking an EntryPoint
 
-Currently there are two versions of ERC-4337 that are used in production.  They are referred to as "EntryPoint 0.6" and "EntryPoint 0.7", where "EntryPoint" refers to the singleton ERC-4337 contract.
+Currently, there are two versions of ERC-4337 in production. They are referred to as “EntryPoint 0.6” and “EntryPoint 0.7”, where “EntryPoint” refers to the singleton ERC-4337 contract.
 
-If you are building a new application, we recommend using EntryPoint 0.7 (Kernel v3), which gives you the latest and greatest features and optimizations.  If you already have an application using EntryPoint 0.6 (Kernel v2), just stick with it -- it will be supported indefinitely.
+If you are building a new application, we recommend using EntryPoint 0.7 (Kernel v3), which gives you the latest and greatest features and optimizations. If you already have an application using EntryPoint 0.6 (Kernel v2), stick with it—support will continue indefinitely.
 
-In this tutorial, we will use EntryPoint 0.7.  Start by selecting an EntryPoint:
+In this tutorial, we will use EntryPoint 0.7. Start by selecting an EntryPoint:
 
 ```ts
 const entryPoint = getEntryPoint("0.7")
@@ -48,7 +50,7 @@ const entryPoint = getEntryPoint("0.7")
 
 ### Picking a Kernel version
 
-[Kernel](https://github.com/zerodevapp/kernel) is the smart account that ZeroDev builds on.  ZeroDev SDK used to implicitly use the latest version of Kernel, which has caused some compatibility issues when people upgrade the SDK.  Therefore, starting from ZeroDev SDK v5.3, we require that you explicitly specify the Kernel version.  This is how you generally should choose:
+[Kernel](https://github.com/zerodevapp/kernel) is the smart account that ZeroDev builds on. The ZeroDev SDK implicitly uses the latest Kernel version, which has caused compatibility issues when people upgrade the SDK. Therefore, starting from ZeroDev SDK v5.3, we require that you explicitly specify the Kernel version. This is how you generally should choose:
 
 - If you had already been in production with ZeroDev SDK v4 or lower, use Kernel version 2.4 with EntryPoint 0.6.
 - If you had already been in production with ZeroDev SDK v5, use Kernel version 3.0 with EntryPoint 0.7.
@@ -77,9 +79,10 @@ const publicClient = createPublicClient({
 
 ### Creating a signer
 
-As aforementioned, a Kernel account using a ECDSA validator is "owned" by a signer, which is anything that can sign messages with a private key.
+As mentioned above, a Kernel account using an ECDSA validator is “owned” by a signer, which is anything that can sign messages with a private key.
 
-Since Kernel is built on top of Viem, we can use any [Viem account](https://viem.sh/docs/accounts/local/toAccount) as the signer.  In this example, we create a signer from a private key:
+Since Kernel is built on top of Viem, we can use any [Viem account](https://viem.sh/docs/accounts/local/toAccount) as the signer. In this example, we create a signer from a private key:
+
 
 ```typescript
 import { Hex } from "viem"
@@ -88,7 +91,7 @@ import { privateKeyToAccount } from "viem/accounts"
 const signer = privateKeyToAccount("PRIVATE_KEY" as Hex)
 ```
 
-Replace `PRIVATE_KEY` with an actual private key.  You can [generate a random one here](https://privatekeys.pw/keys/ethereum/random).
+Replace `PRIVATE_KEY` with an actual private key. You can [generate a random one here](https://privatekeys.pw/keys/ethereum/random).
 
 ### Creating a ECDSA validator
 
@@ -122,7 +125,7 @@ const account = await createKernelAccount(publicClient, {
 
 ### Create an account client
 
-Now that we have an account, we can finally construct an "account client," which is the equivalent of a [wallet client in Viem](https://viem.sh/docs/clients/wallet.html) that allows you to send UserOps to bundlers.
+Now that we have an account, we can finally construct an “account client,” which is the equivalent of a [wallet client in Viem](https://viem.sh/docs/clients/wallet.html) that allows you to send UserOps to bundlers.
 
 ```typescript
 import { createKernelAccountClient } from "@zerodev/sdk"
@@ -154,17 +157,17 @@ Note that:
 
 - You need to replace the `ZERODEV_RPC` with the RPC found on your ZeroDev dashboard.
 - You need to make sure to set the right `chain`.
-- `paymaster` only needs to be specified if you want to [use a paymaster](/sdk/core-api/sponsor-gas).
+- `paymaster` only needs to be specified if you want to [use one](/sdk/core-api/sponsor-gas).
 
 Now you are ready to do things with your smart account, like [sending UserOps](/sdk/core-api/send-transactions)!
 
 ## FAQs
 
-### When I create an account, is it deployed on-chain?
+### When I create an account, is it deployed onchain?
 
-No.  If your account hasn't been deployed yet, we simply use [`CREATE2`](https://eips.ethereum.org/EIPS/eip-1014) to compute the address that the account *would* be deployed to.  Your account is deployed automatically with the first UserOp it sends.
+No. If your account hasn’t been deployed yet, we use [`CREATE2`](https://eips.ethereum.org/EIPS/eip-1014) to compute the address to which it will be deployed. Your account is deployed automatically with the first UserOp it sends.
 
-In other words, "creating" accounts with the SDK is free -- you can create an infinite number of such account objects without paying any gas.  It's only when you send the first UserOp that the account is deployed automatically.
+In other words, “creating” accounts with the SDK is free—you can create an infinite number of such account objects without paying any gas. It’s only when you send the first UserOp that the account is deployed automatically.
 
 ### Can I create multiple accounts from the same EOA signer?
 
@@ -183,7 +186,7 @@ const account = createKernelAccount(publicClient, {
 
 ### How do I get the smart account address from the EOA signer address?
 
-Sometimes you only know the address of the EOA signer but you don't have the signer itself.  In that case, you can still compute the address of the smart account with this helper function:
+Sometimes you only know the address of the EOA signer, but you don’t have the signer itself. In that case, you can still compute the address of the smart account with this helper function:
 
 ```ts
 import { getKernelAddressFromECDSA } from "@zerodev/ecdsa-validator"
@@ -194,7 +197,7 @@ const smartAccountAddress = await getKernelAddressFromECDSA(publicClient, eoaAdd
 
 ### How do I get the EOA signer address from the smart account address?
 
-You can query it on-chain like this:
+You can query it onchain like this:
 
 ```ts
 import { getValidatorAddress } from "@zerodev/ecdsa-validator"
@@ -220,7 +223,7 @@ const owner = await ecdsaValidatorContract.read.ecdsaValidatorStorage([
 
 ### How do I create a Kernel account object with a specific address?
 
-Normally, you don't need to manually specify an address because the smart account address is computed from your signer data.  However, if you have changed the signer, then you may need to manually specify the smart account address.
+Normally, you don’t need to manually specify an address because the smart account address is computed from your signer data. However, if you have changed the signer, then you may need to specify the smart account address manually.
 
 You can do it like this:
 

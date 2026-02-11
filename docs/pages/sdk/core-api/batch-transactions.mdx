@@ -1,21 +1,21 @@
-# Batching Transactions
+# Batching transactions
 
 :::info
-Impatient?  Check out [complete examples here](https://github.com/zerodevapp/zerodev-examples/tree/main/batch-transactions).
+Impatient? Check out [complete examples here](https://github.com/zerodevapp/zerodev-examples/tree/main/batch-transactions).
 :::
 
-Smart accounts like Kernel support *batching* transactions -- rolling multiple transactions into one.  This is very useful for simplifying Web3 interactions for your users.  For instance, instead of doing `approve()` followed by `transfer()`, your user can do both in one transaction.
+Smart accounts like Kernel support transaction batching—rolling multiple transactions into a single transaction. This is very useful for simplifying Web3 interactions for your users. For instance, instead of calling `approve()` followed by `transfer()`, your user can do both in a single transaction.
 
-Batching transactions has a number of important benefits:
+Batching transactions has several important benefits:
 
-- Your user waits for only 1 transaction instead of multiple.
-- Your user pays less gas.
+- Your user waits for only one transaction instead of multiple.
+- Your user pays less for gas.
 - If any transaction in the batch reverts, the entire batch reverts. This ensures that your user won't be stuck in an inconsistent state.
   - This is known as "atomicity."
 
 ## API
 
-There are two ways to send batched transactions.  `sendTransaction` is a simple API that's good enough for most use cases.  If you need fine-grained control over your UserOp, you can use `sendUserOperation`.
+There are two ways to send batched transactions. `sendTransaction` is a simple API that's good enough for most use cases. If you need fine-grained control over your UserOp, you can use `sendUserOperation`.
 
 ### `sendTransaction`
 
@@ -40,7 +40,7 @@ const txHash = await kernelClient.sendTransaction({
 
 You can learn more about the `sendUserOperation` API [here](/sdk/core-api/send-transactions#sending-raw-userops).
 
-To send a UserOp with batching, simply pass an array of calls into `encodeCalls`.
+To send a UserOp with batching, pass an array of calls into `encodeCalls`.
 
 ```typescript
 const userOpHash = await kernelClient.sendUserOperation({
@@ -62,7 +62,7 @@ const userOpHash = await kernelClient.sendUserOperation({
 
 ### Execute a batch without reverting if some of the calls fail
 
-By default, batching is atomic -- if any of the calls fails, the whole batch will fail.
+By default, batching is atomic—if any of the calls fail, the entire batch fails.
 
 If you want to execute the batch such that even if some of the calls fail, the other calls will still execute, you can execute it with the `TRY` mode:
 
