@@ -25,8 +25,8 @@ Sign in to your ZeroDev dashboard and navigate to the Gas Policies page. At the 
 Enter the following options:
 
 - **Webhook URL**: The full URL that the ZeroDev policy engine will make a POST request to.
-- **Timeout Settings**: The amount of time the policy engine will wait for a response from your webhook URL. It's important to keep response times low to decrease latency for your end-users.
-- **Policy Pass on Error**: Select this option to always pass the policy when an error occurs or the webhook times out.
+- **Timeout Settings**: The amount of time the policy engine will wait for a response from your webhook URL. It’s important to keep response times low to reduce latency for your end users.
+- **Policy Pass on Error**: Select this option always to pass the policy when an error occurs or the webhook times out.
 - **Enabling the Policy**: Toggle this option when you are ready to enable the policy for your project.
 
 ## Webhook Payload
@@ -93,11 +93,11 @@ In this case, the transaction will proceed only if both ZeroDev's internal polic
 }
 ```
 
-With the `logicalOperator` set to `'or'`, the transaction will proceed if either ZeroDev's policy checks or the webhook approve it.
+With the `logicalOperator` set to `'or'`, the transaction will proceed if either ZeroDev’s policy checks or the webhook approves it.
 
 ## Behavior of Transaction Approval
 
-When a transaction is submitted, ZeroDev performs internal policy checks to determine if the transaction meets the predefined criteria (e.g., gas policies, rate limits). The result of these checks is combined with the webhook's `proceed` value based on the `logicalOperator`.
+When a transaction is submitted, ZeroDev performs internal policy checks to determine whether it meets predefined criteria (e.g., gas policies, rate limits). The result of these checks is combined with the webhook's `proceed` value based on the `logicalOperator`.
 
 - **Logical AND (`'and'`):**
 
@@ -105,7 +105,7 @@ When a transaction is submitted, ZeroDev performs internal policy checks to dete
 
 - **Logical OR (`'or'`):**
 
-  The transaction proceeds if either ZeroDev's policy checks or the webhook approve (`true`).
+  The transaction proceeds if either ZeroDev's policy checks or the webhook approves (`true`).
 
 **Note:** If the `logicalOperator` field is omitted or contains an invalid value, it defaults to `'and'`.
 
@@ -113,7 +113,7 @@ When a transaction is submitted, ZeroDev performs internal policy checks to dete
 
 To help you get started with implementing your custom gas policies, we've provided an example webhook server. This server demonstrates how you might receive and handle incoming webhook requests from ZeroDev.
 
-The repository includes a basic server setup using Express.js, which listens for POST requests on a specified route. It logs the incoming data to the console and responds with a JSON object indicating whether to sponsor the transaction.
+The repository includes a basic server setup with Express.js that listens for POST requests on a specified route. It logs incoming data to the console and returns a JSON object indicating whether to sponsor the transaction.
 
 You can find the example server [here](https://github.com/zerodevapp/example-webhook-server/tree/main).
 
