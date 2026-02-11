@@ -63,7 +63,7 @@ import { type UseCreateBasicSessionReturnType } from '@zerodev/waas'
 ### write
 `(variables: CreateBasicSessionVariables) => void`
 
-The mutation function to create session for v2 kernel account.
+The mutation function creates a session for the v2 kernel account.
 
 - #### variables 
   - ##### permissions
@@ -83,14 +83,14 @@ Similar to [write](#write) but returns a promise.
 ### data
 `CreateBasicSessionData | undefined`
   - ##### sessionKey
-    `0x${string}` The private key of the session.
+    `0x${string}`: The private key of the session.
   - ##### sessionId
-    `0x${string}` The id of the session.
+    `0x${string}`: The id of the session.
   - ##### smartAccount
-    `0x${string}` The address of smart account.
+    `0x${string}`: The address of the smart account.
   - ##### enableSignature
-    `0x${string}` The signature to enable session.
+    `0x${string}`: The signature to enable the session.
   - ##### permissions
-    `Permission<Abi>[]` The permissions of the session.
+    `Permission<Abi>[]`: The permissions of the session.
 
 <MutationResult />
