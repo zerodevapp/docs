@@ -1,17 +1,17 @@
-# Smart Routing Address
+# Smart routing address
 
 **Smart Routing Address** enables users to easily deposit funds to an L2/L3 from any CEXs, fiat on-ramps, and chains, by simply sending funds to a unique deposit address on any chain.
 
 Technically, **Smart Routing Address** is an address that encodes a _cross-chain intent_. **When anyone sends funds to a smart routing address on _any chain_, they are funding the intent and thereby triggering the intent on a _specific destination chain_.** In other words, a smart routing address is _source-chain-agnostic_, but _target-chain-specific_.
 
-## Common Use Cases
+## Common use cases
 
 - Sending funds from CEXs directly to an L2/L3.
-- Using a fiat onramp with an L2/L3, even if the onramp doesn't directly support the L2/L3.
+- Using a fiat on-ramp with an L2/L3, even if the on-ramp doesn't directly support the L2/L3.
 - Depositing into a token vault with funds from another chain.
 - Cross-chain transfers.
 
-## Try Smart Routing Address
+## Try smart routing address
 
 You can use the smart routing address at [the official portal](https://smart-routing-address.zerodev.app/).
 
@@ -43,7 +43,7 @@ bun add @zerodev/smart-routing-address
 
 The Smart Routing Address has a beautifully simple API: create a Smart Routing Address and then send funds to it. That’s really it.
 
-### Code Example
+### Code example
 
 We recommend that you take a look at [our code example](https://github.com/zerodevapp/smart-routing-address-example) (even better if you try running it) as you follow along the docs.
 
@@ -125,13 +125,13 @@ The options are:
 
 Once you have created a smart routing address, you can send tokens to it on any of the chains specified in `srcTokens`, and the `actions` will happen on the `destChain`. It's really that simple.
 
-## Fee Sponsorship
+## Fee sponsorship
 
 By default, Smart Routing Address deducts usage fees from the user's transferred tokens. However, as a developer, you can sponsor these fees so your users receive the full amount they deposit.
 
 **Example**: When a user deposits 10 `USDC` to their smart routing address, they will receive exactly 10 `USDC` on the destination chain, while your dapp pays the usage fees separately.
 
-### Sponsored Fee Configuration
+### Sponsored fee configuration
 
 To set up fee sponsorship, you must perform two steps:
 
