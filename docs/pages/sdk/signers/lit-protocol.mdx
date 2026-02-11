@@ -1,18 +1,20 @@
 # Use Lit Protocol with ZeroDev
 
-[Lit Protocol](https://www.litprotocol.com/) is distributed cryptography for signing, encryption, and compute. A generalizable key management network, Lit provides you with a set of tools for managing sovereign identities on the open Web.
+[Lit Protocol](https://www.litprotocol.com/) is a distributed cryptographic protocol for signing, encryption, and computation. A generalizable key management network, Lit provides you with a set of tools for managing sovereign identities on the open Web.
 
 ## Set up
 
 To use Lit with ZeroDev, first create an application that integrates with Lit.
 
-- Refer to the [Lit documentation site](https://developer.litprotocol.com/v3/) for instructions on setting up an application with the Lit.
-- For a quick start, Lit provides examples, available [here](https://docs.Lit.com/getting-started/examples).
+- Refer to the [Lit documentation site](https://developer.litprotocol.com/v3/) for instructions on setting up an application with Lit.
+- For a quick start, Lit provides examples available [here](https://docs.Lit.com/getting-started/examples).
 
 ## Integration
-Integrating ZeroDev with Lit is straightforward after setting up the project. Lit provides an Externally Owned Account (EOA) wallet to use as a signer with Kernel.
 
-### Create the pkpWallet 
+Integrating ZeroDev with Lit is straightforward once the project is set up. Lit provides an Externally Owned Account (EOA) wallet to use as a signer with Kernel.
+
+### Create the pkpWallet
+
 After following the Lit documentation, you will have access to a `pkpWallet`. An example is shown below:
 
 ```typescript
@@ -75,7 +77,7 @@ const pkpWallet = new PKPEthersWallet({
 
 ### Use with ZeroDev
 
-Use the provider from Lit Protocol to create a smart account signer, which can be passed to a validator. For detailed guidance on using a validator, refer to our documentation on [creating accounts](/sdk/core-api/create-account#api).
+Use the Lit Protocol provider to create a smart account signer that can be passed to a validator. For detailed guidance on using a validator, refer to our documentation on [creating accounts](/sdk/core-api/create-account#api).
 
 ```typescript
 import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
