@@ -1,8 +1,8 @@
 import SocialLoginSetup from '../../shared/social-login-setup.mdx'
 
-# Social Login
+# Social login
 
-Social login allows users to authenticate using their existing social media accounts such as Google or Facebook.
+Social login allows users to authenticate using their existing social media accounts, such as Google or Facebook.
 
 ZeroDev supports social logins natively, but you can also use ZeroDev with [third-party auth providers](/sdk/signers/intro) such as Privy, Dynamic, and Magic if you prefer their UI.
 
@@ -72,9 +72,9 @@ initiateLogin({
 ```
 
 #### Parameters
-- socialProvider ("google" | "facebook"): The social provider to use for login.
-- oauthCallbackUrl (string, optional): The URL to redirect to after login. Defaults to the current window location if not provided.
-- projectId (string): Your ZeroDev project ID.
+- `socialProvider` ("google" | "facebook"): The social provider to use for login.
+- `oauthCallbackUrl` (string, optional): The URL to redirect to after login. Defaults to the current window location if not provided.
+- `projectId` (string): Your ZeroDev project ID.
 
 #### Example
 
@@ -109,9 +109,9 @@ export async function getSocialValidator<
 ```
 
 #### Parameters
-- client (Client): The client instance.
-- entryPoint (entryPoint): The entry point object.
-- projectId (string): Your ZeroDev project ID.
+- `client` (Client): The client instance.
+- `entryPoint` (entryPoint): The entry point object.
+- `projectId` (string): Your ZeroDev project ID.
 
 #### Returns
 - `Promise<KernelValidator<"SocialValidator">>`: Resolves to a social validator object.
@@ -130,7 +130,9 @@ const socialValidator = await getSocialValidator(
 );
 ```
 :::info
+
 Now you can proceed to [create Kernel accounts](https://docs.zerodev.app/sdk/core-api/create-account#create-a-kernel-account) using the social validator as the sudo validator.
+
 :::
 
 ### `logout`
@@ -142,7 +144,7 @@ logout({ projectId: string })
 ```
 
 #### Parameters
-- projectId (string): Your ZeroDev project ID.
+- `projectId` (string): Your ZeroDev project ID.
 
 #### Example
 
