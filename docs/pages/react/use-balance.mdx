@@ -1,6 +1,6 @@
 import QueryResult from "../shared/query-result.mdx"
 
-# useBalance [Hook for getting balance of kernel account]
+# useBalance [Hook for getting the balance of the kernel account]
 
 ## Import
 ```tsx
@@ -25,13 +25,13 @@ import { type UseBalanceParameters } from '@zerodev/waas';
 
 `Address | undefined`
 
-The address of owner, kernel account if not specified.
+The owner's address (of the kernel account) is not specified.
 
 ### tokenAddress
 
 `Address | undefined`
 
-The address of token contract, native token if not specified.
+The address of the token contract, native token if not specified.
 
 ## Return Types
 
@@ -48,12 +48,12 @@ import { type UseBalanceReturnType } from '@zerodev/waas'
 ### data
 `GetBalanceReturnType | undefined`
   - ##### value
-    `BigInt` The amount of token owned.
+    `BigInt`: The amount of the token owned.
   - ##### decimals
-    `number` The decimals of the token.
+    `number`: The decimals of the token.
   - ##### symbol
-    `string` The symbol of the token.
+    `string`: The symbol of the token.
   - ##### formatted
-    `string` The formatted string.
+    `string`: The formatted string.
 
 <QueryResult />
