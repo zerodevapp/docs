@@ -27,7 +27,7 @@ import { type UseSessionsReturnType } from '@zerodev/waas'
 ### sessions
 `[sessionId: string]: SessionInfoType | null`
 
-The session used in the smart account.
+The session that is being used in the smart account.
 
   - SessionInfoType
     - ##### sessionKey
@@ -38,13 +38,13 @@ The session used in the smart account.
       The id of the session.
     - ##### smartAccount
       `0x${string}`
-      The address of smart account.
+      The address of the smart account.
     - ##### enableSignature
       `0x${string}`
-      The signature to enable session.
+      The signature to enable the session.
     - ##### policies
       `Policy[]`
-      The policies of session.
+      The policies of the session.
     - ##### permissions
       `Permission<Abi>[]` 
       The permissions of the session.
