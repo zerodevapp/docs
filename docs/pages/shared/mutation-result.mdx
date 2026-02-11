@@ -3,7 +3,7 @@
 
 `Error | null`
 
-The error object for the mutation, if an error was encountered.
+The mutation's error object, if an error occurred.
 
 ### isError / isIdle / isPending / isSuccess
 
@@ -16,7 +16,7 @@ Boolean variables derived from [`status`](#status).
 `boolean`
 
 - will be `true` if the mutation has been `paused`.
-- see [Network Mode](https://tanstack.com/query/v5/docs/react/guides/network-mode) for more information.
+- Refer to [Network Mode](https://tanstack.com/query/v5/docs/react/guides/network-mode) for more information.
 
 ### status
 
@@ -31,4 +31,4 @@ Boolean variables derived from [`status`](#status).
 
 `() => void`
 
-A function to clean the mutation internal state (e.g. it resets the mutation to its initial state).
+A function to clean the mutation internal state (e.g., it resets the mutation to its initial state).
