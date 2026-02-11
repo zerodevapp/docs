@@ -2,13 +2,13 @@
 
 Passkeys are cryptographic key pairs created on end-user devices. [Apple](https://developer.apple.com/passkeys) and [Google](https://developers.google.com/identity/passkeys) are two major industry players pushing for the passkeys standard, which means that passkeys are widely available on consumer devices such as:
 
-- iPhones / iPads / Macbooks
-- Android phones / tablets
-- Chrome (on Windows / Mac / Android)
+- iPhones/iPads/MacBooks
+- Android phones/tablets
+- Chrome (on Windows/Mac/Android)
 
 [See here for a full list of systems that support passkeys.](https://passkeys.dev/device-support/#matrix)
 
-The biggest value-add of passkeys, in the context of Web3, is **saving users from manually managing and securing their private keys.** Instead of writing down 12-word seed phrases, your user can simply use a passkey-enabled device to manage their wallet, and trust that the hardware will safely store the passkey, and the hardware vendor (e.g. Apple/Google) will [securely backup the keys](#how-are-passkeys-sync-ed-and-recovered).
+The biggest value-add of passkeys in the context of Web3 is **freeing users from manually managing and securing their private keys**. Instead of writing down 12-word seed phrases, your user can use a passkey-enabled device to manage their wallet, trusting that the hardware will safely store the passkey and that the hardware vendor (e.g., Apple/Google) will [securely back up the keys](#how-are-passkeys-sync-ed-and-recovered).
 
 ## Demo
 
@@ -25,15 +25,15 @@ The biggest value-add of passkeys, in the context of Web3, is **saving users fro
 
 ZeroDev/Kernel supports using passkeys as signers. The support comes in two flavors:
 
-- **Native passkeys** using precompiles via [RIP-7212](https://github.com/ethereum/RIPs/blob/master/RIPS/rip-7212.md) on rollups and [EIP-7951](https://eips.ethereum.org/EIPS/eip-7951) on Ethereum. Native passkeys are the best option when available, since it uses the least amount of gas (only 3450 gas for verifying a P256 signature).  [See here](#chains-with-native-passkey-precompiles) for a list of chains that support native passkey precompiles.
+- **Native passkeys** using precompiles via [RIP-7212](https://github.com/ethereum/RIPs/blob/master/RIPS/rip-7212.md) on rollups and [EIP-7951](https://eips.ethereum.org/EIPS/eip-7951) on Ethereum. Native passkeys are the best option when available, since they use the least gas (only 3450 for verifying a P-256 signature). [See here](#chains-with-native-passkey-precompiles) for a list of chains that support native passkey precompiles.
 
 - **Smart contract passkeys** using either the [Daimo](https://github.com/daimo-eth/p256-verifier) or [FCL](https://github.com/rdubois-crypto/FreshCryptoLib) implementation. Smart contract passkeys can work on all EVM networks, but they are expensive (300-400k gas for verifying a P256 signature).
 
-ZeroDev implements passkey supports through a **progressive passkey validator**, which uses native passkeys if ERC-7212 is available, and falls back to smart contract passkeys otherwise. Notably, this means that if you use passkeys on a network where ERC-7212 isn't available, and the network later adds support for ERC-7212, you don't need to upgrade your validator -- it will automatically start taking advantage of the ERC-7212 precompile.
+ZeroDev implements passkey support via a **progressive passkey validator**, which uses native passkeys if ERC-7212 is available, and falls back to smart contract passkeys otherwise. Notably, this means that if you use passkeys on a network where ERC-7212 isn't available, and the network later adds support for ERC-7212, you don't need to upgrade your validator -- it will automatically start taking advantage of the ERC-7212 precompile.
 
 ## Quickstart
 
-[Follow this tutorial](/sdk/getting-started/tutorial-passkeys) to get started with passkey smart accounts.
+[Follow this tutorial](/sdk/getting-started/tutorial-passkeys) to get started with Passkey Smart Accounts.
 
 ## Installation
 
@@ -59,7 +59,7 @@ bun add @zerodev/passkey-validator
 
 ## API
 
-### Setting up passkey server
+### Setting up the passkey server
 
 In this tutorial, we will be using ZeroDev's passkey server. If you want to use your own passkey server, [read this](#how-do-i-use-my-own-passkeys-server). If you wonder why a passkey server is needed at all, [read this](#why-do-we-need-a-passkeys-server).
 
@@ -69,7 +69,7 @@ Head to the [ZeroDev dashboard](https://dashboard.zerodev.app), select a project
   <img src="/img/passkey_server.png" width="60%" />
 </p>
 
-If you are testing on `localhost`, just leave the domain empty. If you are deploying to a domain, enter and save the domain.
+If you are testing on `localhost`, leave the domain empty. If you are deploying to a domain, enter the domain and save it.
 
 ### Creating a new passkey
 
@@ -133,16 +133,16 @@ Using passkeys with ECDSA session keys has multiple benefits:
 
 - Your users don't have to deal with passkey signing prompts for every UserOp.
 
-### Why do we need a passkeys server?
+### Why do we need a passkey server?
 
-A passkey is generated from a client-server handshake. In theory, we could simulate the handshake on the frontend, then store the public key on-chain. However, storing the public key on-chain involves sending a transaction, so you would want to do that as a part of deploying the account. However, if you must deploy a passkey account before you can use it, that breaks one of the core optimizations of AA which is counterfactual deployment -- the ability to use the address of a smart account without first deploying it.
+A passkey is generated from a client-server handshake. In theory, we could simulate the handshake on the frontend, then store the public key onchain. However, storing the public key onchain involves sending a transaction, so you would want to do that as a part of deploying the account. However, if you must deploy a passkey account before you can use it, that breaks one of the core optimizations of AA, which is counterfactual deployment—the ability to use the address of a smart account without first deploying it.
 
-We are working on ways to remove the dependency on a passkey server. In the mean time, keep in mind that the centralization concern is mitigated by the following:
+We are working on ways to remove the dependency on a passkey server. In the meantime, keep in mind that the centralization concern is mitigated by the following:
 
 - You can [use your own passkeys server](#how-do-i-use-my-own-passkeys-server).
-- The passkeys server only stores the public authentication data. Even if it's compromised, your users's keys are stored on their devices only.
+- The passkey server stores only public authentication data. Even if it’s compromised, your users' keys are stored only on their devices.
 
-If the passkey server is lost, only users who have not yet deployed their accounts (i.e. users who have been using accounts counterfactually) will be unable to recover their accounts. Users who have deployed their accounts will have their authentication data stored on-chain, so their accounts will be safe even if the passkey server is lost.
+If the passkey server is lost, only users who have not yet deployed their accounts (i.e., users who have been using accounts counterfactually) will be unable to recover their accounts. Users who have deployed their accounts will have their authentication data stored onchain, ensuring their accounts remain safe even if the passkey server is lost.
 
 ### How do I use my own passkeys server?
 
@@ -200,7 +200,7 @@ if (verification.verified) {
 // return 401 error if the verification is failed
 ```
 
-- `/login/options`: Generate login options, including a challenge for verification, and return them to the client. The `generateAuthenticationOptions` function will assist you in creating these options.
+- `/login/options`: Generate login options, including a verification challenge, and return them to the client. The `generateAuthenticationOptions` function will help you create these options.
 
 ```ts
 import { generateAuthenticationOptions } from "@simplewebauthn/server"
@@ -213,7 +213,7 @@ const options = await generateAuthenticationOptions({
 return options
 ```
 
-- `/login/verify`: Verify the login response (cred) and report the outcome to the client. Use the `verifyAuthenticationResponse` for the verification process. In the event of successful verification, retrieve the new counter from authenticationInfo and update the user's credentials in your database. It's crucial to send both the verification result and the user's public key back to the client, as the public key is not known to the client during the login process.
+- `/login/verify`: Verify the login response (cred) and report the outcome to the client. Use the `verifyAuthenticationResponse` Upon successful verification, retrieve the new counter from `authenticationInfo` and update the user’s credentials in your database. It’s crucial to return both the verification result and the user’s public key to the client, since the public key is not known to the client during the login process.
 
 ```ts
 import { verifyAuthenticationResponse } from "@simplewebauthn/server"
@@ -280,9 +280,9 @@ const passkeyValidator = await toPasskeyValidator(publicClient, {
 })
 ```
 
-If you want to refer to the ZeroDev passkey server implementation, you can find it [here](https://github.com/zerodevapp/passkey-server)
+If you want to refer to the ZeroDev passkey server implementation, you can find it [here](https://github.com/zerodevapp/passkey-server).
 
-### How are passkeys sync-ed and recovered?
+### How are passkeys synced and recovered?
 
 Synchronization and recovery are both supported natively by Apple and Google:
 
@@ -290,9 +290,9 @@ Synchronization and recovery are both supported natively by Apple and Google:
 
 - With Google, [Google Password Manager](https://passwords.google/) syncs passkeys across devices seamlessly. Google has plans to support syncing more broadly across different operating systems, see [this support summary](https://developers.google.com/identity/passkeys/supported-environments#chrome-passkey-support-summary). Recovery is covered in [this FAQ ("What happens if a user loses their device?")](https://developers.google.com/identity/passkeys/faq#what_happens_if_a_user_loses_their_device): it relies on Google's overall [account recovery process](https://support.google.com/accounts/answer/7682439?hl=en) because passkeys are attached to Google accounts.
 
-## Chains with Native Passkey Precompiles
+## Chains with native passkey precompiles
 
-This is an incomplete list of chains that support native passkey precompiles via RIP-7212 or EIP-7951:
+This is an incomplete list of chains that support native passkey precompiles via [RIP-7212](https://github.com/ethereum/RIPs/blob/master/RIPS/rip-7212.md) or [EIP-7951](https://eips.ethereum.org/EIPS/eip-7951):
 
 ### Mainnet
 - Ethereum
