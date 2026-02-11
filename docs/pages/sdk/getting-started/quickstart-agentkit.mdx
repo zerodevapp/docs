@@ -1,16 +1,19 @@
-# Quickstart — ZeroDev × AgentKit (LangChain chatbot)
+# Quickstart: ZeroDev × AgentKit (LangChain chatbot)
 
-> **Goal**: build a minimal LangChain chatbot whose on-chain wallet is a ZeroDev smart account, all in 50 lines of code.
+:::info Goal
 
-The tutorial is a trimmed-down version of the full example that ships with AgentKit — `typescript/examples/langchain-zerodev-chatbot`. Here we swap the CDP MPC wallet for a local private key (via **Viem**) to keep things lightweight and dependency-free.
+Build a minimal LangChain chatbot whose onchain wallet is a ZeroDev smart account, all in 50 lines of code.
 
----
+:::
+
+The tutorial is a trimmed-down version of the full example that ships with AgentKit—`typescript/examples/langchain-zerodev-chatbot`. Here we swap the CDP MPC wallet for a local private key (via **Viem**) to keep things lightweight and dependency-free.
+
 
 ## 1. Prerequisites & install
 
-• Node 18+  
-• An **OpenAI** key (for the LLM)  
-• A **ZeroDev Project ID** (grab one from the dashboard — Base Sepolia is perfect for testing)
+• Node 18+
+• An **OpenAI** key (for the LLM) 
+• A **ZeroDev Project ID** (grab one from the dashboard—Base Sepolia is perfect for testing)
 
 ```bash
 mkdir zerodev-agentkit-bot && cd zerodev-agentkit-bot
@@ -22,8 +25,6 @@ npm i @coinbase/agentkit @coinbase/agentkit-langchain viem @langchain/core @lang
 # Nice-to-have for TypeScript
 npm i -D ts-node typescript @types/node
 ```
-
----
 
 ## 2. Environment variables
 
@@ -37,8 +38,6 @@ PRIVATE_KEY=
 # optional – defaults to base-sepolia
 NETWORK_ID=base-sepolia
 ```
-
----
 
 ## 3. The code (index.ts)
 
@@ -135,10 +134,10 @@ npx ts-node --env-file=.env index.ts
 
 ```txt
 Smart-account address: 0xAAc5…eF32
-Ask me to do something on-chain (type ‘exit’ to quit)…
+Ask me to do something onchain (type ‘exit’ to quit)…
 
 Prompt: transfer 0.001 eth to 0x000000000000000000000000000000000000dEaD
-✅  Sent a gas-sponsored transaction – hash 0x9eab…1d3a
+✅ Sent a gas-sponsored transaction – hash 0x9eab…1d3a
 ---
 
 Prompt: what’s my eth balance?
@@ -146,12 +145,10 @@ Your smart-account holds ~0.42 ETH on Base Sepolia.
 ---
 ```
 
----
-
 ## 4. Next steps
 
-• Swap the local key for a **CDP** or **Privy** wallet for MPC security.  
-• Add more `actionProviders` (ERC-20, ERC-721, DeFi, …) so the agent can do *real* work.  
+• Swap the local key for a **CDP** or **Privy** wallet for MPC security. 
+• Add more `actionProviders` (`ERC-20`, `ERC-721`, DeFi,...) so the agent can do *real* work. 
 • Explore the [full chatbot example](https://github.com/coinbase/agentkit/tree/main/typescript/examples/langchain-zerodev-chatbot) for persistence, autonomous mode, and more advanced prompts.
 
 Happy hacking 🚀
