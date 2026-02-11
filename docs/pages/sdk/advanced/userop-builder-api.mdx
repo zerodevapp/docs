@@ -1,20 +1,22 @@
-# UserOp Builder API
+# UserOp builder API
 
 The UserOp Builder API provides a server-side solution for building and sending ERC-7702 User Operations with [Kernel smart accounts](https://docs.zerodev.app/sdk/core-api/create-account). It handles gas estimation, paymaster integration, and bundler submission—perfect for backend services that need to construct user operations without client-side SDKs.
 
 :::info
-The UserOp Builder API is only available for users on the Enterprise plan.
+
+The UserOp Builder API is available only to users on the Enterprise plan.
+
 :::
 
 ## Overview
 
 The UserOp Builder API supports:
 
-- **EIP-7702** — EOA to smart account delegation
+- **[EIP-7702](https://eips.ethereum.org/EIPS/eip-7702)** — EOA to smart account delegation
 - **Gas sponsorship** — Automatic paymaster integration
 - **Kernel versions** — `0.3.1`, `0.3.2`, `0.3.3`
 
-## Quick Start
+## Quick start
 
 ```typescript
 // 1. Build the user operation
@@ -61,10 +63,12 @@ const { userOpHash } = await sendResponse.json();
 ## Authentication
 
 :::info
+
 Get your API key from the [ZeroDev Dashboard](https://dashboard.zerodev.app).
+
 :::
 
-All endpoints require authentication via API key headers. Either one of the following headers must be included:
+All endpoints require authentication via API key headers. One of the following headers must be included:
 
 | Header           | Format | Description          |
 | ---------------- | ------ | -------------------- |
@@ -86,7 +90,7 @@ POST /:projectId/:chainId/<endpoint>
 
 ## API Reference
 
-### Build User Operation
+### Build user operation
 
 Builds an unsigned ERC-7702 user operation with gas estimation and paymaster data.
 
@@ -140,11 +144,13 @@ interface BuildUserOpResponse {
 }
 ```
 
-> **Important:** The `userOpHash` in the response is what you need to sign with your account's private key.
+:::info
 
----
+The `userOpHash` in the response is what you need to sign with your account's private key.
 
-### Send User Operation
+:::
+
+### Send user operation
 
 Submits a signed user operation to the bundler.
 
@@ -194,9 +200,8 @@ interface SendUserOpRequest {
 Use the returned `userOpHash` to poll for the receipt.
 :::
 
----
 
-### Get User Operation Receipt
+### Get user operation receipt
 
 Retrieves the receipt for a submitted user operation.
 
@@ -230,13 +235,16 @@ interface UserOpReceipt {
 }
 ```
 
-> **Tip:** Poll this endpoint until you get a successful response. The user operation may take a few seconds to be included in a block.
+:::note
 
----
+Poll this endpoint until you get a successful response. The user operation may take a few seconds to be included in a block.
 
-### Initialize Kernel Client
+:::
 
-Pre-warms the kernel client cache for a project/chain. Optional but recommended for reducing latency on first request.
+
+### Initialize kernel client
+
+Pre-warms the kernel client cache for a project/chain. Optional, but recommended to reduce latency on the first request.
 
 ```
 POST /:projectId/:chainId/init-kernel-client
@@ -271,7 +279,7 @@ interface SignedAuthorization {
 
 ## Using with EIP-7702
 
-[EIP-7702](https://docs.zerodev.app/sdk/advanced/eip7702) allows EOAs to temporarily delegate to a smart contract. To use an EOA as a Kernel smart account:
+[EIP-7702](https://docs.zerodev.app/sdk/advanced/eip7702) allows EOAs to delegate to a smart contract temporarily. To use an EOA as a Kernel smart account:
 
 ```typescript
 const response = await fetch(
@@ -301,13 +309,13 @@ const response = await fetch(
 );
 ```
 
-## Supported Chains
+## Supported chains
 
 The API supports any chain configured in your ZeroDev project:
 
 See [ZeroDev's supported networks](https://docs.zerodev.app/sdk/faqs/chains) for the full list.
 
-## Related Resources
+## Related resources
 
 - [Kernel Smart Accounts](https://docs.zerodev.app/sdk/core-api/create-account)
 - [EIP-7702 Guide](https://docs.zerodev.app/sdk/advanced/eip7702)
