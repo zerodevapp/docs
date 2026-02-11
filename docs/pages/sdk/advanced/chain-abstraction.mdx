@@ -4,15 +4,15 @@ ZeroDev is the first smart account solution to support *cross-chain transactions
 
 More specifically, a ZeroDev smart account can use its tokens from one chain on another chain, without bridging.  Some examples are:
 
-- Stake ETH on Ethereum mainnet using ETH on Polygon.
-- Spend USDC on Base to purchase an NFT sold in USDT on Arbitrum.
-- Execute a transaction on Blast by paying gas in DAI from Optimism.
+- Stake `ETH` on the Ethereum mainnet using `ETH` on Polygon.
+- Spend `USDC` on Base to purchase an NFT sold in `USDT` on Arbitrum.
+- Execute a transaction on Blast by paying gas in `DAI` from Optimism.
 
 ## Features
 
 ### Compatible with EIP-7702
 
-Unlike other chain abstraction solutions, ZeroDev Chain Abstraction supports not just regular smart accounts (ERC-4337), but also smart EOAs (EIP-7702).
+Unlike other chain abstraction solutions, ZeroDev Chain Abstraction supports not only regular smart accounts (ERC-4337) but also smart EOA (EIP-7702).
 
 ### Cross-chain without bridging
 
@@ -24,7 +24,7 @@ Cross-chain transactions with ZeroDev are very fast, thanks to *intents* -- solv
 
 ### Deep liquidity
 
-Most "chain abstraction" solutions on the market are toys that fail under any real amount of traffic.  ZeroDev's cross-chain transactions network is built on top of protocols with the deepest liquidity, such as Relay and Across.
+Most “chain abstraction” solutions on the market are toys that fail under even moderate traffic.  ZeroDev’s cross-chain transactions network is built on top of protocols with the deepest liquidity, such as Relay and Across.
 
 ## Code example
 
@@ -33,7 +33,9 @@ Here is a [complete code example](https://github.com/zerodevapp/zerodev-examples
 ## Setting up chain abstraction
 
 :::info
-We highly recommend that you use the code example above as a reference as you follow this guide.
+
+We highly recommend using the code example above as a reference as you follow this guide.
+
 :::
 
 ### Installation
@@ -62,7 +64,7 @@ bun add @zerodev/intent @zerodev/sdk
 
 ### Choosing a validator
 
-While chain abstraction works with any validator, we highly recommend using a multi-chain validator like `@zerodev/multi-chain-ecdsa-validator` for new projects. Multi-chain validators are optimized for cross-chain transactions because they can sign for multiple input chains with a single signature, making the process more efficient.
+While chain abstraction works with any validator, we highly recommend using a multi-chain validator, such as `@zerodev/multi-chain-ecdsa-validator`, for new projects. Multi-chain validators are optimized for cross-chain transactions because they can sign for multiple input chains with a single signature, making the process more efficient.
 
 If you're starting a new project, you can install the multi-chain ECDSA validator:
 
@@ -126,7 +128,7 @@ const intentClient = createIntentClient({
 
 ## Using chain abstraction
 
-At the core of chain abstraction is the idea of a "chain-abstracted balance" (CAB), which is a unified balance across all the chains.  For example, if you have 100 USDC on Base and 200 on Arbitrum, then you have 300 "chain-abstracted USDC" which you can spend on any chain.
+At the core of chain abstraction is the idea of a “chain-abstracted balance” (CAB), a unified balance across all chains.  For example, if you have 100 `USDC` on Base and 200 on Arbitrum, then you have 300 “chain-abstracted USDC” which you can spend on any chain.
 
 ### Getting Chain-abstracted Balances
 
@@ -180,10 +182,10 @@ console.log(`Intent executed on chain: ${receipt?.executionChainId}`);
 Here:
 
 - `calls` is a [batch](/sdk/core-api/batch-transactions) of calls to execute atomically.
-- `outputTokens` is the chain-abstracted token that your calls require.  For example, if your calls are looking to spend 500 USDC to buy an NFT, then you'd specify 500 USDC with the `outputTokens`.
-  - If you want to use ETH as the output token, set the address to `zeroAddress`.
+- `outputTokens` is the chain-abstracted token that your calls require.  For example, if your calls are looking to spend 500 `USDC` to buy an NFT, then you'd specify 500 `USDC` with the `outputTokens`.
+  - If you want to use `ETH` as the output token, set the address to `zeroAddress`.
 
-Note that in this example, it doesn't matter whether you actually have USDC on Base.  So long as you have enough USDC across all the chains, the transaction will execute.
+Note that in this example, it doesn't matter whether you actually have `USDC` on Base.  So long as you have enough `USDC` across all the chains, the transaction will execute.
 
 ### Specifying input tokens
 
@@ -203,7 +205,7 @@ const result = await intentClient.sendUserIntent({
 })
 ```
 
-Here's a real example for using USDC on Arbitrum to execute a transaction on Base:
+Here's a real example for using `USDC` on Arbitrum to execute a transaction on Base:
 
 ```ts
 const result = await intentClient.sendUserIntent({
@@ -238,17 +240,19 @@ Note that you do NOT need to specify an amount for your `inputTokens`.  Your inp
 When using intents, you may use the `gasToken` flag to configure how to pay gas.
 
 - By default (with no `gasToken` specified), gas is paid in CAB (input tokens) itself.
-- If you specify `gasToken: 'NATIVE'`, the account will pay gas with the native token (e.g. ETH).
+- If you specify `gasToken: 'NATIVE'`, the account will pay gas with the native token (e.g., `ETH`).
 - If you specify `gasToken: 'SPONSORED'`, you will be [sponsoring gas](/sdk/core-api/sponsor-gas) for the account.
 - If you specify `gasToken: 'USDC'` or `gasToken: 'USDT'`, you will pay gas with the specified stablecoin.
 
 ### Parallel intent execution
 
 :::info
+
 Parallel intent execution requires `INTENT_V0_4` or above.
+
 :::
 
-ZeroDev supports executing multiple intents simultaneously, enabling you to batch multiple cross-chain transactions in parallel. This is particularly useful when you need to execute several independent transactions at the same time.
+ZeroDev supports executing multiple intents simultaneously, enabling you to batch cross-chain transactions. This is particularly useful when you need to execute multiple independent transactions simultaneously.
 
 To execute intents in parallel, you'll need to use different nonce keys for each intent:
 
@@ -311,15 +315,15 @@ console.log(
 );
 ```
 
-This tracking system ensures you have complete visibility into your cross-chain transaction's progress, from initiation through to final execution.  If you simply want to wait until the intent fully resolves, just waiting for the execution receipt is enough.
+This tracking system ensures you have complete visibility into the progress of your cross-chain transaction, from initiation through to final execution.  If you simply want to wait until the intent fully resolves, just waiting for the execution receipt is enough.
 
 ## Supported tokens and networks
 
-Feel free to reach out to us with the link on top of this page if you want to see more tokens or networks supported.
+Feel free to reach out to us using the link at the top of this page if you want to see more tokens or networks supported.
 
 ### Mainnet
 
-We support **USDC, USDT, WETH, and ETH** for cross-chain transactions, on the following networks:
+We support **`USDC`, `USDT`, `WETH`, and `ETH`** for cross-chain transactions on the following networks:
 
 - Ethereum mainnet
 - Arbitrum
@@ -329,25 +333,25 @@ We support **USDC, USDT, WETH, and ETH** for cross-chain transactions, on the fo
 - Binance Smart Chain (BSC)
 - Avalanche (USDC only)
 
-By default, ZeroDev spends USDC and USDT interchangeably, which means that if you have say 100 USDC on Arbitrum, you can spend 100 USDC or USDT (or any mix thereof) on any other chain.
+By default, ZeroDev spends `USDC` and `USDT` interchangeably, which means that if you have, say, 100 `USDC` on Arbitrum, you can spend 100 `USDC` or `USDT` (or any mix thereof) on any other chain.
 
 ### Testnet
 
-We support **USDC and ETH** on the following testnets:
+We support **`USDC` and `ETH`** on the following testnets:
 
 - Ethereum Sepolia
 - Base Sepolia
 
-Note that we highly recommend testing on mainnets instead of testnets, due to the unreliability of bridges on testnets.
+Note that we highly recommend testing on mainnets rather than testnets due to the unreliability of bridges on testnets.
 
 ## Pricing
 
 - Developer pricing (charged to the developer)
-  - Chain Abstraction is rate limited for projects on the free or Growth plans.
+  - Chain Abstraction is rate-limited for projects on the free or Growth plans.
   - To use Chain Abstraction in production, please subscribe to the Scale or Enterprise plan.
 
 - User pricing (charged to the user by the input token)
   - For projects on the Scale plan, we charge:
     - 20 basis points (0.2%) for cross-chain transactions below $500.
     - 10 basis points (0.1%) for cross-chain transactions worth $500 or above.
-  - For projects on the enterprise plan, the rates are negotiable.
+  - For enterprise plan projects, the rates are negotiable.
