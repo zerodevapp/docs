@@ -10,7 +10,7 @@ With Kernel, it's possible to configure multiple signers for your smart account.
 
 ## How it works
 
-Each signer is set up with a **weight**, and for any given signature, there must be enough combined weight to reach or surpass the **threshold** for the signature to be considered valid.
+Each signer is assigned a **weight**, and for any given signature, the combined weight must meet or exceed the **threshold** for the signature to be considered valid.
 
 For example, let's say we have:
 
@@ -46,7 +46,7 @@ bun i @zerodev/weighted-validator
 
 To set up a new multisig account, start by creating a validator. Here are examples for both ECDSA and passkey signers:
 
-### With ECDSA Signers
+### With ECDSA signers
 
 ```ts
 import { createWeightedValidator } from "@zerodev/weighted-validator"
@@ -72,7 +72,7 @@ const multiSigValidator = await createWeightedValidator(publicClient, {
 })
 ```
 
-### With Passkey Signers
+### With passkey signers
 
 ```ts
 import { createWeightedValidator } from "@zerodev/weighted-validator"
@@ -142,8 +142,8 @@ const client = createWeightedKernelAccountClient({
 
 When using a multisig account, sending transactions requires gathering enough signatures to meet the threshold. This is a two-step process:
 
-1. First, get approvals from the required signers
-2. Then, send the UserOperation with the collected signatures
+1. First, get approvals from the required signers.
+2. Then, send the UserOperation with the collected signatures.
 
 Here's how to implement this flow:
 
@@ -191,17 +191,19 @@ const receipt = await client.waitForUserOperationReceipt({
   hash: userOpHash
 })
 ```
+:::note Important note
 
-Note that:
-- The signatures can be collected asynchronously from different signers
-- You need to collect enough signatures to meet the threshold weight
-- The same UserOperation object must be used for all signatures
-- Each signer must use their own client instance configured with their signer
-- You can mix signatures from both ECDSA and passkey signers as long as their combined weight meets the threshold
+- Collecting signatures is completed asynchronously from various signers.
+- You need to collect enough signatures to meet the threshold weight.
+- All signatures must use the same UserOperation object.
+- Each signer must use their own client instance configured with their signer.
+- You can mix signatures from both ECDSA and passkey signers as long as their combined weight meets the threshold.
+
+:::
 
 ## Updating multisig config
 
-To update the multisig configuration (like adding or removing signers), you can use the update config functionality. This works the same way for both ECDSA and passkey signers:
+To update the multisig configuration (e.g., adding or removing signers), use the update config functionality. This works the same way for both ECDSA and passkey signers:
 
 ```ts
 import { getUpdateConfigCall } from "@zerodev/weighted-validator"
@@ -231,4 +233,4 @@ await kernelClient.sendTransaction(
 )
 ```
 
-Note that `kernelClient` here must itself be a correctly set-up instance of a multisig account client with sufficient signing authority to make the change.
+Note that the `kernelClient` (in the above) must be a correctly set up instance of a multisig account client with sufficient signing authority to make the change.
