@@ -1,31 +1,31 @@
-# Quickstart -- Capabilities
+# Quickstart: Capabilities
 
-Capabilities ([ERC-5792](https://eips.ethereum.org/EIPS/eip-5792)) is the [new standard way for DApps to interact with smart wallets](/blog/hello-capabilities).  On a high level, it comes down to two steps:
+Capabilities ([ERC-5792](https://eips.ethereum.org/EIPS/eip-5792)) is the [new standard way for DApps to interact with smart wallets](/blog/hello-capabilities). On a high level, it comes down to two steps:
 
 - The DApp *discovers* capabilities of the connected wallet through the `wallet_getCapabilities` RPC.
 - The DApp *uses* capabilities through the `wallet_sendCalls` RPC.
 
-By standardizing smart wallet features such as gas sponsorship, transaction batching, and permissions (session keys), capabilities enable DApps to interact with any smart wallets through standard APIs.  This means that:
+By standardizing smart wallet features such as gas sponsorship, transaction batching, and permissions (session keys), capabilities enable DApps to interact with any smart wallets through standard APIs. This means that:
 
-- If you are building a DApp, you can write your code once and it will work with any AA wallets, whether it's embedded wallets like ZeroDev or standalone wallets like Coinbase Smart Wallet.
+- If you are building a DApp, you can write your code once, and it will work with any AA wallets, whether it's embedded wallets like ZeroDev or standalone wallets like Coinbase Smart Wallet.
 
-- If you are building a wallet, you can write your code once and it will work with any AA accounts, whether it's ZeroDev (Kernel) or another smart account.
+- If you are building a wallet, you can write your code once, and it will work with any AA accounts, whether it's ZeroDev (Kernel) or another smart account.
 
 **TLDR: capabilities standardize smart wallet features and thereby improve interoperability between smart wallets, reducing vendor lock-in for developers.**
 
-In this tutorial, we will guide you through setting up a ZeroDev embedded wallet in your DApp, and communicate with it through the standard capability API using Viem/Wagmi.
+In this tutorial, we will guide you through setting up a ZeroDev embedded wallet in your DApp and communicating with it via the standard capability API using Viem/Wagmi.
 
-## Code Example
+## Code example
 
 Use [this example repo](https://github.com/zerodevapp/capabilities-examples/tree/main/quick-start) as a reference as you go through this tutorial.
 
 ## Create an embedded Passkey Wallet
 
-ZeroDev has created a number of Wagmi connectors that speak the capabilities API.  In this tutorial, we will use the [passkey](/sdk/advanced/passkeys) connector.  You can find [other connectors here](/smart-wallet/creating-wallets).
+ZeroDev has created several of Wagmi connectors that speak the capabilities API. In this tutorial, we will use the [passkey](/sdk/advanced/passkeys) connector. You can find [other connectors here](/smart-wallet/creating-wallets).
 
 ## 1. Create a Wagmi project with Next.js:
 
-In this tutorial, we will be using [Next.js](https://nextjs.org/docs/getting-started/installation).  Start by creating a Next.js project:
+In this tutorial, we will be using [Next.js](https://nextjs.org/docs/getting-started/installation). Start by creating a Next.js project:
 
 ```bash
 npx create-next-app@latest
@@ -55,11 +55,11 @@ bun add @zerodev/wallet viem@latest wagmi @tanstack/react-query
 
 :::
 
-## 3. Setup a ZeroDev connector
+## 3. Set up a ZeroDev connector
 
 For this tutorial, we will let the user create smart wallets with [passkeys](https://docs.zerodev.app/smart-wallet/creating-wallets).
 
-Create a Wagmi provider and set it up with ZeroDev's passkey connector.  You will need to [create a project ID from the dashboard](/smart-wallet/setting-up-zerodev-projects), and make sure you are using the right `chain` object corresponding to your ZeroDev project.
+Create a Wagmi provider and set it up with ZeroDev's passkey connector. You will need to [create a project ID](/smart-wallet/setting-up-zerodev-projects) in the dashboard and make sure you are using the correct chain object for your ZeroDev project.
 
 :::code-group
 
@@ -122,9 +122,9 @@ function App() {
 }
 ```
 
-## 4. Send sponsored & batched transactions
+## 4. Send sponsored and batched transactions
 
-Now let's try using two capabilities together: gas sponsorship and batching.  We will send a batch of two transactions, and sponsor gas for them:
+Now let's try using two capabilities together: gas sponsorship and batching. We will send a batch of two transactions, and sponsor gas for them:
 
 ```tsx filename=page.tsx // [page.tsx]
 import { parseAbi } from 'viem'
@@ -179,8 +179,8 @@ function App() {
 }
 ```
 
-## Next Steps
+## Next steps
 
-Congrats -- you just sent your first gasless transaction with ZeroDev, through the standard capability API!
+Congrats—you just sent your first gasless transaction with ZeroDev, through the standard capability API!
 
-In this example, you used a public ZeroDev API key.  Now learn how to [set up your own ZeroDev project](/smart-wallet/setting-up-zerodev-projects).  Then browse the ZeroDev features using the sidebar and see what you'd like to use!
+In this example, you used a public ZeroDev API key. Now learn how to [set up your own ZeroDev project](/smart-wallet/setting-up-zerodev-projects). Then browse the ZeroDev features using the sidebar and see what you'd like to use!

@@ -1,20 +1,20 @@
-# Quickstart -- React
+# Quickstart: React
 
 :::info
 Check out the [complete quickstart code here](https://github.com/zerodevapp/waas-examples/tree/main/quick-start).
 :::
 
-ZeroDev has two main packages: `@zerodev/waas` which is designed for React projects, and `@zerodev/sdk` which is our core SDK that can be used in any JavaScript environment.
+ZeroDev has two main packages: `@zerodev/waas` designed for React projects, and `@zerodev/sdk` our core SDK that integrates with any JavaScript environment.
 
-If you are building a React project, we recommend starting with `@zerodev/waas`, which is what we will walk you through in this tutorial.  You can always ["dropping down" to the core SDK](#interop-with-the-core-sdk) when necessary.
+If you are building a React project, we recommend starting with `@zerodev/waas`, which is what we will walk you through in this tutorial. You can always ["dropping down" to the core SDK](#interop-with-the-core-sdk) when necessary.
 
 ## 0. Clone the code
 
-Since React has a lot of boilerplate, we will only focus on the ZeroDev-specific code.  We recommend cloning the [complete quickstart code](https://github.com/zerodevapp/waas-examples/tree/main/quick-start) and refer to it if you get lost as you follow along this tutorial.
+Since React has a lot of boilerplate, we will only focus on the ZeroDev-specific code. We recommend cloning the entire [quickstart code](https://github.com/zerodevapp/waas-examples/tree/main/quick-start) and referring to it if you get lost while following this tutorial.
 
 ## 1. Create a Next.js project
 
-In this tutorial, we will be using [Next.js](https://nextjs.org/docs/getting-started/installation).  Start by creating a Next.js project:
+In this tutorial, we will be using [Next.js](https://nextjs.org/docs/getting-started/installation). Start by creating a Next.js project:
 
 ```bash
 npx create-next-app@latest
@@ -44,9 +44,9 @@ bun add @zerodev/waas viem@2.x @tanstack/react-query
 
 :::
 
-## 3. Setup context provider
+## 3. Set up context provider
 
-Create a provider in typical React style.  You will need to [create a project ID from the dashboard](/smart-wallet/setting-up-zerodev-projects), and make sure you are using the right `chain` object corresponding to your ZeroDev project.
+Create a provider in typical React style. You will need to [create a project ID in the dashboard](/smart-wallet/setting-up-zerodev-projects), and make sure you are using the correct `chain` object corresponding to your ZeroDev project.
 
 ```ts filename=Providers.tsx // [Providers.tsx]
 import { http } from "viem"
@@ -74,9 +74,9 @@ function Providers({ children }: { children: React.ReactNode}) {
 }
 ```
 
-## 4. Use ZeroDev waas
+## 4. Use ZeroDev WaaS
 
-### Create a Smart Account
+### Create a smart account
 
 Let's start by creating an account:
 
@@ -161,12 +161,12 @@ function App() {
 
 ### Interop with the Core SDK
 
-If you ever want to use the Core SDK (perhaps because a feature is only supported in the core SDK but not through the React API), you can "drop down" to the SDK with [the `useKernelClient` hook](/react/use-kernelclient#usekernelclient).
+If you ever want to use the Core SDK (perhaps because a feature is only supported in the Core SDK but not through the React API), you can "drop down" to the SDK with [the `useKernelClient` hook](/react/use-kernelclient#usekernelclient).
 
 Similarly, if you have created a Kernel client object with the core SDK, you can "embed" it inside the React SDK using [the `useSetKernelClient` hook](https://docs.zerodev.app/react/use-set-kernelclient).
 
 ## Next Steps
 
-Congrats -- you just sent your first gasless transaction with ZeroDev!
+Congrats—you just sent your first gasless transaction with ZeroDev!
 
-In this example, you used a public ZeroDev API key.  Now learn [how to set up your own ZeroDev project](/smart-wallet/setting-up-zerodev-projects).
+In this example, you used a public ZeroDev API key. Now learn [how to set up your own ZeroDev project](/smart-wallet/setting-up-zerodev-projects).

@@ -1,6 +1,6 @@
-# Connecting Wallet with Other DApps
+# Connecting Wallet with other dApps
 
-If you want your users to be able to use your embedded wallet on other DApps, you can use our WalletConnect integration.
+If you want your users to use your embedded wallet across other DApps, you can use our WalletConnect integration.
 
 ## React SDK `@zerodev/waas`
 
