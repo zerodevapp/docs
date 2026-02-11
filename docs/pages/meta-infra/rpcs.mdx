@@ -2,7 +2,7 @@
 
 To ensure utmost reliability for our customers, our RPCs use multiple bundlers under the hood, including: 
 
-- [UltraRelay](/sdk/core-api/sponsor-gas#ultrarelay), ZeroDev's own bundler optimized for sponsored transactions
+- [UltraRelay](/sdk/core-api/sponsor-gas#ultrarelay) (ZeroDev's own bundler is optimized for sponsored transactions)
 - Alchemy
 - Gelato
 - Pimlico
@@ -11,15 +11,17 @@ Our RPCs support all standard methods defined in the [ERC-4337 spec](https://eip
 
 By default, ZeroDev sends traffic to a provider that's known to work well on the given network.  However, you can configure which specific provider to proxy traffic to, as described below.
 
-You can find the bundler & paymaster RPCs for a specific ZeroDev project on the [ZeroDev dashboard](https://dashboard.zerodev.app/).
+You can find the bundler and paymaster RPCs for a specific ZeroDev project on the [ZeroDev dashboard](https://dashboard.zerodev.app/).
 
 :::info
-While you can in principle use a paymaster from one provider with a bundler from another provider, in practice different providers are sometimes incompatible, so we recommend that if you want to use a specific provider, you use it for both the bundler and the paymaster.
+
+While you can, in principle, use a paymaster from one provider with a bundler from another, in practice, different providers are sometimes incompatible, so we recommend that if you want to use a specific provider, you use it for both the bundler and the paymaster.
+
 :::
 
 ## Configuring the RPC for a specific infra provider
 
-You can append the following query params (i.e. `?param=value`) to the RPC:
+You can append the following query params (e.g., `?param=value`) to the RPC:
 
 - `provider`, which specifies the underlying bundler to use.  Possible values include:
   - `ULTRA_RELAY`
