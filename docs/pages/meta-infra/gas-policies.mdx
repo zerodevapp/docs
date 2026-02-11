@@ -1,8 +1,8 @@
 # Gas Policies
 
-You can configure **gas policies** for ZeroDev paymaster to have fine-grained control over what you sponsor, and how much.
+You can configure **gas policies** for the ZeroDev paymaster to have fine-grained control over what you sponsor and how much you sponsor.
 
-Paymaster policies can be configured through either [the dashboard](https://dashboard.zerodev.app/paymasters) or [the API](/meta-infra/api).
+Paymaster policies configurations are possible through either [the dashboard](https://dashboard.zerodev.app/paymasters) or [the API](/meta-infra/api).
 
 ## Policy Types
 
@@ -19,10 +19,10 @@ When you create a new policy, you set up one or more *rate limits*.
 
 There are four types of rate limits:
 
-- Amount: limit by the amount of gas
-- Request: limit by the number of requests
-- Gas Price: limit by the current gas price
-- Amount per txn: limit by the amount of gas per transaction
+- **Amount**: limited by the amount of gas
+- **Request**: limit by the number of requests
+- **Gas Price**: limited by the current gas price
+- **Amount per txn**: limit by the amount of gas per transaction
 
 ## Policy examples
 
@@ -44,7 +44,7 @@ Here we create a contract policy:
   <img src="/img/gas_policy_example_2.png" width="80%" />
 </p>
 
-### Sponsor transactions for a specific function when gas price is below 50 GWEI
+### Sponsor transactions for a specific function when the gas price is below 50 GWEI
 
 Here we create a contract policy:
 
