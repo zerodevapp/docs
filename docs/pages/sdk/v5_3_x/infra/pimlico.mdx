@@ -4,13 +4,13 @@ import VersionWarning from "../VersionWarning"
 
 # Pimlico
 
-[Pimlico](https://www.pimlico.io/) is a leading AA infra provider with a wide coverage of networks.
+[Pimlico](https://www.pimlico.io/) is a leading AA infrastructure provider with a wide network coverage.
 
 Note that ZeroDev is built on top of Pimlico's [Permissionless](https://docs.pimlico.io/permissionless/reference) SDK, so if you were already using Permissionless, it's easy to switch to ZeroDev to take full advantage of the power of [Kernel](https://github.com/zerodevapp/kernel).
 
 ## Using Pimlico bundler
 
-Simply specify Pimlico's bundler RPC when [constructing a Kernel client](/sdk/v5_3_x/core-api/create-account#standard-api):
+Specify Pimlico's bundler RPC when [constructing a Kernel client](/sdk/v5_3_x/core-api/create-account#standard-api):
 
 ```typescript
 import { createKernelAccountClient } from "@zerodev/sdk"
@@ -23,7 +23,7 @@ const kernelClient = createKernelAccountClient({
 })
 ```
 
-## Using Pimlico paymaster
+## Using the Pimlico paymaster
 
 Construct the Kernel client with Pimlico's paymaster client:
 

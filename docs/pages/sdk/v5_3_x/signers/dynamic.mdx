@@ -10,23 +10,28 @@ import VersionWarning from "../VersionWarning"
 
 To use Dynamic with ZeroDev, you have two options: Dynamic's native integration that utilizes ZeroDev, or a custom integration using Dynamic's Externally Owned Account (EOA) as a signer. Choose the approach that best fits your needs.
 
-### Native Integration
+### Native integration
 
-Dynamic natively supports account abstraction using ZeroDev. This integration allows you to sponsor gas fees, bundle transactions, recover and transfer accounts, utilize session keys.
-- For more information and how to get started, visit the [Dynamic Account Abstraction documentation](https://docs.dynamic.xyz/smart-wallets/smart-wallet-providers/zerodev).
+Dynamic natively supports account abstraction using ZeroDev. This integration allows you to sponsor gas fees, bundle transactions, recover and transfer accounts, and utilize session keys.
+- For more information on how to get started, visit the [Dynamic Account Abstraction documentation](https://docs.dynamic.xyz/smart-wallets/smart-wallet-providers/zerodev).
 
-### Custom Integration
-If you would like to use ZeroDev directly with a Dynamic project, you can set up a custom integration using Dynamics's EOA as a signer.
+### Custom integration
+
+If you would like to use ZeroDev directly with a Dynamics project, you can set up a custom integration using Dynamics' EOA as a signer.
+
 - Begin by setting up your application with Dynamic, as detailed in the [Dynamic documentation](https://docs.dynamic.xyz/introduction/welcome).
 - Dynamic also offers a quick start guide and sample apps, available [here](https://docs.dynamic.xyz/quickstart).
 
-## Implementing Custom Integration
+## Implementing custom integration
+
 Integrating ZeroDev with Dynamic is straightforward once your application is set up. Dynamic provides an EOA wallet to use as a signer with Kernel.
 
-### Get the Dynamic wallet's Provider
+### Get the dynamic wallet's provider
+
 To begin, ensure your application is integrated with Dynamic. Detailed guidance is available in the [Dynamic documentation](https://docs.dynamic.xyz/). 
 
 The following example demonstrates the use of Dynamic's React Core SDK. Ensure your React app is already configured with Dynamic; for setup instructions, refer to the [tutorial](https://docs.dynamic.xyz/react-sdk/tutorial).
+
 ```typescript
 import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
 
@@ -67,6 +72,6 @@ const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
 // You can now use this ECDSA Validator to create a Kernel account
 ```
 
-## Starter Template
+## Starter template
 
 A user has helpfully created a [starter template for Dynamic + ZeroDev](https://github.com/tantodefi/se2-dynamic-zerodev).

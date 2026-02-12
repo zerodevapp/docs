@@ -2,7 +2,7 @@ import VersionWarning from "../VersionWarning"
 
 <VersionWarning version="5.3.x" /> 
 
-# Supported Defi Tokens
+# Supported Defi tokens
 
 This is the full list of DeFi tokens (aka "vaults") supported by ZeroDev's [DeFi integrations](/sdk/v5_3_x/advanced/defi).
 
@@ -14,7 +14,7 @@ To use these tokens, import the `defiTokenAddresses` constant:
 import { defiTokenAddresses } from "@zerodev/defi"
 ```
 
-Then get the DeFi token address with `defiTokenAddresses[chainId][baseToken][protocol]`.  For example, to deposit USDC into the AAVE v3 USDC token vault:
+Then get the DeFi token address with `defiTokenAddresses[chainId][baseToken][protocol]`. For example, to deposit `USDC` into the AAVE v3 `USDC` token vault:
 
 ```ts
 const userOpHash = await defiClient.sendSwapUserOp({
@@ -2515,7 +2515,7 @@ const userOpHash = await defiClient.sendSwapUserOp({
 | Metis | stargate | 0xD4CEc732b3B135eC52a3c0bc8Ce4b8cFb9dacE46 |
 | WOO | stargate | 0x5a0F550bfCaDe1D898034D57A6f72E7Aef32CE79 |
 
-## Polygon Mainnet PoS
+## Polygon mainnet PoS
 
 | Tokens | Protocol | Address |
 |--------|----------|---------|
@@ -3560,7 +3560,7 @@ const userOpHash = await defiClient.sendSwapUserOp({
 | jitoSOL/wstETH | balancer-gauge | 0xfA7C98b893b26e99EFb53110B1B72FFAaC607b69 |
 
 
-## Avalanche-C Mainnet
+## Avalanche-C mainnet
 
 | Tokens | Protocol | Address |
 |--------|----------|---------|

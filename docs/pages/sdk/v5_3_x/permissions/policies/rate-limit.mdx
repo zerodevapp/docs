@@ -2,9 +2,9 @@ import VersionWarning from "../../VersionWarning"
 
 <VersionWarning version="5.3.x" /> 
 
-# Rate Limit Policy
+# Rate limit policy
 
-The rate limit policy specifies the frequency at which the signer is allowed to send UserOps.
+The rate limit policy specifies the frequency at which the signer can send UserOps.
 
 ## API
 
@@ -33,4 +33,4 @@ Arguments to `toRateLimitPolicy`:
 - `count`: the number of times the signer can send UserOps in the given internal.
 - (optional) `interval`: the length of the interval, in seconds.
   - If not specified, then the interval is infinite, which means that you can use `count` to specify the number of times the signer can send UserOps in total.
-- (optional) `startAt`: the starting UNIX timestamp for when the rate limit should take effect.  Before that, the signer cannot send any UserOps.
+- (optional) `startAt`: the starting UNIX timestamp for when the rate limit should take effect. Before that, the signer cannot send any UserOps.

@@ -4,7 +4,7 @@ import VersionWarning from "../VersionWarning"
 
 # Use Particle Network with ZeroDev
 
-[Particle Network](https://particle.network/) is an intent-centric, modular wallet-as-a-service (WaaS). By utilizing MPC-TSS for key management, Particle can streamline onboarding via familiar Web2 methods such as Google, emails, and phone numbers.
+[Particle Network](https://particle.network/) is an intent-centric, modular wallet-as-a-service (WaaS). By using MPC-TSS for key management, Particle can streamline onboarding using familiar Web2 methods such as Google, email, and phone numbers.
 
 By combining ZeroDev with Particle, you can use Particle to enable a smooth social login experience, while using ZeroDev as the smart wallet to sponsor gas for users, batch transactions, and more.
 
@@ -16,9 +16,11 @@ To use Particle Network with ZeroDev, first create an application that integrate
 - For a quick start, Particle Network provides a guide, available [here](https://docs.particle.network/getting-started/get-started).
 
 ## Integration
-Integrating ZeroDev with Particle Network is straightforward after setting up the project. Particle Network provides an Externally Owned Account (EOA) wallet to use as a signer with Kernel.
+
+Integrating ZeroDev with Particle Network is straightforward once the project is set up. Particle Network provides an Externally Owned Account (EOA) wallet to use as a signer with Kernel.
 
 ### Create the Particle Network object
+
 After following the Particle Network documentation, you will have access to a `ParticleProvider` object as shown below:
 
 ```typescript
@@ -38,7 +40,7 @@ const particleProvider = new ParticleProvider(particle.auth)
 
 ### Use with ZeroDev
 
-Use the provider from Particle Network to create a smart account signer, which can be passed to a validator. For detailed guidance on using a validator, refer to our documentation on [creating accounts](/sdk/v5_3_x/core-api/create-account#api).
+Use the Particle Network provider to create a smart account signer that can be passed to a validator. For detailed guidance on using a validator, refer to our documentation on [creating accounts](/sdk/v5_3_x/core-api/create-account#api).
 
 ```typescript
 import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
