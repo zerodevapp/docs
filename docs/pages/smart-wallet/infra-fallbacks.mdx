@@ -1,12 +1,14 @@
-# Infra Fallbacks
+# Infra fallbacks
 
 :::info
-Impatient?  Check out [a complete example here](https://github.com/zerodevapp/zerodev-examples/blob/main/fallback-clients/main.ts).
+
+Impatient? Check out [a complete example here](https://github.com/zerodevapp/zerodev-examples/blob/main/fallback-clients/main.ts).
+
 :::
 
-ZeroDev offers a "[meta infrastructure](/meta-infra/intro)" that integrates with all leading AA infra providers.  When you use ZeroDev, you can pick [a specific infrastructure provider](/meta-infra/rpcs#bundler-rpc).  If you don't pick one, we pick one for you.
+ZeroDev offers a "[meta infrastructure](/meta-infra/intro)" that integrates with all leading AA infra providers. When you use ZeroDev, you can pick [a specific infrastructure provider](/meta-infra/rpcs#bundler-rpc). If you don't pick one, we pick one for you.
 
-However, sometimes an infra provider may experience downtime.  We have developed a "fallbacks" feature that allows you to set up multiple providers, so that when one fails, another takes over.
+However, sometimes an infra provider may experience downtime. We have developed a "fallbacks" feature that allows you to set up multiple providers, so that when one fails, another takes over.
 
 ## Core API
 
@@ -67,11 +69,11 @@ const kernelClient = createFallbackKernelAccountClient([
 ])
 ```
 
-Now you can use `kernelClient` as usual.  Your `kernelClient` will use `kernelClient1` by default, and if it runs into any issues with it, it will fallback to `kernelClient2`.
+Now you can use `kernelClient` as usual. Your `kernelClient` will use `kernelClient1` by default, and if it runs into any issues with it, it will fallback to `kernelClient2`.
 
 ### Using non-ZeroDev infra as fallbacks
 
-In the previous example, we used different providers as fallbacks through ZeroDev.  If you are worried that ZeroDev itself might go down, you can also sign up directly with providers like Pimlico and set them up as fallback providers.
+In the previous example, we used different providers as fallbacks through ZeroDev. If you are worried that ZeroDev itself might go down, you can also sign up directly with providers like Pimlico and set them up as fallback providers.
 
 To do that, simply:
 
@@ -86,6 +88,7 @@ const kernelClient = createFallbackKernelAccountClient([
 ])
 ```
 
+<!--
 ## React API
-
 TODO
+-->

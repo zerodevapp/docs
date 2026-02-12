@@ -1,23 +1,23 @@
 # Batching
 
-Smart accounts support *batching* transactions -- rolling multiple transactions into one.  This is very useful for simplifying Web3 interactions for your users.  For instance, instead of doing `approve()` followed by `transfer()`, your user can do both in one transaction.
+Smart accounts support transaction **batching**—combining multiple transactions into a single transaction. This is very useful for simplifying Web3 interactions for your users. For instance, instead of calling `approve()` followed by `transfer()`, your user can do both in a single transaction
 
 Batching transactions has a number of important benefits:
 
 - Your user waits for only 1 transaction instead of multiple.
-- Your user pays less gas.
+- Your user pays for less gas.
 - If any transaction in the batch reverts, the entire batch reverts. This ensures that your user won't be stuck in an inconsistent state.
   - This is known as "atomicity."
 
 ## Capabilities API
 
-Thanks to [the new capabilities standard](/smart-wallet/quickstart-capabilities), you can batch transactions in a standard way regardless of the smart wallet implementation.
+Thanks to [the new capabilities standard](/smart-wallet/quickstart-capabilities), you can batch transactions consistently regardless of the smart wallet implementation.
 
-To batch transactions, simply use the `wallet_sendCalls` API.  We will be using [Wagmi](https://wagmi.sh/react/api/hooks/useSendCalls) here but you can find the same API in [Viem](https://viem.sh/experimental/eip5792/sendCalls):
+To batch transactions, use the wallet_sendCalls API. We will be using [Wagmi](https://wagmi.sh/react/api/hooks/useSendCalls) here, but you can find the same API in [Viem](https://viem.sh/experimental/eip5792/sendCalls):
 
 ## React API
 
-Simply pass an array of transactions (UserOps) when using the `useSendUserOperation` hook:
+Pass an array of transactions (UserOps) when using the `useSendUserOperation` hook:
 
 ```tsx
 import { useSendUserOperation, useKernelClient } from '@zerodev/waas'
@@ -50,10 +50,12 @@ function App() {
 ## Core API
 
 :::info
-Impatient?  Check out [complete examples here](https://github.com/zerodevapp/zerodev-examples/tree/main/batch-transactions).
+
+Impatient? Check out [complete examples here](https://github.com/zerodevapp/zerodev-examples/tree/main/batch-transactions).
+
 :::
 
-There are two ways to send batched transactions.  `sendTransaction` is a simple API that's good enough for most use cases.  If you need fine-grained control over your UserOp, you can use `sendUserOperation`.
+There are two ways to send batched transactions. `sendTransaction` is a simple API that's good enough for most use cases. If you need fine-grained control over your UserOp, you can use `sendUserOperation`.
 
 ### `sendTransaction`
 
@@ -78,7 +80,7 @@ const txHash = await kernelClient.sendTransaction({
 
 You can learn more about the `sendUserOperation` API [here](/sdk/core-api/send-transactions#sending-raw-userops).
 
-To send a UserOp with batching, simply pass an array of calls into `encodeCalls`.
+To send a UserOp with batching, pass an array of calls into `encodeCalls`.
 
 ```typescript
 const userOpHash = await kernelClient.sendUserOperation({
