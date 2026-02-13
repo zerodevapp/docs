@@ -1,4 +1,4 @@
-# Connecting Wallet with other dApps
+# Connecting wallet with other dApps
 
 If you want your users to use your embedded wallet across other DApps, you can use our WalletConnect integration.
 

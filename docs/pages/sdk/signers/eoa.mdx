@@ -2,7 +2,7 @@
 
 An Externally Owned Account (EOA) is a standard Ethereum account operated via a private key. It’s commonly used in wallets like MetaMask. ZeroDev supports EOAs as signers, and the integration method varies depending on your dApp’s connection approach.
 
-## Integration Methods
+## Integration methods
 
 We'll explore three methods to integrate a signer with ZeroDev: using an EIP-1193 provider, using a Viem WalletClient, and employing a Local Account.
 
@@ -32,7 +32,7 @@ const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
 // You can now use this ECDSA Validator to create a Kernel account
 ```
 
-### Viem Wallet Client Integration
+### Viem Wallet Client integration
 
 A [Wallet Client](https://viem.sh/docs/clients/wallet.html) is an interface for interacting with Ethereum Account(s) and provides the ability to retrieve accounts, execute transactions, sign messages, etc., through Wallet Actions.
 
