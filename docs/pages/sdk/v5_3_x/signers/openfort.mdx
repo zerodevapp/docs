@@ -15,106 +15,178 @@ To use Openfort with ZeroDev, first create an application that integrates with O
 
 ## Integration
 
-Integrating ZeroDev with Openfort is straightforward after setting up your project. Openfort provides an EIP-1193 compatible provider that can be used as a signer with Kernel.
+Integrating ZeroDev with Openfort is straightforward after setting up your project. Openfort's React SDK integrates with Wagmi, providing easy access to wallet clients that can be used as signers with Kernel.
 
-### Create the Openfort client and get the provider
+### Install dependencies
 
-After following the Openfort documentation, you will have access to an Openfort client. Here's how to set it up:
+```bash
+npm install @openfort/react @zerodev/ecdsa-validator @zerodev/sdk wagmi viem @tanstack/react-query permissionless
+```
 
-```typescript
-import { Openfort } from '@openfort/openfort-js'
+### Set up providers
 
-// Initialize Openfort with your keys
-const openfort = new Openfort({
-  baseConfiguration: {
-    publishableKey: "YOUR_OPENFORT_PUBLISHABLE_KEY"
-  },
-  shieldConfiguration: {
-    shieldPublishableKey: "YOUR_SHIELD_PUBLISHABLE_KEY"
-  }
-})
+First, configure the Openfort and Wagmi providers in your app:
 
-// Authenticate the user (e.g., with email, social login, or passkeys)
-// See Openfort docs for authentication options
+```tsx
+import React from "react";
+import {
+  OpenfortProvider,
+  getDefaultConfig,
+  AuthProvider,
+  RecoveryMethod,
+} from "@openfort/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { WagmiProvider, createConfig } from "wagmi";
+import { polygonAmoy } from "viem/chains";
 
-// Get the EIP-1193 provider
-const openfortProvider = await openfort.embeddedWallet.getEthereumProvider()
+const config = createConfig(
+  getDefaultConfig({
+    appName: "Your App Name",
+    chains: [polygonAmoy],
+  })
+);
+
+const queryClient = new QueryClient();
+
+export function Providers({ children }: { children: React.ReactNode }) {
+  return (
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <OpenfortProvider
+          publishableKey="YOUR_OPENFORT_PUBLISHABLE_KEY"
+          walletConfig={{
+            shieldPublishableKey: "YOUR_SHIELD_PUBLISHABLE_KEY",
+            createEncryptedSessionEndpoint: "YOUR_BACKEND_ENDPOINT", // For automatic recovery
+          }}
+          uiConfig={{
+            authProviders: [
+              AuthProvider.EMAIL_OTP,
+              AuthProvider.GOOGLE,
+              AuthProvider.WALLET,
+            ],
+            walletRecovery: {
+              defaultMethod: RecoveryMethod.AUTOMATIC,
+            },
+          }}
+        >
+          {children}
+        </OpenfortProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
+  );
+}
 ```
 
 ### Use with ZeroDev
 
-Use the provider from Openfort to create a smart account signer, which can be passed to a validator. For detailed guidance on using a validator, refer to our documentation on [creating accounts](/sdk/v5_3_x/core-api/create-account#api).
+Once a user is authenticated with Openfort, use Wagmi's `useConnectorClient` hook to get the wallet client. For v5.3.x, convert it to a SmartAccountSigner using permissionless:
 
-```typescript
-import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
-import { KERNEL_V3_1 } from "@zerodev/sdk/constants"
-import { providerToSmartAccountSigner, ENTRYPOINT_ADDRESS_V07 } from 'permissionless'
-import { createPublicClient, http } from "viem"
-import { polygonAmoy } from 'viem/chains'
+```tsx
+import { useConnectorClient } from "wagmi";
+import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator";
+import { KERNEL_V3_1 } from "@zerodev/sdk/constants";
+import { walletClientToSmartAccountSigner, ENTRYPOINT_ADDRESS_V07 } from "permissionless";
+import { createPublicClient, http } from "viem";
+import { polygonAmoy } from "viem/chains";
 
-const publicClient = createPublicClient({
-  // Use your own RPC provider (e.g. Infura/Alchemy).
-  transport: http('https://rpc-amoy.polygon.technology'),
-  chain: polygonAmoy,
-})
+function ZeroDevAccount() {
+  const { data: walletClient } = useConnectorClient();
 
-// Create a SmartAccountSigner from the Openfort provider
-const smartAccountSigner = await providerToSmartAccountSigner(openfortProvider)
+  const createKernelAccount = async () => {
+    if (!walletClient) {
+      throw new Error("Wallet not connected");
+    }
 
-// Pass your smartAccountSigner to the validator
-const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
-  signer: smartAccountSigner,
-  entryPoint: ENTRYPOINT_ADDRESS_V07,
-  kernelVersion: KERNEL_V3_1
-})
+    const publicClient = createPublicClient({
+      transport: http("https://rpc-amoy.polygon.technology"),
+      chain: polygonAmoy,
+    });
 
-// You can now use this ECDSA Validator to create a Kernel account
+    // Convert the wallet client to a SmartAccountSigner
+    const smartAccountSigner = walletClientToSmartAccountSigner(walletClient);
+
+    // Pass the signer to the validator
+    const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
+      signer: smartAccountSigner,
+      entryPoint: ENTRYPOINT_ADDRESS_V07,
+      kernelVersion: KERNEL_V3_1,
+    });
+
+    // You can now use this ECDSA Validator to create a Kernel account
+    return ecdsaValidator;
+  };
+
+  return (
+    <button onClick={createKernelAccount}>
+      Create ZeroDev Account
+    </button>
+  );
+}
 ```
 
-### Using with Viem
+### Full example with authentication
 
-Openfort's provider is also compatible with Viem's `createWalletClient`:
+Here's a complete example showing the Openfort authentication flow with ZeroDev integration:
 
-```typescript
-import { createWalletClient, custom } from 'viem'
-import { walletClientToSmartAccountSigner } from 'permissionless'
-import { polygonAmoy } from 'viem/chains'
-
-// Create a wallet client from the Openfort provider
-const walletClient = createWalletClient({
-  chain: polygonAmoy,
-  transport: custom(openfortProvider)
-})
-
-// Convert to a SmartAccountSigner
-const smartAccountSigner = walletClientToSmartAccountSigner(walletClient)
-
-// Use with ZeroDev as shown above
-```
-
-## React Integration
-
-If you're using React, Openfort provides hooks for easier integration:
-
-```typescript
-import { useOpenfort } from '@openfort/openfort-react'
+```tsx
+import { OpenfortButton, useOpenfortAuth } from "@openfort/react";
+import { useConnectorClient } from "wagmi";
+import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator";
+import { KERNEL_V3_1 } from "@zerodev/sdk/constants";
+import { createKernelAccount } from "@zerodev/sdk";
+import { walletClientToSmartAccountSigner, ENTRYPOINT_ADDRESS_V07 } from "permissionless";
+import { createPublicClient, http } from "viem";
+import { polygonAmoy } from "viem/chains";
 
 function App() {
-  const { embeddedWallet, user } = useOpenfort()
+  const { isAuthenticated } = useOpenfortAuth();
+  const { data: walletClient } = useConnectorClient();
 
-  const getProvider = async () => {
-    if (!user) {
-      throw new Error("User not authenticated")
-    }
-    return await embeddedWallet.getEthereumProvider()
-  }
+  const setupZeroDev = async () => {
+    if (!walletClient) return;
 
-  // Use the provider with ZeroDev as shown above
+    const publicClient = createPublicClient({
+      transport: http("https://rpc-amoy.polygon.technology"),
+      chain: polygonAmoy,
+    });
+
+    const smartAccountSigner = walletClientToSmartAccountSigner(walletClient);
+
+    const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
+      signer: smartAccountSigner,
+      entryPoint: ENTRYPOINT_ADDRESS_V07,
+      kernelVersion: KERNEL_V3_1,
+    });
+
+    const kernelAccount = await createKernelAccount(publicClient, {
+      plugins: {
+        sudo: ecdsaValidator,
+      },
+      entryPoint: ENTRYPOINT_ADDRESS_V07,
+      kernelVersion: KERNEL_V3_1,
+    });
+
+    console.log("Kernel account address:", kernelAccount.address);
+  };
+
+  return (
+    <div>
+      {/* OpenfortButton handles authentication UI */}
+      <OpenfortButton />
+      
+      {isAuthenticated && walletClient && (
+        <button onClick={setupZeroDev}>
+          Create ZeroDev Kernel Account
+        </button>
+      )}
+    </div>
+  );
 }
 ```
 
 ## Additional Resources
 
 - [Openfort Documentation](https://www.openfort.io/docs)
+- [Openfort React SDK Guide](https://www.openfort.io/docs/products/embedded-wallet/react)
 - [Openfort Demo](https://demo.openfort.io/)
 - [Openfort GitHub](https://github.com/openfort-xyz)
