@@ -1,6 +1,6 @@
 import MutationResult from '../shared/mutation-result.mdx'
 
-# useSendTransactionWithSession [Hooks for sending transactions with session keys]
+# `useSendTransactionWithSession` [Hooks for sending transactions with session keys]
 
 ## Import
 ```tsx
@@ -41,7 +41,7 @@ import { type UseSendTransactionWithSessionParameters } from '@zerodev/waas';
 
 `0x${tring}`
 
-The sessionId of session used to send user operation
+The sessionId of the session used to send the user operation.
 
 ### paymaster
 `{type: "SPONSOR"} | {type: "ERC20", gasToken: string} | undefined`
@@ -52,20 +52,20 @@ The paymaster type and gas token address.
   The type of paymaster.
 - #### gasToken
   `string | undefined`
-  The symbol of erc20 token used for erc20 paymaster.
+  The symbol of the `ERC-20` token used for the `ERC-20` paymaster.
 
 ### isParallel
 `boolean | undefined`
 
 - Default to `True`
-- The flag determine whether the user operation allows parallel execution.
+- The flag determines whether the user operation allows parallel execution.
 
 ### nonceKey
 `string | undefined`
 
-The key to generate nonce for userop. 
+The key to generating a nonce for userop. 
 
-## Return Types
+## Return types
 
 ```tsx
 import { type UseSendTransactionWithSessionReturnType } from '@zerodev/waas'
@@ -80,7 +80,7 @@ import { type UseSendTransactionWithSessionReturnType } from '@zerodev/waas'
 ### write
 `(variables: SendTransactionWithSessionVariables) => void`
 
-The mutation function to send transactions with session.
+The mutation function sends transactions with a session.
 
 - #### variables 
   - ##### to

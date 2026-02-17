@@ -4,16 +4,16 @@ import VersionWarning from "../VersionWarning"
 
 # Choosing an infra provider
 
-ZeroDev is compatible with any account abstraction infra provider.  Check out these guides for integrating with a specific provider:
+ZeroDev is compatible with any account abstraction infra provider. Check out these guides for integrating with a specific provider:
 
 - [ZeroDev](/meta-infra/intro)
 - [Pimlico](/sdk/v5_3_x/infra/pimlico)
 
 Read on to learn how to integrate with a custom provider.
 
-## Interop with Bundlers
+## Interop with bundlers
 
-For the most part, bundlers are perfectly interoperable between different providers.  You simply specify the bundler RPC when you construct a Kernel client:
+For the most part, bundlers are perfectly interoperable between different providers. You specify the bundler RPC when you construct a Kernel client:
 
 ```typescript
 import { createKernelAccountClient } from "@zerodev/sdk"
@@ -28,7 +28,7 @@ const kernelClient = createKernelAccountClient({
 
 ## Interop with Paymasters
 
-Paymasters are not perfectly interoperable between providers.  To integrate with a paymaster, you need to implement the `sponsorUserOperation` function:
+Paymasters are not perfectly interoperable between providers. To integrate with a paymaster, you need to implement the `sponsorUserOperation` function:
 
 ```typescript
 import { createKernelAccountClient } from "@zerodev/sdk"

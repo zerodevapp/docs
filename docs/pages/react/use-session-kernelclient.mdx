@@ -1,6 +1,6 @@
 import QueryResult from "../shared/query-result.mdx"
 
-# useSessionKernelClient [Hook for getting kernel account client with session plugin]
+# `useSessionKernelClient` [Hook for getting kernel account client with session plugin]
 
 ## Import
 ```ts
@@ -26,7 +26,7 @@ import { type UseSessionKernelClientParameters } from '@zerodev/waas';
 
 `0x${string}`
 
-The sessionId of session used to send user operation.
+The sessionId of the session used to send user operations.
 
 ### paymaster
 `{type: "SPONSOR"} | {type: "ERC20", gasToken: string} | undefined`
@@ -37,9 +37,9 @@ The paymaster type and gas token address.
   The type of paymaster.
 - #### gasToken
   `string | undefined`
-  The symbol of erc20 token used for erc20 paymaster.
+  The `ERC-20` token symbol is used for the `ERC-20` paymaster.
 
-## Return Types
+## Return types
 
 ```tsx
 import { type UseKernelClientReturnType } from '@zerodev/waas'
@@ -54,11 +54,11 @@ import { type UseSessionKernelClientReturnType } from '@zerodev/waas'
 ### kernelAccount
 `KernelSmartAccount<EntryPoint> | null`
 
-The current kernel account with session plugin.
+The current kernel account has a session plugin.
 
 ### kernelClient
 `KernelAccountClient<EntryPoint>`
 
-The current kernel account client with session plugin.
+The current kernel account client with the session plugin.
 
 <QueryResult />

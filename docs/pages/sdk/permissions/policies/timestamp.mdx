@@ -1,6 +1,6 @@
-# Timestamp Policy
+# Timestamp policy
 
-The timestamp policy specifies the start and end time for when the signer is valid.
+The timestamp policy specifies the start and end times for when the signer is valid.
 
 ## API
 
@@ -26,5 +26,5 @@ const validator = toPermissionValidator(publicClient, {
 
 Arguments to `toTimestampPolicy`:
 
-- `validAfter`: the time after which the signer becomes valid.  If not specified, the signer is immediately valid.
-- `validUntil`: the time before which the signer is valid.  If not specified, the signer never expires.
+- `validAfter`: the time after which the signer becomes valid. If not specified, the signer is considered valid immediately.
+- `validUntil`: the time before which the signer is valid. If not specified, the signer never expires.

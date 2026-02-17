@@ -1,9 +1,11 @@
-# Installing Permissions During Account Creation
+# Installing permission during account creation
 
-You can install permission plugins during account creation using `initConfig`. This approach allows you to set up permissions right when the account is deployed.
+You can install permission plugins during account creation using `initConfig`. This approach lets you set up permissions when the account is deployed.
 
 :::note
+
 The counterfactual account address is tied to the permission plugin configuration. If you modify the permission plugin's configuration after account creation and reinstall it, you'll need to explicitly specify the account address using the `address` parameter when calling `createKernelAccount`.
+
 :::
 
 ## Example
@@ -35,6 +37,6 @@ const account = await createKernelAccount(publicClient, {
 })
 ```
 
-## Starter Template
+## Starter template
 
 An example of a starter template for installing permissions during account creation is available [here](https://github.com/zerodevapp/zerodev-examples/blob/main/session-keys/install-permissions-with-init-config.ts).

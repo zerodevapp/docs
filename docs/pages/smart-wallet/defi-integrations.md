@@ -1,20 +1,20 @@
-# DeFi Integrations
+# DeFi integrations
 
 ZeroDev partners with [Enso](https://www.enso.finance/) to support seamless token swaps and DeFi integrations, even across chains.
 
 The API deals with two types of tokens:
 
-- **Base tokens** are normal tokens that do not represent a DeFi position.  Examples are ETH, USDC, etc. 
-- **DeFi tokens** are ERC20 tokens that represent a DeFi position, such as in a [ERC-4626 vault](https://ethereum.org/en/developers/docs/standards/tokens/erc-4626/).  For example, depositing ETH into Lido gets you `stETH` that represents staked ETH.
+- **Base tokens** are normal tokens that do not represent a DeFi position. Examples are `ETH`, `USDC`, etc. 
+- **DeFi tokens** are ERC20 tokens that represent a DeFi position, such as in an [ERC-4626 vault](https://ethereum.org/en/developers/docs/standards/tokens/erc-4626/)—for example, depositing `ETH` into Lido yields `stETH`, which represents staked `ETH`.
 
 By allowing you to swap between base tokens and DeFi tokens, you can easily:
 
 - Swap between any token pairs.
 - Entering and exiting DeFi positions (staking, lending, etc.)
 
-ZeroDev leverages [batching](/sdk/core-api/batch-transactions) and [delegatecall](/sdk/core-api/delegatecall) internally to ensure that even complex routes are executed in one atomic UserOp, providing the user with low latency, low gas cost, and high safety.
+ZeroDev leverages [batching](/sdk/core-api/batch-transactions) and [delegatecall](/sdk/core-api/delegatecall) internally to ensure that even complex routes are executed in a single atomic UserOp, providing the user with low latency, low gas costs, and high safety.
 
-## Supported Tokens
+## Supported tokens
 
 See the full lists of supported base tokens and DeFi tokens:
 
@@ -46,7 +46,9 @@ bun add @zerodev/defi
 ## Core API 
 
 :::info
+
 Check out [these code examples](https://github.com/zerodevapp/zerodev-examples/tree/main/defi).
+
 :::
 
 ### Creating a DeFi client
@@ -64,9 +66,9 @@ Where:
 - `kernelClient` is the [account client](/sdk/core-api/create-account#create-an-account-client) object.
 - `projectId` is your ZeroDev project ID, obtained from the dashboard.
 
-### Swapping Tokens
+### Swapping tokens
 
-Suppose you want to swap 100 USDC to USDT:
+Suppose you want to swap 100 `USDC` to `USDT`:
 
 ```ts
 import { baseTokenAddresses } from "@zerodev/defi"
@@ -89,16 +91,16 @@ const userOpHash = await defiClient.sendSwapUserOp({
 Where:
 
 - `fromToken` is the input token.
-- `fromAmount` is a `bigint` representing the input token amount.  Note that this uses the smallest unit for the token, e.g. Wei for Ether.
+- `fromAmount` is a `bigint` representing the input token amount. Note that this uses the smallest unit for the token, e.g., Wei for `ETH`.
 - `toToken` is the output token.
 - `toAddress`: defaults to the account's own address. If specified, it will send the output token to that address instead.
 - `gasToken`: [see below.](#gas-tokens)
 
 ### Entering / Exiting DeFi positions
 
-Entering a DeFi position simply means swapping a token into a DeFi token.
+Entering a DeFi position means swapping a token for a DeFi token.
 
-You can get a DeFi token address through the `defiTokenAddresses` constant, which is a map with three keys: `chainId => tokenName => protocolName`.  For example, the DeFi token representing the USDC vault on AAVE v3 on Arbitrum would be `defiTokenAddresses[arbitrum.id]['USDC']['aave-v3']`.  So, to enter the vault:
+You can get a DeFi token address through the `defiTokenAddresses` constant, which is a map with three keys: `chainId => tokenName => protocolName`. For example, the DeFi token representing the `USDC` vault on AAVE v3 on Arbitrum would be `defiTokenAddresses[arbitrum.id]['USDC']['aave-v3']`. So, to enter the vault:
 
 ```ts
 import { defiTokenAddresses } from "@zerodev/defi"
@@ -116,11 +118,11 @@ const userOpHash = await defiClient.sendSwapUserOp({
 })
 ```
 
-Similarly, exiting a DeFi position is just swapping a DeFi token into another token.
+Similarly, exiting a DeFi position is just swapping a DeFi token for another token.
 
-### Cross-chain Swaps
+### Cross-chain swaps
 
-To swap tokens across chains, use `sendSwapUserOpCrossChain`.  For example, to swap USDC on Arbitrum to DAI on Polygon:
+To swap tokens across chains, use `sendSwapUserOpCrossChain`. For example, to swap `USDC` on Arbitrum to DAI on Polygon:
 
 ```ts
 // Convert mainnet DAI to USDC, and lend it through AAVE on Arbitrum
@@ -139,7 +141,7 @@ const userOpHash = await defiClient.sendSwapUserOpCrossChain({
 Where:
 
 - `fromToken` is the input token.
-- `fromAmount` is a `bigint` representing the input token amount.  Note that this uses the smallest unit for the token, e.g. Wei for Ether.
+- `fromAmount` is a `bigint` representing the input token amount. Note that this uses the smallest unit for the token, e.g., Wei for `ETH`.
 - `toToken` is the output token.
 - `toChainId`: the chain for `toToken`,
 - `toAddress`: defaults to the account's own address. If specified, it will send the output token to that address instead.
@@ -147,7 +149,7 @@ Where:
 
 ### Listing Tokens
 
-You can list all ERC20 tokens an account owns with the `listTokenBalances` function:
+You can list all `ERC-20` tokens an account owns with the `listTokenBalances` function:
 
 ```ts
 const accountBalances = await defiClient.listTokenBalances({
@@ -156,31 +158,33 @@ const accountBalances = await defiClient.listTokenBalances({
 })
 ```
 
-### Gas Tokens
+### Gas tokens
 
-The `gasToken` flag specifies how gas is paid for the UserOp.  It can be one of the following values:
+The `gasToken` flag specifies how gas is paid for the UserOp. It can be one of the following values:
 
 - `sponsored`: sponsor the UserOp.
-- `fromToken`: pays gas in the input token, using a [ERC20 paymaster](/sdk/core-api/pay-gas-with-erc20s).
-- `toToken`: pays gas in the output token, using a [ERC20 paymaster](/sdk/core-api/pay-gas-with-erc20s).
+- `fromToken`: pays gas on the input token using an [`ERC-20` paymaster](/sdk/core-api/pay-gas-with-erc20s).
+- `toToken`: pays gas in the output token, using an [`ERC-20` paymaster](/sdk/core-api/pay-gas-with-erc20s).
 - `native`: pays gas in the native token, using the account's balance.
-- You can also specify an `Address` for a ERC20 token, to pay gas with that token using a [ERC20 paymaster](/sdk/core-api/pay-gas-with-erc20s).
+- You can also specify an `Address` for an `ERC-20` token to pay gas with that token using an [`ERC-20` paymaster](/sdk/core-api/pay-gas-with-erc20s).
 
 ### Getting the UserOp without sending
 
-If you want to just construct a UserOp but not send it immediately (perhaps because you want to show the user a gas estimate), use:
+If you want to construct a UserOp but not send it immediately (perhaps because you want to show the user a gas estimate), use:
 
 - `getSwapUserOp` instead of `sendSwapUserOp`
 - `getSwapUserOpCrossChain` instead of `sendSwapUserOpCrossChain`
 
-The functions above will get a signed UserOp but not sending it.  If you want to get an unsigned UserOp, use:
+The functions above will get a signed UserOp, but they will not send it. If you want to get an unsigned UserOp, use:
 
 - `getSwapData`, [like this](https://github.com/zerodevapp/zerodev-examples/blob/8cd83fd5e588a11414d1eb946622eda864e2b044/defi/get-swap-data.ts#L67-L84).
 
-If you want to get regular transaction data instead of UserOps (presumably because you want to send the transaction through a EOA), use:
+If you want to get regular transaction data instead of UserOps (presumably because you want to send the transaction through an EOA), use:
 
 - `getSwapUserOpCrossChain`
 
+<!--
 ## React API
 
 TODO
+-->

@@ -1,24 +1,27 @@
-# Signing and Verifying Messages
+# Signing and verifying messages
 
-Signing and verifying messages for smart accounts is different than with EOAs.  There are a few reasons why:
+Signing and verifying messages for smart accounts differs from that for EOAs. There are a few reasons why:
 
-- With an EOA, the address is effectively the public key of the private key used for signing.  Therefore, verifying a EOA signature is as simple as [recovering](https://soliditydeveloper.com/ecrecover) the signature and compare the recovered public key with the address.
-  - With a smart account, the address is the address of a smart contract that has no cryptographic link to the signing private key.  Therefore, you must use [ERC-1271](https://eips.ethereum.org/EIPS/eip-1271) to validate the message.
+- In an EOA, the address is effectively the public key corresponding to the private key used for signing. Therefore, verifying an EOA signature is as simple as [recovering](https://soliditydeveloper.com/ecrecover) the signature and comparing the recovered public key with the address.
+  - With a smart account, the address is that of a smart contract with no cryptographic link to the signing private key. Therefore, you  must use [ERC-1271](https://eips.ethereum.org/EIPS/eip-1271) to validate the message.
 
-- With an EOA, you don't have to deploy the account.  It just exists.
-  - Since smart accounts need to be deployed, it may not be clear how you can validate messages against a smart account not yet deployed.  However, that's actually possible thanks to [ERC-6492](https://eips.ethereum.org/EIPS/eip-6492).
+- With an EOA, you don't have to deploy the account. It just exists.
+  - Since smart accounts need to be deployed, it may not be clear how to validate messages against a smart account that hasn't been deployed yet. However, that's actually possible thanks to [ERC-6492](https://eips.ethereum.org/EIPS/eip-6492).
 
-If you are impatient, head straight to [the API](#api).  Otherwise, read on to learn more about ERC-1271 and ERC-6492.
+If you are impatient, head straight to [the API](#api). Otherwise, read on to learn more about ERC-1271 and ERC-6492.
 
+<!-- TODO 
 ## Understanding ERC-1271 and ERC-6492
 
 TODO
+
+-->
 
 ## API
 
 ### Signing messages
 
-Both [the account and account client objects](/sdk/core-api/create-account#create-a-kernel-account) are able to sign messages:
+Both [the account and account client objects](/sdk/core-api/create-account#create-a-kernel-account) can sign messages:
 
 ```ts
 const signature = await account.signMessage({
@@ -30,11 +33,11 @@ const signature = await kernelClient.signMessage({
 })
 ```
 
-If the account hasn't been deployed, a ERC-6492 signature will be generated.
+If the account hasn't been deployed, an ERC-6492 signature will be generated.
 
 ### Validating signatures
 
-While you can validate signatures with ERC-1271, it's recommended that you use ERC-6492 since it works just like ERC-1271 if the account has been deployed, but it can also validate signatures for undeployed accounts.
+While you can validate signatures with ERC-1271, it’s recommended that you use ERC-6492 since it works just like ERC-1271 if the account has been deployed. Still, it can also validate signatures for undeployed accounts.
 
 To validate signatures with ERC-6492:
 

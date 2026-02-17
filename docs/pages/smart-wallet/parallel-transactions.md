@@ -1,26 +1,26 @@
-# Parallel Transactions
+# Parallel transactions
 
-With a EOA, the nonce is sequential: 1, 2, 3, ...  This means that transactions must be ordered sequentially, and a transaction cannot be processed unless a previous transaction was completed.
+With an EOA, the nonce is sequential: 1, 2, 3,… This means that transactions get processed sequentially, and a transaction cannot be processed unless the previous transaction has completed.
 
-With smart accounts, the nonce can be two-dimensional, which allows for *parallel UserOps*.  Imagine that your user wants to place three trades:
+With smart accounts, the nonce can be two-dimensional, enabling *parallel UserOps*. Imagine that your user wants to place three trades:
 
-1. Swap 100 USDC to DAI
-2. Swap 100 DAI to USDT
-3. Swap 1WETH to USDT
+1. Swap 100 `USDC` to `DAI`
+2. Swap 100 `DAI` to `USDT`
+3. Swap 1WETH to `USDT`
 
-In this example, assuming the user did not have DAI to start with, the first two trades have dependencies, since the user needs to wait for the first trade to complete before they can do the second trade.  However, the third trade doesn't depend on either of the first two trades, so it ought to be able to be placed in parallel.
+In this example, assuming the user did not have DAI to start with, the first two trades are dependent, since the user needs to wait for the first trade to complete before they can do the second. However, the third trade doesn’t depend on either of the first two trades, so it ought to be able to be placed in parallel.
 
-## How 2D Nonces Work
+## How 2D nonces work
 
-With a smart account, the nonce has two components: a "nonce key" and a "nonce value."
+In a smart account, the nonce consists of two components: a “nonce key” and a “nonce value.”
 
-UserOps with the same nonce key will be ordered sequentially.  For example, by default all UserOps use the a nonce key of `0`, which is why by default all UserOps are ordered sequentially.
+UserOps with the same nonce key will be ordered sequentially. For example, by default, all UserOps use a nonce key of `0`, which is why all UserOps are ordered sequentially.
 
-To send UserOps in parallel, simply assign them with different nonce keys.
+To send UserOps in parallel, assign each UserOps instance a different nonce key.
 
 ## React API
 
-When sending UserOps with `useSendUserOperation` or `useSendUserOperationWithSession`, you can specify a `nonceKey` which is a string.
+When sending UserOps with `useSendUserOperation` or `useSendUserOperationWithSession`, you can specify a `nonceKey`, which is a string.
 
 ```tsx
 import { useSendUserOperation, useKernelClient } from '@zerodev/waas'
@@ -53,12 +53,14 @@ function App() {
 }
 ```
 
-UserOps with the same `nonceKey` will be ordered sequentially.  UserOps with different `nonceKey`s will be ordered in parallel.  All UserOps use a nonceKey of `0` by default.
+UserOps with the same `nonceKey` will be ordered sequentially. UserOps with different `nonceKey`s will be ordered in parallel. All UserOps use a default nonceKey of `0`.
 
 ## Core API
 
 :::info
+
 Check out [a complete example here](https://github.com/zerodevapp/zerodev-examples/blob/main/send-transactions/with-2d-nonce.ts).
+
 :::
 
 To send parallel UserOps, use "nonce keys" to compute nonces:
@@ -92,6 +94,6 @@ await kernelClient.sendUserOperation({
 })
 ```
 
-All UserOps using the same nonce key will be ordered sequentially.  UserOps using different nonce keys will be parallel to each other.
+All UserOps using the same nonce key will be ordered sequentially. UserOps using different nonce keys will run in parallel.
 
-For example, if you want to order all UserOps that interact with Uniswap, and order all UserOps that interact with AAVE, but you want the Uniswap UserOps and the AAVE UserOps to be parallel to each other, you can use the string "Uniswap" and "AAVE" as the nonce keys for their UserOps respectively.
+For example, if you want to order all UserOps that interact with Uniswap, and order all UserOps that interact with AAVE, but you want the Uniswap UserOps and the AAVE UserOps to be parallel to each other, you can use the string "Uniswap" and "AAVE" as the nonce keys for their UserOps, respectively.

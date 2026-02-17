@@ -4,7 +4,7 @@ You can use the ZeroDev SDK with Pimlico bundlers.
 
 ## Using Pimlico bundler
 
-Simply specify Pimlico's bundler RPC when [constructing a Kernel client](/sdk/core-api/create-account#standard-api):
+Specify Pimlico's bundler RPC when [constructing a Kernel client](/sdk/core-api/create-account#standard-api):
 
 ```typescript
 import { createKernelAccountClient } from "@zerodev/sdk"

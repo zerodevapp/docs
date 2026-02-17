@@ -2,11 +2,11 @@ import VersionWarning from "../../VersionWarning"
 
 <VersionWarning version="5.3.x" /> 
 
-# Signature Caller Policy
+# Signature caller policy
 
 The signature caller policy specifies a list of addresses that are allowed to validate messages signed by the signer.
 
-This is useful when you want the signer to sign messages for a set of particular protocols only.  For example, if you want to create a signer that can only sign USDC [permits](https://eips.ethereum.org/EIPS/eip-2612), then you can use this policy to ensure that only the USDC contract can validate its messages.
+This is useful when you want the signer to sign messages only for a specific set of protocols. For example, if you want to create a signer that can only sign `USDC` [permits](https://eips.ethereum.org/EIPS/eip-2612), then you can use this policy to ensure that only the `USDC` contract can validate its messages.
 
 ## API
 
@@ -28,4 +28,4 @@ const validator = toPermissionValidator(publicClient, {
 })
 ```
 
-- `allowedCallers` is a list of addresses that are allowed to validate messages signed by the signer.
+- `allowedCallers`: is a list of addresses that are allowed to validate messages signed by the signer.

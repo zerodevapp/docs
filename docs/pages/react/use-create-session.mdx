@@ -1,6 +1,6 @@
 import MutationResult from '../shared/mutation-result.mdx'
 
-# useCreateSession [Hook for creating session for kernel v3 account]
+# `useCreateSession` [Hook for creating session for kernel v3 account]
 
 ## Import
 ```tsx
@@ -32,7 +32,7 @@ function App() {
 No parameter needed.
 
 
-## Return Types
+## Return types
 
 ```tsx
 import { type UseCreateSessionReturnType } from '@zerodev/waas'
@@ -47,7 +47,7 @@ import { type UseCreateSessionReturnType } from '@zerodev/waas'
 ### write
 `(variables: CreateSessionVariables) => void`
 
-The mutation function to create session for v3 kernel account.
+The mutation function creates a session for the v3 kernel account.
 
 - #### variables 
   - ##### policies
@@ -75,12 +75,12 @@ Similar to [write](#write) but returns a promise.
     The id of the session.
   - ##### smartAccount
     `0x${string}`
-    The address of smart account.
+    The address of the smart account.
   - ##### enableSignature
     `0x${string}`
-    The signature to enable session.
+    The signature to enable the session.
   - ##### policies
     `Policy[]`
-    The policies of session.
+    The policies of the session.
 
 <MutationResult />

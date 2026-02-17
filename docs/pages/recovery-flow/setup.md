@@ -1,3 +1,3 @@
-# Recovery Setup
+# Recovery setup
 
-[Follow instructions here to set up the recovery flow.](https://github.com/zerodevapp/recovery-flow)
+Follow the instructions in the [`recovery-flow` repo](https://github.com/zerodevapp/recovery-flow) to set up the recovery flow.

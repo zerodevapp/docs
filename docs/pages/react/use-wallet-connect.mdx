@@ -1,8 +1,8 @@
-# useWalletConnect 
+# `useWalletConnect` 
 
 Do you want your users to be able to use their smart accounts with other DApps? If so, you can integrate ZeroDev with WalletConnect.
 
-The useWalletConnect hook from the `@zerodev/waas` package integrates WalletConnect functionality with a React application, providing an interface for connecting to WalletConnect, handling session proposals, requests, and managing connections.
+The `useWalletConnect` hook from the `@zerodev/waas` package integrates WalletConnect functionality into a React application, providing an interface for connecting to WalletConnect, handling session proposals and requests, and managing connections.
 
 ## Import
 
@@ -45,7 +45,7 @@ const App = () => {
 export default App;
 ```
 
-For a practical demonstration of how `useWalletConnect` can be implemented in a project, check out our [live demo](https://wallet-connect-demo.onrender.com). You can also explore the [source code of the demo](https://github.com/zerodevapp/waas-wallet-connect-demo) for a deeper understanding and more detailed examples.
+For a practical demonstration of how to implement `useWalletConnect` in a project, check out our [live demo](https://wallet-connect-demo.onrender.com). You can also explore the [demo's source code](https://github.com/zerodevapp/waas-wallet-connect-demo) for a deeper understanding and more detailed examples.
 
 ## Parameters
 
@@ -75,7 +75,7 @@ interface Metadata {
 
 Please refer to the WalletConnect documentation for more information on the metadata and projectId.
 
-## Return Types
+## Return types
 
 ```tsx
 import { type UseWalletConnectReturnType } from '@zerodev/waas'
@@ -88,7 +88,7 @@ import { type UseWalletConnectReturnType } from '@zerodev/waas'
 ### `approveSessionProposal(proposalData?: Web3WalletTypes.SessionProposal)`
 
 - Function to approve a session proposal.
-- Parameter `proposalData` is optional and should conform to the `Web3WalletTypes.SessionProposal` from `@walletconnect/web3wallet`.
+- The parameter `proposalData` is optional and should conform to `Web3WalletTypes.SessionProposal` from `@walletconnect/web3wallet`.
 
 ### `rejectSessionProposal()`
 
@@ -117,11 +117,11 @@ import { type UseWalletConnectReturnType } from '@zerodev/waas'
 
 ### `isLoading`
 
-- Enum for loading states including 'Approve', 'Reject', 'Connect', 'Disconnect'.
+- Enum for loading states including 'Approve', 'Reject', 'Connect', and 'Disconnect'.
 
 ### `sessions`
 
-- Array of active sessions.
+- An array of active sessions.
 
 ### `error`
 

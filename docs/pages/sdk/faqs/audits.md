@@ -1,4 +1,4 @@
-# ZeroDev Audits
+# ZeroDev audits
 
 All ZeroDev contracts and plugins are audited unless otherwise noted.
 

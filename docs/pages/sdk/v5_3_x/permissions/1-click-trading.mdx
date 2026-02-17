@@ -2,11 +2,11 @@ import VersionWarning from "../VersionWarning"
 
 <VersionWarning version="5.3.x" /> 
 
-# Tutorial -- Transaction Automation
+# Tutorial: Transaction automation
 
 In this tutorial, you will learn how to enable 1-click trading for your app using session keys.
 
-Refer to [this code example](https://github.com/zerodevapp/zerodev-examples/blob/main/session-keys/1-click-trading.ts) while you follow along the tutorial.  You can run the example by following instructions of [the examples repo](https://github.com/zerodevapp/zerodev-examples).
+Refer to [this code example](https://github.com/zerodevapp/zerodev-examples/blob/main/session-keys/1-click-trading.ts) while you follow along with the tutorial. You can run the example by following the instructions in [the examples repo](https://github.com/zerodevapp/zerodev-examples).
 
 ## Installation
 
@@ -32,21 +32,26 @@ bun add @zerodev/permissions
 
 :::
 
-## Owner-Agent Architecture
+## Owner-Agent architecture
 
-There are multiple ways to use session keys.  In this tutorial, we will use the popular "owner-agent" pattern:
+There are multiple ways to use session keys. In this tutorial, we will use the popular "owner-agent" pattern:
 
 - The "owner" is the owner of the master key.
 - The "agent" is the entity that wants to use the session key.
 
-In a typical setup, you might be wishing to automate transactions for your users from your server.
+In a typical setup, you can automate transactions for your users on your server.
 
-your user's master key might be connected to your DApp frontend, in which case your frontend is the "owner."  You might be wishing 
+<!-- REVIEW sentence seems incomplete
+
+your user's master key might be connected to your DApp frontend, in which case your frontend is the "owner." You might be wishing 
+-->
 
 ## API
 
 :::info
+
 You can reference this [complete code example](https://github.com/zerodevapp/zerodev-examples/blob/main/permissions/main.ts) as you go through the tutorial.
+
 :::
 
 With a permissions validator, you are putting together:
@@ -57,7 +62,7 @@ With a permissions validator, you are putting together:
 
 ### Creating a signer
 
-Start by creating a [ECDSA signer](/sdk/v5_3_x/permissions/signers/ecdsa):
+Start by creating an [ECDSA signer](/sdk/v5_3_x/permissions/signers/ecdsa):
 
 ```ts
 const sessionPrivateKey = generatePrivateKey()
@@ -68,7 +73,7 @@ const sessionKeySigner = await toECDSASigner({
 })
 ```
 
-### Creating a number of policies
+### Creating several of policies
 
 Now, let's create two policies:
 
@@ -99,7 +104,7 @@ const rateLimitPolicy = toRateLimitPolicy({
 
 ### Composing signer and policies
 
-Here comes the fun part -- we "compose" the signer and policies together into a single validator:
+Here comes the fun part—we "compose" the signer and policies together into a single validator:
 
 ```ts
 const sessionKeyValidator = await toPermissionValidator(publicClient, {
@@ -113,11 +118,11 @@ const sessionKeyValidator = await toPermissionValidator(publicClient, {
 }),
 ```
 
-Now, we have created a ECDSA session key that's subject to a call policy and a rate limit policy.  Just like that!
+Now, we have created an ECDSA session key that's subject to a call policy and a rate limit policy. Just like that!
 
 ### Using the session key
 
-Finally, we can set up the account with this session key as the signer.  Note that if this is the first time that the session key is used, we need to [enable the plugin](/sdk/v5_3_x/core-api/using-plugins#enabling-a-regular-validator).
+Finally, we can set up the account with this session key as the signer. Note that if this is the first time that the session key is used, we need to [enable the plugin](/sdk/v5_3_x/core-api/using-plugins#enabling-a-regular-validator).
 
 ```ts
 const account = await createKernelAccount(publicClient, {
@@ -130,21 +135,21 @@ const account = await createKernelAccount(publicClient, {
 })
 ```
 
-Now you can [set up a Kernel client](/sdk/v5_3_x/core-api/create-account#create-an-account-client) using this account, and start minting NFTs with this session key -- but only up to once a month!
+Now you can [set up a Kernel client](/sdk/v5_3_x/core-api/create-account#create-an-account-client) using this account, and start minting NFTs with this session key—but only up to once a month!
 
 Try running [this script](https://github.com/zerodevapp/zerodev-examples/blob/main/permissions/main.ts) and see for yourself.
 
-## Storing Session Keys
+## Storing session keys
 
-Session keys (and permission validators in general) can be stored, by serializing them and then deserializing them later.
+Session keys (and permission validators in general) can be stored by serializing them and then deserializing them later.
 
 ### Code examples
 
-There are two general patterns with storing session keys.
+There are two general patterns for storing session keys.
 
-- The owner creates a session key for another agent to store & use.  Check out [this example](https://github.com/zerodevapp/zerodev-examples/blob/main/session-keys/owner-created.ts).
-- The agent creates a session key and asks the owner to "approve" it as a session key.  Check out [this example](https://github.com/zerodevapp/zerodev-examples/blob/main/session-keys/agent-created.ts).
-  - In this flow, the owner never sees the private part of the session key, so it may be better for security.
+- The owner creates a session key for another agent to store & use. Check out [this example](https://github.com/zerodevapp/zerodev-examples/blob/main/session-keys/owner-created.ts).
+- The agent generates a session key and asks the owner to “approve” it. Check out [this example](https://github.com/zerodevapp/zerodev-examples/blob/main/session-keys/agent-created.ts).
+ - In this flow, the owner never sees the private part of the session key, which may be better for security.
 
 ### Serializing a session key
 
@@ -152,7 +157,7 @@ There are two general patterns with storing session keys.
 const serializedSessionKey = await serializePermissionAccount(sessionKeyAccount, sessionPrivateKey)
 ```
 
-Note that `sessionPrivateKey` is optional.  If the private key is not included, then you must provide the private key when you deserialize the session key.
+Note that `sessionPrivateKey` is optional. If the private key is not included, you must provide it when deserializing the session key.
 
 ### De-serializing a session key
 

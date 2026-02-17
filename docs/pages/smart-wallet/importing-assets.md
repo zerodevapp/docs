@@ -1,13 +1,13 @@
-# Importing Assets
+# Importing assets
 
-Generally there are two ways to get assets into the smart wallet:
+Generally, there are two ways to get assets into the smart wallet:
 
 - Fiat onramp
 - Importing assets from another wallet
 
-ZeroDev works with any fiat onramp solution -- you simply specify the smart wallet address as the destination address.
+ZeroDev works with any fiat onramp solution—you specify the smart wallet address as the destination address.
 
-In this doc, we describe how to use ZeroDev's routing function to help users transfer their assets from another wallet (presumably an EOA) into the smart account.  We support both same-chain and cross-chain transfers.
+In this doc, we describe how to use ZeroDev's routing function to help users transfer their assets from another wallet (presumably an EOA) into the smart account. We support both same-chain and cross-chain transfers.
 
 ## Installation
 :::code-group
@@ -108,9 +108,9 @@ function App() {
 
 ## Core API
 
-### Same Chain
+### Same chain
 
-Refer to the [page](/smart-wallet/creating-wallets#creating-wallets) for instructions on how to construct a kernel client.
+Refer to the [page](/smart-wallet/creating-wallets#creating-wallets) for instructions on building a kernel client.
 
 ```ts
 import { createWalletClient, http } from 'viem'
@@ -145,7 +145,7 @@ await walletClient.sendTransaction({
 
 ```
 
-### Cross Chain
+### Cross chain
 
 Please see the [example](#same-chain-1) above for guidance on skipping imports and constructing wallets.
 

@@ -1,6 +1,6 @@
 import MutationResult from '../shared/mutation-result.mdx'
 
-# useSendTransaction [Hook for sending transaction]
+# `useSendTransaction` [Hook for sending transaction]
 
 ## Import
 ```tsx
@@ -47,20 +47,20 @@ The paymaster type and gas token address.
   The type of paymaster.
 #### gasToken
   `string | undefined`
-  The symbol of erc20 token used for erc20 paymaster.
+  The symbol of the `ERC-20` token used for the `ERC-20` paymaster.
 
 ### isParallel
 `boolean | undefined`
 
 - Default to `True`
-- The flag determine whether the user operation allows parallel execution.
+- The flag determines whether the user operation allows parallel execution.
 
 ### nonceKey
 `string | undefined`
 
-The key to generate nonce for userop. 
+The key to generating a nonce for userop. 
 
-## Return Types
+## Return types
 
 ```tsx
 import { type UseSendTransactionReturnType } from '@zerodev/waas'
@@ -75,7 +75,7 @@ import { type UseSendTransactionReturnType } from '@zerodev/waas'
 ### write
 `(variables: SendTransactionVariables) => void`
 
-The mutation function to send transactions.
+The mutation function sends transactions.
 
 - #### variables 
   - ##### to

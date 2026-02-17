@@ -2,15 +2,17 @@ import VersionWarning from "../VersionWarning"
 
 <VersionWarning version="5.3.x" /> 
 
-# Key Storage
+# Key storage
 
 :::warning
-The remote signer feature is a paid add-on.  Please [contact us](https://t.me/derek_chiang) before you use this feature in production, in order to avoid service disruptions.
+
+The remote signer feature is a paid add-on. Please [contact us](https://t.me/derek_chiang) before using this feature in production to avoid service disruptions.
+
 :::
 
-Sometimes you might want to manage session keys or even actual private keys for your users, but you may not want to store the keys on your database.
+Sometimes you can manage session keys or even actual private keys for your users, but you may not want to store the keys in your database.
 
-ZeroDev offers a key management API you can use to generate private keys and sign with them.  The private key is never transmitted to you or stored on your server -- the API executes the signing remotely.
+ZeroDev provides a key management API that lets you generate private keys and sign with them. The private key is never transmitted to you or stored on your server—the API executes the signing remotely.
 
 ## Code Example
 
@@ -40,7 +42,7 @@ bun add @zerodev/remote-signer
 
 ## API
 
-First, obtain the ZeroDev API key from [your dashboard](https://dashboard.zerodev.app/account).  Remember: you must secure this API key.  Whoever has access to this API key effectively controls all the private keys you manage with the key management API.
+First, obtain the ZeroDev API key from [your dashboard](https://dashboard.zerodev.app/account). Remember: you must secure this API key. Whoever has access to this API key effectively controls all the private keys you manage with the key management API.
 
 ### Generating a private key
 
@@ -53,13 +55,13 @@ const remoteSigner = await toRemoteSigner({
 })
 ```
 
-`remoteSigner` is a [Viem account](https://viem.sh/docs/accounts/privateKey) which you can use for signing.
+`remoteSigner` is a [Viem account](https://viem.sh/docs/accounts/privateKey) that you can use for signing.
 
-Note that if you want to get this key later, you must store its "address" which is basically its public key: `remoteSigner.address`.
+Note that if you want to get this key later, you must store its "address," which is basically its public key: `remoteSigner.address`.
 
 ### Getting an existing private key
 
-When getting an existing key, specify the "address" of the key.
+When getting an existing key, specify the key's “address”.
 
 ```ts
 import { toRemoteSigner, RemoteSignerMode } from "@zerodev/remote-signer"

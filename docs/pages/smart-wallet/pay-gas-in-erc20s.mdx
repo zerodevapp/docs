@@ -1,18 +1,20 @@
-# Paying Gas in ERC20s
+# Paying gas in `ERC-20`s
 
-A smart account can pay gas with ERC20 tokens.  As a result, your users don't have to own any native gas tokens (e.g. ETH) in order to use Web3.  Instead, they can just use stablecoins or even your project's own tokens.  When your users pay gas with ERC20 tokens, we add 5% to the exchange rate to make a profit.
+A smart account can pay for gas with `ERC-20` tokens. As a result, your users don’t need to own any native gas tokens (e.g., `ETH`) to use Web3. Instead, they can use stablecoins or even your project’s own tokens. When your users pay for gas with `ERC-20` tokens, we add a 5% markup to the exchange rate to make a profit.
 
 :::warning
-Using your project's own tokens to pay for gas is a beta feature.  If you are interested, please reach out.
+
+Using your project's own tokens to pay for gas is a beta feature. If you are interested, please reach out.
+
 :::
 
-On a high level, you need to do two things to enable a smart account to pay gas in a particular ERC20 token:
+On a high level, you need to do two things to enable a smart account to pay gas in a particular `ERC-20` token:
 
-- Set up the Kernel client with the ERC20 paymaster.
-- Ensure that enough ERC20 tokens have been approved for the ERC20 paymaster.
-  - This step is necessary because the ERC20 paymaster needs to withdraw ERC20 tokens from the smart account.
+- Set up the Kernel client with the `ERC-20` paymaster.
+- Ensure that enough `ERC-20` tokens have been approved for the `ERC-20` paymaster.
+  - This step is necessary because the `ERC-20` paymaster needs to withdraw `ERC-20` tokens from the smart account.
 
-Let's go through these two steps next.  We will be using mainnet USDC in the following examples, but you can use any of [these supported tokens](https://docs.pimlico.io/infra/paymaster/erc20-paymaster/supported-tokens) thanks to our integration with Pimlico.
+Let’s go through these two steps next. We will use mainnet USDC in the following examples, but you can use any of the [supported tokens](https://docs.pimlico.io/infra/paymaster/erc20-paymaster/supported-tokens) thanks to our integration with Pimlico.
 
 ## React API
 
@@ -70,10 +72,12 @@ function App() {
 ## Core API
 
 :::info
+
 Check out [a complete example here](https://github.com/zerodevapp/zerodev-examples/tree/main/pay-gas-with-erc20).
+
 :::
 
-### Setting up Kernel Client
+### Setting up Kernel client
 
 When you [set up an account](/smart-wallet/creating-wallets#create-an-account-client), do this:
 
@@ -104,9 +108,9 @@ const kernelClient = createKernelAccountClient({
 })
 ```
 
-### Approving ERC20 tokens for paymaster
+### Approving `ERC-20` tokens for the paymaster
 
-Use the `getERC20PaymasterApproveCall` function to construct a call that approves the paymaster with the ERC20 tokens:
+Use the `getERC20PaymasterApproveCall` function to construct a call that approves the paymaster with the `ERC-20` tokens:
 
 ```typescript
 import { getERC20PaymasterApproveCall } from "@zerodev/sdk"
@@ -141,11 +145,12 @@ const userOpHash = await kernelClient.sendUserOperation({
 })
 ```
 
-Note that you only have to approve once, as long as the approval amount is sufficient for many UserOps.  The [paymaster contract by Pimlico](https://github.com/pimlicolabs/erc20-paymaster/blob/main/src/ERC20PaymasterV06.sol) has been audited, it's widely used and generally considered safe.
 
-### Estimating Gas in ERC20s
+Note that you only have to approve once, as long as the approval amount is sufficient for many UserOps. The [Pimlico paymaster contract](https://github.com/pimlicolabs/erc20-paymaster/blob/main/src/ERC20PaymasterV06.sol) has been audited; it’s widely used and generally considered safe.
 
-If you need to estimate gas in terms of a ERC20 token, do this:
+### Estimating Gas in `ERC-20`s'
+
+If you need to estimate gas in terms of a `ERC-20` token, do this:
 
 ```ts
 const userOperation = await kernelClient.prepareUserOperation({
@@ -167,6 +172,6 @@ const erc20Amount = await paymasterClient.estimateGasInERC20({
 
 You can also see [a code example for estimating gas here](https://github.com/zerodevapp/zerodev-examples/blob/main/pay-gas-with-erc20/estimate-gas.ts).
 
-## Supported Tokens
+## Supported tokens
 
 We support [these tokens](https://docs.pimlico.io/infra/paymaster/erc20-paymaster/supported-tokens) thanks to our integration with Pimlico.

@@ -10,13 +10,15 @@ import VersionWarning from "../VersionWarning"
 
 To use Fireblocks with ZeroDev, first create an application that integrates with Fireblocks.
 
-- Refer to the [Fireblocks documentation site](https://developers.fireblocks.com/) for instructions on setting up an application with the Fireblocks.
+- Refer to the [Fireblocks documentation site](https://developers.fireblocks.com/) for instructions on setting up an application with Fireblocks.
 - For a quick start, Fireblocks provides a guide, available [here](https://developers.fireblocks.com/docs/quickstart).
 
 ## Integration
-Integrating ZeroDev with Fireblocks is straightforward after setting up the project. Fireblocks provides an Externally Owned Account (EOA) wallet to use as a signer with Kernel.
+
+Integrating ZeroDev with Fireblocks is straightforward once the project is set up. Fireblocks provides an Externally Owned Account (EOA) wallet to use as a signer with Kernel.
 
 ### Create the Fireblocks object
+
 After following the Fireblocks documentation, you will have access to a `FireblocksWeb3Provider` object as shown below:
 
 ```typescript
@@ -29,7 +31,7 @@ const fireblocksWeb3Provider = new FireblocksWeb3Provider(fireblocksProviderConf
 
 ### Use with ZeroDev
 
-Use the provider from Fireblocks to create a smart account signer, which can be passed to a validator. For detailed guidance on using a validator, refer to our documentation on [creating accounts](/sdk/v5_3_x/core-api/create-account#api).
+Use the Fireblocks provider to create a smart account signer that can be passed to a validator. For detailed guidance on using a validator, refer to our documentation on [creating accounts](/sdk/v5_3_x/core-api/create-account#api).
 
 ```typescript
 import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"

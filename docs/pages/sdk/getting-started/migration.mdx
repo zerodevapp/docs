@@ -1,11 +1,11 @@
-# Migration Guide
+# Migration guide
 
 ## API v2 => API v3
 
 With API v3, the notable changes are:
 
 - A ZeroDev project can now support multiple networks.
-- The same RPC can be used for both bundler and paymaster.
+- * The same RPC is usable for both bundler and paymaster.
 
 Here's what a v3 RPC looks like:
 
@@ -13,7 +13,7 @@ Here's what a v3 RPC looks like:
 https://rpc.zerodev.app/api/v3/xxxxxf2d-xxxx-xxxx-90cc-xxxxxxxxx007/chain/42161
 ```
 
-Note that the last part `42161` is the chain ID.  Therefore, if you'd like to programmatically use the RPC for different chains, you can do something like:
+Note that the last part `42161` is the chain ID. Therefore, if you'd like to use the RPC for different chains programmatically, you can do something like:
 
 ```ts
 // replace the prefix with your own RPC prefix
@@ -21,13 +21,13 @@ const rpcPrefix = `https://rpc.zerodev.app/api/v3/xxxxxf2d-xxxx-xxxx-90cc-xxxxxx
 const rpc = rpcPrefix + chain.id
 ```
 
-Of course, you can also simply copy the RPC for different chains from the dashboard.
+Of course, you can also copy the RPC for different chains from the dashboard.
 
 <p align="center">
   <img src="/img/multichain-project.png" width="50%" />
 </p>
 
-The same RPC can then be used as both the bundler RPC and the paymaster RPC.  See [the tutorial](/sdk/getting-started/tutorial#creating-a-kernel-client) for an example.
+The same RPC can then be used as both the bundler RPC and the paymaster RPC. See [the tutorial](/sdk/getting-started/tutorial#creating-a-kernel-client) for an example.
 
 ## SDK 5.3.x => 5.4.x
 
@@ -43,7 +43,7 @@ This guide will help you migrate your codebase to be compatible with the new ver
    npm uninstall permissionless
    ```
 
-2. **Ensure you have `viem@^2.21.40` version**
+2. **Ensure you have the `viem@^2.21.40` version**
 
 ### Update `permissionless` Account Abstractions
 
@@ -51,14 +51,14 @@ Replace any imports from `permissionless` with the equivalent from `viem/account
 
 ### Update Type Definitions
 
-Replace `EntryPoint` Types
+Replace the `EntryPoint` Types
 
 ```typescript
 import type { EntryPoint } from 'permissionless/types'; // [!code --]
 import type { EntryPointVersion } from 'viem/account-abstraction'; // [!code ++]
 ```
 
-Replace `UserOperation` Types
+Replace the `UserOperation` Types
 
 
 ```typescript
@@ -126,7 +126,7 @@ signerToEcdsaValidator(publicClient, {
 ### Added `estimateFeesPerGas` to `userOperation` in `createKernelAccountClient`
 
 `estimateFeesPerGas` is now required in `userOperation` in `createKernelAccountClient` to estimate the gas price for the user operation.
-The default gas prices might be too high, so it's recommended to use this function to estimate the gas price.
+The default gas prices might be too high, so it's recommended to use this function to estimate them.
 
 ```typescript
   const kernelClient = createKernelAccountClient({

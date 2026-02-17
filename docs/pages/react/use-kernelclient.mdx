@@ -1,6 +1,6 @@
 import QueryResult from "../shared/query-result.mdx"
 
-# useKernelClient [Hook for getting kernel account client]
+# `useKernelClient` [Hook for getting kernel account client]
 
 ## Import
 ```tsx
@@ -31,9 +31,9 @@ The paymaster type and gas token address.
   The type of paymaster.
 #### gasToken
   `string | undefined`
-  The symbol of erc20 token used for erc20 paymaster.
+  The symbol of the `ERC-20` token used for the `ERC-20` paymaster.
 
-## Return Types
+## Return types
 
 ```tsx
 import { type UseKernelClientReturnType } from '@zerodev/waas'
@@ -42,7 +42,7 @@ import { type UseKernelClientReturnType } from '@zerodev/waas'
 ### address
 `Address | undefined`
 
-The address of connected kernel account.
+The address of the connected kernel account.
 
 ### kernelAccount
 `KernelSmartAccount<EntryPoint> | undefined`

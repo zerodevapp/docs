@@ -1,10 +1,10 @@
-# Quickstart -- EIP-7702
+# Quickstart: EIP-7702
 
-[EIP-7702](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-7702.md) is an Ethereum upgrade that allows for attaching a piece of EVM code to a EOA, effectively turning it into a "dual account" that can function simultaneously as a EOA and a smart account.  You can learn more about EIP-7702 from our blog series [here](/blog/7702-adoption) and [here](/blog/7702-for-dapps).
+[EIP-7702](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-7702.md) is an Ethereum upgrade that allows attaching a piece of EVM code to an EOA, effectively turning it into a “dual account” that can function simultaneously as an EOA and a smart account. You can learn more about EIP-7702 from our blog series [here](/blog/7702-adoption) and [here](/blog/7702-for-dapps)..
 
-In practical terms, this means that EOA users can now enjoy most of the benefits of AA, such as gas sponsorship, transaction batching, session keys, chain abstraction, and more.
+In practical terms, this means EOA users can now enjoy most of the benefits of AA, including gas sponsorship, transaction batching, session keys, chain abstraction, and more.
 
-In this example, we will upgrade a EOA into a ZeroDev smart account ([Kernel](https://github.com/zerodevapp/kernel)) and send a gasless batched transaction from it.
+In this example, we will upgrade an EOA into a ZeroDev smart account ([Kernel](https://github.com/zerodevapp/kernel)) and send a gasless batched transaction from it.
 
 ## Complete example
 
@@ -22,7 +22,7 @@ npm i @zerodev/sdk viem
 
 ## Create a project for a 7702-compatible network
 
-In this example, we will use the Sepolia testnet, but you can use any 7702-compatible network such as Arbitrum and Base.
+In this example, we will use the Sepolia testnet, but you can use any 7702-compatible network, such as Arbitrum and Base.
 
 - Go to [the ZeroDev dashboard](https://dashboard.zerodev.app) and create a project for `Sepolia`.
 - Enable gas sponsorship for Sepolia under `Gas Policies`.
@@ -34,9 +34,9 @@ ZERODEV_RPC=<YOUR_RPC_FROM_DASHBOARD>
 
 Use the ZeroDev RPC on your project page from the dashboard.
 
-## Upgrade EOA to smart account
+## Upgrade EOA to a smart account
 
-To upgrade a EOA to a smart account, you need to sign an "authorization."  You can create this authorization manually and pass it to the ZeroDev SDK, or you can let ZeroDev create this authorization automatically. 
+To upgrade an EOA to a smart account, you need to sign an “authorization.” You can create this authorization manually and pass it to the ZeroDev SDK, or let ZeroDev create it automatically.
 
 ### Automatically create the authorization
 
@@ -81,13 +81,13 @@ const kernelClient = createKernelAccountClient({
 })
 ```
 
-Note that in this example, `eip7702Account` is the EOA you want to upgrade.  We are using a random EOA in this example but you should replace this with the actual EOA.
+Note that in this example, `eip7702Account` is the EOA you want to upgrade. We are using a random EOA in this example, but you should replace this with the actual EOA.
 
 ### Manually create the authorization
 
 You can create the authorization manually with [Viem's `signAuthorization` function](https://viem.sh/docs/eip7702/signAuthorization), then pass the authorization to the ZeroDev SDK.
 
-When you create the authorization, make sure you are specifying [Kernel](https://github.com/zerodevapp/kernel) as the smart account.
+When creating the authorization, make sure you specify [Kernel](https://github.com/zerodevapp/kernel) as the smart account.
 
 ```ts
 import { KERNEL_V3_3 } from "@zerodev/sdk/constants";
@@ -107,7 +107,7 @@ const account = await createKernelAccount(publicClient, {
 
 ## Sending UserOps from the smart account
 
-Once you have upgraded the EOA to a smart account, you can use the ZeroDev SDK as usual.  For example, to send a gasless batched UserOp:
+Once you have upgraded the EOA to a smart account, you can use the ZeroDev SDK as usual. For example, to send a gasless batched UserOp:
 
 ```ts
 const userOpHash = await kernelClient.sendUserOperation({
@@ -132,6 +132,6 @@ await kernelClient.waitForUserOperationReceipt({
 console.log("UserOp completed")
 ```
 
-Congratulations!  You just sent your first gasless, batched transaction using a EOA.  You can see it by looking up your account on [the Sepolia explorer](https://sepolia.etherscan.io/).  Note that you may need to look under "Internal Transactions" because UserOps do not appear as regular transactions.
+Congratulations! You just sent your first gasless, batched transaction using an EOA. You can see it by looking up your account on [the Sepolia explorer](https://sepolia.etherscan.io/). Note that you may need to look under "Internal Transactions" because UserOps do not appear as regular transactions.
 
-Easy, right?  Now try some of the more advanced [examples](https://7702.zerodev.app/) for building with 7702, or explore the rest of the ZeroDev docs!
+Easy, right? Now try some of the more advanced [examples](https://7702.zerodev.app/) for building with 7702, or explore the rest of the ZeroDev docs!

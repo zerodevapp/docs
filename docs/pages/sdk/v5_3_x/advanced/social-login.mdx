@@ -4,9 +4,9 @@ import VersionWarning from "../VersionWarning"
 
 <VersionWarning version="5.3.x" /> 
 
-# Social Login
+# Social login
 
-Social login allows users to authenticate using their existing social media accounts such as Google or Facebook.
+Social login allows users to authenticate using their existing social media accounts, such as Google or Facebook.
 
 ZeroDev supports social logins natively, but you can also use ZeroDev with [third-party auth providers](/sdk/v5_3_x/signers/intro) such as Dynamic, Privy, and Magic if you prefer their UI.
 
@@ -47,10 +47,10 @@ isAuthorized({ projectId: string }): Promise<boolean>
 ```
 
 #### Parameters
-- projectId (string): Your ZeroDev project ID.
+- `projectId (string)`: Your ZeroDev project ID.
 
 #### Returns
-- `Promise<boolean>`: Resolves to true if the user is logged in, otherwise false.
+- `Promise<boolean>`: Resolves to true if the user is logged in, otherwise returns false.
 
 #### Example
 
@@ -76,9 +76,9 @@ initiateLogin({
 ```
 
 #### Parameters
-- socialProvider ("google" | "facebook"): The social provider to use for login.
-- oauthCallbackUrl (string, optional): The URL to redirect to after login. Defaults to the current window location if not provided.
-- projectId (string): Your ZeroDev project ID.
+- `socialProvider ("google" | "facebook")`: The social provider to use for login.
+- `oauthCallbackUrl (string, optional)`: The URL to redirect to after login. Defaults to the current window location if not provided.
+- `projectId (string)`: Your ZeroDev project ID.
 
 #### Example
 
@@ -106,9 +106,9 @@ getSocialValidator<entryPoint extends EntryPoint, TTransport extends Transport =
 ```
 
 #### Parameters
-- client (Client): The client instance.
-- entryPoint (entryPoint): The entry point address.
-- projectId (string): Your ZeroDev project ID.
+- `client (Client)`: The client instance.
+- `entryPoint (entryPoint)`: The entry point address.
+- `projectId (string)`: Your ZeroDev project ID.
 
 #### Returns
 - `Promise<KernelValidator<entryPoint, "SocialValidator">>`: Resolves to a social validator object.
@@ -128,7 +128,9 @@ const socialValidator = await getSocialValidator(
 );
 ```
 :::info
+
 Now you can proceed to [create Kernel accounts](https://docs.zerodev.app/sdk/core-api/create-account#create-a-kernel-account) using the social validator as the sudo validator.
+
 :::
 
 ### `logout`
@@ -140,7 +142,7 @@ logout({ projectId: string })
 ```
 
 #### Parameters
-- projectId (string): Your ZeroDev project ID.
+- `projectId (string)`: Your ZeroDev project ID.
 
 #### Example
 

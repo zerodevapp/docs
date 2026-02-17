@@ -2,28 +2,28 @@ import VersionWarning from "../VersionWarning"
 
 <VersionWarning version="5.3.x" /> 
 
-# Sending Transactions
+# Sending transactions
 
 :::info
-Impatient?  Check out [complete examples here](https://github.com/zerodevapp/zerodev-examples/tree/main/send-transactions).
+Impatient? Check out [complete examples here](https://github.com/zerodevapp/zerodev-examples/tree/main/send-transactions).
 :::
 
-In ERC-4337, a transaction is known as a "UserOp."  A UserOp looks mostly like a regular transaction, but it contains some extra information specific to AA, such as whether the UserOp should be sponsored.
+In ERC-4337, a transaction is known as a "UserOp." A UserOp looks mostly like a regular transaction, but it contains some extra information specific to AA, such as whether the UserOp should be sponsored.
 
 There are two ways to send UserOps:
 
 - Sending raw UserOps
 - Sending regular transactions through the Viem API, which ZeroDev then "translates" into UserOps
 
-The former enables the highest degree of flexibility, whereas the latter is more interoperable with existing libraries like Viem that deal only with transactions and not UserOps.
+The former offers the highest degree of flexibility, whereas the latter is more interoperable with existing libraries like Viem, which deal only with transactions and not UserOps.
 
-We will now describe both approaches.  We assume that you have already [created a Kernel account](/sdk/v5_3_x/core-api/create-account).
+We will now describe both approaches. We assume that you have already [created a Kernel account](/sdk/v5_3_x/core-api/create-account).
 
 ## Using the Viem API
 
 Since the Kernel account client implements [Viem's wallet client interface](https://viem.sh/docs/clients/wallet.html), you can send UserOps with standard Viem methods.
 
-### Sending Transactions
+### Sending transactions
 
 ```typescript
 const txnHash = await kernelClient.sendTransaction({
@@ -33,11 +33,11 @@ const txnHash = await kernelClient.sendTransaction({
 })
 ```
 
-This function returns the transaction hash of the ERC-4337 bundle that contains the UserOp.  Due to the way that ERC-4337 works, by the time we get the transaction hash, the ERC-4337 bundle (and therefore the UserOps includeded within) will have already been mined, meaning that you don't have to [wait with the hash](https://viem.sh/docs/actions/public/waitForTransactionReceipt.html).
+This function returns the transaction hash of the ERC-4337 bundle that contains the UserOp. Because ERC-4337 works the way it does, by the time we get the transaction hash, the ERC-4337 bundle (and therefore the UserOps included within) will have already been mined, so you don’t have to [wait with the hash](https://viem.sh/docs/actions/public/waitForTransactionReceipt.html).
 
-If you need to separate the sending from the waiting of the UserOp, try [sending raw UserOps](#sending-raw-userops).
+If you need to separate the sending from the waiting for the UserOp, try [sending raw UserOps](#sending-raw-userops).
 
-### Interacting with Contracts
+### Interacting with contracts
 
 First, construct a [Viem contract instance](https://viem.sh/docs/contract/getContract.html) by passing the Kernel account client as the `walletClient`:
 
@@ -75,7 +75,7 @@ const unwatch = contract.watchEvent.Transfer(
 
 ### UserOp API
 
-Sending raw UserOps affords you with the highest degree of control.  To send a raw UserOp, use `sendUserOperation`:
+Sending raw UserOps affords you the highest degree of control. To send a raw UserOp, use `sendUserOperation`:
 
 ```typescript
 const userOpHash = await kernelClient.sendUserOperation({
@@ -107,17 +107,17 @@ const userOpHash = await kernelClient.sendUserOperation({
 
 Other than `callData`, every field has a sensible default:
 
-- `sender` defaults to the Kernel account address
-- `nonce` defaults to the next available nonce
-- `initCode` defaults to `0x` if the account has been deployed, or the correct `initCode` if not.
-- `callGasLimit`, `verificationGasLimit`, and `preVerificationGas` default to estimations provided by the underlying bundler and paymaster.
-- `maxFeePerGas` and `maxPriorityFeePerGas` default to estimations provided by the public client.
-- `paymasterAndData` defaults to `0x` if no paymaster was specified when you created the Kernel account object, or it will use the value provided by the paymaster.
-- `signature` defaults to the signature provided by the signer.
+- `sender`: defaults to the Kernel account address
+- `nonce`: defaults to the next available nonce
+- `initCode`: defaults to `0x` if the account has been deployed, or the correct `initCode` if not.
+- `callGasLimit`, `verificationGasLimit`, and `preVerificationGas`: default to estimations provided by the underlying bundler and paymaster.
+- `maxFeePerGas` and `maxPriorityFeePerGas`: default to the public client's estimates.
+- `paymasterAndData`: defaults to `0x` if no paymaster was specified when you created the Kernel account object, or it will use the value provided by the paymaster.
+- `signature`: defaults to the signer's signature.
 
-### Encoding callData
+### Encoding `callData`
 
-To encode the calldata, use the `encodeCallData` function from the account object:
+To encode the call data, use the `encodeCallData` function from the account object:
 
 ```typescript
 const userOpHash = await kernelClient.sendUserOperation({
@@ -131,7 +131,7 @@ const userOpHash = await kernelClient.sendUserOperation({
 })
 ```
 
-You can use Viem's helper functions such as `encodeFunctionData` to encode function calls.  For example:
+You can use Viem's helper functions, such as `encodeFunctionData` to encode function calls. For example:
 
 ```ts
 const userOpHash = await kernelClient.sendUserOperation({
@@ -159,7 +159,7 @@ const receipt = await bundlerClient.waitForUserOperationReceipt({
 })
 ```
 
-Note that if you had constructed your `kernelClient` with a [preset](/sdk/v5_3_x/presets/intro), you may not have access to a bundler client.  Instead, you can extend your `kernelClient` with bundler actions:
+Note that if you had constructed your `kernelClient` with a [preset](/sdk/v5_3_x/presets/intro), you may not have access to a bundler client. Instead, you can extend your `kernelClient` with bundler actions:
 
 ```typescript
 import { ENTRYPOINT_ADDRESS_V07, bundlerActions } from "permissionless"
@@ -172,7 +172,7 @@ const receipt = await bundlerClient.waitForUserOperationReceipt({
 
 ### Constructing a UserOp for sending later
 
-In some applications, you might want to construct a UserOp but not immediately send it.  There are two possible flows:
+In some applications, you should construct a UserOp but not send it immediately. There are two possible flows:
 
 - If you want to separate signing and sending:
   - Create and sign a UserOp with `kernelClient.signUserOperation()`

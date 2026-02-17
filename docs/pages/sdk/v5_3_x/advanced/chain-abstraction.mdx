@@ -2,15 +2,17 @@ import VersionWarning from "../VersionWarning"
 
 <VersionWarning version="5.3.x" /> 
 
-# Chain Abstraction
+# Chain abstraction
 
 :::info
-Chain Abstraction is in public alpha and undergoing audit.  Please [contact us](https://t.me/derek_chiang) if you plan on going live with it.
+
+Chain Abstraction is in public alpha and undergoing audit. Please [contact us](https://t.me/derek_chiang) if you plan on going live with it.
+
 :::
 
 ZeroDev is the first smart account solution to support *chain abstraction*.
 
-With ZeroDev, you can turn a token balance into a "**chain-abstracted balance**" (CAB).  Instead of thinking about "USDC on Ethereum" vs "USDC on Arbitrum," your user can just look at their "USDC balance" as a single balance that can be spent on any chain.
+With ZeroDev, you can turn a token balance into a "**chain-abstracted balance**" (CAB). Instead of thinking about "`USDC` on Ethereum" vs "`USDC` on Arbitrum," your user can look at their `“USDC` balance” as a single balance that is usable on any chain.
 
 ## Demo
 
@@ -20,23 +22,23 @@ With ZeroDev, you can turn a token balance into a "**chain-abstracted balance**"
 
 ### One unified balance
 
-As aforementioned, CAB (chain-abstracted balance) is a single balance that can be spent on any chain.
+As mentioned, CAB (chain-abstracted balance) is a single balance usable across any chain.
 
-For example, if you deposit 100 USDC to a ZeroDev account on Base, then deposit 200 USDC to the account on Polygon, the account will now hold 300 "chain-abstracted USDC" that can be spent on any chain.
+For example, if you deposit 100 `USDC` to a ZeroDev account on Base, then deposit 200 `USDC` to the account on Polygon, the account will now hold 300 "chain-abstracted `USDC`" that can be spent on any chain.
 
 ### No bridging latency
 
-Amazingly, CAB can be spent at the speed of the destination chain -- just like a regular transaction. This is unlike a traditional bridge where the user has to wait for confirmations on both the source chain and the destination chain.
+Amazingly, CAB can be spent at the speed of the destination chain—just like a regular transaction. This is unlike a traditional bridge, where the user has to wait for confirmations on both the source and destination chains.
 
 ### Spending as any tokens
 
-CAB can be spent as any supported tokens; ZeroDev automatically handles the swapping.  For example, if you have 500 USDC in CAB but you need to spend 500 USDT, you can do that.
+CAB can be spent as any supported tokens; ZeroDev automatically handles the swapping. For example, if you have 500 `USDC` in CAB but you need to spend 500 `USDT`, you can do that.
 
-Currently, we support swapping USDC to USDT/DAI/WETH/WBTC.  Contact us if you are looking to support any specific tokens.
+Currently, we support swapping `USDC` to USDT/`DAI`/`WETH`/`WBTC`. Contact us if you are looking to support any specific tokens.
 
 ## Code example
 
-Here are [complete code examples](https://github.com/zerodevapp/zerodev-examples/blob/main/chain-abstraction) for using CAB.  To run the example you need to set the environment variable `CAB_PAYMASTER_URL` which you can find [here](#setting-up-the-cab-client).
+Here are [complete code examples](https://github.com/zerodevapp/zerodev-examples/blob/main/chain-abstraction) for using CAB. To run the example, you need to set the environment variable `CAB_PAYMASTER_URL`, which you can find [here](#setting-up-the-cab-client).
 
 ## Usage
 
@@ -64,9 +66,9 @@ bun add @zerodev/cab
 
 ### Setting up the Kernel account
 
-Skip to the next section if your ZeroDev app is already live.  This section is for developers who can still change how they set up their Kernel accounts.
+Skip to the next section if your ZeroDev app is already live. This section is for developers who can still change how they set up their Kernel accounts.
 
-For the best experience with CAB, we recommend setting up your Kernel account with a *multi-chain validator*, which is a [validator](https://docs.zerodev.app/sdk/core-api/using-plugins) that can sign messages for multiple chains in one signature.  This is useful for CAB because CAB needs to be enabled for each chain, so with a multi-chain validator you can enable CAB with just one signature, whereas with a regular validator you'd need to sign once per chain.
+For the best experience with CAB, we recommend setting up your Kernel account with a *multi-chain [validator](https://docs.zerodev.app/sdk/core-api/using-plugins)*, which can sign messages for multiple chains in a single signature. This is useful for CAB because CAB needs to be enabled for each chain, so with a multi-chain validator, you can enable CAB with just one signature, whereas with a regular validator, you’d need to sign once per chain.
 
 To set up a multi-chain ECDSA validator ([code example](https://github.com/zerodevapp/zerodev-examples/blob/main/chain-abstraction/multichain-validator.ts)):
 
@@ -96,11 +98,11 @@ const cabClient = createKernelCABClient(kernelClient, {
 })
 ```
 
-For testing, you can use `https://cab-paymaster-service.onrender.com/paymaster/api` as the `CAB_PAYMASTER_URL`.  You need to [contact us](https://t.me/derek_chiang) to obtain a CAB paymaster URL for production.
+For testing, you can use `https://cab-paymaster-service.onrender.com/paymaster/api` as the `CAB_PAYMASTER_URL`. You need to [contact us](https://t.me/derek_chiang) to obtain a CAB paymaster URL for production.
 
 ### Enabling chain-abstracted balance
 
-Before using CAB, you need to enable CAB for the smart account, by specifying a list of tokens you wish to support.  Currently, CAB supports USDC only.  Please let us know if there are specific tokens you wish us to support.
+Before using CAB, you need to enable CAB for the smart account by specifying a list of tokens you wish to support. Currently, CAB supports `USDC` only. Please let us know if there are any specific tokens you would like us to support.
 
 ```tsx
 await cabClient.enableCAB({
@@ -111,7 +113,7 @@ await cabClient.enableCAB({
 })
 ```
 
-You can optionally specify the list of networks to enable CAB for.  If you don't specify it, CAB is enabled for all supported networks.
+You can optionally specify the list of networks to enable CAB for. If you don't specify it, CAB is enabled for all supported networks.
 
 If you are not using a multi-chain validator, you need to enableCAB for each network, one at a time:
 
@@ -132,7 +134,7 @@ There are three steps to spending CAB:
 - Prepare the CAB UserOp and token info
 - Send the UserOp
 
-First, start by constructing the calls.  You can include multiple calls if you'd like to send a batch.
+First, construct the calls. You can include multiple calls if you'd like to send a batch.
 
 ```tsx
 // In this example, we are performing a USDC transfer
@@ -149,7 +151,8 @@ const calls = [
 ]
 ```
 
-Then, prepare the CAB UserOp by specifying the calls and repay tokens.  Note that the call can spend a different token than the repay token.  Currently the repay token can only be USDC, but the call can spend USDC/USDT/DAI/WETH/WBTC.  If the repay token and the spent token are different, the ZeroDev SDK automatically performs the swapping.
+Then, prepare the CAB UserOp by specifying the calls and repay tokens. Note that the call can spend a different token than the repay token. Currently, the repay token can only be `USDC`, but the call can spend `USDC`/`USDT`/`DAI`/`WETH`/`WBTC`. If the repay token and the spent token differ, the ZeroDev SDK automatically swaps them.
+
 
 ```tsx
 const { userOperation, repayTokensInfo, sponsorTokensInfo } =

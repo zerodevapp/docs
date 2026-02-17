@@ -1,6 +1,6 @@
 import MutationResult from '../shared/mutation-result.mdx'
 
-# useSwitchChain [Hook for switching chain]
+# `useSwitchChain` [Hook for switching chain]
 
 ## Import
 ```tsx
@@ -29,7 +29,7 @@ function App() {
 import { type UseSwitchChainParameters } from '@zerodev/waas';
 ```
 
-## Return Types
+## Return types
 
 ```tsx
 import { type UseSwitchChainReturnType } from '@zerodev/waas'
@@ -44,12 +44,12 @@ import { type UseSwitchChainReturnType } from '@zerodev/waas'
 ### switchChain
 `(variables: SwitchChainVariables) => void`
 
-The mutation function to swich chain.
+The mutation function that switches chains.
 
 - #### variables 
   - ##### chainId
     `number`
-    ID of chain to switch to.
+    ID of the chain to switch to.
 
 ### switchChainAsync
 `(variables: SwitchChainVariables) => Promise<SwitchChainData>`
@@ -59,10 +59,9 @@ Similar to [switchChain](#switchchain) but returns a promise.
 - #### variables 
   - ##### chainId
     `number`
-    ID of chain to switch to.
+    ID of the chain to switch to.
 
 ### data
 `SwitchChainData | undefined`
-  
 
 <MutationResult />

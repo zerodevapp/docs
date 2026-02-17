@@ -1,6 +1,6 @@
 import MutationResult from '../shared/mutation-result.mdx'
 
-# useCreateKernelClientSocial [Hook for creating a kernel client with social login integration]
+# `useCreateKernelClientSocial` [Hook for creating a kernel client with social login integration]
 
 ## Import
 ```tsx
@@ -39,7 +39,7 @@ import { type UseCreateKernelClientSocialParameters } from '@zerodev/waas';
 
 `v2 | v3`
 
-The version of kernel account.
+The version of the kernel account.
 ```tsx
 import { useCreateKernelClientSocial } from '@zerodev/waas';
 
@@ -52,9 +52,9 @@ function App() {
 ### oauthCallbackUrl (optional)
 `string`
 
-The callback URL for social login. After a successful login, the user will be redirected to this URL. Defaults to the current URI of your application if not specified.
+The callback URL for social login. After a successful login, the user will get redirected to this URL. Defaults to the current URI of your application if not specified.
 
-## Return Types
+## Return types
 
 ```tsx
 import { type UseCreateKernelClientSocialReturnType } from '@zerodev/waas'
@@ -78,10 +78,10 @@ The function to trigger the redirect to your social provider for login.
 ### data
 `CreateKernelClientSocialReturnType | undefined`
   - ##### validator
-    `KernelValidator<EntryPoint>` The object of kernel validator.
+    `KernelValidator<EntryPoint>`: The object of the kernel validator.
   - ##### kernelAccount
-    `KernelSmartAccount<EntryPoint>` The object of kernel account.
+    `KernelSmartAccount<EntryPoint>`: The object of the kernel account.
   - ##### entryPoint
-    `EntryPoint` The entrypoint address of kernel account.
+    `EntryPoint`: The entrypoint address of the kernel account.
 
 <MutationResult />

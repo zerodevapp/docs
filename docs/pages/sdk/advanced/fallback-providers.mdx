@@ -1,10 +1,12 @@
-# Fallback Providers
+# Fallback providers
 
 :::info
-Impatient?  Check out [a complete example here](https://github.com/zerodevapp/zerodev-examples/blob/main/fallback-clients/main.ts).
+
+Impatient? Check out [a complete example here](https://github.com/zerodevapp/zerodev-examples/blob/main/fallback-clients/main.ts).
+
 :::
 
-ZeroDev aggregates multiple bundler and paymaster services to provide the highest possible reliability to our users.  You can set up "fallbacks" so that when one of the services fails, another takes over.
+ZeroDev aggregates multiple bundler and paymaster services to provide the highest possible reliability to our users. You can set up “fallbacks” so that when one service fails, another takes over.
 
 ## API
 
@@ -61,7 +63,7 @@ const kernelClient2 = createKernelAccountClient({
 })
 ```
 
-Then combine the Kernel clients with the `createFallbackKernelAccountClient` function:
+Then, combine the Kernel clients with the `createFallbackKernelAccountClient` function:
 
 ```ts
 const kernelClient = createFallbackKernelAccountClient([
@@ -70,11 +72,11 @@ const kernelClient = createFallbackKernelAccountClient([
 ])
 ```
 
-Now you can use `kernelClient` as usual.  Your `kernelClient` will use `kernelClient1` by default, and if it runs into any issues with it, it will fallback to `kernelClient2`.
+Now you can use `kernelClient` as usual. Your `kernelClient` will use `kernelClient1` by default, and if it runs into any issues with it, it will fallback to `kernelClient2`.
 
 ## Using non-ZeroDev infra as fallbacks
 
-In the previous example, we used different providers as fallbacks through ZeroDev.  If you are worried that ZeroDev itself might go down, you can also sign up directly with providers like Pimlico and set them up as fallback providers.
+In the previous example, we used different providers as fallbacks through ZeroDev. If you are worried that ZeroDev itself might go down, you can also sign up directly with providers like Pimlico and set them up as fallback providers.
 
 To do that, simply:
 

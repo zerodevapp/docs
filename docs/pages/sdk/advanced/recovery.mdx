@@ -1,26 +1,28 @@
 # Recovery
 
-With Kernel's [permissions system](/sdk/permissions/intro), it's possible to set up a guardian (or multiple guardians) for a smart account, so that if the owner loses their key, the guardian(s) can recover the key for the owner.
+With Kernel's [permissions system](/sdk/permissions/intro), it's possible to set up a guardian (or multiple guardians) for a smart account, so that if the owner loses their key, the guardian(s) can recover it.
 
 There are two typical types of recovery:
 
-- **Self-recovery**: your user can set up recovery for their account with another auth factor they own, such as a passkey or another wallet they own.
+- **Self-recovery**: your user can set up recovery for their account using another authentication factor they own, such as a passkey or another wallet.
 
-- **DApp-assisted recovery**: your user might set you (the DApp) as their guardian.  When they lose their account, they would contact you and you would recover the account for them.
+- **DApp-assisted recovery**: your user might set you (the DApp) as their guardian. When they lose their account, they would contact you, and you would recover the account for them.
 
-There are two ways to use recovery: through a pre-built recovery flow or build a totally custom flow using the Kernel recovery plugin.
+There are two ways to use recovery: through a pre-built recovery flow, or by building a fully custom flow using the Kernel recovery plugin.
 
-## Recovery Plugin 
+## Recovery plugin 
 
 :::info
-Impatient?  Check out [complete examples here](https://github.com/zerodevapp/zerodev-examples/tree/main/guardians/recovery.ts).
+
+Impatient? Check out [complete examples here](https://github.com/zerodevapp/zerodev-examples/tree/main/guardians/recovery.ts).
+
 :::
 
 Here we go through the process of using the recovery plugin:
 
 ### Setting up the guardian validator
 
-Start by creating a permissions validator.  Let's say you want a single key to be your guardian:
+Start by creating a permissions validator. Let's say you want a single key to be your guardian:
 
 ```ts
 const guardianSigner = privateKeyToAccount(GUARDIAN_KEY)
@@ -34,9 +36,9 @@ const guardianValidator = await signerToEcdsaValidator(publicClient, {
 
 If you want multiple guardians, set up a [multisig validator](/sdk/advanced/multisig) instead.
 
-### Setting up account with the recovery action
+### Setting up an account with the recovery action
 
-We have deployed a simple recovery executor that can recover any accounts using [the ECDSA validator](/sdk/permissions/signers/ecdsa).  You can set it up with the following values:
+We have deployed a simple recovery executor that can recover any accounts using [the ECDSA validator](/sdk/permissions/signers/ecdsa). You can set it up with the following values:
 
 ```ts
 import { toFunctionSelector } from "viem"
@@ -63,11 +65,11 @@ const account = await createKernelAccount(publicClient, {
 })
 ```
 
-you only need to set the sudo validator if you are enabling the guardian validator, i.e. that it's the first time you are using the guardian.
+You only need to set the sudo validator if you are enabling the guardian validator, i.e., if it's the first time you are using the guardian.
 
 ### Executing recovery
 
-After you [construct the account client from the account](/sdk/core-api/create-account#create-an-account-client), you can execute recovery as such:
+After you [construct the account client from the account](/sdk/core-api/create-account#create-an-account-client), you can execute recovery as follows:
 
 ```ts
 import { encodeFunctionData } from "viem"
@@ -82,9 +84,9 @@ const userOpHash = await kernelClient.sendUserOperation({
 })
 ```
 
-### Using account with the new owner
+### Using an account with the new owner
 
-After you update the account owner, the account address can no longer by computed from the new owner.  Therefore, you should use the `address` option to manually set the account address when you [create the account object](/sdk/core-api/create-account#create-a-kernel-account).  For example:
+After you update the account owner, the account address can not be computed from the new owner. Therefore, you should use the `address` option to manually set the account address when you [create the account object](/sdk/core-api/create-account#create-a-kernel-account). For example:
 
 ```ts
 const account = await createKernelAccount(publicClient, {

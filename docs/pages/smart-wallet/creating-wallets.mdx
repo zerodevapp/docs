@@ -5,18 +5,20 @@ import SocialLoginSetup from '../shared/social-login-setup.mdx'
 ZeroDev supports three types of wallet creation:
 
 - Passkeys
-  - ZeroDev supports on-chain passkeys, where transactions are signed directly with passkeys on your user's device, and the signatures are validated on-chain with either [RIP-7212](https://github.com/ethereum/RIPs/blob/master/RIPS/rip-7212.md) (if supported by the network) or smart contracts, without reliance on centralized infrastructure.  [Learn more here](/sdk/advanced/passkeys).
+  - ZeroDev supports onchain passkeys, where transactions are signed directly with passkeys on your user's device, and the signatures are validated onchain with either [RIP-7212](https://github.com/ethereum/RIPs/blob/master/RIPS/rip-7212.md) (if supported by the network) or smart contracts, without reliance on centralized infrastructure. [Learn more here](/sdk/advanced/passkeys).
 - Socials
-  - ZeroDev supports social logins natively, but you can also use ZeroDev with [third-party auth providers](/sdk/signers/intro) such as Dynamic, Privy, and Magic if your prefer their UI.
+  - ZeroDev supports social logins natively, but you can also use ZeroDev with [third-party auth providers](/sdk/signers/intro) such as Dynamic, Privy, and Magic if you prefer their UI.
 - EOA
-  - It's important to note that when a user signs in with an EOA (e.g. MetaMask) through ZeroDev, the EOA is not used as a wallet, but rather as the *signer* of the ZeroDev smart wallet.  Therefore, the address of the smart wallet is different than the address of the user's EOA.
+  - It's important to note that when a user signs in with an EOA (e.g., MetaMask) via ZeroDev, the EOA is not used as a wallet but rather as the **signer** for the ZeroDev smart wallet. Therefore, the smart wallet's address differs from the user’s EOA address.
 
 ## Capabilities API
 
-[Capabilities](/smart-wallet/quickstart-capabilities) (ERC-5792) are the new standard for DApps to communicate with smart wallets.  If you are building a DApp and looking to use ZeroDev as an embedded smart wallet, we recommend that you do it through the capabilities API, in order to be compatible with other smart wallets.
+[Capabilities](/smart-wallet/quickstart-capabilities) (ERC-5792) are the new standard for DApps to communicate with smart wallets. If you are building a DApp and want to use ZeroDev as an embedded smart wallet, we recommend using the capabilities API to ensure compatibility with other smart wallets.
 
 :::info
+
 Check out this [code example](https://github.com/zerodevapp/capabilities-examples/tree/main/create-account).
+
 :::
 
 ### Passkeys
@@ -59,21 +61,25 @@ function App() {
 }
 ```
 
+<!--
 ### Social
 
 TODO
+-->
 
 ## React API
 
 :::info
+
 Check out this [code example](https://github.com/zerodevapp/waas-examples/tree/main/create-account).
+
 :::
 
 ### Passkeys
 
-You can learn more about [how ZeroDev's on-chain passkeys work here](/sdk/advanced/passkeys).
+You can learn more about [how ZeroDev's onchain passkeys work here](/sdk/advanced/passkeys).
 
-Create the wallet using [`useCreateKernelClientPasskey`](/react/use-create-kernelclient-passkey).  Use `connectRegister` to create a new passkey, or `connectLogin` to use an existing key.
+Create the wallet using [`useCreateKernelClientPasskey`](/react/use-create-kernelclient-passkey). Use `connectRegister` to create a new passkey, or `connectLogin` to use an existing key.
 
 ```tsx
 import { useCreateKernelClientPasskey } from "@zerodev/waas"
@@ -100,7 +106,7 @@ function App() {
 
 ### Socials
 
-Use `useCreateKernelClientSocial`.  Note that you can also use ZeroDev with a [third-party auth provider](/sdk/signers/intro) (e.g. Privy/Dynamic) to enable social logins.
+Use `useCreateKernelClientSocial`. Note that you can also use ZeroDev with a [third-party auth provider](/sdk/signers/intro) (e.g., Privy/Dynamic) to enable social logins.
 
 ```tsx
 import { useCreateKernelClientSocial } from "@zerodev/waas"
@@ -122,7 +128,7 @@ function App() {
 
 ### EOA
 
-If you want to use an EOA wallet as signer to your ZeroDev smart wallet, wrap the `ZeroDevProvider` inside a Wagmi provider, then use [`useCreateKernelClientEOA`](/react/use-create-kernelclient-eoa).
+If you want to use an EOA wallet as a signer to your ZeroDev smart wallet, wrap the `ZeroDevProvider` inside a Wagmi provider, then use [`useCreateKernelClientEOA`](/react/use-create-kernelclient-eoa).
 
 ```tsx
 import { useCreateKernelClientEOA } from "@zerodev/waas"

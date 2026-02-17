@@ -5,15 +5,16 @@ import VersionWarning from "../VersionWarning"
 # Multisig
 
 :::info
-Impatient?  Check out [complete examples here](https://github.com/zerodevapp/zerodev-examples/tree/main/multisig).
+
+Impatient? Check out [complete examples here](https://github.com/zerodevapp/zerodev-examples/tree/main/multisig).
+
 :::
 
-With Kernel, it's possible to configure multiple signers for your smart account.  The plugin that supports this functionality is named `WeightedECDSAValidator`, for the fact that it supports multiple ECDSA signers, each having a specific "weight."
+With Kernel, it’s possible to configure multiple signers for your smart account. The plugin that supports this functionality is named `WeightedECDSAValidator` because it supports multiple ECDSA signers, each with a specific “weight.”
 
 ## How it works
 
-Each signer is set up with a **weight**, and for any given signature, there must be enough combined weight to reach or surpass the **threshold** for the signature to be considered valid.
-
+Each signer is assigned a **weight**, and for any given signature, the combined weight must meet or exceed the **threshold** for the signature to be considered valid.
 For example, let's say we have:
 
 - Threshold: 100
@@ -67,9 +68,9 @@ const multisigValidator = await createWeightedECDSAValidator(publicClient, {
 })
 ```
 
-In `config`, you specify the `threshold` and an list of signer addresses, as well as their weights.
+In `config`, you specify the `threshold`, a list of signer addresses, and their weights.
 
-In `signers`, you specify the list of signers ([Viem accounts](https://viem.sh/docs/accounts/local)) that will be signing for this account.  The combined weight of these signers must reach the threshold.
+In `signers`, specify the list of signers ([Viem accounts](https://viem.sh/docs/accounts/local)) who will sign for this account. The combined weight of these signers must reach the threshold.
 
 After creating the validator, you can [set up a Kernel account using the validator](/sdk/v5_3_x/core-api/create-account#create-a-kernel-account) as usual.
 
@@ -96,7 +97,7 @@ const account = await createKernelAccount(publicClient, {
 
 ## Updating multisig config
 
-In many use cases, you may need to add and remove signers over time.  To do so, send a UserOp that updates the config:
+In many use cases, you may need to add and remove signers over time. To do so, send a UserOp that updates the config:
 
 ```ts
 import { getUpdateConfigCall } from "@zerodev/weighted-ecdsa-validator"

@@ -1,16 +1,18 @@
 # Upgrading Kernel
 
 :::info
-Impatient?  Check out [a complete example here](https://github.com/zerodevapp/zerodev-examples/blob/main/create-ecdsa-migration-account/main.ts).
+
+Impatient? Check out [a complete example here](https://github.com/zerodevapp/zerodev-examples/blob/main/create-ecdsa-migration-account/main.ts).
+
 :::
 
-[Kernel](https://github.com/zerodevapp/kernel), our smart account implementation, receives updates from time to time to keep up with the latest standards and best practices.  We do NOT recommend upgrading Kernel accounts unless you NEED TO, since there are many ways to accidentally screw up.  But if you do need to upgrade, you can follow the steps here.
+[Kernel](https://github.com/zerodevapp/kernel), our smart account implementation, receives periodic updates to keep up with the latest standards and best practices. We do NOT recommend upgrading Kernel accounts unless you NEED TO, since there are many ways to screw up accidentally. But if you do need to upgrade, you can follow the steps here.
 
-The tricky thing about upgrading a smart account is that it affects the *deterministic address computation* (i.e. `CREATE2`), since a Kernel address is partially derived from the smart account implementation.  Thankfully, the ZeroDev SDK offers a convenience function for upgrading Kernel accounts without messing up the deterministic address.
+The tricky thing about upgrading a smart account is that it affects the *deterministic address computation* (e.g., `CREATE2`), since a Kernel address is partially derived from the smart account implementation. Thankfully, the ZeroDev SDK provides a convenience function for upgrading Kernel accounts without disrupting the deterministic address.
 
 ## API
 
-We currently offer an API for upgrading a ECDSA Kernel account.  For other account types, reach out for assistance.
+We currently offer an API for upgrading an ECDSA Kernel account. For other account types, reach out for assistance.
 
 To migrate, replace the code that you used to set up the Kernel validator and account with a single `createEcdsaKernelMigrationAccount` function:
 

@@ -1,6 +1,6 @@
 # Use Arcana Auth with ZeroDev
 
-[Arcana Auth](https://www.arcana.network/) offers a self-custodial Web3 wallet embedded within applications, utilizing asynchronous distributed key generation algorithms for enhanced security and privacy. This wallet, accessible without the need for a browser extension, allows authenticated users to instantly access and sign blockchain transactions within the app environment.
+[Arcana Auth](https://www.arcana.network/) offers a self-custodial Web3 wallet embedded in applications, leveraging asynchronous distributed key-generation algorithms for enhanced security and privacy. This wallet, accessible without a browser extension, allows authenticated users to sign blockchain transactions within the app instantly.
 
 ## Set up
 
@@ -10,10 +10,12 @@ To use Arcana Auth with ZeroDev, first create an application that integrates wit
 - For a quick start, Arcana Auth provides a web app guide, available [here](https://docs.arcana.network/quick-start/web/).
 
 ## Integration
-Integrating ZeroDev with Arcana Auth is straightforward after setting up the project. Arcana Auth provides an Externally Owned Account (EOA) wallet to use as a signer with Kernel.
+
+Integrating ZeroDev with Arcana Auth is straightforward once the project is set up. Arcana Auth provides an Externally Owned Account (EOA) wallet to use as a signer with Kernel.
 
 ### Create the authProvider object
-After following the Arcana Auth documentation, you will have access to a `authProvider` object as shown below:
+
+After following the Arcana Auth documentation, you will have access to an `authProvider` object as shown below:
 
 ```typescript
 import {
@@ -28,7 +30,7 @@ const authProvider = new AuthProvider(clientId, params);
 
 ### Use with ZeroDev
 
-Use the provider from Arcana to create a smart account signer, which can be passed to a validator. For detailed guidance on using a validator, refer to our documentation on [creating accounts](/sdk/core-api/create-account#api).
+Use the Arcana provider to create a smart account signer that can be passed to a validator. For detailed guidance on using a validator, refer to our documentation on [creating accounts](/sdk/core-api/create-account#api).
 
 ```typescript
 import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
