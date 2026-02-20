@@ -1,0 +1,68 @@
+# What is ZeroDev?
+
+ZeroDev is a programmable wallet infrastructure for teams building on EVM chains. It provides two things that work together: 
+- A managed infrastructure layer — bundlers, paymasters, and the Kernel smart account contract
+- A set of SDKs that let you build ERC-4337 smart account features into your product without standing up or maintaining that infrastructure yourself.
+
+If your team is deciding whether to build smart account capabilities in-house or adopt a production-ready solution, this page will help you understand what ZeroDev covers, and where to start.
+
+---
+
+## The integration problem
+
+ERC-4337 defines the protocol. It does not give you the stack.
+
+To ship a feature as simple as sponsored gas, you need a smart account contract, a paymaster, a bundler, a policy engine to control spending, and an SDK to connect it all to your frontend. Each of those pieces can be built independently — and teams do build them — but the integration work adds up fast. Bugs surface at the seams between components. Bundler reliability directly affects user-facing transaction success rates. Paymaster policy logic gets coupled into your backend and becomes a maintenance burden.
+
+ZeroDev assembles this stack and operates it as a service. Kernel is the smart account contract: modular, audited, and one of the most deployed account implementations on Ethereum. The bundler and paymaster infrastructure runs across all major EVM chains. Gas policies are configured through a dashboard, not deployed as custom contracts. The SDKs handle the glue between your frontend and the protocol, at the level of abstraction that fits your architecture.
+
+---
+
+## build or buy?
+
+Building ERC-4337 infrastructure in-house is possible. It requires engineers who understand the EntryPoint contract, UserOperation lifecycle, paymaster validation rules, and bundler behavior under load — a specialized intersection of protocol knowledge and infrastructure engineering. Once built, it requires ongoing maintenance as the standard evolves and as you add chains.
+
+ZeroDev is the buy answer for teams that want smart account capabilities without a dedicated protocol engineering function. The Kernel contract is open source and extensively audited. The infrastructure is shared across production deployments, which means reliability is a product priority, not a per-customer concern. Enterprise SLAs and support contracts are available for teams that need them.
+
+For early-stage companies, adopting ZeroDev means shipping smart wallet features in days instead of months. For larger teams, it means redirecting protocol engineering capacity toward differentiated product work.
+
+**→ To discuss enterprise pricing, infrastructure SLAs, or custom deployment: [Contact us](https://calendly.com/zerodev/30min)**
+**→ To evaluate the product: [Create a free project in the dashboard](https://dashboard.zerodev.app/)**
+
+---
+
+## How will ZeroDev improve my product?
+
+ZeroDev enables four user-facing improvements that have the highest impact on conversion and retention:
+
+**No gas friction.** Sponsor transactions for your users so they never need to hold ETH. This eliminates the single biggest drop-off point for new users arriving from non-crypto contexts. You configure spending limits and eligibility rules through a dashboard; no contract changes required.
+
+**Familiar authentication.** Let users create wallets with passkeys (Face ID / Touch ID) or social login (Google, email, and others). No seed phrases, no browser extensions. Users get self-custodial accounts through flows that feel like standard web authentication.
+
+**One-click flows.** Batch multiple on-chain operations into a single user confirmation. Approve-and-swap, mint-and-list, stake-and-delegate — interactions that currently require two or more transactions become one. This has a direct effect on completion rates for any multi-step flow.
+
+**Persistent sessions.** Issue scoped, time-bounded permissions (session keys) so repeat users don't confirm every action. The user approves a session once; subsequent actions execute silently within the authorized scope.
+
+Each of these maps to a ZeroDev feature with documented integration time. None of them requires changes to your existing contract architecture.
+
+**→ To explore capabilities and estimate integration scope: [Browse features in the SDK docs](/sdk/getting-started/quickstart)**
+**→ To get a project set up and test features hands-on: [Log in to the dashboard](https://dashboard.zerodev.app/)**
+
+---
+
+## SDKs
+
+ZeroDev provides three SDKs, each calibrated to a different integration depth:
+
+- **`@zerodev/wallet`** — Wagmi connectors and EIP-1193 providers. If your frontend already uses Wagmi, this is the lowest-friction integration path. Drop in a connector, configure gas sponsorship through the dashboard, and you have smart wallet features without touching your account logic. This is the right starting point for DApp teams adding smart wallet support.
+
+- **`@zerodev/core`** — The full-featured SDK for teams building embedded wallets or needing fine-grained control over account creation, session management, and signing. Supports all major auth providers (Privy, Magic, Dynamic, Web3Auth, Fireblocks, Capsule, and others) as plug-in signers.
+
+- **`@zerodev/waas`** — A React SDK built on `@zerodev/core`, providing hooks for wallet state, transaction management, session handling, and chain switching. For React-native wallet products, this is the fastest path to full feature coverage.
+
+Infrastructure concerns — bundler uptime, paymaster balance management, chain support — are handled by ZeroDev. Your team owns the integration; ZeroDev owns the ops.
+
+For teams evaluating integration scope before committing: each SDK has a working quickstart that covers the full round-trip (account creation, sponsored transaction, session key issuance) in under 50 lines of code.
+
+**→ To evaluate integration depth by use case: [Which SDK should I use?](/smart-wallet/which-sdk)**
+**→ To run a working integration in under 10 minutes: [Start with the quickstart](/smart-wallet/quickstart-capabilities)**
