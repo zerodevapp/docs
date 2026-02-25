@@ -1,0 +1,75 @@
+# Passkey Authentication [Register and login with WebAuthn passkeys]
+
+:::danger[IMPORTANT]
+**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
+:::
+
+Passkeys use the [WebAuthn](https://webauthn.guide/) standard for passwordless authentication. Users authenticate with biometrics (Face ID, Touch ID, fingerprint) or a hardware security key.
+
+## Hooks
+
+- [`useRegisterPasskey`](/wallets/hooks/use-register-passkey) — Create a new wallet with a passkey
+- [`useLoginPasskey`](/wallets/hooks/use-login-passkey) — Sign in to an existing wallet
+
+## Example
+
+```tsx
+import { useAccount, useDisconnect } from 'wagmi'
+import { useRegisterPasskey, useLoginPasskey } from '@zerodev/wallet-react'
+
+function PasskeyAuth() {
+  const { address, isConnected } = useAccount()
+  const { disconnectAsync } = useDisconnect()
+  const registerPasskey = useRegisterPasskey()
+  const loginPasskey = useLoginPasskey()
+
+  if (isConnected) {
+    return (
+      <div>
+        <p>Connected: {address}</p>
+        <button onClick={() => disconnectAsync()}>Logout</button>
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <button
+        onClick={() => registerPasskey.mutateAsync()}
+        disabled={registerPasskey.isPending}
+      >
+        {registerPasskey.isPending ? 'Registering...' : 'Create Wallet'}
+      </button>
+
+      <button
+        onClick={() => loginPasskey.mutateAsync()}
+        disabled={loginPasskey.isPending}
+      >
+        {loginPasskey.isPending ? 'Logging in...' : 'Login'}
+      </button>
+
+      {registerPasskey.isError && (
+        <p>Registration error: {registerPasskey.error.message}</p>
+      )}
+      {loginPasskey.isError && (
+        <p>Login error: {loginPasskey.error.message}</p>
+      )}
+    </div>
+  )
+}
+```
+
+## How it works
+
+1. **Register**: `useRegisterPasskey` triggers the browser's WebAuthn prompt. The user creates a passkey stored on their device. A new wallet is created and linked to the passkey.
+
+2. **Login**: `useLoginPasskey` triggers the WebAuthn prompt. The user selects their existing passkey. The SDK authenticates and creates a session.
+
+After either flow, the Wagmi connector is connected and the user's address is available via `useAccount`.
+
+## Notes
+
+- No email is required for passkey auth — the passkey itself is the credential
+- Passkeys are supported in all major browsers (Chrome, Safari, Firefox, Edge)
+- Passkeys can sync across devices via iCloud Keychain, Google Password Manager, etc.
+- The `rpId` connector option controls the WebAuthn relying party ID (defaults to the current hostname)

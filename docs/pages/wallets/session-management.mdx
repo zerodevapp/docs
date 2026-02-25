@@ -1,0 +1,101 @@
+# Session Management [Understand and control the session lifecycle]
+
+:::danger[IMPORTANT]
+**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
+:::
+
+The ZeroDev Wallet SDK manages sessions automatically. Sessions are created during authentication and persist across page reloads.
+
+## Session lifecycle
+
+```
+Authenticate → Session Created → Auto-refresh → Expiry → Re-authenticate
+```
+
+1. **Created**: A session is created when the user authenticates (passkey, OTP, OAuth, or magic link). The session contains a credential that allows the SDK to sign transactions.
+
+2. **Persisted**: Sessions are stored in `localStorage` by default (configurable via `sessionStorage` connector option). On page reload, the connector checks for an existing session and reconnects automatically.
+
+3. **Auto-refresh**: When `autoRefreshSession` is enabled (default), the SDK refreshes the session before it expires. The refresh happens `sessionWarningThreshold` milliseconds before expiry (default: 60 seconds).
+
+4. **Expiry**: If a session expires without being refreshed, the Wagmi connector disconnects and the user needs to re-authenticate.
+
+## Refreshing sessions
+
+Use the [`useRefreshSession`](/wallets/hooks/use-refresh-session) hook to manually refresh the current session:
+
+```tsx
+import { useRefreshSession } from '@zerodev/wallet-react'
+
+function SessionControls() {
+  const refreshSession = useRefreshSession()
+
+  return (
+    <button
+      onClick={() => refreshSession.mutateAsync({})}
+      disabled={refreshSession.isPending}
+    >
+      {refreshSession.isPending ? 'Refreshing...' : 'Refresh Session'}
+    </button>
+  )
+}
+```
+
+## Auto-refresh configuration
+
+Configure auto-refresh via the connector options:
+
+```tsx
+zeroDevWallet({
+  projectId: 'YOUR_PROJECT_ID',
+  chains: [sepolia],
+  autoRefreshSession: true,           // default: true
+  sessionWarningThreshold: 120_000,   // refresh 2 minutes before expiry
+})
+```
+
+Set `autoRefreshSession: false` to disable auto-refresh and handle session expiry manually.
+
+## Custom storage
+
+By default, sessions are stored in `localStorage`. Provide a custom `StorageAdapter` for alternative storage:
+
+```tsx
+import { type StorageAdapter } from '@zerodev/wallet-core'
+
+const customStorage: StorageAdapter = {
+  getItem: async (key: string) => { /* ... */ },
+  setItem: async (key: string, value: string) => { /* ... */ },
+  removeItem: async (key: string) => { /* ... */ },
+}
+
+zeroDevWallet({
+  projectId: 'YOUR_PROJECT_ID',
+  chains: [sepolia],
+  sessionStorage: customStorage,
+})
+```
+
+This is useful for React Native apps where `localStorage` is not available.
+
+## Detecting session expiry
+
+When a session expires, the Wagmi connector disconnects. You can detect this using the Wagmi `useAccount` hook:
+
+```tsx
+import { useAccount } from 'wagmi'
+
+function SessionStatus() {
+  const { status, isConnected } = useAccount()
+
+  if (status === 'disconnected') {
+    return <p>Session expired — please sign in again</p>
+  }
+
+  if (isConnected) {
+    return <p>Connected</p>
+  }
+
+  return null
+}
+```

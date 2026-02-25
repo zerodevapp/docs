@@ -1,0 +1,53 @@
+# ZeroDev Wallet SDK [Embedded wallet authentication for your app]
+
+:::danger[IMPORTANT]
+**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
+:::
+
+ZeroDev Wallet SDK provides embedded wallet authentication with multiple auth methods, EIP-7702 smart accounts, and seamless Wagmi integration. Users get a self-custodial smart account without needing to manage seed phrases or gas.
+
+## Key Features
+
+- **Multiple auth methods** — Passkeys, Email OTP, Magic Links, and Google OAuth
+- **EIP-7702 smart accounts** — EOA wallets upgraded with smart account capabilities (gas sponsorship, batch transactions)
+- **Wagmi integration** — Drop-in connector that works with standard Wagmi hooks
+- **Session management** — Automatic session persistence, refresh, and expiry handling
+- **Wallet export** — Users can export their seed phrase or private key at any time
+
+## Packages
+
+The SDK is split into two packages:
+
+| Package | Description |
+|---------|-------------|
+| `@zerodev/wallet-core` | Framework-agnostic core SDK. Handles authentication, session management, and key operations. |
+| `@zerodev/wallet-react` | React hooks and Wagmi connector built on TanStack Query. |
+
+For React apps, install `@zerodev/wallet-react` — it re-exports everything from `@zerodev/wallet-core`.
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────┐
+│                  Your App                    │
+│         (Wagmi hooks / React hooks)          │
+├─────────────────────────────────────────────┤
+│           @zerodev/wallet-react              │
+│     (Wagmi connector + TanStack Query)       │
+├─────────────────────────────────────────────┤
+│            @zerodev/wallet-core              │
+│     (Auth, Sessions, Key operations)         │
+├─────────────────────────────────────────────┤
+│           Secure Key Infrastructure          │
+│        (Keys in secure enclaves)             │
+├─────────────────────────────────────────────┤
+│              EIP-7702 EOA                    │
+│    (Delegates to Kernel smart account)       │
+└─────────────────────────────────────────────┘
+```
+
+Authentication creates a session backed by secure key infrastructure. The SDK uses that session to sign transactions through an EOA that delegates to a Kernel smart account via EIP-7702, enabling gas sponsorship and batch transactions.
+
+## Next Steps
+
+Head to the [Quickstart](/wallets/quickstart) to set up your first integration.

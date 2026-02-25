@@ -1,0 +1,90 @@
+# Email OTP Authentication [Authenticate with a one-time code sent by email]
+
+:::danger[IMPORTANT]
+**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
+:::
+
+Email OTP is a two-step flow: send a verification code to the user's email, then verify the code they enter.
+
+## Hooks
+
+- [`useSendOTP`](/wallets/hooks/use-send-otp) — Send a one-time code to an email address
+- [`useVerifyOTP`](/wallets/hooks/use-verify-otp) — Verify the code and authenticate
+
+## Example
+
+```tsx
+import { useState } from 'react'
+import { useAccount, useDisconnect } from 'wagmi'
+import { useSendOTP, useVerifyOTP } from '@zerodev/wallet-react'
+
+function EmailOTPAuth() {
+  const [email, setEmail] = useState('')
+  const [code, setCode] = useState('')
+  const [otpId, setOtpId] = useState<string | null>(null)
+
+  const { address, isConnected } = useAccount()
+  const { disconnectAsync } = useDisconnect()
+  const sendOTP = useSendOTP()
+  const verifyOTP = useVerifyOTP()
+
+  if (isConnected) {
+    return (
+      <div>
+        <p>Connected: {address}</p>
+        <button onClick={() => disconnectAsync()}>Logout</button>
+      </div>
+    )
+  }
+
+  if (!otpId) {
+    return (
+      <div>
+        <input
+          type="email"
+          placeholder="Enter your email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <button
+          onClick={async () => {
+            const result = await sendOTP.mutateAsync({ email })
+            setOtpId(result.otpId)
+          }}
+          disabled={sendOTP.isPending || !email}
+        >
+          {sendOTP.isPending ? 'Sending...' : 'Send Code'}
+        </button>
+        {sendOTP.isError && <p>Error: {sendOTP.error.message}</p>}
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <p>Code sent to {email}</p>
+      <input
+        type="text"
+        placeholder="Enter verification code"
+        value={code}
+        onChange={(e) => setCode(e.target.value)}
+      />
+      <button
+        onClick={() => verifyOTP.mutateAsync({ code, otpId })}
+        disabled={verifyOTP.isPending || !code}
+      >
+        {verifyOTP.isPending ? 'Verifying...' : 'Verify Code'}
+      </button>
+      {verifyOTP.isError && <p>Error: {verifyOTP.error.message}</p>}
+    </div>
+  )
+}
+```
+
+## How it works
+
+1. **Send code**: `useSendOTP` sends a one-time verification code to the provided email address. It returns an `otpId` that identifies this verification attempt.
+
+2. **Verify code**: `useVerifyOTP` takes the `otpId` and the code the user entered. If the code is valid, the SDK authenticates and creates a session.
+
+After verification, the Wagmi connector is connected and the user's address is available via `useAccount`.
