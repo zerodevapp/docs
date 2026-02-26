@@ -6,6 +6,18 @@
 
 Passkeys use the [WebAuthn](https://webauthn.guide/) standard for passwordless authentication. Users authenticate with biometrics (Face ID, Touch ID, fingerprint) or a hardware security key.
 
+## Configure RP ID (optional)
+
+Set `rpId` on the connector if you need a custom [relying party identifier](https://www.w3.org/TR/webauthn-2/#relying-party-identifier) (defaults to the current hostname):
+
+```ts
+zeroDevWallet({
+  projectId: process.env.NEXT_PUBLIC_ZERODEV_PROJECT_ID!,
+  chains: [sepolia],
+  rpId: "example.com",
+});
+```
+
 ## Hooks
 
 - [`useRegisterPasskey`](/wallets/hooks/use-register-passkey) — Create a new wallet with a passkey
@@ -72,4 +84,3 @@ After either flow, the Wagmi connector is connected and the user's address is av
 - No email is required for passkey auth — the passkey itself is the credential
 - Passkeys are supported in all major browsers (Chrome, Safari, Firefox, Edge)
 - Passkeys can sync across devices via iCloud Keychain, Google Password Manager, etc.
-- The `rpId` connector option controls the WebAuthn relying party ID (defaults to the current hostname)

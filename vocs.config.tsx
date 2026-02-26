@@ -834,6 +834,10 @@ export default defineConfig({
             text: "Quickstart",
             link: "/wallets/quickstart",
           },
+          {
+            text: "Demo",
+            link: "https://zerodev-signer-demo.vercel.app/",
+          },
         ],
       },
       {
@@ -869,6 +873,24 @@ export default defineConfig({
           {
             text: "Export Wallet",
             link: "/wallets/export",
+          },
+        ],
+      },
+      {
+        text: "Wallet API",
+        collapsed: false,
+        items: [
+          {
+            text: "Send a Transaction",
+            link: "/wallets/wallet-api/send-transaction",
+          },
+          {
+            text: "Sign a Message",
+            link: "/wallets/wallet-api/sign-message",
+          },
+          {
+            text: "Sign a Typed Message",
+            link: "/wallets/wallet-api/sign-typed-message",
           },
         ],
       },
