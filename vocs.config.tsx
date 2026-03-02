@@ -57,6 +57,7 @@ export default defineConfig({
       link: "/smart-routing-address",
       match: "/smart-routing-address",
     },
+    { text: "Debugger", link: "https://debug.zerodev.app" },
     { text: "API", link: "https://zerodev-api.readme.io" },
     {
       link: "https://dashboard.zerodev.app/",
@@ -175,6 +176,10 @@ export default defineConfig({
           {
             text: "Status & Uptime API",
             link: "/sdk/core-api/status",
+          },
+          {
+            text: "UserOp Debugger",
+            link: "/sdk/core-api/debugger",
           },
         ],
       },
@@ -435,10 +440,6 @@ export default defineConfig({
           {
             text: "What networks do you support?",
             link: "/sdk/faqs/chains",
-          },
-          {
-            text: "How to debug a UserOp?",
-            link: "/sdk/faqs/debug-userop",
           },
           {
             text: "Can I use a KernelClient with ethers.js?",
