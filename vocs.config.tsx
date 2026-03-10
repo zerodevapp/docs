@@ -822,6 +822,130 @@ export default defineConfig({
         ],
       },
     ],
+    "/wallets": [
+      {
+        text: "Getting Started",
+        collapsed: false,
+        items: [
+          {
+            text: "Introduction",
+            link: "/wallets",
+          },
+          {
+            text: "Quickstart",
+            link: "/wallets/quickstart",
+          },
+          {
+            text: "Demo",
+            link: "https://zerodev-signer-demo.vercel.app/",
+          },
+        ],
+      },
+      {
+        text: "Authentication",
+        collapsed: false,
+        items: [
+          {
+            text: "Passkeys",
+            link: "/wallets/auth/passkeys",
+          },
+          {
+            text: "Email OTP",
+            link: "/wallets/auth/email-otp",
+          },
+          {
+            text: "Magic Link",
+            link: "/wallets/auth/magic-link",
+          },
+          {
+            text: "Google OAuth",
+            link: "/wallets/auth/google-oauth",
+          },
+        ],
+      },
+      {
+        text: "Features",
+        collapsed: false,
+        items: [
+          {
+            text: "Session Management",
+            link: "/wallets/session-management",
+          },
+          {
+            text: "Export Wallet",
+            link: "/wallets/export",
+          },
+        ],
+      },
+      {
+        text: "Wallet API",
+        collapsed: false,
+        items: [
+          {
+            text: "Send a Transaction",
+            link: "/wallets/wallet-api/send-transaction",
+          },
+          {
+            text: "Sign a Message",
+            link: "/wallets/wallet-api/sign-message",
+          },
+          {
+            text: "Sign a Typed Message",
+            link: "/wallets/wallet-api/sign-typed-message",
+          },
+        ],
+      },
+      {
+        text: "Hooks",
+        collapsed: false,
+        items: [
+          {
+            text: "useRegisterPasskey",
+            link: "/wallets/hooks/use-register-passkey",
+          },
+          {
+            text: "useLoginPasskey",
+            link: "/wallets/hooks/use-login-passkey",
+          },
+          {
+            text: "useAuthenticateOAuth",
+            link: "/wallets/hooks/use-authenticate-oauth",
+          },
+          {
+            text: "useSendOTP",
+            link: "/wallets/hooks/use-send-otp",
+          },
+          {
+            text: "useVerifyOTP",
+            link: "/wallets/hooks/use-verify-otp",
+          },
+          {
+            text: "useSendMagicLink",
+            link: "/wallets/hooks/use-send-magic-link",
+          },
+          {
+            text: "useVerifyMagicLink",
+            link: "/wallets/hooks/use-verify-magic-link",
+          },
+          {
+            text: "useGetUserEmail",
+            link: "/wallets/hooks/use-get-user-email",
+          },
+          {
+            text: "useRefreshSession",
+            link: "/wallets/hooks/use-refresh-session",
+          },
+          {
+            text: "useExportWallet",
+            link: "/wallets/hooks/use-export-wallet",
+          },
+          {
+            text: "useExportPrivateKey",
+            link: "/wallets/hooks/use-export-private-key",
+          },
+        ],
+      },
+    ],
     "/react": [
       {
         text: "Getting Started",

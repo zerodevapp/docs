@@ -1,0 +1,85 @@
+# Google OAuth [Authenticate with Google sign-in]
+
+:::danger[IMPORTANT]
+**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
+:::
+
+Google OAuth lets users sign in with their Google account using a popup-based flow. The SDK handles the popup, redirect, and session creation automatically.
+
+## Hook
+
+- [`useAuthenticateOAuth`](/wallets/hooks/use-authenticate-oauth) — Trigger the OAuth flow
+
+## Example
+
+```tsx
+import { useAccount, useDisconnect } from 'wagmi'
+import {
+  useAuthenticateOAuth,
+  OAUTH_PROVIDERS,
+} from '@zerodev/wallet-react'
+
+function GoogleAuth() {
+  const { address, isConnected } = useAccount()
+  const { disconnectAsync } = useDisconnect()
+  const authenticateOAuth = useAuthenticateOAuth()
+
+  if (isConnected) {
+    return (
+      <div>
+        <p>Connected: {address}</p>
+        <button onClick={() => disconnectAsync()}>Logout</button>
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <button
+        onClick={() =>
+          authenticateOAuth.mutateAsync({
+            provider: OAUTH_PROVIDERS.GOOGLE,
+          })
+        }
+        disabled={authenticateOAuth.isPending}
+      >
+        {authenticateOAuth.isPending
+          ? 'Signing in...'
+          : 'Sign in with Google'}
+      </button>
+
+      {authenticateOAuth.isError && (
+        <p>Error: {authenticateOAuth.error.message}</p>
+      )}
+    </div>
+  )
+}
+```
+
+## How it works
+
+1. **Open popup**: `useAuthenticateOAuth` opens a popup window to the KMS backend's OAuth endpoint.
+
+2. **Google sign-in**: The backend initiates the Google OAuth flow with PKCE. The user signs in with their Google account.
+
+3. **Backend callback**: Google redirects back to the backend, which exchanges the auth code for tokens and sets a session cookie.
+
+4. **Popup redirect**: The backend redirects the popup to your app with `?oauth_success=true`.
+
+5. **Auto-detect**: The SDK detects the success parameter. If running in a popup, it sends a `postMessage` to the opener window and closes. The main window then calls the backend's auth endpoint (reading the session cookie) to get a session.
+
+After the flow completes, the Wagmi connector is connected and the user's address is available via `useAccount`.
+
+## Backend requirements
+
+Google OAuth requires a KMS proxy backend that handles the OAuth flow. Set the `proxyBaseUrl` connector option to point to your backend:
+
+```tsx
+zeroDevWallet({
+  projectId: 'YOUR_PROJECT_ID',
+  proxyBaseUrl: 'https://your-backend.com',
+  chains: [sepolia],
+})
+```
+
+The backend must have Google OAuth credentials configured (`GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`).
