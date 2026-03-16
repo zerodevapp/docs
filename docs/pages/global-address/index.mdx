@@ -125,6 +125,56 @@ The options are:
 
 Once you have created a smart routing address, you can send tokens to it on any of the chains specified in `srcTokens`, and the `actions` will happen on the `destChain`. It's really that simple.
 
+### Fetching status
+
+You can fetch the status of a smart routing address to see its deposit history, including the source deposit, bridge transaction, and execution on the destination chain.
+
+```tsx
+import { getSmartRoutingAddressStatus } from "@zerodev/smart-routing-address";
+
+const status = await getSmartRoutingAddressStatus({
+  smartRoutingAddress: "0x...", // your smart routing address
+});
+```
+
+The response contains a `deposits` array, where each entry tracks the full lifecycle of a deposit:
+
+```json
+{
+  "deposits": [
+    {
+      "deposit": {
+        "chainId": 42161,
+        "token": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+        "amount": "600000",
+        "blockNumber": "414941806",
+        "transactionHash": "0xebf172e44cd61903aba01c075d884b92c72875bce27afacd63bf06ad84c97ed8"
+      },
+      "bridge": {
+        "blockNumber": "414941821",
+        "transactionHash": "0x1d54d7ef15377b98eff47d1d0e52fe7152c4a4b6a98b69927c3f0b407b35cb8f"
+      },
+      "execution": {
+        "blockNumber": "40011722",
+        "chainId": 8453,
+        "outputToken": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+        "transactionHash": "0x0506423eac1775e20b4b6fcb94b6a177075f9ca027d841e293b0690e51230622",
+        "outputAmount": "600000"
+      }
+    }
+  ],
+  "totalCount": 1,
+  "nextPage": null,
+  "totalPages": 1
+}
+```
+
+Each deposit entry includes:
+
+- `deposit` — the source chain transaction where funds were sent to the smart routing address.
+- `bridge` — the bridge transaction that moves funds cross-chain.
+- `execution` — the destination chain transaction where the action was executed.
+
 ## Fee Sponsorship
 
 By default, Smart Routing Address deducts usage fees from the user's transferred tokens. However, as a developer, you can sponsor these fees so your users receive the full amount they deposit.
