@@ -362,6 +362,10 @@ export default defineConfig({
             text: "Magic",
           },
           {
+            link: "/sdk/signers/openfort",
+            text: "Openfort",
+          },
+          {
             link: "/sdk/signers/web3auth",
             text: "Web3Auth",
           },
@@ -690,6 +694,10 @@ export default defineConfig({
           {
             link: "/sdk/v5_3_x/signers/magic",
             text: "Magic",
+          },
+          {
+            link: "/sdk/v5_3_x/signers/openfort",
+            text: "Openfort",
           },
           {
             link: "/sdk/v5_3_x/signers/web3auth",
