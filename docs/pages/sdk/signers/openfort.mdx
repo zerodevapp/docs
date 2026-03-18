@@ -16,7 +16,7 @@ Integrating ZeroDev with Openfort is straightforward after setting up your proje
 ### Install dependencies
 
 ```bash
-npm install @openfort/react @zerodev/ecdsa-validator @zerodev/sdk wagmi viem @tanstack/react-query
+npm install @openfort/react@^1.0.4 @zerodev/ecdsa-validator @zerodev/sdk wagmi viem @tanstack/react-query
 ```
 
 ### Set up providers
@@ -27,10 +27,10 @@ First, configure the Openfort and Wagmi providers in your app:
 import React from "react";
 import {
   OpenfortProvider,
-  getDefaultConfig,
   AuthProvider,
   RecoveryMethod,
 } from "@openfort/react";
+import { getDefaultConfig } from "@openfort/react/wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider, createConfig } from "wagmi";
 import { polygonAmoy } from "viem/chains";
@@ -121,7 +121,7 @@ function ZeroDevAccount() {
 Here's a complete example showing the Openfort authentication flow with ZeroDev integration:
 
 ```tsx
-import { OpenfortButton, useOpenfortAuth } from "@openfort/react";
+import { OpenfortButton, useUser } from "@openfort/react";
 import { useConnectorClient } from "wagmi";
 import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator";
 import { KERNEL_V3_1, getEntryPoint } from "@zerodev/sdk/constants";
@@ -130,7 +130,7 @@ import { createPublicClient, http } from "viem";
 import { polygonAmoy } from "viem/chains";
 
 function App() {
-  const { isAuthenticated } = useOpenfortAuth();
+  const { isAuthenticated } = useUser();
   const { data: walletClient } = useConnectorClient();
 
   const setupZeroDev = async () => {
@@ -162,7 +162,7 @@ function App() {
     <div>
       {/* OpenfortButton handles authentication UI */}
       <OpenfortButton />
-      
+
       {isAuthenticated && walletClient && (
         <button onClick={setupZeroDev}>
           Create ZeroDev Kernel Account
