@@ -33,6 +33,7 @@ import {
   OpenfortProvider,
   AuthProvider,
   RecoveryMethod,
+  AccountTypeEnum,
 } from "@openfort/react";
 import { getDefaultConfig } from "@openfort/react/wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -57,6 +58,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
           walletConfig={{
             shieldPublishableKey: "YOUR_SHIELD_PUBLISHABLE_KEY",
             createEncryptedSessionEndpoint: "YOUR_BACKEND_ENDPOINT", // For automatic recovery
+            accountType: AccountTypeEnum.EOA,
           }}
           uiConfig={{
             authProviders: [
