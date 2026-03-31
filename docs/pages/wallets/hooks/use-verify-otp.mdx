@@ -1,0 +1,87 @@
+import MutationResult from '../shared/mutation-result.mdx'
+
+# useVerifyOTP [Hook for verifying a one-time code and authenticating]
+
+:::danger[IMPORTANT]
+**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
+:::
+
+## Import
+
+```tsx
+import { useVerifyOTP } from '@zerodev/wallet-react'
+```
+
+## Usage
+
+```tsx
+import { useState } from 'react'
+import { useVerifyOTP } from '@zerodev/wallet-react'
+import { useAccount } from 'wagmi'
+
+function VerifyCode({ otpId }: { otpId: string }) {
+  const [code, setCode] = useState('')
+  const verifyOTP = useVerifyOTP()
+  const { address, isConnected } = useAccount()
+
+  if (isConnected) {
+    return <p>Authenticated: {address}</p>
+  }
+
+  return (
+    <div>
+      <input
+        type="text"
+        value={code}
+        onChange={(e) => setCode(e.target.value)}
+        placeholder="Enter verification code"
+      />
+      <button
+        onClick={() => verifyOTP.mutateAsync({ code, otpId })}
+        disabled={verifyOTP.isPending || !code}
+      >
+        {verifyOTP.isPending ? 'Verifying...' : 'Verify'}
+      </button>
+      {verifyOTP.isError && <p>Error: {verifyOTP.error.message}</p>}
+    </div>
+  )
+}
+```
+
+## Parameters
+
+### code
+
+`string`
+
+**Required.** The verification code entered by the user.
+
+### otpId
+
+`string`
+
+**Required.** The OTP identifier returned by [`useSendOTP`](/wallets/hooks/use-send-otp).
+
+## Return Types
+
+[TanStack Query mutation docs](https://tanstack.com/query/v5/docs/react/reference/useMutation)
+
+### mutate
+
+`(variables: { code: string; otpId: string }) => void`
+
+The mutation function to verify the OTP.
+
+### mutateAsync
+
+`(variables: { code: string; otpId: string }) => Promise<void>`
+
+Similar to [`mutate`](#mutate) but returns a promise. Resolves when the code is verified and the wallet is connected.
+
+### data
+
+`void`
+
+This mutation does not return data. On success, the Wagmi connector is connected and the account is available via `useAccount`.
+
+<MutationResult />

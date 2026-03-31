@@ -1,0 +1,89 @@
+import MutationResult from '../shared/mutation-result.mdx'
+
+# useExportWallet [Hook for exporting the wallet seed phrase]
+
+:::danger[IMPORTANT]
+**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
+:::
+
+## Import
+
+```tsx
+import { useExportWallet } from '@zerodev/wallet-react'
+```
+
+## Usage
+
+```tsx
+import { useExportWallet } from '@zerodev/wallet-react'
+
+function ExportSeedPhrase() {
+  const exportWallet = useExportWallet()
+
+  return (
+    <div>
+      <div id="export-container" style={{ minHeight: '200px' }} />
+
+      <button
+        onClick={() =>
+          exportWallet.mutateAsync({
+            iframeContainerId: 'export-container',
+            iframeStyles: {
+              width: '400px',
+              height: '200px',
+              border: 'none',
+            },
+          })
+        }
+        disabled={exportWallet.isPending}
+      >
+        {exportWallet.isPending ? 'Exporting...' : 'Export Seed Phrase'}
+      </button>
+    </div>
+  )
+}
+```
+
+## Parameters
+
+### iframeContainerId
+
+`string`
+
+**Required.** The `id` of the DOM element where the secure export iframe will be rendered. The seed phrase is displayed inside this iframe.
+
+### iframeStyles
+
+`Record<string, string> | undefined`
+
+Optional CSS styles to apply to the export iframe element. Accepts a dictionary of CSS property names to values.
+
+### connector
+
+`Connector | undefined`
+
+The Wagmi connector to export the wallet for. If omitted, uses the currently active connector.
+
+## Return Types
+
+[TanStack Query mutation docs](https://tanstack.com/query/v5/docs/react/reference/useMutation)
+
+### mutate
+
+`(variables: { iframeContainerId: string; iframeStyles?: Record<string, string>; connector?: Connector }) => void`
+
+The mutation function to initiate the wallet export. Renders a secure iframe containing the seed phrase in the specified container.
+
+### mutateAsync
+
+`(variables: { iframeContainerId: string; iframeStyles?: Record<string, string>; connector?: Connector }) => Promise<void>`
+
+Similar to [`mutate`](#mutate) but returns a promise. Resolves when the export iframe is rendered.
+
+### data
+
+`void`
+
+This mutation does not return data. The seed phrase is displayed inside the secure iframe.
+
+<MutationResult />

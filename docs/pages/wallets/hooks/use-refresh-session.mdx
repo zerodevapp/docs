@@ -1,0 +1,66 @@
+import MutationResult from '../shared/mutation-result.mdx'
+
+# useRefreshSession [Hook for manually refreshing the current session]
+
+:::danger[IMPORTANT]
+**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
+:::
+
+## Import
+
+```tsx
+import { useRefreshSession } from '@zerodev/wallet-react'
+```
+
+## Usage
+
+```tsx
+import { useRefreshSession } from '@zerodev/wallet-react'
+
+function SessionControls() {
+  const refreshSession = useRefreshSession()
+
+  return (
+    <button
+      onClick={() => refreshSession.mutateAsync({})}
+      disabled={refreshSession.isPending}
+    >
+      {refreshSession.isPending ? 'Refreshing...' : 'Refresh Session'}
+    </button>
+  )
+}
+```
+
+## Parameters
+
+This hook takes an empty object `{}` as its mutation variable. An optional `connector` can be provided if you have multiple connectors configured.
+
+### connector
+
+`Connector | undefined`
+
+The Wagmi connector to refresh the session for. If omitted, uses the currently active connector.
+
+## Return Types
+
+[TanStack Query mutation docs](https://tanstack.com/query/v5/docs/react/reference/useMutation)
+
+### mutate
+
+`(variables: { connector?: Connector }) => void`
+
+The mutation function to refresh the session.
+
+### mutateAsync
+
+`(variables: { connector?: Connector }) => Promise<unknown>`
+
+Similar to [`mutate`](#mutate) but returns a promise. Resolves with the refreshed session data.
+
+### data
+
+`unknown`
+
+The refreshed session data.
+
+<MutationResult />
