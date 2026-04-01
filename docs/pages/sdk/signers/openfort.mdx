@@ -1,0 +1,183 @@
+# Use Openfort with ZeroDev
+
+[Openfort](https://www.openfort.io/) is a wallet infrastructure platform that provides embedded wallets with built-in account abstraction support. It offers passkey authentication, social login, and seamless onboarding experiences for both web and mobile applications. Openfort's embedded wallets are non-custodial by design and support ERC-4337 smart accounts with features like gas sponsorship, transaction batching, and session keys.
+
+## Set up
+
+To use Openfort with ZeroDev, first create an application that integrates with Openfort.
+
+- Refer to the [Openfort documentation site](https://www.openfort.io/docs) for instructions on setting up an application.
+- For a quick start, Openfort provides a demo application, available [here](https://demo.openfort.io/).
+
+## Integration
+
+Integrating ZeroDev with Openfort is straightforward after setting up your project. Openfort's React SDK integrates with Wagmi, providing easy access to wallet clients that can be used as signers with Kernel.
+
+### Install dependencies
+
+```bash
+npm install @openfort/react@^1.0.4 @zerodev/ecdsa-validator @zerodev/sdk wagmi viem @tanstack/react-query
+```
+
+### Set up providers
+
+First, configure the Openfort and Wagmi providers in your app:
+
+```tsx
+import React from "react";
+import {
+  OpenfortProvider,
+  AuthProvider,
+  RecoveryMethod,
+  AccountTypeEnum,
+} from "@openfort/react";
+import { getDefaultConfig } from "@openfort/react/wagmi";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { WagmiProvider, createConfig } from "wagmi";
+import { polygonAmoy } from "viem/chains";
+
+const config = createConfig(
+  getDefaultConfig({
+    appName: "Your App Name",
+    chains: [polygonAmoy],
+  })
+);
+
+const queryClient = new QueryClient();
+
+export function Providers({ children }: { children: React.ReactNode }) {
+  return (
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <OpenfortProvider
+          publishableKey="YOUR_OPENFORT_PUBLISHABLE_KEY"
+          walletConfig={{
+            shieldPublishableKey: "YOUR_SHIELD_PUBLISHABLE_KEY",
+            createEncryptedSessionEndpoint: "YOUR_BACKEND_ENDPOINT", // For automatic recovery
+            accountType: AccountTypeEnum.EOA,
+          }}
+          uiConfig={{
+            authProviders: [
+              AuthProvider.EMAIL_OTP,
+              AuthProvider.GOOGLE,
+              AuthProvider.WALLET,
+            ],
+            walletRecovery: {
+              defaultMethod: RecoveryMethod.AUTOMATIC,
+            },
+          }}
+        >
+          {children}
+        </OpenfortProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
+  );
+}
+```
+
+### Use with ZeroDev
+
+Once a user is authenticated with Openfort, use Wagmi's `useConnectorClient` hook to get the wallet client, which can be passed to ZeroDev's validator:
+
+```tsx
+import { useConnectorClient } from "wagmi";
+import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator";
+import { KERNEL_V3_1, getEntryPoint } from "@zerodev/sdk/constants";
+import { createPublicClient, http } from "viem";
+import { polygonAmoy } from "viem/chains";
+
+function ZeroDevAccount() {
+  const { data: walletClient } = useConnectorClient();
+
+  const createKernelAccount = async () => {
+    if (!walletClient) {
+      throw new Error("Wallet not connected");
+    }
+
+    const publicClient = createPublicClient({
+      transport: http("https://rpc-amoy.polygon.technology"),
+      chain: polygonAmoy,
+    });
+
+    // Pass the Openfort wallet client to the validator
+    const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
+      signer: walletClient,
+      entryPoint: getEntryPoint("0.7"),
+      kernelVersion: KERNEL_V3_1,
+    });
+
+    // You can now use this ECDSA Validator to create a Kernel account
+    return ecdsaValidator;
+  };
+
+  return (
+    <button onClick={createKernelAccount}>
+      Create ZeroDev Account
+    </button>
+  );
+}
+```
+
+### Full example with authentication
+
+Here's a complete example showing the Openfort authentication flow with ZeroDev integration:
+
+```tsx
+import { OpenfortButton, useUser } from "@openfort/react";
+import { useConnectorClient } from "wagmi";
+import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator";
+import { KERNEL_V3_1, getEntryPoint } from "@zerodev/sdk/constants";
+import { createKernelAccount } from "@zerodev/sdk";
+import { createPublicClient, http } from "viem";
+import { polygonAmoy } from "viem/chains";
+
+function App() {
+  const { isAuthenticated } = useUser();
+  const { data: walletClient } = useConnectorClient();
+
+  const setupZeroDev = async () => {
+    if (!walletClient) return;
+
+    const publicClient = createPublicClient({
+      transport: http("https://rpc-amoy.polygon.technology"),
+      chain: polygonAmoy,
+    });
+
+    const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
+      signer: walletClient,
+      entryPoint: getEntryPoint("0.7"),
+      kernelVersion: KERNEL_V3_1,
+    });
+
+    const kernelAccount = await createKernelAccount(publicClient, {
+      plugins: {
+        sudo: ecdsaValidator,
+      },
+      entryPoint: getEntryPoint("0.7"),
+      kernelVersion: KERNEL_V3_1,
+    });
+
+    console.log("Kernel account address:", kernelAccount.address);
+  };
+
+  return (
+    <div>
+      {/* OpenfortButton handles authentication UI */}
+      <OpenfortButton />
+
+      {isAuthenticated && walletClient && (
+        <button onClick={setupZeroDev}>
+          Create ZeroDev Kernel Account
+        </button>
+      )}
+    </div>
+  );
+}
+```
+
+## Additional Resources
+
+- [Openfort Documentation](https://www.openfort.io/docs)
+- [Openfort React SDK Guide](https://www.openfort.io/docs/products/embedded-wallet/react)
+- [Openfort Demo](https://demo.openfort.io/)
+- [Openfort GitHub](https://github.com/openfort-xyz)
