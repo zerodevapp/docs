@@ -412,28 +412,6 @@ export default defineConfig({
         ],
       },
       {
-        text: "Infra",
-        collapsed: false,
-        items: [
-          {
-            text: "Introduction",
-            link: "/sdk/infra/intro",
-          },
-          {
-            text: "ZeroDev",
-            link: "/meta-infra/intro",
-          },
-          {
-            text: "Pimlico",
-            link: "/sdk/infra/pimlico",
-          },
-          {
-            text: "Coinbase",
-            link: "/sdk/infra/coinbase",
-          },
-        ],
-      },
-      {
         text: "FAQs",
         collapsed: false,
         items: [
