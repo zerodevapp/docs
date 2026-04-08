@@ -184,6 +184,16 @@ export default defineConfig({
         ],
       },
       {
+        text: "Solana",
+        collapsed: false,
+        items: [
+          {
+            text: "Sponsor Gas",
+            link: "/sdk/solana/sponsor-gas",
+          },
+        ],
+      },
+      {
         text: "Advanced",
         collapsed: false,
         items: [
