@@ -1,0 +1,143 @@
+# Sponsor Gas on Solana
+
+With ZeroDev, you can sponsor transaction fees for your users on Solana, so they don't need to hold SOL to interact with your DApp.
+
+## How Solana fee sponsorship works
+
+Unlike EVM chains, Solana doesn't need ERC-4337 or paymasters for fee sponsorship. Every Solana transaction has a **fee payer** field that can be set to any account — it doesn't have to be the same account that initiates the transaction. ZeroDev takes advantage of this by setting the fee payer to a ZeroDev-managed wallet that covers two types of costs:
+
+- **Transaction fees** — the cost of including and executing the transaction on the network.
+- **Rent** — the minimum SOL deposit required to create new accounts or token accounts on-chain (e.g. when calling `createAccount` or `createAssociatedTokenAccount`).
+
+Your users sign the transaction normally, and ZeroDev's sponsorship server co-signs as the fee payer and broadcasts the transaction — all in a single step.
+
+:::info
+Solana doesn't have a notion of chain ID, but we use sentinel values for consistency in our RPC endpoints. Currently supported networks:
+
+- **Solana mainnet** — `9034109930`
+- **Solana devnet** — `9034109931`
+:::
+
+## Paying for sponsored gas
+
+When you sponsor gas through ZeroDev, there are two ways to pay for the gas:
+
+- Put down your credit card. We front the gas for your users, and then at the end of the billing cycle (once a month) we charge your credit card.
+
+- Buy gas credits from us.
+
+## Setting up gas sponsoring policies
+
+To avoid over-spending on sponsoring, you must set up gas-sponsoring policies. Sign up on the [ZeroDev dashboard](https://dashboard.zerodev.app/) if you haven't already, then [set up gas policies](/meta-infra/gas-policies).
+
+Note that you MUST set up a gas policy to begin sponsoring. Without setting up a gas policy, there won't be any gas sponsored.
+
+## Installation
+
+Install the ZeroDev Solana sponsorship SDK along with its peer dependencies:
+
+```bash
+npm i @zerodev/solana-sponsorship-sdk @solana/kit @solana-program/system
+```
+
+## Quick Start
+
+### 1. Get your RPC endpoint
+
+Go to the [ZeroDev dashboard](https://dashboard.zerodev.app/) and create a Solana project. Copy the RPC endpoint for the correct Solana network (mainnet or devnet), e.g. `https://rpc.zerodev.app/api/v3/svm/YOUR_PROJECT_ID/chain/9034109930`.
+
+### 2. Create the sponsorship and Solana RPC clients
+
+Get a Solana RPC URL from a provider like [Alchemy](https://www.alchemy.com/) or [Helius](https://www.helius.dev/), or use the public endpoint `https://api.mainnet-beta.solana.com` (restrictively rate-limited and not advisable for production).
+
+```typescript
+import { createSolanaRpc, mainnet } from "@solana/kit";
+import { createSponsorshipRpc } from "@zerodev/solana-sponsorship-sdk";
+
+const sponsorshipRpc = createSponsorshipRpc({
+  endpoint: "https://rpc.zerodev.app/api/v3/svm/YOUR_PROJECT_ID/chain/9034109930",
+});
+
+const solanaRpc = createSolanaRpc(mainnet("YOUR_SOLANA_RPC_URL"));
+```
+
+### 3. Get a recent blockhash
+
+```typescript
+const { value: { blockhash: recentBlockhash, lastValidBlockHeight } } =
+  await solanaRpc.getLatestBlockhash({ commitment: "finalized" }).send();
+```
+
+### 4. Create your transaction instruction(s)
+
+This can be any Solana instruction. Here we use a simple SOL transfer as an example:
+
+```typescript
+import { lamports } from "@solana/kit";
+import { getTransferSolInstruction } from "@solana-program/system";
+
+const transferInstruction = getTransferSolInstruction({
+  source: userKeypair,          // your user's keypair signer
+  destination: toAddress,       // destination address
+  amount: lamports(1_000_000n), // 0.001 SOL
+});
+```
+
+### 5. Get the sponsor fee payer and build the transaction
+
+Fetch ZeroDev's fee payer address and set it as the transaction's fee payer. We use a `NoopSigner` as a placeholder because the fee payer's private key lives on ZeroDev's server, not the client. The real fee payer signature is added server-side when you call `sponsorTransaction` in the next step.
+
+```typescript
+import {
+  createTransactionMessage,
+  pipe,
+  setTransactionMessageLifetimeUsingBlockhash,
+  address,
+  blockhash,
+  appendTransactionMessageInstructions,
+  setTransactionMessageFeePayerSigner,
+  createNoopSigner,
+} from "@solana/kit";
+
+const feePayer = await sponsorshipRpc.getFeePayer().send();
+
+const message = pipe(
+  createTransactionMessage({ version: "legacy" }),
+  (msg) => setTransactionMessageFeePayerSigner(createNoopSigner(address(feePayer)), msg),
+  (msg) => appendTransactionMessageInstructions([transferInstruction], msg),
+  (msg) => setTransactionMessageLifetimeUsingBlockhash(
+    { blockhash: blockhash(recentBlockhash), lastValidBlockHeight },
+    msg
+  ),
+);
+```
+
+### 6. Sign and sponsor the transaction
+
+The user signs the transaction, then ZeroDev co-signs as the fee payer and broadcasts it to the network:
+
+```typescript
+import { partiallySignTransactionMessageWithSigners } from "@solana/kit";
+import { sponsorTransaction } from "@zerodev/solana-sponsorship-sdk";
+
+const signedMessage = await partiallySignTransactionMessageWithSigners(message);
+const response = await sponsorTransaction(sponsorshipRpc, signedMessage);
+
+console.log(`Transaction sponsored: https://explorer.solana.com/tx/${response.signature}`);
+```
+
+## Error Handling
+
+If sponsorship fails (e.g., you've hit a policy limit), the SDK throws a `SponsorshipError`:
+
+```typescript
+import { sponsorTransaction, SponsorshipError } from "@zerodev/solana-sponsorship-sdk";
+
+try {
+  const response = await sponsorTransaction(sponsorshipRpc, signedMessage);
+} catch (error) {
+  if (error instanceof SponsorshipError) {
+    console.error(`Sponsorship failed (code ${error.code}): ${error.message}`);
+  }
+}
+```
