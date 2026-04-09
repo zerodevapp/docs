@@ -91,7 +91,7 @@ export default defineConfig({
         items: [
           {
             text: "Introduction",
-            link: "/",
+            link: "/introduction",
           },
           {
             text: "Quickstart",
