@@ -126,6 +126,52 @@ const response = await sponsorTransaction(sponsorshipRpc, signedMessage);
 console.log(`Transaction sponsored: https://explorer.solana.com/tx/${response.signature}`);
 ```
 
+## Using with external wallets
+
+If your users sign with an external wallet provider, replace step 6 above: compile the transaction to bytes, sign with the wallet, then decode the signed bytes back for sponsorship.
+
+### Privy
+
+```typescript
+import { compileTransaction, getTransactionEncoder, getTransactionDecoder } from "@solana/kit";
+import { sponsorTransaction } from "@zerodev/solana-sponsorship-sdk";
+import { useSignTransaction } from "@privy-io/react-auth/solana";
+
+const { signTransaction } = useSignTransaction();
+
+// Build the transaction message with pipe() as shown in steps 2–5, then:
+const unsignedTx = compileTransaction(message);
+const encoded = new Uint8Array(getTransactionEncoder().encode(unsignedTx));
+
+const { signedTransaction } = await signTransaction({ transaction: encoded, wallet });
+const decoded = getTransactionDecoder().decode(signedTransaction);
+const result = await sponsorTransaction(sponsorshipRpc, decoded);
+```
+
+### Dynamic
+
+```typescript
+import { compileTransaction, getTransactionEncoder, getTransactionDecoder } from "@solana/kit";
+import { sponsorTransaction } from "@zerodev/solana-sponsorship-sdk";
+import { isSolanaWallet } from "@dynamic-labs/solana";
+import { useDynamicContext } from "@dynamic-labs/sdk-react-core";
+
+const { primaryWallet } = useDynamicContext();
+if (!primaryWallet || !isSolanaWallet(primaryWallet)) throw new Error("No Solana wallet");
+
+// Build the transaction message with pipe() as shown in steps 2–5, then:
+const unsignedTx = compileTransaction(message);
+const encoded = new Uint8Array(getTransactionEncoder().encode(unsignedTx));
+
+const { VersionedTransaction } = await import("@solana/web3.js");
+const signer = await primaryWallet.getSigner();
+const versionedTx = VersionedTransaction.deserialize(encoded);
+const signedTx = await (signer.signTransaction as any)(versionedTx);
+
+const decoded = getTransactionDecoder().decode((signedTx as any).serialize());
+const result = await sponsorTransaction(sponsorshipRpc, decoded);
+```
+
 ## Error Handling
 
 If sponsorship fails (e.g., you've hit a policy limit), the SDK throws a `SponsorshipError`:
