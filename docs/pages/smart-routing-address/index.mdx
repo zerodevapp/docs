@@ -225,12 +225,6 @@ const { smartRoutingAddress, estimatedFees } = await createSmartRoutingAddress({
 
 Only tokens that are **both** configured with the project ID in the code **and** selected in the dashboard will be sponsored. For these tokens, usage fees are charged to your ZeroDev account, ensuring users receive the full deposit amount.
 
-## Pricing
-
-- Usage pricing (paid by the user with their transferred tokens, or sponsored by the developer):
-  - 20 basis points (0.20%) for transfers of $1000 or less.
-  - 10 basis points (0.10%) for transfers above $1000
-
 ### Notes
 
 - Smart Routing Address integrates with bridges under the hood, so the usage pricing is on top of the underlying bridge fees.
