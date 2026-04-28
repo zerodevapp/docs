@@ -1,0 +1,57 @@
+# What is ZeroDev?
+
+ZeroDev is an expressive developer toolkit for building next-generation onchain applications. We provide the modular infrastructure and SDKs required to create seamless, automated, and chain-abstracted experiences—without forcing your team to build or maintain the underlying protocol plumbing.
+
+ZeroDev provides two core pillars that work together:
+
+- **Managed Infrastructure Layer**: A production-ready stack including bundlers, gas sponsorship (paymasters), and the Kernel—the industry’s most expressive and widely deployed modular smart account.  
+- **Chain Abstraction & Connectivity**: Tools like Smart Routing Address (SRA) that enable one-click funding and execution across the entire multichain ecosystem.
+
+## The Integration Problem
+
+Standards define the protocol. They don’t give you the stack.
+
+To ship a feature as simple as sponsored gas, you need a smart account contract, a sponsorship service, a transaction relayer, a policy engine to control spending, and an SDK to connect it all to your frontend. In a multichain world, this complexity multiplies as you move liquidity between fragmented networks.
+
+ZeroDev assembles this stack and operates it as a service. Kernel is your account layer: modular, audited, and highly expressive.
+
+* Infrastructure (Bundlers/Paymasters) runs across 75+ chains with Enterprise SLAs.  
+* Smart Routing Address (SRA) acts as your connectivity layer, allowing users to fund accounts from any source—CEXs, fiat on-ramps, or other chains—directly to their destination.
+
+## Build or Buy?
+
+Building infrastructure in-house is possible. It requires engineers who understand the EntryPoint contract, UserOperation lifecycle, paymaster validation rules, and bundler behavior under load—a specialized intersection of protocol knowledge and infrastructure engineering. Once built, it requires ongoing maintenance as the standard evolves and as you add chains.
+
+ZeroDev is the buy answer for teams that want smart account capabilities without a dedicated protocol engineering function. The Kernel contract is open source and extensively audited. The infrastructure is shared across production deployments, which means reliability is a product priority rather than a per-customer concern. Enterprise SLAs and support contracts are available for teams that need them.
+
+For early-stage companies, adopting ZeroDev means shipping features in days instead of months. For larger teams, it means redirecting protocol engineering capacity toward differentiated product work.
+
+## How Will ZeroDev Improve My Product?
+
+ZeroDev enables four user-facing improvements that have the highest impact on conversion and retention:
+
+No gas friction. Sponsor transactions for your users so they never need to hold `ETH`. This eliminates the single biggest drop-off point for new users arriving from non-crypto contexts. You configure spending limits and eligibility rules through a dashboard; no contract changes required.
+
+Familiar authentication. Let users create wallets with passkeys (Face ID/Touch ID) or social login (Google, email, and others), with no seed phrases or browser extensions. Users get self-custodial accounts through flows that feel like standard web authentication.
+
+One-click flows. Batch multiple onchain operations into a single user confirmation. 
+
+Approve-and-swap, mint-and-list, stake-and-delegate—interactions that currently require two or more transactions become one. This has a direct effect on completion rates for any multi-step flow.
+
+Persistent sessions. Issue-scoped, time-bounded permissions (session keys) so repeat users don’t confirm every action. The user approves a session once; subsequent actions execute silently within the authorized scope.
+
+Remove the bridge & swap hurdle. With Smart Routing, users get a unified balance and a single deposit address that works across the entire ecosystem.
+
+Each of these maps to a ZeroDev feature with documented integration time. None of them requires changes to your existing contract architecture.
+
+## SDKs
+
+ZeroDev provides three SDKs, each calibrated to a different integration depth:
+
+* @zerodev/wallet: Wagmi connectors and [EIP-1193](https://eips.ethereum.org/EIPS/eip-1193) providers. If your frontend already uses Wagmi, this is the lowest-friction integration path. Drop in a connector, configure gas sponsorship through the dashboard, and you have smart wallet features without touching your account logic. This is the right starting point for DApp teams adding smart wallet support.  
+* @zerodev/core: The full-featured SDK for teams building embedded wallets or needing fine-grained control over account creation, session management, and signing. Supports all major auth providers (Privy, Magic, Dynamic, Web3Auth, Fireblocks, Capsule, and others) as plug-in signers.  
+* @zerodev/waas: A React SDK built on @zerodev/core, providing hooks for wallet state, transaction management, session handling, and chain switching. For React-native wallet products, this is the fastest path to full feature coverage.
+
+Infrastructure concerns—bundler uptime, paymaster balance management, chain support—are handled by ZeroDev. Your team owns the integration; ZeroDev owns the ops.
+
+For teams evaluating integration scope before committing: each SDK has a working quickstart that covers the full round-trip (account creation, sponsored transaction, session key issuance) in under 50 lines of code.  
