@@ -10,7 +10,7 @@ When you sponsor gas through ZeroDev, there are two ways to pay for the gas:
 
 ## Setting up gas sponsoring policies
 
-To avoid over-spending gas on sponsoring, you must set up gas-sponsoring policies.  Sign up on the ZeroDev dashboard if you haven't already, then [set up gas policies](/meta-infra/gas-policies).
+To avoid over-spending gas on sponsoring, you must set up gas-sponsoring policies.  Sign up on the ZeroDev dashboard if you haven't already, then [set up gas policies](/resources/infrastructure/gas-policies).
 
 Note that you MUST set up a gas policy to begin sponsoring.  Without setting up a gas policy, there won't be any gas sponsored.
 
@@ -20,7 +20,7 @@ Note that you MUST set up a gas policy to begin sponsoring.  Without setting up 
 Impatient?  Check out [complete examples here](https://github.com/zerodevapp/zerodev-examples/blob/main/create-account/main.ts).
 :::
 
-When [setting up an account](/sdk/core-api/create-account), you can specify a `getPaymasterData` function in `paymaster` when you [create the account client](/sdk/core-api/create-account#create-an-account-client).
+When [setting up an account](/smart-accounts/create-a-smart-account), you can specify a `getPaymasterData` function in `paymaster` when you [create the account client](/smart-accounts/create-a-smart-account#create-an-account-client).
 
 The `getPaymasterData` function essentially takes a UserOp and then returns a UserOp with the `paymasterAndData` field set.  For example, if you are using the ZeroDev paymaster, use the `createZeroDevPaymasterClient` helper function:
 
@@ -52,7 +52,7 @@ const kernelClient = createKernelAccountClient({
 
 ### What happens when you reach the sponsorship limit?
 
-If you have reached the sponsorship limit, either because of the [policies](/meta-infra/gas-policies) you set up or because you have reached an account-level limit, sending UserOp will fail.
+If you have reached the sponsorship limit, either because of the [policies](/resources/infrastructure/gas-policies) you set up or because you have reached an account-level limit, sending UserOp will fail.
 
 If, instead of failing, you want the UserOp to proceed but use the user's own native tokens (e.g. ETH), then you can set up your `paymaster` middleware like this:
 

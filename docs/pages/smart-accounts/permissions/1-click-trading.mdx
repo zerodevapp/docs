@@ -53,7 +53,7 @@ With a permissions validator, you are putting together:
 
 ### Creating a signer
 
-Start by creating a [ECDSA signer](/sdk/permissions/signers/ecdsa):
+Start by creating a [ECDSA signer](/smart-accounts/permissions/signers/ecdsa):
 
 ```ts
 const sessionPrivateKey = generatePrivateKey()
@@ -113,7 +113,7 @@ Now, we have created a ECDSA session key that's subject to a call policy and a r
 
 ### Using the session key
 
-Finally, we can set up the account with this session key as the signer.  Note that if this is the first time that the session key is used, we need to [enable the plugin](/sdk/core-api/using-plugins#enabling-a-regular-validator).
+Finally, we can set up the account with this session key as the signer.  Note that if this is the first time that the session key is used, we need to [enable the plugin](/smart-accounts/use-plugins/overview#enabling-a-regular-validator).
 
 ```ts
 const account = await createKernelAccount(publicClient, {
@@ -126,7 +126,7 @@ const account = await createKernelAccount(publicClient, {
 })
 ```
 
-Now you can [set up a Kernel client](/sdk/core-api/create-account#create-an-account-client) using this account, and start minting NFTs with this session key -- but only up to once a month!
+Now you can [set up a Kernel client](/smart-accounts/create-a-smart-account#create-an-account-client) using this account, and start minting NFTs with this session key -- but only up to once a month!
 
 Try running [this script](https://github.com/zerodevapp/zerodev-examples/blob/main/permissions/main.ts) and see for yourself.
 

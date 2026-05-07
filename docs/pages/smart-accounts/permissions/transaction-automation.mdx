@@ -1,6 +1,6 @@
 # Tutorial -- Transaction Automation
 
-In this tutorial, you will learn how to automate transactions for your users using [session keys](/sdk/permissions/intro).  This is useful when you want to send transactions for your users from your server, for instance.
+In this tutorial, you will learn how to automate transactions for your users using [session keys](/smart-accounts/permissions/intro).  This is useful when you want to send transactions for your users from your server, for instance.
 
 Refer to [this code example](https://github.com/zerodevapp/zerodev-examples/blob/main/session-keys/transaction-automation.ts) while you follow along the tutorial.  You can run the example by following instructions of [the examples repo](https://github.com/zerodevapp/zerodev-examples).
 
@@ -49,7 +49,7 @@ From a high level, this is how transaction automation works:
 
 ### Agent: creating a session key
 
-From the agent's side, create a [ECDSA signer](/sdk/permissions/signers/ecdsa) as the session key:
+From the agent's side, create a [ECDSA signer](/smart-accounts/permissions/signers/ecdsa) as the session key:
 
 ```ts
 const sessionPrivateKey = generatePrivateKey()
@@ -86,7 +86,7 @@ Send this address to the owner.
 
 ### Owner: approving the session key
 
-Now, on the owner side, approve the session key with [policies](/sdk/permissions/intro#policies):
+Now, on the owner side, approve the session key with [policies](/smart-accounts/permissions/intro#policies):
 
 ```ts
 const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
@@ -202,7 +202,7 @@ const txHash = await sudoKernelClient.uninstallPlugin({
 
 ### Creating multiple session keys on multiple chains in one signature
 
-[Refer to this page.](/sdk/advanced/multi-chain-signing)
+[Refer to this page.](/advanced/multi-chain-signing)
 
 ### Using session keys with 7702
 

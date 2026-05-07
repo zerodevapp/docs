@@ -20,7 +20,7 @@ Let's go through these two steps next.
 
 ### Set up Kernel Client
 
-When you [set up an account](/sdk/core-api/create-account#create-an-account-client), do this:
+When you [set up an account](/smart-accounts/create-a-smart-account#create-an-account-client), do this:
 
 ```typescript
 import {
@@ -69,7 +69,7 @@ const userOpHash = await kernelClient.sendUserOperation({
 })
 ```
 
-Thanks to [batching](/sdk/core-api/batch-transactions), it's possible to batch the approval with the UserOp you want to send:
+Thanks to [batching](/smart-accounts/batch-transactions), it's possible to batch the approval with the UserOp you want to send:
 
 ```typescript
 const userOpHash = await kernelClient.sendUserOperation({

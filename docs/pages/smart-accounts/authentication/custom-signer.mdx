@@ -2,7 +2,7 @@
 ZeroDev offers the flexibility to integrate various types of signers, catering to diverse application requirements.
 
 ## Using Externally Owned Accounts (EOAs)
-Most commonly used signers are Externally Owned Accounts (EOAs). If you're using a signer that falls under this category and isn't explicitly covered in our documentation, we recommend visiting our dedicated [EOA integration section](/sdk/signers/eoa). This section provides detailed guidance on integrating EOAs with ZeroDev.
+Most commonly used signers are Externally Owned Accounts (EOAs). If you're using a signer that falls under this category and isn't explicitly covered in our documentation, we recommend visiting our dedicated [EOA integration section](/smart-accounts/authentication/eoa). This section provides detailed guidance on integrating EOAs with ZeroDev.
 
 ## Implementing Custom Signers
 
@@ -10,4 +10,4 @@ If your requirements extend beyond standard EOAs, ZeroDev supports the integrati
 
 One easy way to implement a `SmartAccountSigner` is to implement Viem's account type, [by following this guide](https://viem.sh/docs/accounts/local/toAccount).
 
-Once you've implemented the signer, you should be able to [use it with a validator](/sdk/core-api/create-account#creating-a-ecdsa-validator).
+Once you've implemented the signer, you should be able to [use it with a validator](/smart-accounts/create-a-smart-account#creating-a-ecdsa-validator).

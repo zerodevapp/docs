@@ -1,6 +1,6 @@
 # Recovery
 
-With Kernel's [permissions system](/sdk/permissions/intro), it's possible to set up a guardian (or multiple guardians) for a smart account, so that if the owner loses their key, the guardian(s) can recover the key for the owner.
+With Kernel's [permissions system](/smart-accounts/permissions/intro), it's possible to set up a guardian (or multiple guardians) for a smart account, so that if the owner loses their key, the guardian(s) can recover the key for the owner.
 
 There are two typical types of recovery:
 
@@ -32,11 +32,11 @@ const guardianValidator = await signerToEcdsaValidator(publicClient, {
 })
 ```
 
-If you want multiple guardians, set up a [multisig validator](/sdk/advanced/multisig) instead.
+If you want multiple guardians, set up a [multisig validator](/smart-accounts/use-plugins/multisig) instead.
 
 ### Setting up account with the recovery action
 
-We have deployed a simple recovery executor that can recover any accounts using [the ECDSA validator](/sdk/permissions/signers/ecdsa).  You can set it up with the following values:
+We have deployed a simple recovery executor that can recover any accounts using [the ECDSA validator](/smart-accounts/permissions/signers/ecdsa).  You can set it up with the following values:
 
 ```ts
 import { toFunctionSelector } from "viem"
@@ -67,7 +67,7 @@ you only need to set the sudo validator if you are enabling the guardian validat
 
 ### Executing recovery
 
-After you [construct the account client from the account](/sdk/core-api/create-account#create-an-account-client), you can execute recovery as such:
+After you [construct the account client from the account](/smart-accounts/create-a-smart-account#create-an-account-client), you can execute recovery as such:
 
 ```ts
 import { encodeFunctionData } from "viem"
@@ -84,7 +84,7 @@ const userOpHash = await kernelClient.sendUserOperation({
 
 ### Using account with the new owner
 
-After you update the account owner, the account address can no longer by computed from the new owner.  Therefore, you should use the `address` option to manually set the account address when you [create the account object](/sdk/core-api/create-account#create-a-kernel-account).  For example:
+After you update the account owner, the account address can no longer by computed from the new owner.  Therefore, you should use the `address` option to manually set the account address when you [create the account object](/smart-accounts/create-a-smart-account#create-a-kernel-account).  For example:
 
 ```ts
 const account = await createKernelAccount(publicClient, {

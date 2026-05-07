@@ -12,14 +12,14 @@ By allowing you to swap between base tokens and DeFi tokens, you can easily:
 - Swap between any token pairs.
 - Entering and exiting DeFi positions (staking, lending, etc.)
 
-ZeroDev leverages [batching](/sdk/core-api/batch-transactions) and [delegatecall](/sdk/core-api/delegatecall) internally to ensure that even complex routes are executed in one atomic UserOp, providing the user with low latency, low gas cost, and high safety.
+ZeroDev leverages [batching](/smart-accounts/batch-transactions) and [delegatecall](/advanced/delegatecall) internally to ensure that even complex routes are executed in one atomic UserOp, providing the user with low latency, low gas cost, and high safety.
 
 ## Supported Tokens
 
 See the full lists of supported base tokens and DeFi tokens:
 
-- [Base tokens](/sdk/advanced/supported-base-tokens)
-- [DeFi tokens (protocols)](/sdk/advanced/supported-defi-tokens)
+- [Base tokens](/cross-chain/chain-abstraction/supported-base-tokens)
+- [DeFi tokens (protocols)](/cross-chain/chain-abstraction/supported-defi-tokens)
 
 ## Installation
 
@@ -61,7 +61,7 @@ const defiClient = createKernelDefiClient(kernelClient, projectId)
 
 Where:
 
-- `kernelClient` is the [account client](/sdk/core-api/create-account#create-an-account-client) object.
+- `kernelClient` is the [account client](/smart-accounts/create-a-smart-account#create-an-account-client) object.
 - `projectId` is your ZeroDev project ID, obtained from the dashboard.
 
 ### Swapping Tokens
@@ -161,10 +161,10 @@ const accountBalances = await defiClient.listTokenBalances({
 The `gasToken` flag specifies how gas is paid for the UserOp.  It can be one of the following values:
 
 - `sponsored`: sponsor the UserOp.
-- `fromToken`: pays gas in the input token, using a [ERC20 paymaster](/sdk/core-api/pay-gas-with-erc20s).
-- `toToken`: pays gas in the output token, using a [ERC20 paymaster](/sdk/core-api/pay-gas-with-erc20s).
+- `fromToken`: pays gas in the input token, using a [ERC20 paymaster](/smart-accounts/pay-gas-with-erc20s).
+- `toToken`: pays gas in the output token, using a [ERC20 paymaster](/smart-accounts/pay-gas-with-erc20s).
 - `native`: pays gas in the native token, using the account's balance.
-- You can also specify an `Address` for a ERC20 token, to pay gas with that token using a [ERC20 paymaster](/sdk/core-api/pay-gas-with-erc20s).
+- You can also specify an `Address` for a ERC20 token, to pay gas with that token using a [ERC20 paymaster](/smart-accounts/pay-gas-with-erc20s).
 
 ### Getting the UserOp without sending
 

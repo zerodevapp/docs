@@ -6,9 +6,9 @@ Impatient?  Check out [a complete example here](https://github.com/zerodevapp/ze
 
 At the core of account abstraction is the *smart account* -- an account powered by a smart contract.  ZeroDev is built on [Kernel](https://github.com/zerodevapp/kernel), a *modular smart account* that can be customized with plugins.
 
-When you create a Kernel account, you set it up with a *validator*, which is a type of plugin that handles how the account validates UserOps.  In this tutorial, we will be using the ECDSA validator, which works like a normal EOA by validating signatures from a ECDSA private key.  ZeroDev supports other validators such as [passkeys](/sdk/advanced/passkeys) and [multisig](/sdk/advanced/multisig).
+When you create a Kernel account, you set it up with a *validator*, which is a type of plugin that handles how the account validates UserOps.  In this tutorial, we will be using the ECDSA validator, which works like a normal EOA by validating signatures from a ECDSA private key.  ZeroDev supports other validators such as [passkeys](/smart-accounts/use-plugins/passkeys/overview) and [multisig](/smart-accounts/use-plugins/multisig).
 
-We will be using a local private key, but the ECDSA validator also works with [third-party auth providers](/sdk/signers/intro).
+We will be using a local private key, but the ECDSA validator also works with [third-party auth providers](/smart-accounts/use-plugins/signers-intro).
 
 ## Installation
 
@@ -154,9 +154,9 @@ Note that:
 
 - You need to replace the `ZERODEV_RPC` with the RPC found on your ZeroDev dashboard.
 - You need to make sure to set the right `chain`.
-- `paymaster` only needs to be specified if you want to [use a paymaster](/sdk/core-api/sponsor-gas).
+- `paymaster` only needs to be specified if you want to [use a paymaster](/smart-accounts/sponsor-gas/evm).
 
-Now you are ready to do things with your smart account, like [sending UserOps](/sdk/core-api/send-transactions)!
+Now you are ready to do things with your smart account, like [sending UserOps](/smart-accounts/send-transactions)!
 
 ## FAQs
 

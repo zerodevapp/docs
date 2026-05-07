@@ -71,7 +71,7 @@ const remoteSigner = await toRemoteSigner({
 
 Since `remoteSigner` is a [Viem account](https://viem.sh/docs/accounts/privateKey), you can use it wherever a Viem account is expected.
 
-For example, to use the remote signer as a [session key](/sdk/permissions/intro):
+For example, to use the remote signer as a [session key](/smart-accounts/permissions/intro):
 
 ```ts
 const ecdsaSigner = toECDSASigner({ signer: remoteSigner })
