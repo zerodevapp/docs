@@ -344,24 +344,20 @@ export default defineConfig({
           { text: "Quickstart", link: "/get-started/quickstart" },
           {
             text: "SDKs",
-            collapsed: true,
+            collapsed: false,
             items: [
               { text: "Overview", link: "/get-started/sdks/overview" },
               {
+                text: "Set up a project",
+                link: "/get-started/sdks/setup-project",
+              },
+              {
                 text: "Client-side",
-                collapsed: true,
+                collapsed: false,
                 items: [
                   {
                     text: "TypeScript / JavaScript",
                     link: "/get-started/sdks/client-side/typescript",
-                  },
-                  {
-                    text: "React Hooks (waas, legacy)",
-                    link: "/advanced/react-hooks/getting-started",
-                  },
-                  {
-                    text: "Embedded Wallet (React)",
-                    link: "/smart-accounts/embedded-wallet/quickstart",
                   },
                   {
                     text: "iOS (Swift)",
@@ -375,7 +371,7 @@ export default defineConfig({
               },
               {
                 text: "Server-side",
-                collapsed: true,
+                collapsed: false,
                 items: [
                   {
                     text: "Node.js / TypeScript",
@@ -405,13 +401,12 @@ export default defineConfig({
             text: "Code Examples",
             link: "https://github.com/zerodevapp/zerodev-examples",
           },
-          { text: "Docs for SDK v5.3.x", link: "/sdk/v5_3_x/" },
         ],
       },
     ],
     "/smart-accounts": [
       {
-        text: "Smart Accounts & Wallets",
+        text: "Smart Account",
         collapsed: false,
         items: [
           {
@@ -489,35 +484,6 @@ export default defineConfig({
             ],
           },
           {
-            text: "Use Plugins",
-            collapsed: true,
-            items: [
-              {
-                text: "Overview",
-                link: "/smart-accounts/use-plugins/overview",
-              },
-              {
-                text: "Signers Introduction",
-                link: "/smart-accounts/use-plugins/signers-intro",
-              },
-              {
-                text: "Passkeys",
-                link: "/smart-accounts/use-plugins/passkeys/overview",
-                collapsed: true,
-                items: [
-                  {
-                    text: "Code Example: Tutorial",
-                    link: "/smart-accounts/use-plugins/passkeys/tutorial",
-                  },
-                ],
-              },
-              {
-                text: "Multisig",
-                link: "/smart-accounts/use-plugins/multisig",
-              },
-            ],
-          },
-          {
             text: "Send Transactions",
             link: "/smart-accounts/send-transactions",
           },
@@ -527,7 +493,7 @@ export default defineConfig({
           },
           {
             text: "Sponsor Gas",
-            collapsed: true,
+            collapsed: false,
             items: [
               { text: "EVM", link: "/smart-accounts/sponsor-gas/evm" },
               { text: "Solana", link: "/smart-accounts/sponsor-gas/solana" },
@@ -670,124 +636,153 @@ export default defineConfig({
             ],
           },
           {
-            text: "Embedded Wallet",
+            text: "Use Plugins",
             collapsed: true,
             items: [
               {
-                text: "Introduction",
-                link: "/smart-accounts/embedded-wallet",
+                text: "Overview",
+                link: "/smart-accounts/use-plugins/overview",
               },
               {
-                text: "Quickstart",
-                link: "/smart-accounts/embedded-wallet/quickstart",
+                text: "Signers Introduction",
+                link: "/smart-accounts/use-plugins/signers-intro",
               },
               {
-                text: "Demo",
-                link: "https://zerodev-signer-demo.vercel.app/",
-              },
-              {
-                text: "Authentication",
+                text: "Passkeys",
+                link: "/smart-accounts/use-plugins/passkeys/overview",
                 collapsed: true,
                 items: [
                   {
-                    text: "Passkeys",
-                    link: "/smart-accounts/embedded-wallet/auth/passkeys",
-                  },
-                  {
-                    text: "Email OTP",
-                    link: "/smart-accounts/embedded-wallet/auth/email-otp",
-                  },
-                  {
-                    text: "Magic Link",
-                    link: "/smart-accounts/embedded-wallet/auth/magic-link",
-                  },
-                  {
-                    text: "Google OAuth",
-                    link: "/smart-accounts/embedded-wallet/auth/google-oauth",
+                    text: "Code Example: Tutorial",
+                    link: "/smart-accounts/use-plugins/passkeys/tutorial",
                   },
                 ],
               },
               {
-                text: "Features",
-                collapsed: true,
-                items: [
-                  {
-                    text: "Session Management",
-                    link: "/smart-accounts/embedded-wallet/session-management",
-                  },
-                  {
-                    text: "Export Wallet",
-                    link: "/smart-accounts/embedded-wallet/export",
-                  },
-                ],
+                text: "Multisig",
+                link: "/smart-accounts/use-plugins/multisig",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        text: "Embedded Wallet",
+        collapsed: false,
+        items: [
+          {
+            text: "Introduction",
+            link: "/smart-accounts/embedded-wallet",
+          },
+          {
+            text: "Quickstart",
+            link: "/smart-accounts/embedded-wallet/quickstart",
+          },
+          {
+            text: "Demo",
+            link: "https://zerodev-signer-demo.vercel.app/",
+          },
+          {
+            text: "Authentication",
+            collapsed: true,
+            items: [
+              {
+                text: "Passkeys",
+                link: "/smart-accounts/embedded-wallet/auth/passkeys",
               },
               {
-                text: "Wallet API",
-                collapsed: true,
-                items: [
-                  {
-                    text: "Send a Transaction",
-                    link: "/smart-accounts/embedded-wallet/wallet-api/send-transaction",
-                  },
-                  {
-                    text: "Sign a Message",
-                    link: "/smart-accounts/embedded-wallet/wallet-api/sign-message",
-                  },
-                  {
-                    text: "Sign a Typed Message",
-                    link: "/smart-accounts/embedded-wallet/wallet-api/sign-typed-message",
-                  },
-                ],
+                text: "Email OTP",
+                link: "/smart-accounts/embedded-wallet/auth/email-otp",
               },
               {
-                text: "Hooks",
-                collapsed: true,
-                items: [
-                  {
-                    text: "useRegisterPasskey",
-                    link: "/smart-accounts/embedded-wallet/hooks/use-register-passkey",
-                  },
-                  {
-                    text: "useLoginPasskey",
-                    link: "/smart-accounts/embedded-wallet/hooks/use-login-passkey",
-                  },
-                  {
-                    text: "useAuthenticateOAuth",
-                    link: "/smart-accounts/embedded-wallet/hooks/use-authenticate-oauth",
-                  },
-                  {
-                    text: "useSendOTP",
-                    link: "/smart-accounts/embedded-wallet/hooks/use-send-otp",
-                  },
-                  {
-                    text: "useVerifyOTP",
-                    link: "/smart-accounts/embedded-wallet/hooks/use-verify-otp",
-                  },
-                  {
-                    text: "useSendMagicLink",
-                    link: "/smart-accounts/embedded-wallet/hooks/use-send-magic-link",
-                  },
-                  {
-                    text: "useVerifyMagicLink",
-                    link: "/smart-accounts/embedded-wallet/hooks/use-verify-magic-link",
-                  },
-                  {
-                    text: "useGetUserEmail",
-                    link: "/smart-accounts/embedded-wallet/hooks/use-get-user-email",
-                  },
-                  {
-                    text: "useRefreshSession",
-                    link: "/smart-accounts/embedded-wallet/hooks/use-refresh-session",
-                  },
-                  {
-                    text: "useExportWallet",
-                    link: "/smart-accounts/embedded-wallet/hooks/use-export-wallet",
-                  },
-                  {
-                    text: "useExportPrivateKey",
-                    link: "/smart-accounts/embedded-wallet/hooks/use-export-private-key",
-                  },
-                ],
+                text: "Magic Link",
+                link: "/smart-accounts/embedded-wallet/auth/magic-link",
+              },
+              {
+                text: "Google OAuth",
+                link: "/smart-accounts/embedded-wallet/auth/google-oauth",
+              },
+            ],
+          },
+          {
+            text: "Features",
+            collapsed: true,
+            items: [
+              {
+                text: "Session Management",
+                link: "/smart-accounts/embedded-wallet/session-management",
+              },
+              {
+                text: "Export Wallet",
+                link: "/smart-accounts/embedded-wallet/export",
+              },
+            ],
+          },
+          {
+            text: "Wallet API",
+            collapsed: true,
+            items: [
+              {
+                text: "Send a Transaction",
+                link: "/smart-accounts/embedded-wallet/wallet-api/send-transaction",
+              },
+              {
+                text: "Sign a Message",
+                link: "/smart-accounts/embedded-wallet/wallet-api/sign-message",
+              },
+              {
+                text: "Sign a Typed Message",
+                link: "/smart-accounts/embedded-wallet/wallet-api/sign-typed-message",
+              },
+            ],
+          },
+          {
+            text: "Hooks",
+            collapsed: true,
+            items: [
+              {
+                text: "useRegisterPasskey",
+                link: "/smart-accounts/embedded-wallet/hooks/use-register-passkey",
+              },
+              {
+                text: "useLoginPasskey",
+                link: "/smart-accounts/embedded-wallet/hooks/use-login-passkey",
+              },
+              {
+                text: "useAuthenticateOAuth",
+                link: "/smart-accounts/embedded-wallet/hooks/use-authenticate-oauth",
+              },
+              {
+                text: "useSendOTP",
+                link: "/smart-accounts/embedded-wallet/hooks/use-send-otp",
+              },
+              {
+                text: "useVerifyOTP",
+                link: "/smart-accounts/embedded-wallet/hooks/use-verify-otp",
+              },
+              {
+                text: "useSendMagicLink",
+                link: "/smart-accounts/embedded-wallet/hooks/use-send-magic-link",
+              },
+              {
+                text: "useVerifyMagicLink",
+                link: "/smart-accounts/embedded-wallet/hooks/use-verify-magic-link",
+              },
+              {
+                text: "useGetUserEmail",
+                link: "/smart-accounts/embedded-wallet/hooks/use-get-user-email",
+              },
+              {
+                text: "useRefreshSession",
+                link: "/smart-accounts/embedded-wallet/hooks/use-refresh-session",
+              },
+              {
+                text: "useExportWallet",
+                link: "/smart-accounts/embedded-wallet/hooks/use-export-wallet",
+              },
+              {
+                text: "useExportPrivateKey",
+                link: "/smart-accounts/embedded-wallet/hooks/use-export-private-key",
               },
             ],
           },
@@ -860,113 +855,18 @@ export default defineConfig({
             link: "/advanced/userop-builder-api",
           },
           { text: "Go SDK (legacy)", link: "/advanced/go-sdk" },
-          {
-            text: "React Hooks (@zerodev/waas, legacy)",
-            collapsed: true,
-            items: [
-              {
-                text: "Getting Started",
-                link: "/advanced/react-hooks/getting-started",
-              },
-              {
-                text: "Code Examples",
-                link: "https://github.com/zerodevapp/waas-examples",
-              },
-              { text: "useBalance", link: "/advanced/react-hooks/use-balance" },
-              { text: "useChainId", link: "/advanced/react-hooks/use-chainid" },
-              { text: "useChains", link: "/advanced/react-hooks/use-chains" },
-              {
-                text: "useCreateBasicSession",
-                link: "/advanced/react-hooks/use-create-basic-session",
-              },
-              {
-                text: "useCreateSession",
-                link: "/advanced/react-hooks/use-create-session",
-              },
-              {
-                text: "useCreateKernelClientEOA",
-                link: "/advanced/react-hooks/use-create-kernelclient-eoa",
-              },
-              {
-                text: "useCreateKernelClientPasskey",
-                link: "/advanced/react-hooks/use-create-kernelclient-passkey",
-              },
-              {
-                text: "useCreateKernelClientSocial",
-                link: "/advanced/react-hooks/use-create-kernelclient-social",
-              },
-              {
-                text: "useDisconnectKernelClient",
-                link: "/advanced/react-hooks/use-disconnect-kernelclient",
-              },
-              {
-                text: "useKernelClient",
-                link: "/advanced/react-hooks/use-kernelclient",
-              },
-              {
-                text: "useSendTransaction",
-                link: "/advanced/react-hooks/use-send-transaction",
-              },
-              {
-                text: "useSendTransactionWithSession",
-                link: "/advanced/react-hooks/use-send-transaction-with-session",
-              },
-              {
-                text: "useSendUserOperation",
-                link: "/advanced/react-hooks/use-send-useroperation",
-              },
-              {
-                text: "useSendUserOperationWithSession",
-                link: "/advanced/react-hooks/use-send-useroperation-with-session",
-              },
-              { text: "useSessions", link: "/advanced/react-hooks/use-sessions" },
-              {
-                text: "useSessionKernelClient",
-                link: "/advanced/react-hooks/use-session-kernelclient",
-              },
-              {
-                text: "useSetKernelClient",
-                link: "/advanced/react-hooks/use-set-kernelclient",
-              },
-              {
-                text: "useSwitchChain",
-                link: "/advanced/react-hooks/use-switch-chain",
-              },
-              {
-                text: "useWalletConnect",
-                link: "/advanced/react-hooks/use-wallet-connect",
-              },
-            ],
-          },
         ],
       },
     ],
-    "/resources": [
+    "/api-and-toolings": [
       {
-        text: "Resources",
+        text: "API & Toolings",
         collapsed: false,
         items: [
           {
             text: "Infrastructure",
-            collapsed: true,
+            collapsed: false,
             items: [
-              { text: "Introduction", link: "/resources/infrastructure/intro" },
-              {
-                text: "Choose an Infra Provider",
-                link: "/resources/infrastructure/choose-an-infra-provider",
-              },
-              {
-                text: "ZeroDev infra",
-                link: "/resources/infrastructure/zerodev",
-              },
-              {
-                text: "Pimlico",
-                link: "/resources/infrastructure/pimlico",
-              },
-              {
-                text: "Coinbase",
-                link: "/resources/infrastructure/coinbase",
-              },
               {
                 text: "Gas Policies",
                 link: "/resources/infrastructure/gas-policies",
@@ -976,10 +876,6 @@ export default defineConfig({
                 link: "/resources/infrastructure/custom-gas-policies",
               },
               {
-                text: "Bundler & Paymaster RPCs",
-                link: "/resources/infrastructure/rpcs",
-              },
-              {
                 text: "Admin API",
                 link: "/resources/infrastructure/api",
               },
@@ -987,21 +883,13 @@ export default defineConfig({
           },
           {
             text: "Tools",
-            collapsed: true,
+            collapsed: false,
             items: [
-              { text: "UserOp Debugger", link: "/resources/tools/debugger" },
+              { text: "UserOp Debugger", link: "https://debug.zerodev.app/" },
               {
                 text: "Status & Uptime API",
-                link: "/resources/tools/status",
+                link: "https://status.zerodev.app/",
               },
-            ],
-          },
-          {
-            text: "Presets",
-            collapsed: true,
-            items: [
-              { text: "Introduction", link: "/resources/presets/intro" },
-              { text: "ZeroDev preset", link: "/resources/presets/zerodev" },
             ],
           },
           {
@@ -1418,7 +1306,7 @@ export default defineConfig({
     { href: '/smart-accounts/create-a-smart-account', text: 'Smart Accounts & Wallets', match: function(p) { return p.indexOf('/smart-accounts') === 0; } },
     { href: '/cross-chain/smart-routing-address', text: 'Cross-Chain Workflows', match: function(p) { return p.indexOf('/cross-chain') === 0; } },
     { href: '/advanced/migration', text: 'Advanced', match: function(p) { return p.indexOf('/advanced') === 0; } },
-    { href: '/resources/infrastructure/intro', text: 'Resources', match: function(p) { return p.indexOf('/resources') === 0; } }
+    { href: '/api-and-toolings/infrastructure/intro', text: 'API and Toolings', match: function(p) { return p.indexOf('/resources') === 0; } }
   ];
 
   function build() {
@@ -1503,6 +1391,61 @@ export default defineConfig({
           return html.replace(
             "</head>",
             `${pillarBarStyles}\n${pillarBarScript}\n</head>`,
+          );
+        },
+      },
+      {
+        name: "inject-external-link-handler",
+        transformIndexHtml(html) {
+          const externalLinkScript = `
+<script id="zd-external-link-handler">
+(function() {
+  function isExternal(href) {
+    if (!href) return false;
+    if (!/^https?:\\/\\//i.test(href)) return false;
+    try {
+      var u = new URL(href, window.location.href);
+      return u.host !== window.location.host;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function markExternalLinks() {
+    var anchors = document.querySelectorAll('a[href]');
+    anchors.forEach(function(a) {
+      if (a.dataset.zdExternalChecked === '1') return;
+      a.dataset.zdExternalChecked = '1';
+      if (isExternal(a.getAttribute('href'))) {
+        a.setAttribute('target', '_blank');
+        a.setAttribute('rel', 'noopener noreferrer');
+      }
+    });
+  }
+
+  function start() {
+    markExternalLinks();
+    var observer = new MutationObserver(function() {
+      markExternalLinks();
+    });
+    if (document.body) {
+      observer.observe(document.body, { childList: true, subtree: true });
+    }
+  }
+
+  window.addEventListener('zd-locationchange', markExternalLinks);
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start);
+  } else {
+    start();
+  }
+})();
+</script>`;
+
+          return html.replace(
+            "</head>",
+            `${externalLinkScript}\n</head>`,
           );
         },
       },

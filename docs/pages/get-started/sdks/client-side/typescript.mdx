@@ -1,44 +1,211 @@
 ---
 title: TypeScript / JavaScript SDK
-description: Install and use the ZeroDev TypeScript SDK in a browser app.
+description: Install and use the ZeroDev TypeScript SDK to mint an NFT without paying gas.
 ---
 
 # TypeScript / JavaScript SDK
 
-{/* TODO(authoring): fill this stub. Sections below are the agreed template (Install / Setup / Example). Replace TODOs with real content. */}
+The ZeroDev TypeScript SDK (`@zerodev/sdk`) is the core package for building smart-account apps in JavaScript/TypeScript. This tutorial walks you through minting an NFT without paying gas.
 
 :::info
-🚧 **This page is a stub.** Content is being written. The structure below is the agreed template.
+Impatient?  Check out [the complete example here](https://github.com/zerodevapp/zerodev-examples/tree/main/tutorial/completed.ts).
 :::
 
-The ZeroDev TypeScript SDK (`@zerodev/sdk`) is the core package for building smart-account apps in JavaScript/TypeScript. This page covers browser-side usage; for server-side use see [Node.js / TypeScript](/get-started/sdks/server-side/nodejs).
+Before you start, [set up a ZeroDev project](/get-started/sdks/setup-project) so you have an RPC URL with a gas-sponsorship policy.
 
-## Install
+## Write the code
 
-{/* TODO(authoring): confirm package list — is @zerodev/sdk enough, or do we recommend installing a validator (e.g. @zerodev/ecdsa-validator) here too? */}
+Clone the [ZeroDev examples repo](https://github.com/zerodevapp/zerodev-examples).  Then, inside the directory, install all dependencies:
 
 ```bash
-npm i @zerodev/sdk
+npm install
 ```
 
-## Setup
+Create a `.env` file with the following line, using the RPC URL from your ZeroDev project:
 
-{/* TODO(authoring): minimal browser-side initialization. Show kernelClient creation with viem chain + RPC. */}
-
-```ts
-// TODO: minimal initialization snippet
+```
+ZERODEV_RPC=<YOUR_RPC>
 ```
 
-## Example
+If all goes well, you should be able to run:
 
-{/* TODO(authoring): "Hello World" — create a smart account, send a transaction. Link to a runnable repo. */}
-
-```ts
-// TODO: create-account + send-transaction example
+```bash
+npx ts-node tutorial/completed.ts
 ```
+
+Now open the [`tutorial/template.ts`](https://github.com/zerodevapp/zerodev-examples/blob/main/tutorial/template.ts) file in your editor.  This will be the template where you will write your code.  You can always refer to [`tutorial/completed.ts`](https://github.com/zerodevapp/zerodev-examples/blob/main/tutorial/completed.ts) to see the completed tutorial code.
+
+### Create a signer
+
+Kernel accounts support many different signing methods, including ECDSA keys and passkeys.  In this tutorial, we will use ECDSA keys which are the same type of keys that MetaMask and other Ethereum wallets use.
+
+Let's start by generating a random key.  Add the following code to the `main` function:
+
+```typescript
+import { generatePrivateKey, privateKeyToAccount } from "viem/accounts"
+
+const main = async () => {
+  const privateKey = generatePrivateKey()  // [!code focus]
+  const signer = privateKeyToAccount(privateKey)  // [!code focus]
+}
+```
+
+### Create a validator
+
+Each Kernel account handles validation through a smart contract known as a "validator."  In this case, we will be using the ECDSA validator.
+
+Add the following code to create the ECDSA validator:
+
+```typescript
+import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
+
+const main = async () => {
+  // other code...
+
+  const ecdsaValidator = await signerToEcdsaValidator(publicClient, { // [!code focus]
+    signer,  // [!code focus]
+    entryPoint,  // [!code focus]
+  })  // [!code focus]
+}
+```
+
+### Create an account
+
+We are now ready to create an account.  Add the following code:
+
+```typescript
+import { createKernelAccount } from "@zerodev/sdk"
+ 
+const main = async () => {
+  // other code...
+
+  const account = await createKernelAccount(publicClient, {  // [!code focus]
+    plugins: {  // [!code focus]
+      sudo: ecdsaValidator,  // [!code focus]
+    },  // [!code focus]
+    entryPoint,  // [!code focus]
+  })  // [!code focus]
+}
+```
+
+### Creating a Kernel client
+
+Finally, we are going to create an "account client" which serves as the connection between your account and some AA infra (i.e. bundlers and paymasters).  The connection is necessary for you to actually send UserOps.
+
+Add the following code:
+
+```typescript
+const main = async () => {
+  // ... other code
+
+  const zerodevPaymaster = createZeroDevPaymasterClient({
+    chain,
+    transport: http(ZERODEV_RPC),
+  })
+
+  const kernelClient = createKernelAccountClient({
+    account,
+    chain,
+    bundlerTransport: http(ZERODEV_RPC),
+    client: publicClient,
+    paymaster: {
+        getPaymasterData(userOperation) {
+            return zerodevPaymaster.sponsorUserOperation({userOperation})
+        }
+    },
+  })
+
+  const accountAddress = kernelClient.account.address
+  console.log("My account:", accountAddress)
+}
+```
+
+Run this script with `npx ts-node tutorial/template.ts` and confirm that it prints an address.
+
+### Send a UserOp
+
+Now that you have an account client, it's time to send your first UserOp!  For this tutorial, we will mint an NFT from a contract deployed on Sepolia.
+
+Add the following import and code:
+
+```typescript
+import { encodeFunctionData } from "viem"
+
+const main = async () => {
+  // ... other code
+
+  const userOpHash = await kernelClient.sendUserOperation({
+      callData: await kernelClient.account.encodeCalls([{
+        to: contractAddress,
+        value: BigInt(0),
+        data: encodeFunctionData({
+          abi: contractABI,
+          functionName: "mint",
+          args: [accountAddress],
+        })
+      }])
+  })
+  console.log("Submitted UserOp:", userOpHash)
+}
+```
+
+There's quite a bit of code going on, so let's go through it.
+
+- We start by calling `kernelClient.sendUserOperation`, which takes a `userOperation` argument.
+- Inside `userOperation`, we specify a `callData` field.  This is the equivalent of the calldata field for a normal Ethereum transaction.
+- Since we want to call the `mint(address)` function on the NFT contract, we use Viem's helper function `encodeFunctionData` and give it the ABI, function name, and function argument.
+- `kernelClient.sendUserOperation` returns a "UserOperation hash."  This is the equivalent of a transaction hash but for a UserOp.
+
+Run the script again with `npx ts-node tutorial/template.ts` and confirm that it prints the UserOp hash.  At this point, you can go to a UserOp explorer such as [JiffyScan](https://jiffyscan.xyz/) and find your UserOp with the hash!
+
+### Waiting for the UserOp
+
+When you call `sendUserOperation`, the call returns as soon as the UserOp has been submitted to the bundler, but it doesn't wait for the UserOp to be "confirmed" on-chain.  To wait for the UserOp to be confirmed, add the following import and code:
+
+```typescript
+
+const main = async () => {
+  // ... other code
+
+  const receipt = await kernelClient.waitForUserOperationReceipt({
+    hash: userOpHash,
+  })
+  console.log("UserOp confirmed:", receipt.userOpHash)
+}
+```
+
+Let's break down the code:
+
+- `waitForUserOperationReceipt` is a bundler action.  If you are unfamiliar with the concept of "actions," you can read more about it on [Viem's documentation](https://viem.sh/docs/actions/public/introduction).
+- This function returns a "receipt" object.  If you are curious, you can print the full object and see what it contains.
+
+### Read contract state
+
+Now let's confirm that we actually minted an NFT.  Add the following import and code:
+
+```typescript
+import { publicActions } from "viem"
+
+const main = async () => {
+  // ... other code
+
+  const nftBalance = await publicClient.readContract({
+    address: contractAddress,
+    abi: contractABI,
+    functionName: 'balanceOf',
+    args: [accountAddress],
+  })
+  console.log(`NFT balance: ${nftBalance}`)
+}
+```
+
+Run the script again.  You should see that it prints `NFT balance: 1`, confirming that you have minted an NFT! 
 
 ## Next steps
 
-- [Create a Smart Account](/smart-accounts/create-a-smart-account)
-- [Authentication](/smart-accounts/authentication/social-login)
-- [Quickstart](/get-started/quickstart)
+In this tutorial, we were able to mint an NFT without paying gas, thanks to gas sponsorship.
+
+For next steps:
+
+- Check out [the core API](/smart-accounts/create-a-smart-account) to learn more about the SDK
+- Read some [code examples](https://github.com/zerodevapp/zerodev-examples) of using ZeroDev
