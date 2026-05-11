@@ -5,42 +5,104 @@ description: Install and use the ZeroDev Omni SDK Python binding.
 
 # Python SDK
 
-{/* TODO(authoring): fill this stub. The Python binding is part of the Omni SDK monorepo, published to PyPI as zerodev-aa. */}
+The ZeroDev Python SDK is part of the [Omni SDK](https://github.com/zerodevapp/zerodev-omni-sdk) — a single Zig core shipped with first-class bindings for Python, Swift, Kotlin, Go, Rust, and C. Published to PyPI as `zerodev-aa`, with native libraries bundled in the wheel for macOS (arm64, x86_64) and Linux (x86_64). It supports smart-account creation, signing, sponsored transactions, and EIP-7702 delegation on any EVM chain — ideal for backend services, scripts, and AI agents.
 
 :::info
-🚧 **This page is a stub.** Content is being written. The Python binding is in alpha.
+The Python binding is currently in alpha.
 :::
 
-The ZeroDev Python SDK is a Python binding over the Omni SDK core, published to PyPI. It currently supports smart-account creation, signing, and transactions on EVM chains — useful for backend services, scripts, and AI agents.
-
 ## Install
-
-{/* TODO(authoring): confirm package name and Python version requirements. */}
 
 ```bash
 pip install zerodev-aa
 ```
 
-Requires Python {/* TODO: minimum version */}.
+Requires Python 3.10+.
 
 ## Setup
 
-{/* TODO(authoring): minimal initialization snippet. */}
-
 ```python
-# TODO: import + initialize ZeroDev client
+from zerodev_aa import Context, Signer, KernelVersion, GasMiddleware, PaymasterMiddleware
+
+with Context(
+    project_id,
+    chain_id=11155111,                          # Sepolia
+    gas=GasMiddleware.ZERODEV,
+    paymaster=PaymasterMiddleware.ZERODEV,
+) as ctx:
+    with Signer.local(private_key) as signer:
+        with ctx.new_account(signer, KernelVersion.V3_3) as account:
+            # ...
+            pass
 ```
 
-## Example
+`Signer.generate()` is useful for demos when you don't need to reuse a key. Use `with` blocks (or call `.close()`) to release native resources.
 
-{/* TODO(authoring): "Hello World" — create a smart account, send a transaction. */}
+## Example — sponsored UserOp
 
 ```python
-# TODO: end-to-end example
+from zerodev_aa import Context, Signer, Call, KernelVersion, GasMiddleware, PaymasterMiddleware
+
+with Context(
+    project_id,
+    chain_id=11155111,
+    gas=GasMiddleware.ZERODEV,
+    paymaster=PaymasterMiddleware.ZERODEV,
+) as ctx:
+    with Signer.local(private_key) as signer:
+        with ctx.new_account(signer, KernelVersion.V3_3) as account:
+            recipient = bytes.fromhex("...")    # 20 bytes
+
+            hash = account.send_user_op([Call(target=recipient)])
+            receipt = account.wait_for_receipt(hash)
+
+            print("Success:", receipt.success)
+            print("Tx:", receipt.transaction_hash)
 ```
+
+## Custom signers
+
+Implement any class with the four signer methods (Python uses duck typing — no inheritance required):
+
+```python
+class MySigner:
+    def sign_hash(self, hash: bytes) -> bytes: ...
+    def sign_message(self, msg: bytes) -> bytes: ...
+    def sign_typed_data_hash(self, hash: bytes) -> bytes: ...
+    def get_address(self) -> bytes: ...
+
+    # Optional — implement to sign EIP-7702 auth tuples natively.
+    # Omit and the SDK falls back to sign_hash over keccak256(0x05 || rlp(...)).
+    def sign_authorization(self, chain_id: int, address: bytes, nonce: int): ...
+
+signer = Signer.custom(MySigner())
+```
+
+## EIP-7702 delegation
+
+EIP-7702 lets an EOA delegate its code to a Kernel contract so its address **is** the smart-account address — no CREATE2, no init code, no index. The SDK signs an authorization tuple on the first UserOp and attaches it via the `eip7702Auth` field; subsequent ops skip the auth once delegation is installed on-chain.
+
+```python
+from zerodev_aa import Context, Signer, Call, KernelVersion, GasMiddleware, PaymasterMiddleware
+
+with Context(
+    project_id,
+    chain_id=11155111,
+    gas=GasMiddleware.ZERODEV,
+    paymaster=PaymasterMiddleware.ZERODEV,
+) as ctx:
+    with Signer.generate() as signer:                    # fresh EOA
+        with ctx.new_account_7702(signer, KernelVersion.V3_3) as account:
+            # account.get_address().bytes == signer's EOA address
+            hash = account.send_user_op([Call(target=account.get_address().bytes)])
+            account.wait_for_receipt(hash)
+```
+
+Custom signers can implement `sign_authorization` on their class to sign EIP-7702 tuples natively. Otherwise the SDK falls back to hashing the tuple and calling `sign_hash`.
 
 ## Next steps
 
-- [Bundler & Paymaster RPCs](/resources/infrastructure/rpcs)
-- [Create a Smart Account](/smart-accounts/create-a-smart-account)
+- [Runnable example: gasless-transfer-7702/python](https://github.com/zerodevapp/zerodev-omni-sdk/tree/main/examples/gasless-transfer-7702/python)
 - [Omni SDK source](https://github.com/zerodevapp/zerodev-omni-sdk)
+- [Create a Smart Account](/smart-accounts/create-a-smart-account)
+- [Bundler & Paymaster RPCs](/api-and-toolings/infrastructure/rpcs)
