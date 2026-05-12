@@ -5,43 +5,105 @@ description: Install and use the ZeroDev Omni SDK Rust crate.
 
 # Rust SDK
 
-{/* TODO(authoring): fill this stub. The Rust binding is part of the Omni SDK monorepo, published to crates.io as zerodev-aa. */}
+The ZeroDev Rust SDK is part of the [Omni SDK](https://github.com/zerodevapp/zerodev-omni-sdk) — a single Zig core shipped with first-class bindings for Rust, Swift, Kotlin, Go, Python, and C. Published to crates.io as `zerodev-aa`. The crate's `build.rs` auto-downloads precompiled native libraries from GitHub Releases — no Zig toolchain required to build. It supports smart-account creation, signing, sponsored transactions, and EIP-7702 delegation on any EVM chain.
 
 :::info
-🚧 **This page is a stub.** Content is being written. The Rust crate is in alpha.
+The Rust crate is currently in alpha.
 :::
-
-The ZeroDev Rust SDK is a Rust crate over the Omni SDK core, published to crates.io. It currently supports smart-account creation, signing, and transactions on EVM chains.
 
 ## Install
 
-{/* TODO(authoring): confirm crate name and MSRV. */}
+```bash
+cargo add zerodev-aa
+```
 
-In `Cargo.toml`:
+Or add to `Cargo.toml` directly:
 
 ```toml
 [dependencies]
-zerodev-aa = "0.0.1-alpha.2" # TODO: confirm latest
+zerodev-aa = "0.0.1-alpha.2"
 ```
 
 ## Setup
 
-{/* TODO(authoring): minimal initialization snippet. */}
-
 ```rust
-// TODO: use statements + initialize ZeroDev client
+use zerodev_aa::{Context, Signer, KernelVersion, GasMiddleware, PaymasterMiddleware};
+
+let ctx = Context::new(
+    project_id,
+    "",                              // RPC URL (empty → derive from project_id)
+    "",                              // Bundler URL (empty → derive from project_id)
+    11155111,                        // Sepolia
+    GasMiddleware::ZeroDev,
+    PaymasterMiddleware::ZeroDev,
+)?;
+let signer = Signer::local(&private_key)?;
+let account = ctx.new_account(&signer, KernelVersion::V3_3, 0)?;
 ```
 
-## Example
+`Signer::generate()` is useful for demos when you don't need to reuse a key. All handles implement `Drop` — native resources are released automatically.
 
-{/* TODO(authoring): "Hello World" — create a smart account, send a transaction. */}
+## Example — sponsored UserOp
 
 ```rust
-// TODO: end-to-end example
+use zerodev_aa::{Context, Signer, Call, KernelVersion, GasMiddleware, PaymasterMiddleware};
+
+let ctx = Context::new(project_id, "", "", 11155111,
+    GasMiddleware::ZeroDev, PaymasterMiddleware::ZeroDev)?;
+let signer = Signer::local(&private_key)?;
+let account = ctx.new_account(&signer, KernelVersion::V3_3, 0)?;
+
+let recipient = /* 20-byte address */;
+let hash = account.send_user_op(&[Call {
+    target: recipient,
+    value: [0u8; 32],
+    calldata: vec![],
+}])?;
+
+let receipt = account.wait_for_user_operation_receipt(&hash, 60, 2)?;
+println!("Success: {}", receipt.success);
+println!("Tx: {}", receipt.transaction_hash);
 ```
+
+## Custom signers
+
+Implement the `SignerImpl` trait to integrate any signing backend (Privy, HSM, MPC, custom keystore):
+
+```rust
+use zerodev_aa::{Signer, SignerImpl};
+
+struct MySigner { /* ... */ }
+impl SignerImpl for MySigner {
+    fn sign_hash(&self, hash: [u8; 32]) -> Result<[u8; 65], _> { todo!() }
+    fn sign_message(&self, msg: &[u8]) -> Result<[u8; 65], _> { todo!() }
+    fn sign_typed_data_hash(&self, hash: [u8; 32]) -> Result<[u8; 65], _> { todo!() }
+    fn get_address(&self) -> [u8; 20] { todo!() }
+}
+
+let signer = Signer::custom(MySigner { /* ... */ })?;
+```
+
+## EIP-7702 delegation
+
+EIP-7702 lets an EOA delegate its code to a Kernel contract so its address **is** the smart-account address — no CREATE2, no init code, no index. The SDK signs an authorization tuple on the first UserOp and attaches it via the `eip7702Auth` field; subsequent ops skip the auth once delegation is installed on-chain.
+
+```rust
+let signer = Signer::generate()?;                          // fresh EOA
+let account = ctx.new_account_7702(&signer, KernelVersion::V3_3)?;
+
+// account.get_address()? == signer's EOA address
+let hash = account.send_user_op(&[Call {
+    target: account.get_address()?,
+    value: [0u8; 32],
+    calldata: vec![],
+}])?;
+```
+
+Custom signers can override `SignerImpl::sign_authorization` (and set `provides_sign_authorization()` to return `true`) to sign EIP-7702 tuples natively. Otherwise the SDK falls back to hashing the tuple and calling `sign_hash`.
 
 ## Next steps
 
-- [Bundler & Paymaster RPCs](/resources/infrastructure/rpcs)
-- [Create a Smart Account](/smart-accounts/create-a-smart-account)
+- [Runnable example: gasless-transfer-7702/rust](https://github.com/zerodevapp/zerodev-omni-sdk/tree/main/examples/gasless-transfer-7702/rust)
 - [Omni SDK source](https://github.com/zerodevapp/zerodev-omni-sdk)
+- [Create a Smart Account](/smart-accounts/create-a-smart-account)
+- [Bundler & Paymaster RPCs](/api-and-toolings/infrastructure/rpcs)

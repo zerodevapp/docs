@@ -47,7 +47,8 @@ const REDIRECTS: Record<string, string> = {
   "/sdk/advanced/run-solidity-code-on-init":
     "/advanced/track-deployed-accounts",
   "/sdk/advanced/upgrade-kernel": "/advanced/upgrade-kernel",
-  "/sdk/advanced/go-sdk": "/advanced/go-sdk",
+  "/sdk/advanced/go-sdk": "/get-started/sdks/server-side/go",
+  "/advanced/go-sdk": "/get-started/sdks/server-side/go",
   "/sdk/advanced/userop-builder-api": "/advanced/userop-builder-api",
   "/sdk/advanced/supported-base-tokens":
     "/cross-chain/chain-abstraction/supported-base-tokens",
@@ -378,8 +379,8 @@ export default defineConfig({
                     link: "/get-started/sdks/server-side/nodejs",
                   },
                   {
-                    text: "Go (legacy)",
-                    link: "/advanced/go-sdk",
+                    text: "Go",
+                    link: "/get-started/sdks/server-side/go",
                   },
                   {
                     text: "Python",
@@ -854,7 +855,6 @@ export default defineConfig({
             text: "UserOp Builder API",
             link: "/advanced/userop-builder-api",
           },
-          { text: "Go SDK (legacy)", link: "/advanced/go-sdk" },
         ],
       },
     ],
