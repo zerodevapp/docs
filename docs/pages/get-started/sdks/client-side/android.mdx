@@ -1,0 +1,111 @@
+---
+title: Android (Kotlin) SDK
+description: Install and use the ZeroDev Omni SDK Kotlin binding for Android and the JVM.
+---
+
+# Android (Kotlin) SDK
+
+The ZeroDev Kotlin SDK is part of the [Omni SDK](https://github.com/zerodevapp/zerodev-omni-sdk) — a single Zig core shipped with first-class bindings for Kotlin, Swift, Go, Rust, Python, and C. The Android AAR bundles native libraries for arm64-v8a and x86_64; the JVM JAR extracts the right native at runtime. It supports smart-account creation, signing, sponsored transactions, and EIP-7702 delegation on any EVM chain.
+
+:::info
+The Kotlin binding is currently in alpha.
+:::
+
+## Install
+
+In your module's `build.gradle.kts`:
+
+```kotlin
+dependencies {
+    // Android (AAR with bundled native libraries)
+    implementation("app.zerodev:zerodev-aa:0.0.1-alpha.6")
+
+    // Desktop JVM (JAR; extracts native library at runtime)
+    implementation("app.zerodev:zerodev-aa-jvm:0.0.1-alpha.6")
+}
+```
+
+Requires Android `minSdk 24` (or JDK 11+ for the JVM artifact).
+
+## Setup
+
+```kotlin
+import dev.zerodev.aa.*
+
+Context.create(
+    projectId,
+    chainId = 11155111,                          // Sepolia
+    gas = GasMiddleware.ZERODEV,
+    paymaster = PaymasterMiddleware.ZERODEV
+).use { ctx ->
+    Signer.local(privateKey).use { signer ->
+        ctx.newAccount(signer, KernelVersion.V3_3).use { account ->
+            // ...
+        }
+    }
+}
+```
+
+`Signer.generate()` is useful for demos when you don't need to reuse a key. All handles implement `AutoCloseable` — use Kotlin's `use { }` to release native resources deterministically.
+
+## Example — sponsored UserOp
+
+```kotlin
+import dev.zerodev.aa.*
+
+Context.create(projectId, chainId = 11155111,
+    gas = GasMiddleware.ZERODEV,
+    paymaster = PaymasterMiddleware.ZERODEV).use { ctx ->
+    Signer.local(privateKey).use { signer ->
+        ctx.newAccount(signer, KernelVersion.V3_3).use { account ->
+            val recipient = Address.fromHex("0x...")
+
+            val hash = account.sendUserOp(listOf(Call(target = recipient)))
+            val receipt = account.waitForUserOperationReceipt(hash)
+
+            println("Success: ${receipt.success}")
+            println("Tx: ${receipt.transactionHash}")
+        }
+    }
+}
+```
+
+## Custom signers
+
+Implement `SignerImpl` to integrate any signing backend (Privy, HSM, MPC, custom keystore):
+
+```kotlin
+val signer = Signer.custom(object : SignerImpl {
+    override fun signHash(hash: ByteArray): ByteArray = TODO()
+    override fun signMessage(msg: ByteArray): ByteArray = TODO()
+    override fun signTypedDataHash(hash: ByteArray): ByteArray = TODO()
+    override fun getAddress(): ByteArray = TODO()
+})
+```
+
+## EIP-7702 delegation
+
+EIP-7702 lets an EOA delegate its code to a Kernel contract so its address **is** the smart-account address — no CREATE2, no init code, no index. The SDK signs an authorization tuple on the first UserOp and attaches it via the `eip7702Auth` field; subsequent ops skip the auth once delegation is installed on-chain.
+
+```kotlin
+Context.create(projectId, chainId = 11155111,
+    gas = GasMiddleware.ZERODEV,
+    paymaster = PaymasterMiddleware.ZERODEV).use { ctx ->
+    Signer.generate().use { signer ->                    // fresh EOA
+        ctx.newAccount7702(signer, KernelVersion.V3_3).use { account ->
+            // account.getAddress() == signer's EOA address
+            val hash = account.sendUserOp(listOf(Call(target = account.getAddress())))
+            account.waitForUserOperationReceipt(hash)
+        }
+    }
+}
+```
+
+Custom signers can override `SignerImpl.signAuthorization` (and set `providesSignAuthorization = true`) to sign EIP-7702 tuples natively. Otherwise the SDK falls back to hashing the tuple and calling `signHash`.
+
+## Next steps
+
+- [Sample app: omni-sdk-android-example](https://github.com/zerodevapp/omni-sdk-android-example) — Jetpack Compose + Privy embedded wallet + gasless transactions
+- [Omni SDK source](https://github.com/zerodevapp/zerodev-omni-sdk)
+- [Create a Smart Account](/smart-accounts/create-a-smart-account)
+- [Bundler & Paymaster RPCs](/api-and-toolings/infrastructure/rpcs)

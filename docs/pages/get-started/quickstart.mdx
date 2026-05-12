@@ -1,0 +1,147 @@
+# Quickstart
+
+Create a new project with `npm` (or whatever package manager you use):
+
+```bash
+mkdir zerodev
+cd zerodev
+npm init -y
+```
+
+Install the ZeroDev SDK and a plugin:
+
+```bash
+npm i @zerodev/sdk @zerodev/ecdsa-validator
+```
+
+Install dev packages for TypeScript:
+
+```bash
+npm i --save-dev @types/node tslib
+```
+
+Create the following `tsconfig.json` (TypeScript config):
+
+```json
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "declaration": true,
+    "outDir": "./lib",
+    "strict": true,
+    "esModuleInterop": true
+  },
+  "include": ["./**/*.ts"]
+}
+```
+
+Create a script `index.ts` with the following code:
+
+```ts
+import { createKernelAccount, createKernelAccountClient, createZeroDevPaymasterClient } from "@zerodev/sdk"
+import { KERNEL_V3_1, getEntryPoint } from "@zerodev/sdk/constants"
+import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
+import { http, createPublicClient, zeroAddress } from "viem"
+import { generatePrivateKey, privateKeyToAccount } from "viem/accounts"
+import { baseSepolia } from "viem/chains"
+ 
+const ZERODEV_RPC = 'https://rpc.zerodev.app/api/v3/61016d2a-e0df-4350-929c-d5f2110700d1/chain/84532'
+
+const chain = baseSepolia 
+const entryPoint = getEntryPoint("0.7")
+const kernelVersion = KERNEL_V3_1
+ 
+const main = async () => {
+  // Construct a signer
+  const privateKey = generatePrivateKey()
+  const signer = privateKeyToAccount(privateKey)
+ 
+  // Construct a public client
+  const publicClient = createPublicClient({
+    // Use your own RPC provider in production (e.g. Infura/Alchemy).
+    transport: http(ZERODEV_RPC),
+    chain
+  })
+ 
+  // Construct a validator
+  const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
+    signer,
+    entryPoint,
+    kernelVersion
+  })
+ 
+  // Construct a Kernel account
+  const account = await createKernelAccount(publicClient, {
+    plugins: {
+      sudo: ecdsaValidator,
+    },
+    entryPoint,
+    kernelVersion
+  })
+ 
+  const zerodevPaymaster = createZeroDevPaymasterClient({
+    chain,
+    transport: http(ZERODEV_RPC),
+  })
+ 
+  // Construct a Kernel account client
+  const kernelClient = createKernelAccountClient({
+    account,
+    chain,
+    bundlerTransport: http(ZERODEV_RPC),
+    // Required - the public client
+    client: publicClient,
+    paymaster: {
+        getPaymasterData(userOperation) {
+            return zerodevPaymaster.sponsorUserOperation({userOperation})
+        }
+    },
+  })
+ 
+  const accountAddress = kernelClient.account.address
+  console.log("My account:", accountAddress)
+ 
+  // Send a UserOp
+  const userOpHash = await kernelClient.sendUserOperation({
+      callData: await kernelClient.account.encodeCalls([{
+        to: zeroAddress,
+        value: BigInt(0),
+        data: "0x",
+      }]),
+  })
+ 
+  console.log("UserOp hash:", userOpHash)
+  console.log("Waiting for UserOp to complete...")
+ 
+  await kernelClient.waitForUserOperationReceipt({
+    hash: userOpHash,
+    timeout: 1000 * 15,
+  })
+ 
+  console.log("UserOp completed: https://base-sepolia.blockscout.com/op/" + userOpHash)
+ 
+  process.exit()
+}
+ 
+main()
+```
+
+Run it:
+
+```bash
+npx ts-node index.ts
+```
+
+You should see an output like this:
+
+```txt
+My account: 0xaf731E22Fe96979C5D864B07bad0EB999cDBbE76
+UserOp hash: 0x7a8e0ba961cc0a34f745b81d64766f033269fee831104fee0269fa5bcc397dcb
+Waiting for UserOp to complete...
+View completed UserOp here: https://jiffyscan.xyz/userOpHash/0x7a8e0ba961cc0a34f745b81d64766f033269fee831104fee0269fa5bcc397dcb
+```
+
+Congrats -- you just sent your first gasless transaction with ZeroDev!
+
+In this example, you used a public ZeroDev API key.  Now read [Set up a project](/get-started/sdks/setup-project) to see how to set up your own ZeroDev project, then walk through the full [TypeScript / JavaScript tutorial](/get-started/sdks/client-side/typescript).

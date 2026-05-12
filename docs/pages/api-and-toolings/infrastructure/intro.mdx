@@ -1,0 +1,30 @@
+# Meta AA Infrastructure
+
+ZeroDev works with major AA infra providers to provide a "meta intrastructure."  Our meta infra proxies traffic to the underlying bundlers and paymasters, ensuring that our users have the highest possible uptime, since traffic can be routed to a different bundler when one goes down.
+
+ZeroDev integrates with the following infra provider:
+
+- [UltraRelay](/smart-accounts/sponsor-gas/evm#ultrarelay), ZeroDev's own bundler optimized for sponsored transactions
+- Alchemy
+- Gelato
+- Pimlico
+
+To get started using bundlers & paymasters through ZeroDev:
+
+## Getting a ZeroDev RPC
+
+You will need an RPC to start using bundlers & paymasters through ZeroDev.
+
+- Sign up at the ZeroDev dashboard
+- Create a project
+- Copy the RPC from the project page (each network has an RPC).
+
+The same RPC can be used as both bundler and paymaster RPCs.
+
+[Learn more about bundler & paymaster RPCs here](/resources/infrastructure/rpcs).
+
+## Setting up sponsoring policies
+
+If you would like to sponsor gas for your users, you need to set up gas policies on the dashboard.
+
+[Learn more about gas policies here.](/resources/infrastructure/gas-policies)

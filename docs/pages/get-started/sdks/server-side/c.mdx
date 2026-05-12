@@ -1,0 +1,147 @@
+---
+title: C SDK (FFI)
+description: Use the ZeroDev Omni SDK C FFI to embed smart-account functionality in any language.
+---
+
+# C SDK (FFI)
+
+The ZeroDev C SDK is the FFI surface of the [Omni SDK](https://github.com/zerodevapp/zerodev-omni-sdk) — a Zig core exposed as a C-compatible shared library. Use it to embed ZeroDev smart-account functionality from any language that can call C, including languages without a first-class Omni binding. It supports smart-account creation, signing, sponsored transactions, and EIP-7702 delegation on any EVM chain.
+
+:::info
+The C FFI is currently in alpha. Built from source.
+:::
+
+## Install
+
+### Prerequisites
+
+- [Zig 0.15+](https://ziglang.org/download/)
+- macOS: `brew install secp256k1`
+- A [ZeroDev project ID](https://dashboard.zerodev.app)
+
+### Build
+
+```bash
+git clone https://github.com/zerodevapp/zerodev-omni-sdk
+cd zerodev-omni-sdk
+make build
+```
+
+Artifacts:
+
+- Static: `zig-out/lib/libzerodev_aa.a` and `libsecp256k1.a`
+- Shared: `zig-out/lib/libzerodev_aa.{so,dylib}`
+- Header: `include/aa.h`
+
+## Setup
+
+```c
+#include "aa.h"
+
+aa_context_t *ctx;
+aa_context_create(project_id, "", "", 11155111 /* Sepolia */, &ctx);
+
+// Plug in ZeroDev middleware for gas pricing and paymaster sponsorship.
+aa_context_set_gas_middleware(ctx, &aa_gas_zerodev);
+aa_context_set_paymaster_middleware(ctx, &aa_paymaster_zerodev);
+
+aa_signer_t *signer;
+aa_signer_local(private_key, &signer);
+
+aa_account_t *account;
+aa_account_create(ctx, signer, AA_KERNEL_V3_3, 0 /* index */, &account);
+```
+
+## Example — sponsored UserOp
+
+```c
+#include "aa.h"
+#include <stdio.h>
+#include <string.h>
+
+int main(void) {
+    aa_context_t *ctx;
+    aa_context_create(project_id, "", "", 11155111, &ctx);
+    aa_context_set_gas_middleware(ctx, &aa_gas_zerodev);
+    aa_context_set_paymaster_middleware(ctx, &aa_paymaster_zerodev);
+
+    aa_signer_t *signer;
+    aa_signer_local(private_key, &signer);
+
+    aa_account_t *account;
+    aa_account_create(ctx, signer, AA_KERNEL_V3_3, 0, &account);
+
+    uint8_t recipient[20] = { /* ... */ };
+    aa_call_t call = { 0 };
+    memcpy(call.target, recipient, 20);
+
+    uint8_t hash[32];
+    if (aa_send_userop(account, &call, 1, hash) != AA_OK) {
+        fprintf(stderr, "send failed: %s\n", aa_get_last_error());
+        return 1;
+    }
+
+    char *receipt_json = NULL;
+    size_t receipt_len = 0;
+    aa_wait_for_user_operation_receipt(account, hash, 0, 0, &receipt_json, &receipt_len);
+    printf("Receipt: %.*s\n", (int)receipt_len, receipt_json);
+    aa_free(receipt_json);
+
+    aa_account_destroy(account);
+    aa_signer_destroy(signer);
+    aa_context_destroy(ctx);
+    return 0;
+}
+```
+
+## Custom signers
+
+Provide a vtable to integrate any signing backend (Privy, HSM, MPC, custom keystore):
+
+```c
+static int my_sign_hash(void *ctx, const uint8_t hash[32], uint8_t sig_out[65]) { /* ... */ return 0; }
+static int my_sign_message(void *ctx, const uint8_t *msg, size_t msg_len, uint8_t sig_out[65]) { /* ... */ return 0; }
+static int my_sign_typed_data_hash(void *ctx, const uint8_t hash[32], uint8_t sig_out[65]) { /* ... */ return 0; }
+static int my_get_address(void *ctx, uint8_t addr_out[20]) { /* ... */ return 0; }
+
+// Zero-initialize so the optional 5th slot (sign_authorization) is NULL,
+// letting the SDK fall back to computing the auth hash + calling sign_hash.
+aa_signer_vtable vtable = {
+    .sign_hash = my_sign_hash,
+    .sign_message = my_sign_message,
+    .sign_typed_data_hash = my_sign_typed_data_hash,
+    .get_address = my_get_address,
+};
+
+aa_signer_t *signer;
+aa_signer_custom(&vtable, /* user ctx */ NULL, &signer);
+```
+
+## EIP-7702 delegation
+
+EIP-7702 lets an EOA delegate its code to a Kernel contract so its address **is** the smart-account address — no CREATE2, no init code, no index. The SDK signs an authorization tuple on the first UserOp and attaches it via the `eip7702Auth` field; subsequent ops skip the auth once delegation is installed on-chain.
+
+```c
+aa_signer_t *signer;
+aa_signer_generate(&signer);                                 // fresh EOA
+
+aa_account_t *account;
+aa_context_new_account_7702(ctx, signer, AA_KERNEL_V3_3, &account);
+
+uint8_t addr[20];
+aa_account_get_address(account, addr);                       // == signer's EOA address
+
+aa_call_t call = { 0 };
+memcpy(call.target, addr, 20);
+
+uint8_t hash[32];
+aa_send_userop(account, &call, 1, hash);
+```
+
+Custom signers can populate the optional `sign_authorization` slot of `aa_signer_vtable` to sign EIP-7702 tuples natively. Leave it NULL and the SDK falls back to hashing the tuple and calling `sign_hash`.
+
+## Next steps
+
+- [Omni SDK source](https://github.com/zerodevapp/zerodev-omni-sdk) — full header reference in `include/aa.h`
+- [Runnable examples (Zig)](https://github.com/zerodevapp/zerodev-omni-sdk/tree/main/test/e2e) — live E2E tests exercising the same C API
+- [Bundler & Paymaster RPCs](/api-and-toolings/infrastructure/rpcs)

@@ -1,0 +1,129 @@
+---
+title: Go SDK
+description: Install and use the ZeroDev Omni SDK Go binding.
+---
+
+# Go SDK
+
+The ZeroDev Go SDK is part of the [Omni SDK](https://github.com/zerodevapp/zerodev-omni-sdk) — a single Zig core shipped with first-class bindings for Go, Swift, Kotlin, Rust, Python, and C. The module bundles precompiled static libraries for darwin/linux × arm64/amd64, so `go get` works without a Zig toolchain. It supports smart-account creation, signing, sponsored transactions, and EIP-7702 delegation on any EVM chain.
+
+:::info
+The Go binding is currently in alpha.
+:::
+
+## Install
+
+```bash
+go get github.com/zerodevapp/zerodev-omni-sdk/bindings/go
+```
+
+Then import:
+
+```go
+import "github.com/zerodevapp/zerodev-omni-sdk/bindings/go/aa"
+```
+
+Requires Go 1.21+ with CGo enabled (the default on the supported platforms).
+
+## Setup
+
+```go
+import "github.com/zerodevapp/zerodev-omni-sdk/bindings/go/aa"
+
+ctx, err := aa.NewContext(
+    projectID,
+    "",                          // RPC URL (empty → derive from project_id)
+    "",                          // Bundler URL (empty → derive from project_id)
+    11155111,                    // Sepolia
+    aa.GasZeroDev,
+    aa.PaymasterZeroDev,
+)
+if err != nil { panic(err) }
+defer ctx.Close()
+
+signer, err := aa.LocalSigner(privateKey)
+if err != nil { panic(err) }
+defer signer.Close()
+
+account, err := ctx.NewAccount(signer, aa.KernelV3_3, 0)
+if err != nil { panic(err) }
+defer account.Close()
+```
+
+`aa.GenerateSigner()` is useful for demos when you don't need to reuse a key.
+
+## Example — sponsored UserOp
+
+```go
+package main
+
+import (
+    "fmt"
+    "os"
+
+    "github.com/zerodevapp/zerodev-omni-sdk/bindings/go/aa"
+)
+
+func main() {
+    projectID := os.Getenv("ZERODEV_PROJECT_ID")
+
+    ctx, _ := aa.NewContext(projectID, "", "", 11155111,
+        aa.GasZeroDev, aa.PaymasterZeroDev)
+    defer ctx.Close()
+
+    signer, _ := aa.LocalSigner(privateKey)
+    defer signer.Close()
+
+    account, _ := ctx.NewAccount(signer, aa.KernelV3_3, 0)
+    defer account.Close()
+
+    recipient := [20]byte{ /* ... */ }
+    hash, _ := account.SendUserOp([]aa.Call{{Target: recipient}})
+
+    receipt, _ := account.WaitForUserOperationReceipt(hash, 60_000, 2_000)
+    fmt.Println("Success:", receipt.Success)
+    fmt.Println("Tx:", receipt.Receipt["transactionHash"])
+}
+```
+
+## Custom signers
+
+Pass callbacks for any signing backend (Privy, HSM, MPC, custom keystore):
+
+```go
+signer, _ := aa.CustomSigner(aa.SignerFuncs{
+    SignHash:          func(hash [32]byte) ([65]byte, error) { /* ... */ },
+    SignMessage:       func(msg []byte) ([65]byte, error) { /* ... */ },
+    SignTypedDataHash: func(hash [32]byte) ([65]byte, error) { /* ... */ },
+    GetAddress:        func() [20]byte { /* ... */ },
+
+    // Optional — omit to let the SDK hash the auth tuple and call SignHash.
+    SignAuthorization: func(chainID uint64, address [20]byte, nonce uint64) (aa.Authorization, error) {
+        /* ... */
+    },
+})
+```
+
+## EIP-7702 delegation
+
+EIP-7702 lets an EOA delegate its code to a Kernel contract so its address **is** the smart-account address — no CREATE2, no init code, no index. The SDK signs an authorization tuple on the first UserOp and attaches it via the `eip7702Auth` field; subsequent ops skip the auth once delegation is installed on-chain.
+
+```go
+signer, _ := aa.GenerateSigner()                                 // fresh EOA
+defer signer.Close()
+
+account, _ := ctx.NewAccount7702(signer, aa.KernelV3_3)
+defer account.Close()
+
+addr, _ := account.GetAddress()                                  // == signer's EOA address
+hash, _ := account.SendUserOp([]aa.Call{{Target: addr}})
+```
+
+Custom signers can populate `SignerFuncs.SignAuthorization` to sign EIP-7702 tuples natively. Leave it `nil` and the SDK falls back to hashing the tuple and calling `SignHash`.
+
+## Next steps
+
+- [Runnable example: gasless-transfer-7702/go](https://github.com/zerodevapp/zerodev-omni-sdk/tree/main/examples/gasless-transfer-7702/go)
+- [Omni SDK source](https://github.com/zerodevapp/zerodev-omni-sdk)
+- [Create a Smart Account](/smart-accounts/create-a-smart-account)
+- [Bundler & Paymaster RPCs](/api-and-toolings/infrastructure/rpcs)

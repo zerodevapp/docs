@@ -1,0 +1,269 @@
+# Migration Guide
+
+## API v2 => API v3
+
+With API v3, the notable changes are:
+
+- A ZeroDev project can now support multiple networks.
+- The same RPC can be used for both bundler and paymaster.
+
+Here's what a v3 RPC looks like:
+
+```txt
+https://rpc.zerodev.app/api/v3/xxxxxf2d-xxxx-xxxx-90cc-xxxxxxxxx007/chain/42161
+```
+
+Note that the last part `42161` is the chain ID.  Therefore, if you'd like to programmatically use the RPC for different chains, you can do something like:
+
+```ts
+// replace the prefix with your own RPC prefix
+const rpcPrefix = `https://rpc.zerodev.app/api/v3/xxxxxf2d-xxxx-xxxx-90cc-xxxxxxxxx007/chain/`
+const rpc = rpcPrefix + chain.id
+```
+
+Of course, you can also simply copy the RPC for different chains from the dashboard.
+
+<p align="center">
+  <img src="/img/multichain-project.png" width="50%" />
+</p>
+
+The same RPC can then be used as both the bundler RPC and the paymaster RPC.  See [the tutorial](/get-started/quickstart#creating-a-kernel-client) for an example.
+
+## SDK 5.3.x => 5.4.x
+
+In version **5.4.x** of the `@zerodev/sdk`, we've migrated to using `viem@2.18.x` with native Account Abstraction (AA) modules instead of the `permissionless` package. This change brings significant updates to types, imports, function signatures, and overall API usage.
+
+This guide will help you migrate your codebase to be compatible with the new version.
+
+### Update dependencies
+
+1. **Remove the `permissionless` package**:
+
+   ```bash
+   npm uninstall permissionless
+   ```
+
+2. **Ensure you have `viem@^2.21.40` version**
+
+### Update `permissionless` Account Abstractions
+
+Replace any imports from `permissionless` with the equivalent from `viem/account-abstraction` or `@zerodev/sdk` if applicable.
+
+### Update Type Definitions
+
+Replace `EntryPoint` Types
+
+```typescript
+import type { EntryPoint } from 'permissionless/types'; // [!code --]
+import type { EntryPointVersion } from 'viem/account-abstraction'; // [!code ++]
+```
+
+Replace `UserOperation` Types
+
+
+```typescript
+import type { UserOperation } from 'permissionless/types'; // [!code --]
+import type { UserOperation } from 'viem/account-abstraction'; // [!code ++] 
+```
+
+### Replaced `entryPoint: Address` with `entryPoint: { address: Address; version: EntryPointVersion}`
+
+For `createKernelAccount` and `signerToEcdsaValidator` among other plugins, replace the `entryPoint` parameter as shown:
+
+```typescript
+import { getEntryPoint } from "@zerodev/sdk/constants"; // [!code ++]
+createKernelAccount(publicClient, {
+  // ...
+  entryPoint: ENTRYPOINT_ADDRESS_V07, // [!code --]
+  entryPoint: getEntryPoint("0.7"), // [!code ++]
+})
+```
+
+```typescript
+signerToEcdsaValidator(publicClient, {
+  // ...
+  entryPoint: ENTRYPOINT_ADDRESS_V07, // [!code --]
+  entryPoint: getEntryPoint("0.7"), // [!code ++]
+})
+```
+
+### Removed `entryPoint` from `createKernelAccountClient`
+
+```typescript
+  const kernelClient = createKernelAccountClient({
+    entryPoint, // [!code --]
+    // ...
+  });
+```
+
+### Replaced `middleware.sponsorUserOperation` from `createKernelAccountClient` with `paymaster.getPaymasterData`
+
+```typescript
+  const kernelClient = createKernelAccountClient({
+    middleware: { // [!code --]
+		  sponsorUserOperation: paymasterClient.sponsorUserOperation, // [!code --]
+	  }, // [!code --]
+    paymaster: { // [!code ++]
+      getPaymasterData(userOperation) { // [!code ++]
+        return paymasterClient.sponsorUserOperation({ userOperation }) // [!code ++]
+      } // [!code ++]
+    } // [!code ++]
+    // ...
+  });
+```
+
+### Added `client` to `createKernelAccountClient`
+
+`client` is now required in `createKernelAccountClient`.
+
+```typescript
+  const kernelClient = createKernelAccountClient({
+    client: publicClient, // [!code ++]
+    // ...
+  });
+```
+
+### Added `estimateFeesPerGas` to `userOperation` in `createKernelAccountClient`
+
+`estimateFeesPerGas` is now required in `userOperation` in `createKernelAccountClient` to estimate the gas price for the user operation.
+The default gas prices might be too high, so it's recommended to use this function to estimate the gas price.
+
+```typescript
+  const kernelClient = createKernelAccountClient({
+    userOperation: { // [!code ++]
+      estimateFeesPerGas: async ({bundlerClient}) => { // [!code ++]
+        return getUserOperationGasPrice(bundlerClient) // [!code ++]
+      } // [!code ++]
+    }, // [!code ++]
+    // ...
+  });
+```
+
+### `kernelClient.sendUserOperation` and `kernelClient.signUserOperation` now take `userOperation` properties directly
+
+```typescript
+await kernelClient.sendUserOperation({
+  userOperation: { sender, callData, nonce, ...rest }, // [!code --]
+  sender, // [!code ++]
+  callData, // [!code ++]
+  nonce, // [!code ++]
+  ...rest // [!code ++]
+});
+await kernelClient.signUserOperation({
+  userOperation: { sender, callData, nonce, ...rest }, // [!code --]
+  sender, // [!code ++]
+  callData, // [!code ++]
+  nonce, // [!code ++]
+  ...rest // [!code ++]
+});
+```
+
+### Replaced `account.encodeCallData` with `account.encodeCalls`
+
+```typescript
+    await account.encodeCallData( // [!code --]
+      {  // [!code --]
+        to: zeroAddress,  // [!code --]
+        value: BigInt(0), // [!code --]
+        data: "0x", // [!code --]
+        callType // [!code --]
+      }, // [!code --]
+    ), // [!code --]
+    await account.encodeCalls([ // [!code ++]
+      { // [!code ++]
+        to: zeroAddress, // [!code ++]
+        value: BigInt(0), // [!code ++]
+        data: "0x", // [!code ++]
+      }, // [!code ++]
+    ], callType), // [!code ++]
+```
+
+### Replaced `kernelClient.sendTransactions` with `kernelClient.sendTransaction`
+
+```typescript
+await kernelClient.sendTransactions({ // [!code --]
+    transactions: [ // [!code --]
+      // ... // [!code --]
+    ], // [!code --]
+}); // [!code --]
+await kernelClient.sendTransaction({ // [!code ++]
+    calls: [ // [!code ++]
+      // ... // [!code ++]
+    ], // [!code ++]
+}); // [!code ++]
+```
+
+### `KernelAccountClient` extends `bundlerActions` by default
+
+For example:
+```typescript
+const bundlerClient = kernelClient.extend(bundlerActions(entryPoint)); // [!code --]
+await bundlerClient.waitForUserOperationReceipt({ // [!code --]
+  hash: userOpHash, // [!code --]
+}); // [!code --]
+await kernelClient.waitForUserOperationReceipt({ hash }) // [!code ++]
+```
+
+### Merged `bundlerClient.sendUserOperation` and `kernelClient.sendUserOperation`
+
+`kernelClient.sendUserOperation` now prepares the `userOperation` if needed and directly calls `eth_sendUserOperation`.
+
+## SDK 5.1.x => 5.2.x
+
+### Most functions now take an `entryPoint` param
+
+EntryPoint 0.7 is the most recent update to ERC-4337, but we will still be supporting EntryPoint 0.6.
+
+The SDK will automatically use Kernel v3 for EntryPoint 0.7, and Kernel v2 for EntryPoint 0.6.
+
+You will need to specify an `entryPoint` parameter to many functions, including:
+
+- Functions for creating validators, such as `signerToEcdsaValidator`
+- Functions for creating Kernel accounts, such as `createKernelAccount`
+- Function for creating Kernel client: `createKernelAccountClient`
+
+For example:
+
+```ts
+import { ENTRYPOINT_ADDRESS_V06, ENTRYPOINT_ADDRESS_V07 } from "permissionless"
+
+// If migrating a live app
+const entryPoint = ENTRYPOINT_ADDRESS_V06
+
+// If launching a new app
+const entryPoint = ENTRYPOINT_ADDRESS_V07
+
+const account = await createKernelAccount(publicClient, {
+  plugins: {
+    sudo: ecdsaValidator,
+  },
+  entryPoint,
+})
+```
+
+- If you are migrating a live app that is using EntryPoint 0.6 (Kernel v2), set `entryPoint` to `ENTRYPOINT_ADDRESS_V06`.
+- If you are launching a new app, set `entryPoint` to `ENTRYPOINT_ADDRESS_V07`.
+
+### Replaced `transport` with `bundlerTransport` inside `createKernelAccountClient`
+
+```ts
+const kernelClient = createKernelAccountClient({
+  transport: http(bundlerUrl), // [!code --]
+  bundlerTransport: http(bundlerUrl), // [!code ++]
+  // ...
+})
+```
+
+### Replaced `sponsorUserOperation` with `middleware.sponsorUserOperation`
+
+Instead of accepting just a `sponsorUserOperation` middleware, `createSmartAccountClient` now accepts a `middleware` function that can specify a `sponsorUserOperation` function internally, as well as a `gasPrice` function.
+
+```ts
+const kernelClient = createKernelAccountClient({
+  sponsorUserOperation: paymasterClient.sponsorUserOperation, // [!code --]
+  middleware: { // [!code ++]
+		sponsorUserOperation: paymasterClient.sponsorUserOperation, // [!code ++]
+	}, // [!code ++]
+  // ...
+})
+```
