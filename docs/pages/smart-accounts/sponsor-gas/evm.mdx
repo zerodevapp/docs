@@ -10,7 +10,7 @@ When you sponsor gas through ZeroDev, there are two ways to pay for the gas:
 
 ## Setting up gas sponsoring policies
 
-To avoid over-spending gas on sponsoring, you must set up gas-sponsoring policies.  Sign up on the ZeroDev dashboard if you haven't already, then [set up gas policies](/resources/infrastructure/gas-policies).
+To avoid over-spending gas on sponsoring, you must set up gas-sponsoring policies.  Sign up on the ZeroDev dashboard if you haven't already, then [set up gas policies](/api-and-toolings/infrastructure/gas-policies).
 
 Note that you MUST set up a gas policy to begin sponsoring.  Without setting up a gas policy, there won't be any gas sponsored.
 
@@ -52,7 +52,7 @@ const kernelClient = createKernelAccountClient({
 
 ### What happens when you reach the sponsorship limit?
 
-If you have reached the sponsorship limit, either because of the [policies](/resources/infrastructure/gas-policies) you set up or because you have reached an account-level limit, sending UserOp will fail.
+If you have reached the sponsorship limit, either because of the [policies](/api-and-toolings/infrastructure/gas-policies) you set up or because you have reached an account-level limit, sending UserOp will fail.
 
 If, instead of failing, you want the UserOp to proceed but use the user's own native tokens (e.g. ETH), then you can set up your `paymaster` middleware like this:
 
