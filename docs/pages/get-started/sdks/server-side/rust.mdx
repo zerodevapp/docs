@@ -41,7 +41,7 @@ let signer = Signer::local(&private_key)?;
 let account = ctx.new_account(&signer, KernelVersion::V3_3, 0)?;
 ```
 
-`Signer::generate()` is useful for demos when you don't need to reuse a key. All handles implement `Drop` — native resources are released automatically.
+`Signer::generate()` is useful for demos when you don't need to reuse a key. It requires a working OS CSPRNG; on hardened sandboxes where `getrandom(2)` is blocked the call returns an error rather than producing a weak key, so production paths in those environments should pass a real key via `Signer::local(&pk)`. All handles implement `Drop` — native resources are released automatically.
 
 ## Example — sponsored UserOp
 
