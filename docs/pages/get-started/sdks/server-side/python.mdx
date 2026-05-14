@@ -36,7 +36,7 @@ with Context(
             pass
 ```
 
-`Signer.generate()` is useful for demos when you don't need to reuse a key. Use `with` blocks (or call `.close()`) to release native resources.
+`Signer.generate()` is useful for demos when you don't need to reuse a key. It requires a working OS CSPRNG; on hardened sandboxes where `getrandom(2)` is blocked the call raises rather than producing a weak key, so production paths in those environments should pass a real key via `Signer.local(pk)`. Use `with` blocks (or call `.close()`) to release native resources.
 
 ## Example — sponsored UserOp
 

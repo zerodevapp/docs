@@ -46,7 +46,7 @@ Context.create(
 }
 ```
 
-`Signer.generate()` is useful for demos when you don't need to reuse a key. All handles implement `AutoCloseable` — use Kotlin's `use { }` to release native resources deterministically.
+`Signer.generate()` is useful for demos when you don't need to reuse a key. It requires a working OS CSPRNG; on hardened sandboxes where `getrandom(2)` is blocked the call throws rather than producing a weak key, so production paths in those environments should pass a real key via `Signer.local(privateKey)`. All handles implement `AutoCloseable` — use Kotlin's `use { }` to release native resources deterministically.
 
 ## Example — sponsored UserOp
 

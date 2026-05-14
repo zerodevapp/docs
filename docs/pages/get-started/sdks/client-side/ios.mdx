@@ -42,7 +42,7 @@ let signer = try Signer.local(privateKey: pk)
 let account = try ctx.newAccount(signer: signer, version: .v3_3)
 ```
 
-`Signer.generate()` is useful for demos when you don't need to reuse a key.
+`Signer.generate()` is useful for demos when you don't need to reuse a key. It requires a working OS CSPRNG; on hardened sandboxes where `getrandom(2)` is blocked the call returns an error rather than producing a weak key, so production paths in those environments should pass a real key via `Signer.local(privateKey:)`.
 
 ## Example — sponsored UserOp
 
