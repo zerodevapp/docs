@@ -144,46 +144,7 @@ const REDIRECTS: Record<string, string> = {
   "/smart-routing-address": "/cross-chain/smart-routing-address",
   "/global-address": "/cross-chain/smart-routing-address",
 
-  // Embedded Wallet (formerly /wallets)
-  "/wallets": "/smart-accounts/embedded-wallet",
-  "/wallets/quickstart": "/smart-accounts/embedded-wallet/quickstart",
-  "/wallets/export": "/smart-accounts/embedded-wallet/export",
-  "/wallets/session-management":
-    "/smart-accounts/embedded-wallet/session-management",
-  "/wallets/auth/passkeys": "/smart-accounts/embedded-wallet/auth/passkeys",
-  "/wallets/auth/email-otp": "/smart-accounts/embedded-wallet/auth/email-otp",
-  "/wallets/auth/magic-link":
-    "/smart-accounts/embedded-wallet/auth/magic-link",
-  "/wallets/auth/google-oauth":
-    "/smart-accounts/embedded-wallet/auth/google-oauth",
-  "/wallets/wallet-api/send-transaction":
-    "/smart-accounts/embedded-wallet/wallet-api/send-transaction",
-  "/wallets/wallet-api/sign-message":
-    "/smart-accounts/embedded-wallet/wallet-api/sign-message",
-  "/wallets/wallet-api/sign-typed-message":
-    "/smart-accounts/embedded-wallet/wallet-api/sign-typed-message",
-  "/wallets/hooks/use-register-passkey":
-    "/smart-accounts/embedded-wallet/hooks/use-register-passkey",
-  "/wallets/hooks/use-login-passkey":
-    "/smart-accounts/embedded-wallet/hooks/use-login-passkey",
-  "/wallets/hooks/use-authenticate-oauth":
-    "/smart-accounts/embedded-wallet/hooks/use-authenticate-oauth",
-  "/wallets/hooks/use-send-otp":
-    "/smart-accounts/embedded-wallet/hooks/use-send-otp",
-  "/wallets/hooks/use-verify-otp":
-    "/smart-accounts/embedded-wallet/hooks/use-verify-otp",
-  "/wallets/hooks/use-send-magic-link":
-    "/smart-accounts/embedded-wallet/hooks/use-send-magic-link",
-  "/wallets/hooks/use-verify-magic-link":
-    "/smart-accounts/embedded-wallet/hooks/use-verify-magic-link",
-  "/wallets/hooks/use-get-user-email":
-    "/smart-accounts/embedded-wallet/hooks/use-get-user-email",
-  "/wallets/hooks/use-refresh-session":
-    "/smart-accounts/embedded-wallet/hooks/use-refresh-session",
-  "/wallets/hooks/use-export-wallet":
-    "/smart-accounts/embedded-wallet/hooks/use-export-wallet",
-  "/wallets/hooks/use-export-private-key":
-    "/smart-accounts/embedded-wallet/hooks/use-export-private-key",
+  // Embedded Wallet docs live at /wallets/* (alpha — unlisted in sidebars).
 
   // React WaaS hooks → Advanced › React Hooks (legacy)
   "/react/getting-started": "/advanced/react-hooks/getting-started",
@@ -667,128 +628,132 @@ export default defineConfig({
           },
         ],
       },
-      //   {
-      //     text: "Embedded Wallet",
-      //     collapsed: false,
-      //     items: [
-      //       {
-      //         text: "Introduction",
-      //         link: "/smart-accounts/embedded-wallet",
-      //       },
-      //       {
-      //         text: "Quickstart",
-      //         link: "/smart-accounts/embedded-wallet/quickstart",
-      //       },
-      //       {
-      //         text: "Demo",
-      //         link: "https://zerodev-signer-demo.vercel.app/",
-      //       },
-      //       {
-      //         text: "Authentication",
-      //         collapsed: true,
-      //         items: [
-      //           {
-      //             text: "Passkeys",
-      //             link: "/smart-accounts/embedded-wallet/auth/passkeys",
-      //           },
-      //           {
-      //             text: "Email OTP",
-      //             link: "/smart-accounts/embedded-wallet/auth/email-otp",
-      //           },
-      //           {
-      //             text: "Magic Link",
-      //             link: "/smart-accounts/embedded-wallet/auth/magic-link",
-      //           },
-      //           {
-      //             text: "Google OAuth",
-      //             link: "/smart-accounts/embedded-wallet/auth/google-oauth",
-      //           },
-      //         ],
-      //       },
-      //       {
-      //         text: "Features",
-      //         collapsed: true,
-      //         items: [
-      //           {
-      //             text: "Session Management",
-      //             link: "/smart-accounts/embedded-wallet/session-management",
-      //           },
-      //           {
-      //             text: "Export Wallet",
-      //             link: "/smart-accounts/embedded-wallet/export",
-      //           },
-      //         ],
-      //       },
-      //       {
-      //         text: "Wallet API",
-      //         collapsed: true,
-      //         items: [
-      //           {
-      //             text: "Send a Transaction",
-      //             link: "/smart-accounts/embedded-wallet/wallet-api/send-transaction",
-      //           },
-      //           {
-      //             text: "Sign a Message",
-      //             link: "/smart-accounts/embedded-wallet/wallet-api/sign-message",
-      //           },
-      //           {
-      //             text: "Sign a Typed Message",
-      //             link: "/smart-accounts/embedded-wallet/wallet-api/sign-typed-message",
-      //           },
-      //         ],
-      //       },
-      //       {
-      //         text: "Hooks",
-      //         collapsed: true,
-      //         items: [
-      //           {
-      //             text: "useRegisterPasskey",
-      //             link: "/smart-accounts/embedded-wallet/hooks/use-register-passkey",
-      //           },
-      //           {
-      //             text: "useLoginPasskey",
-      //             link: "/smart-accounts/embedded-wallet/hooks/use-login-passkey",
-      //           },
-      //           {
-      //             text: "useAuthenticateOAuth",
-      //             link: "/smart-accounts/embedded-wallet/hooks/use-authenticate-oauth",
-      //           },
-      //           {
-      //             text: "useSendOTP",
-      //             link: "/smart-accounts/embedded-wallet/hooks/use-send-otp",
-      //           },
-      //           {
-      //             text: "useVerifyOTP",
-      //             link: "/smart-accounts/embedded-wallet/hooks/use-verify-otp",
-      //           },
-      //           {
-      //             text: "useSendMagicLink",
-      //             link: "/smart-accounts/embedded-wallet/hooks/use-send-magic-link",
-      //           },
-      //           {
-      //             text: "useVerifyMagicLink",
-      //             link: "/smart-accounts/embedded-wallet/hooks/use-verify-magic-link",
-      //           },
-      //           {
-      //             text: "useGetUserEmail",
-      //             link: "/smart-accounts/embedded-wallet/hooks/use-get-user-email",
-      //           },
-      //           {
-      //             text: "useRefreshSession",
-      //             link: "/smart-accounts/embedded-wallet/hooks/use-refresh-session",
-      //           },
-      //           {
-      //             text: "useExportWallet",
-      //             link: "/smart-accounts/embedded-wallet/hooks/use-export-wallet",
-      //           },
-      //           {
-      //             text: "useExportPrivateKey",
-      //             link: "/smart-accounts/embedded-wallet/hooks/use-export-private-key",
-      //           },
-      //         ],
-      //       },
-      //     ],
-      //   },
+    ],
+    // Embedded Wallet (alpha) — not advertised in the public pillar bar.
+    // Lives at /wallets/* and is only navigable for users who know the URL.
+    "/wallets": [
+      {
+        text: "Embedded Wallet",
+        collapsed: false,
+        items: [
+          {
+            text: "Introduction",
+            link: "/wallets",
+          },
+          {
+            text: "Quickstart",
+            link: "/wallets/quickstart",
+          },
+          {
+            text: "Demo",
+            link: "https://zerodev-signer-demo.vercel.app/",
+          },
+          {
+            text: "Authentication",
+            collapsed: true,
+            items: [
+              {
+                text: "Passkeys",
+                link: "/wallets/auth/passkeys",
+              },
+              {
+                text: "Email OTP",
+                link: "/wallets/auth/email-otp",
+              },
+              {
+                text: "Magic Link",
+                link: "/wallets/auth/magic-link",
+              },
+              {
+                text: "Google OAuth",
+                link: "/wallets/auth/google-oauth",
+              },
+            ],
+          },
+          {
+            text: "Features",
+            collapsed: true,
+            items: [
+              {
+                text: "Session Management",
+                link: "/wallets/session-management",
+              },
+              {
+                text: "Export Wallet",
+                link: "/wallets/export",
+              },
+            ],
+          },
+          {
+            text: "Wallet API",
+            collapsed: true,
+            items: [
+              {
+                text: "Send a Transaction",
+                link: "/wallets/wallet-api/send-transaction",
+              },
+              {
+                text: "Sign a Message",
+                link: "/wallets/wallet-api/sign-message",
+              },
+              {
+                text: "Sign a Typed Message",
+                link: "/wallets/wallet-api/sign-typed-message",
+              },
+            ],
+          },
+          {
+            text: "Hooks",
+            collapsed: true,
+            items: [
+              {
+                text: "useRegisterPasskey",
+                link: "/wallets/hooks/use-register-passkey",
+              },
+              {
+                text: "useLoginPasskey",
+                link: "/wallets/hooks/use-login-passkey",
+              },
+              {
+                text: "useAuthenticateOAuth",
+                link: "/wallets/hooks/use-authenticate-oauth",
+              },
+              {
+                text: "useSendOTP",
+                link: "/wallets/hooks/use-send-otp",
+              },
+              {
+                text: "useVerifyOTP",
+                link: "/wallets/hooks/use-verify-otp",
+              },
+              {
+                text: "useSendMagicLink",
+                link: "/wallets/hooks/use-send-magic-link",
+              },
+              {
+                text: "useVerifyMagicLink",
+                link: "/wallets/hooks/use-verify-magic-link",
+              },
+              {
+                text: "useGetUserEmail",
+                link: "/wallets/hooks/use-get-user-email",
+              },
+              {
+                text: "useRefreshSession",
+                link: "/wallets/hooks/use-refresh-session",
+              },
+              {
+                text: "useExportWallet",
+                link: "/wallets/hooks/use-export-wallet",
+              },
+              {
+                text: "useExportPrivateKey",
+                link: "/wallets/hooks/use-export-private-key",
+              },
+            ],
+          },
+        ],
+      },
     ],
     "/cross-chain": [
       {
@@ -860,7 +825,7 @@ export default defineConfig({
     ],
     "/api-and-toolings": [
       {
-        text: "API & Toolings",
+        text: "API & Tooling",
         collapsed: false,
         items: [
           {
@@ -1306,7 +1271,7 @@ export default defineConfig({
     { href: '/smart-accounts/create-a-smart-account', text: 'Smart Accounts & Wallets', match: function(p) { return p.indexOf('/smart-accounts') === 0; } },
     { href: '/cross-chain/smart-routing-address', text: 'Cross-Chain Workflows', match: function(p) { return p.indexOf('/cross-chain') === 0; } },
     { href: '/advanced/migration', text: 'Advanced', match: function(p) { return p.indexOf('/advanced') === 0; } },
-    { href: '/api-and-toolings/infrastructure/intro', text: 'API and Toolings', match: function(p) { return p.indexOf('/resources') === 0; } }
+    { href: '/api-and-toolings/infrastructure/intro', text: 'API and Tooling', match: function(p) { return p.indexOf('/resources') === 0; } }
   ];
 
   function build() {

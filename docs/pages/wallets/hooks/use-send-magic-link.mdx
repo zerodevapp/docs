@@ -1,6 +1,6 @@
 import MutationResult from '../shared/mutation-result.mdx'
 
-# useSendOTP [Hook for sending a one-time verification code]
+# useSendMagicLink [Hook for sending a magic link email]
 
 :::danger[IMPORTANT]
 **USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
@@ -9,18 +9,18 @@ import MutationResult from '../shared/mutation-result.mdx'
 ## Import
 
 ```tsx
-import { useSendOTP } from '@zerodev/wallet-react'
+import { useSendMagicLink } from '@zerodev/wallet-react'
 ```
 
 ## Usage
 
 ```tsx
 import { useState } from 'react'
-import { useSendOTP } from '@zerodev/wallet-react'
+import { useSendMagicLink } from '@zerodev/wallet-react'
 
-function SendCode() {
+function SendMagicLink() {
   const [email, setEmail] = useState('')
-  const sendOTP = useSendOTP()
+  const sendMagicLink = useSendMagicLink()
 
   return (
     <div>
@@ -32,14 +32,19 @@ function SendCode() {
       />
       <button
         onClick={async () => {
-          const result = await sendOTP.mutateAsync({ email })
-          console.log('OTP ID:', result.otpId)
-          // Pass otpId to useVerifyOTP
+          const result = await sendMagicLink.mutateAsync({
+            email,
+            redirectURL: `${window.location.origin}/verify`,
+          })
+          // Store otpId for the verify page
+          sessionStorage.setItem('magicLinkOtpId', result.otpId)
         }}
-        disabled={sendOTP.isPending || !email}
+        disabled={sendMagicLink.isPending || !email}
       >
-        {sendOTP.isPending ? 'Sending...' : 'Send Code'}
+        {sendMagicLink.isPending ? 'Sending...' : 'Send Magic Link'}
       </button>
+
+      {sendMagicLink.isSuccess && <p>Check your email!</p>}
     </div>
   )
 }
@@ -51,31 +56,25 @@ function SendCode() {
 
 `string`
 
-**Required.** The email address to send the verification code to.
+**Required.** The email address to send the magic link to.
 
-### emailCustomization
+### redirectURL
 
-`{ magicLinkTemplate?: string } | undefined`
+`string`
 
-Optional email customization options.
-
-#### magicLinkTemplate
-
-`string | undefined`
-
-Custom template for the email content.
+**Required.** The URL the user will be redirected to after clicking the magic link. This should be a page in your app that calls [`useVerifyMagicLink`](/wallets/hooks/use-verify-magic-link).
 
 ### otpCodeCustomization
 
 `{ length?: 6 | 7 | 8 | 9; alphanumeric?: boolean } | undefined`
 
-Optional customization for the generated OTP code.
+Optional customization for the generated verification code.
 
 #### length
 
 `6 | 7 | 8 | 9 | undefined`
 
-The number of characters in the OTP code. Defaults to `6`.
+The number of characters in the code. Defaults to `6`.
 
 #### alphanumeric
 
@@ -89,13 +88,13 @@ Whether to use alphanumeric characters instead of digits only. Defaults to `fals
 
 ### mutate
 
-`(variables: { email: string; emailCustomization?: { magicLinkTemplate?: string } }) => void`
+`(variables: { email: string; redirectURL: string }) => void`
 
-The mutation function to send the OTP.
+The mutation function to send the magic link.
 
 ### mutateAsync
 
-`(variables: { email: string; emailCustomization?: { magicLinkTemplate?: string } }) => Promise<{ otpId: string }>`
+`(variables: { email: string; redirectURL: string }) => Promise<{ otpId: string }>`
 
 Similar to [`mutate`](#mutate) but returns a promise.
 
@@ -110,6 +109,6 @@ Similar to [`mutate`](#mutate) but returns a promise.
 
 `string`
 
-The identifier for this OTP verification attempt. Pass this to [`useVerifyOTP`](/smart-accounts/embedded-wallet/hooks/use-verify-otp) to complete authentication.
+The identifier for this magic link verification. Store this value and pass it to [`useVerifyMagicLink`](/wallets/hooks/use-verify-magic-link) on the redirect page.
 
 <MutationResult />
