@@ -50,7 +50,7 @@ if err != nil { panic(err) }
 defer account.Close()
 ```
 
-`aa.GenerateSigner()` is useful for demos when you don't need to reuse a key.
+`aa.GenerateSigner()` is useful for demos when you don't need to reuse a key. It requires a working OS CSPRNG; on hardened sandboxes where `getrandom(2)` is blocked the call returns an error rather than producing a weak key, so production paths in those environments should pass a real key via `aa.LocalSigner(pk)`.
 
 ## Example — sponsored UserOp
 
