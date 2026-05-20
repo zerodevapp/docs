@@ -233,6 +233,18 @@ const REDIRECTS: Record<string, string> = {
     "/smart-accounts/permissions/actions/build-your-own",
   "/smart-wallet/permissions/1-click-trading":
     "/smart-accounts/permissions/1-click-trading",
+
+  // React Kit docs moved from the standalone vocs site under
+  // packages/react-kit/docs into the main wallets section.
+  "/react-kit/getting-started": "/wallets/react-kit/getting-started",
+  "/react-kit/configuration": "/wallets/react-kit/configuration",
+  "/react-kit/features/authentication":
+    "/wallets/react-kit/features/authentication",
+  "/react-kit/features/transaction-signing":
+    "/wallets/react-kit/features/transaction-signing",
+  "/react-kit/hooks/use-auth": "/wallets/react-kit/hooks/use-auth",
+  "/react-kit/hooks/use-pending-request":
+    "/wallets/react-kit/hooks/use-pending-request",
 };
 
 export default defineConfig({
@@ -749,6 +761,46 @@ export default defineConfig({
               {
                 text: "useExportPrivateKey",
                 link: "/wallets/hooks/use-export-private-key",
+              },
+            ],
+          },
+          {
+            text: "React Kit",
+            collapsed: true,
+            items: [
+              {
+                text: "Getting Started",
+                link: "/wallets/react-kit/getting-started",
+              },
+              {
+                text: "Configuration",
+                link: "/wallets/react-kit/configuration",
+              },
+              {
+                text: "Features",
+                items: [
+                  {
+                    text: "Authentication",
+                    link: "/wallets/react-kit/features/authentication",
+                  },
+                  {
+                    text: "Transaction Signing",
+                    link: "/wallets/react-kit/features/transaction-signing",
+                  },
+                ],
+              },
+              {
+                text: "Hooks",
+                items: [
+                  {
+                    text: "useAuth",
+                    link: "/wallets/react-kit/hooks/use-auth",
+                  },
+                  {
+                    text: "usePendingRequest",
+                    link: "/wallets/react-kit/hooks/use-pending-request",
+                  },
+                ],
               },
             ],
           },
