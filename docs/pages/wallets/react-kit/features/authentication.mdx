@@ -1,0 +1,86 @@
+# Authentication
+
+Sign user in with email, Google, passkey, and more. The `<AuthFlow />`
+component sits in your tree and renders the right auth screen for the
+current step.
+
+## Import
+
+```tsx
+import { AuthFlow } from '@zerodev/wallet-react-kit'
+```
+
+## Configure auth
+
+Pass an `auth` block to the connector to enable authentication:
+
+```tsx
+import { zeroDevWallet } from '@zerodev/wallet-react-kit'
+
+zeroDevWallet({
+  projectId: '...',
+  chains: [sepolia],
+  config: {
+    auth: {
+      magicLinkBaseUrl: 'https://yourdomain.com/auth/verify',
+      enabledMethods: ['email', 'google', 'passkey'],
+      termsAndConditionsUrl: 'https://yourdomain.com/terms',
+      privacyPolicyUrl: 'https://yourdomain.com/privacy',
+      onSuccess: () => {
+        // user is authenticated
+      },
+      onError: (error) => {
+        // auth failed
+      },
+    },
+  },
+})
+```
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `magicLinkBaseUrl` | `string` | The URL the magic link points to. Your app should call the verification handler at this path. |
+| `enabledMethods` | `AuthMethod[]` | Which methods to offer: `'email'`, `'google'`, `'passkey'`, `'injected-wallet'`. |
+| `termsAndConditionsUrl` | `string` (optional) | URL for your terms and conditions page. When set (alone or with `privacyPolicyUrl`), the auth UI shows a required agreement checkbox before the user can continue. |
+| `privacyPolicyUrl` | `string` (optional) | URL for your privacy policy page. When set (alone or with `termsAndConditionsUrl`), the auth UI shows a required agreement checkbox before the user can continue. |
+| `onSuccess` | `() => void` | Called when authentication completes successfully. |
+| `onError` | `(error: unknown) => void` | Called when authentication fails. |
+
+## Usage
+
+Mount the component once, anywhere in your tree. It renders the active
+auth screen when the user is signing in and renders nothing otherwise.
+Trigger the flow with wagmi's `useConnect`:
+
+```tsx
+import { AuthFlow } from '@zerodev/wallet-react-kit'
+import { useConnect } from 'wagmi'
+
+function App() {
+  const { connect, connectors } = useConnect()
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => connect({ connector: connectors[0] })}
+      >
+        Connect
+      </button>
+      <AuthFlow />
+    </>
+  )
+}
+```
+
+`connect()` triggers `eth_requestAccounts` under the hood, which kicks
+off the auth flow. The flow completes when the user is authenticated,
+at which point `onSuccess` fires.
+
+To build a custom auth UI instead of using `<AuthFlow />`, read state
+directly with the [`useAuth`](/wallets/react-kit/hooks/use-auth) hook.
+
+## Live demo
+
+Try `<AuthFlow />` end-to-end at
+[zerodev-signer-demo.vercel.app](https://zerodev-signer-demo.vercel.app/).
