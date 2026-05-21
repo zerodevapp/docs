@@ -1,0 +1,27 @@
+---
+title: SDKs Overview
+description: Choose the right ZeroDev SDK for your stack — client-side, server-side, and per-language.
+---
+
+# SDKs
+
+ZeroDev ships SDKs for browser, mobile, and server-side stacks. Most non-TypeScript bindings are powered by the **[Omni SDK](https://github.com/zerodevapp/zerodev-omni-sdk)** — a single Zig core exposed through C FFI, with first-class language bindings for Swift, Kotlin, Go, Rust, Python, and C. Pick the one that matches your runtime.
+
+## Client-side
+
+For applications that run in a user's browser or on their device.
+
+- **[TypeScript / JavaScript](/get-started/sdks/client-side/typescript)** — the core `@zerodev/sdk` package, for browser apps.
+- **[Embedded Wallet (React)](/wallets/quickstart)** — `@zerodev/wallet-react` for embedded smart wallet flows.
+- **[iOS (Swift)](/get-started/sdks/client-side/ios)** — Omni SDK Swift binding (SPM, precompiled xcframework).
+- **[Android (Kotlin)](/get-started/sdks/client-side/android)** — Omni SDK Kotlin binding (Maven Central, bundled native libs).
+
+## Server-side
+
+For backend services, scripts, and agents.
+
+- **[Node.js / TypeScript](/get-started/sdks/server-side/nodejs)** — `@zerodev/sdk` running server-side.
+- **[Go](/get-started/sdks/server-side/go)** — Omni SDK Go binding.
+- **[Python](/get-started/sdks/server-side/python)** — Omni SDK Python binding (PyPI).
+- **[Rust](/get-started/sdks/server-side/rust)** — Omni SDK Rust crate (crates.io).
+- **[C](/get-started/sdks/server-side/c)** — Omni SDK C FFI for cross-language embedding.

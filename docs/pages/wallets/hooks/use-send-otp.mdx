@@ -1,0 +1,115 @@
+import MutationResult from '../shared/mutation-result.mdx'
+
+# useSendOTP [Hook for sending a one-time verification code]
+
+:::danger[IMPORTANT]
+**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
+:::
+
+## Import
+
+```tsx
+import { useSendOTP } from '@zerodev/wallet-react'
+```
+
+## Usage
+
+```tsx
+import { useState } from 'react'
+import { useSendOTP } from '@zerodev/wallet-react'
+
+function SendCode() {
+  const [email, setEmail] = useState('')
+  const sendOTP = useSendOTP()
+
+  return (
+    <div>
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Enter your email"
+      />
+      <button
+        onClick={async () => {
+          const result = await sendOTP.mutateAsync({ email })
+          console.log('OTP ID:', result.otpId)
+          // Pass otpId to useVerifyOTP
+        }}
+        disabled={sendOTP.isPending || !email}
+      >
+        {sendOTP.isPending ? 'Sending...' : 'Send Code'}
+      </button>
+    </div>
+  )
+}
+```
+
+## Parameters
+
+### email
+
+`string`
+
+**Required.** The email address to send the verification code to.
+
+### emailCustomization
+
+`{ magicLinkTemplate?: string } | undefined`
+
+Optional email customization options.
+
+#### magicLinkTemplate
+
+`string | undefined`
+
+Custom template for the email content.
+
+### otpCodeCustomization
+
+`{ length?: 6 | 7 | 8 | 9; alphanumeric?: boolean } | undefined`
+
+Optional customization for the generated OTP code.
+
+#### length
+
+`6 | 7 | 8 | 9 | undefined`
+
+The number of characters in the OTP code. Defaults to `6`.
+
+#### alphanumeric
+
+`boolean | undefined`
+
+Whether to use alphanumeric characters instead of digits only. Defaults to `false`.
+
+## Return Types
+
+[TanStack Query mutation docs](https://tanstack.com/query/v5/docs/react/reference/useMutation)
+
+### mutate
+
+`(variables: { email: string; emailCustomization?: { magicLinkTemplate?: string } }) => void`
+
+The mutation function to send the OTP.
+
+### mutateAsync
+
+`(variables: { email: string; emailCustomization?: { magicLinkTemplate?: string } }) => Promise<{ otpId: string }>`
+
+Similar to [`mutate`](#mutate) but returns a promise.
+
+### data
+
+`{ otpId: string } | undefined`
+
+- Defaults to `undefined`
+- The data returned from the mutation on success.
+
+#### otpId
+
+`string`
+
+The identifier for this OTP verification attempt. Pass this to [`useVerifyOTP`](/wallets/hooks/use-verify-otp) to complete authentication.
+
+<MutationResult />

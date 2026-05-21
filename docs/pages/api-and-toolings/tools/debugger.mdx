@@ -1,0 +1,39 @@
+# UserOp Debugger
+
+ZeroDev ships a web-based UserOp debugger at [debug.zerodev.app](https://debug.zerodev.app).  Unlike similar tools on the market, the ZeroDev debugger has some major advantages:
+
+- It's fully free to use (even for non-ZeroDev users!).
+- It runs fully locally in the browser, with no dependencies on our servers.
+  - As a result, you can trust that the debugger will always be available independent of the uptime of ZeroDev itself.
+
+The reason why the UserOp debugger can run fully in the browser is because we make innovative use of [TEVM](https://www.tevm.sh/), an Ethereum client implementation in TypeScript.  This allows us to simulate UserOps without dependencies on RPC-based debuggers such as Tenderly, thus allowing us to offer this tool for free with 100% uptime.
+
+## Using the debugger
+
+The debugger UI is very self-explanatory, so we encourage you to just [head over directly](https://debug.zerodev.app/).
+
+The debugger supports three modes (available as the three tabs on the navbar).
+
+### Direct simulation
+
+To use the debugger, simply:
+
+- Select a network
+- Enter a JSON RPC for the network manually or select one from the preexisting list.
+- Select an EntryPoint version (if you are unsure, you are likely using 0.7 which is the default for ZeroDev SDK).
+- Paste in the UserOp.  We support multiple UserOp formats including the output from Viem, so in most cases it should just work.
+- Click "Simulate."
+
+### Importing from bundler transactions
+
+Sometimes you might want to find a UserOp from a bundler transaction.  In that case, simply select the network and paste in the transaction hash.
+
+You can give try this transaction hash on Arbitrum if you'd like to see an example: `0x9b9bc487071fb1258892658853f6f89aace80647affc06c793c83eb193fc57e0`.
+
+### Analyze an account
+
+You can analyze an account by inputing its address.  Try this address on Base: `0x2E9f1C283A151927afED5dEd86dD147243A8fa79`.
+
+## Next steps
+
+[Head to the debugger and try some of the examples.](https://debug.zerodev.app)

@@ -1,0 +1,112 @@
+# Export Wallet [Let users export their seed phrase or private key]
+
+:::danger[IMPORTANT]
+**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
+:::
+
+The SDK supports exporting the user's wallet as a seed phrase or private key. The key material is displayed inside a secure iframe and never touches your application code.
+
+## Hooks
+
+- [`useExportWallet`](/wallets/hooks/use-export-wallet) — Export the wallet seed phrase
+- [`useExportPrivateKey`](/wallets/hooks/use-export-private-key) — Export a single private key
+
+## Example
+
+```tsx
+import { useState } from 'react'
+import { useExportWallet, useExportPrivateKey } from '@zerodev/wallet-react'
+
+function ExportModal() {
+  const [showExport, setShowExport] = useState(false)
+  const exportWallet = useExportWallet()
+  const exportPrivateKey = useExportPrivateKey()
+
+  return (
+    <div>
+      <button onClick={() => setShowExport(true)}>
+        Export Wallet
+      </button>
+
+      {showExport && (
+        <div className="modal">
+          <h3>Export Options</h3>
+
+          {/* Container where the export iframe will render */}
+          <div id="export-container" style={{ minHeight: '200px' }} />
+
+          <button
+            onClick={() =>
+              exportWallet.mutateAsync({
+                iframeContainerId: 'export-container',
+                iframeStyles: {
+                  width: '400px',
+                  height: '200px',
+                  border: 'none',
+                },
+              })
+            }
+            disabled={exportWallet.isPending}
+          >
+            {exportWallet.isPending ? 'Exporting...' : 'Show Seed Phrase'}
+          </button>
+
+          <button
+            onClick={() =>
+              exportPrivateKey.mutateAsync({
+                iframeContainerId: 'export-container',
+                keyFormat: 'Hexadecimal',
+                iframeStyles: {
+                  width: '400px',
+                  height: '100px',
+                  border: 'none',
+                },
+              })
+            }
+            disabled={exportPrivateKey.isPending}
+          >
+            {exportPrivateKey.isPending ? 'Exporting...' : 'Show Private Key'}
+          </button>
+
+          <button onClick={() => setShowExport(false)}>
+            Close
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+```
+
+## How it works
+
+1. You provide a container element ID where the secure iframe will be rendered.
+2. The SDK initiates a secure export session.
+3. The seed phrase or private key is rendered inside a secure iframe.
+4. The key material is displayed directly to the user — it never passes through your application.
+
+## Iframe styling
+
+Customize the iframe appearance with `iframeStyles`:
+
+```tsx
+exportWallet.mutateAsync({
+  iframeContainerId: 'export-container',
+  iframeStyles: {
+    width: '100%',
+    height: '250px',
+    border: '1px solid #ccc',
+    borderRadius: '8px',
+    padding: '16px',
+  },
+})
+```
+
+## Private key formats
+
+`useExportPrivateKey` supports two key formats:
+
+| Format | Description |
+|--------|-------------|
+| `'Hexadecimal'` | Standard hex-encoded private key (default) |
+| `'Solana'` | Solana-compatible key format |

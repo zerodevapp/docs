@@ -1,0 +1,56 @@
+import QueryResult from '../shared/query-result.mdx'
+
+# useGetUserEmail [Hook for getting the authenticated user's email]
+
+:::danger[IMPORTANT]
+**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
+:::
+
+## Import
+
+```tsx
+import { useGetUserEmail } from '@zerodev/wallet-react'
+```
+
+## Usage
+
+```tsx
+import { useGetUserEmail } from '@zerodev/wallet-react'
+import { useAccount } from 'wagmi'
+
+function UserProfile() {
+  const { isConnected } = useAccount()
+  const { data: userEmail, isLoading } = useGetUserEmail({})
+
+  if (!isConnected) return null
+
+  if (isLoading) return <p>Loading email...</p>
+
+  return <p>Email: {userEmail?.email ?? 'Not available'}</p>
+}
+```
+
+## Parameters
+
+```tsx
+import { type UseGetUserEmailParameters } from '@zerodev/wallet-react'
+```
+
+This hook takes an empty object `{}` as its argument. No additional parameters are required.
+
+## Return Types
+
+### data
+
+`{ email: string } | undefined`
+
+- Defaults to `undefined`
+- The authenticated user's email address, if available.
+
+#### email
+
+`string`
+
+The user's email address. This is available when the user authenticated with Email OTP, Magic Link, or Google OAuth. It may not be available for passkey-only authentication.
+
+<QueryResult />

@@ -1,0 +1,106 @@
+---
+title: iOS (Swift) SDK
+description: Install and use the ZeroDev Omni SDK Swift binding for iOS and macOS.
+---
+
+# iOS (Swift) SDK
+
+The ZeroDev Swift SDK is part of the [Omni SDK](https://github.com/zerodevapp/zerodev-omni-sdk) — a single Zig core shipped with first-class bindings for Swift, Kotlin, Go, Rust, Python, and C. It supports smart-account creation, signing, sponsored transactions, and EIP-7702 delegation on any EVM chain.
+
+:::info
+The Swift binding is currently in alpha.
+:::
+
+## Install
+
+In Xcode, choose **File → Add Packages…** and add:
+
+```
+https://github.com/zerodevapp/zerodev-omni-sdk
+```
+
+Or add to your `Package.swift`:
+
+```swift
+.package(url: "https://github.com/zerodevapp/zerodev-omni-sdk.git", from: "0.0.1-alpha")
+```
+
+The package ships a precompiled xcframework — no native build step required.
+
+## Setup
+
+```swift
+import ZeroDevAA
+
+let ctx = try Context(
+    projectID: projectID,
+    chainID: 11155111,                  // Sepolia
+    gasMiddleware: .zeroDev,
+    paymasterMiddleware: .zeroDev
+)
+let signer = try Signer.local(privateKey: pk)
+let account = try ctx.newAccount(signer: signer, version: .v3_3)
+```
+
+`Signer.generate()` is useful for demos when you don't need to reuse a key. It requires a working OS CSPRNG; on hardened sandboxes where `getrandom(2)` is blocked the call returns an error rather than producing a weak key, so production paths in those environments should pass a real key via `Signer.local(privateKey:)`.
+
+## Example — sponsored UserOp
+
+```swift
+import ZeroDevAA
+
+let ctx = try Context(
+    projectID: projectID,
+    chainID: 11155111,
+    gasMiddleware: .zeroDev,
+    paymasterMiddleware: .zeroDev
+)
+let signer = try Signer.local(privateKey: pk)
+let account = try ctx.newAccount(signer: signer, version: .v3_3)
+
+let recipient = try Address(hex: "0x...")
+let hash = try await account.sendUserOp(calls: [
+    Call(target: recipient)
+])
+
+let receipt = try await account.waitForUserOperationReceipt(useropHash: hash)
+print("Success:", receipt.success)
+print("Tx:", receipt.transactionHash)
+```
+
+## Custom signers
+
+For wallet providers (Privy, WalletConnect, Web3Auth) that expose async APIs, use `Signer.async`:
+
+```swift
+let signer = try Signer.async(myAsyncSignerImpl)   // AsyncSignerProtocol
+```
+
+For synchronous integrations (HSM, MPC, custom secure enclave), use `Signer.custom`:
+
+```swift
+let signer = try Signer.custom(MySignerImpl())     // SignerProtocol
+```
+
+## EIP-7702 delegation
+
+EIP-7702 lets an EOA delegate its code to a Kernel contract so its address **is** the smart-account address — no CREATE2, no init code, no index. The SDK signs an authorization tuple on the first UserOp and attaches it via the `eip7702Auth` field; subsequent ops skip the auth once delegation is installed on-chain.
+
+```swift
+let signer = try Signer.generate()
+let account = try ctx.newAccount7702(signer: signer, version: .v3_3)
+
+// account.getAddress() == signer's EOA address
+let hash = try await account.sendUserOp(calls: [
+    Call(target: try account.getAddress())
+])
+```
+
+Custom signers can implement `SignerProtocol.signAuthorization(chainId:address:nonce:)` (and conform to `SignerProvidesAuthorization` returning `true`) to sign EIP-7702 tuples natively. Otherwise the SDK falls back to hashing `keccak256(0x05 || rlp([chainId, address, nonce]))` and calling `signHash`.
+
+## Next steps
+
+- [Sample app: omni-sdk-swift-example](https://github.com/zerodevapp/omni-sdk-swift-example) — SwiftUI + Privy embedded wallet + gasless transactions
+- [Omni SDK source](https://github.com/zerodevapp/zerodev-omni-sdk)
+- [Create a Smart Account](/smart-accounts/create-a-smart-account)
+- [Bundler & Paymaster RPCs](/api-and-toolings/infrastructure/rpcs)

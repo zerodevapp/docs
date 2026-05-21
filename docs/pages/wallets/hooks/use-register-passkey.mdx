@@ -1,0 +1,66 @@
+import MutationResult from '../shared/mutation-result.mdx'
+
+# useRegisterPasskey [Hook for registering a new passkey wallet]
+
+:::danger[IMPORTANT]
+**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
+:::
+
+## Import
+
+```tsx
+import { useRegisterPasskey } from '@zerodev/wallet-react'
+```
+
+## Usage
+
+```tsx
+import { useRegisterPasskey } from '@zerodev/wallet-react'
+import { useAccount } from 'wagmi'
+
+function Register() {
+  const registerPasskey = useRegisterPasskey()
+  const { address, isConnected } = useAccount()
+
+  if (isConnected) {
+    return <p>Wallet created: {address}</p>
+  }
+
+  return (
+    <button
+      onClick={() => registerPasskey.mutateAsync()}
+      disabled={registerPasskey.isPending}
+    >
+      {registerPasskey.isPending ? 'Registering...' : 'Create Wallet'}
+    </button>
+  )
+}
+```
+
+## Parameters
+
+This hook takes no mutation variables. It triggers the browser's WebAuthn prompt to create a new passkey.
+
+## Return Types
+
+[TanStack Query mutation docs](https://tanstack.com/query/v5/docs/react/reference/useMutation)
+
+### mutate
+
+`() => void`
+
+The mutation function to register a passkey. Triggers the WebAuthn browser prompt.
+
+### mutateAsync
+
+`() => Promise<void>`
+
+Similar to [`mutate`](#mutate) but returns a promise. Resolves when the passkey is registered and the wallet is connected.
+
+### data
+
+`void`
+
+This mutation does not return data. On success, the Wagmi connector is connected and the account is available via `useAccount`.
+
+<MutationResult />

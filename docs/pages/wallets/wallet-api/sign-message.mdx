@@ -1,0 +1,31 @@
+# Sign a Message [Sign messages with Wagmi hooks]
+
+:::danger[IMPORTANT]
+**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
+:::
+
+To sign a message, use Wagmi's `useSignMessage` hook:
+
+```tsx
+import { useSignMessage } from "wagmi";
+
+export function SignMessage() {
+  const { signMessage, data, isPending, error } = useSignMessage();
+
+  const handleSign = () =>
+    signMessage({
+      message: "Hello from ZeroDev Wallet",
+    });
+
+  return (
+    <div>
+      <button onClick={handleSign} disabled={isPending}>
+        {isPending ? "Signing..." : "Sign message"}
+      </button>
+
+      {data && <p>Signature: {data}</p>}
+      {error && <p>Signing failed: {error.message}</p>}
+    </div>
+  );
+}
+```

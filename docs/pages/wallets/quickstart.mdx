@@ -1,0 +1,130 @@
+# Quickstart [Get up and running in 5 minutes]
+
+:::danger[IMPORTANT]
+**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
+:::
+
+## Installation
+
+:::code-group
+
+```bash [npm]
+npm i @zerodev/wallet-react @zerodev/sdk wagmi viem @tanstack/react-query
+```
+
+```bash [yarn]
+yarn add @zerodev/wallet-react @zerodev/sdk wagmi viem @tanstack/react-query
+```
+
+```bash [pnpm]
+pnpm i @zerodev/wallet-react @zerodev/sdk wagmi viem @tanstack/react-query
+```
+
+```bash [bun]
+bun add @zerodev/wallet-react @zerodev/sdk wagmi viem @tanstack/react-query
+```
+
+:::
+
+## 1. Configure Wagmi
+
+Create a Wagmi config with the `zeroDevWallet` connector:
+
+```tsx
+import { createConfig, http } from 'wagmi'
+import { sepolia } from 'wagmi/chains'
+import { zeroDevWallet } from '@zerodev/wallet-react'
+
+export const config = createConfig({
+  chains: [sepolia],
+  connectors: [
+    zeroDevWallet({
+      projectId: 'YOUR_ZERODEV_PROJECT_ID',
+      chains: [sepolia],
+    }),
+  ],
+  transports: {
+    [sepolia.id]: http(),
+  },
+})
+```
+
+Get your project ID from the [ZeroDev Dashboard](https://dashboard.zerodev.app/).
+
+## 2. Wrap your app
+
+Wrap your application with `WagmiProvider` and `QueryClientProvider`:
+
+```tsx
+import { WagmiProvider } from 'wagmi'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { config } from './wagmi-config'
+
+const queryClient = new QueryClient()
+
+export default function App({ children }: { children: React.ReactNode }) {
+  return (
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        {children}
+      </QueryClientProvider>
+    </WagmiProvider>
+  )
+}
+```
+
+## 3. Add authentication
+
+Here's a basic example with passkey registration and login:
+
+```tsx
+import { useAccount, useDisconnect } from 'wagmi'
+import { useRegisterPasskey, useLoginPasskey } from '@zerodev/wallet-react'
+
+function AuthPage() {
+  const { address, isConnected } = useAccount()
+  const { disconnectAsync } = useDisconnect()
+  const registerPasskey = useRegisterPasskey()
+  const loginPasskey = useLoginPasskey()
+
+  if (isConnected) {
+    return (
+      <div>
+        <p>Connected: {address}</p>
+        <button onClick={() => disconnectAsync()}>
+          Logout
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <button
+        onClick={() => registerPasskey.mutateAsync()}
+        disabled={registerPasskey.isPending}
+      >
+        {registerPasskey.isPending ? 'Registering...' : 'Register with Passkey'}
+      </button>
+
+      <button
+        onClick={() => loginPasskey.mutateAsync()}
+        disabled={loginPasskey.isPending}
+      >
+        {loginPasskey.isPending ? 'Logging in...' : 'Login with Passkey'}
+      </button>
+    </div>
+  )
+}
+```
+
+After authentication, the user's wallet is available through standard Wagmi hooks like `useAccount`, `useSendTransaction`, and `useSignMessage`.
+
+## Next Steps
+
+- [Passkey Authentication](/wallets/auth/passkeys) — Full passkey guide
+- [Email OTP](/wallets/auth/email-otp) — Authenticate with email codes
+- [Google OAuth](/wallets/auth/google-oauth) — Social login with Google
+- [Send Transactions](/wallets/wallet-api/send-transaction) — Send gasless transactions
+- [Sign Messages](/wallets/wallet-api/sign-message) — Sign messages with the wallet
+- [Session Management](/wallets/session-management) — Session lifecycle and refresh

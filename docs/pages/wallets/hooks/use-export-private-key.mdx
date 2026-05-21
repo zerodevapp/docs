@@ -1,0 +1,105 @@
+import MutationResult from '../shared/mutation-result.mdx'
+
+# useExportPrivateKey [Hook for exporting a private key]
+
+:::danger[IMPORTANT]
+**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
+:::
+
+## Import
+
+```tsx
+import { useExportPrivateKey } from '@zerodev/wallet-react'
+```
+
+## Usage
+
+```tsx
+import { useExportPrivateKey } from '@zerodev/wallet-react'
+
+function ExportKey() {
+  const exportPrivateKey = useExportPrivateKey()
+
+  return (
+    <div>
+      <div id="key-container" style={{ minHeight: '100px' }} />
+
+      <button
+        onClick={() =>
+          exportPrivateKey.mutateAsync({
+            iframeContainerId: 'key-container',
+            keyFormat: 'Hexadecimal',
+            iframeStyles: {
+              width: '400px',
+              height: '100px',
+              border: 'none',
+            },
+          })
+        }
+        disabled={exportPrivateKey.isPending}
+      >
+        {exportPrivateKey.isPending ? 'Exporting...' : 'Export Private Key'}
+      </button>
+    </div>
+  )
+}
+```
+
+## Parameters
+
+### iframeContainerId
+
+`string`
+
+**Required.** The `id` of the DOM element where the secure export iframe will be rendered. The private key is displayed inside this iframe.
+
+### iframeStyles
+
+`Record<string, string> | undefined`
+
+Optional CSS styles to apply to the export iframe element.
+
+### address
+
+`string | undefined`
+
+The address of the account to export the private key for. If omitted, uses the currently active account.
+
+### keyFormat
+
+`'Hexadecimal' | 'Solana' | undefined`
+
+The format for the exported private key.
+
+- `'Hexadecimal'` — Standard hex-encoded private key (default)
+- `'Solana'` — Solana-compatible key format
+
+### connector
+
+`Connector | undefined`
+
+The Wagmi connector to export the key for. If omitted, uses the currently active connector.
+
+## Return Types
+
+[TanStack Query mutation docs](https://tanstack.com/query/v5/docs/react/reference/useMutation)
+
+### mutate
+
+`(variables: { iframeContainerId: string; iframeStyles?: Record<string, string>; address?: string; keyFormat?: 'Hexadecimal' | 'Solana'; connector?: Connector }) => void`
+
+The mutation function to initiate the private key export. Renders a secure iframe containing the private key in the specified container.
+
+### mutateAsync
+
+`(variables: { iframeContainerId: string; iframeStyles?: Record<string, string>; address?: string; keyFormat?: 'Hexadecimal' | 'Solana'; connector?: Connector }) => Promise<void>`
+
+Similar to [`mutate`](#mutate) but returns a promise. Resolves when the export iframe is rendered.
+
+### data
+
+`void`
+
+This mutation does not return data. The private key is displayed inside the secure iframe.
+
+<MutationResult />

@@ -1,0 +1,107 @@
+# Magic Link Authentication [Authenticate with a link sent by email]
+
+:::danger[IMPORTANT]
+**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
+:::
+
+Magic links let users authenticate by clicking a link in their email. The link redirects to your app where the SDK completes the verification.
+
+## Hooks
+
+- [`useSendMagicLink`](/wallets/hooks/use-send-magic-link) — Send a magic link to an email address
+- [`useVerifyMagicLink`](/wallets/hooks/use-verify-magic-link) — Verify the magic link and authenticate
+
+## Example
+
+### Login page — send the magic link
+
+```tsx
+import { useState } from 'react'
+import { useSendMagicLink } from '@zerodev/wallet-react'
+
+function MagicLinkLogin() {
+  const [email, setEmail] = useState('')
+  const sendMagicLink = useSendMagicLink()
+
+  return (
+    <div>
+      <input
+        type="email"
+        placeholder="Enter your email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+      <button
+        onClick={async () => {
+          const result = await sendMagicLink.mutateAsync({
+            email,
+            redirectURL: `${window.location.origin}/verify`,
+          })
+          // Store otpId for the verify page
+          sessionStorage.setItem('magicLinkOtpId', result.otpId)
+        }}
+        disabled={sendMagicLink.isPending || !email}
+      >
+        {sendMagicLink.isPending ? 'Sending...' : 'Send Magic Link'}
+      </button>
+
+      {sendMagicLink.isSuccess && (
+        <p>Check your email for the magic link!</p>
+      )}
+      {sendMagicLink.isError && (
+        <p>Error: {sendMagicLink.error.message}</p>
+      )}
+    </div>
+  )
+}
+```
+
+### Verify page — handle the redirect
+
+When the user clicks the magic link, they're redirected to your `redirectURL` with query parameters. The verify page reads these and completes authentication:
+
+```tsx
+import { useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { useAccount } from 'wagmi'
+import { useVerifyMagicLink } from '@zerodev/wallet-react'
+
+function VerifyMagicLink() {
+  const searchParams = useSearchParams()
+  const { isConnected, address } = useAccount()
+  const verifyMagicLink = useVerifyMagicLink()
+
+  useEffect(() => {
+    const code = searchParams.get('code')
+    const otpId = sessionStorage.getItem('magicLinkOtpId')
+
+    if (code && otpId && !isConnected) {
+      verifyMagicLink.mutateAsync({ otpId, code })
+    }
+  }, [searchParams])
+
+  if (isConnected) {
+    return <p>Connected: {address}</p>
+  }
+
+  if (verifyMagicLink.isPending) {
+    return <p>Verifying...</p>
+  }
+
+  if (verifyMagicLink.isError) {
+    return <p>Error: {verifyMagicLink.error.message}</p>
+  }
+
+  return <p>Waiting for verification...</p>
+}
+```
+
+## How it works
+
+1. **Send link**: `useSendMagicLink` sends an email with a magic link pointing to your `redirectURL`. It returns an `otpId` that you need for verification.
+
+2. **User clicks link**: The user clicks the link in their email, which redirects them to your app with a `code` query parameter.
+
+3. **Verify**: Your verify page calls `useVerifyMagicLink` with the `otpId` and `code`. If valid, the SDK authenticates and creates a session.
+
+After verification, the Wagmi connector is connected and the user's address is available via `useAccount`.
