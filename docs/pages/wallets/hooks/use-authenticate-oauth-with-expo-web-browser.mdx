@@ -1,0 +1,86 @@
+import MutationResult from "../shared/mutation-result.mdx";
+
+# useAuthenticateOAuthWithExpoWebBrowser [Hook for authenticating with an OAuth provider on React Native]
+
+:::danger[IMPORTANT]
+**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
+:::
+
+The React Native counterpart of [`useAuthenticateOAuth`](/wallets/hooks/use-authenticate-oauth). Instead of the web popup flow, it opens the system auth browser via `expo-web-browser` and completes the flow when the OAuth redirect deep-links back into the app — whichever arrives first, the browser result or the deep link.
+
+Requires the `expo-web-browser` and `expo-linking` peer dependencies. See [Google OAuth on React Native](/wallets/react-native/google-oauth) for the full setup, including the callback route and Dashboard allowlisting.
+
+## Import
+
+```tsx
+import { useAuthenticateOAuthWithExpoWebBrowser } from "@zerodev/wallet-react/react-native/oauth/with-expo-web-browser";
+```
+
+## Usage
+
+```tsx
+import { OAUTH_PROVIDERS } from "@zerodev/wallet-react";
+import { useAuthenticateOAuthWithExpoWebBrowser } from "@zerodev/wallet-react/react-native/oauth/with-expo-web-browser";
+import * as Linking from "expo-linking";
+import { Button } from "react-native";
+import { useAccount } from "wagmi";
+
+function OAuthLogin() {
+  const auth = useAuthenticateOAuthWithExpoWebBrowser({
+    redirectUri: Linking.createURL("oauth-callback"),
+  });
+  const { isConnected } = useAccount();
+
+  if (isConnected) return null;
+
+  return (
+    <Button
+      title={auth.isPending ? "Signing in..." : "Sign in with Google"}
+      disabled={auth.isPending}
+      onPress={() => auth.mutate({ provider: OAUTH_PROVIDERS.GOOGLE })}
+    />
+  );
+}
+```
+
+## Parameters
+
+### redirectUri
+
+`string`
+
+**Required.** The URI the OAuth flow redirects back to after sign-in. Either a custom-scheme deep link (e.g. `Linking.createURL('oauth-callback')`) or an [App Link](/wallets/react-native/google-oauth#using-an-app-link-as-the-redirect) on your verified domain (e.g. `https://<your domain>/oauth-callback`). The URL must be allowlisted on the [ZeroDev Dashboard](https://dashboard.zerodev.app/), and your app must have a route that catches it.
+
+## Mutation Parameters
+
+### provider
+
+`OAuthProvider`
+
+**Required.** The OAuth provider to authenticate with, passed to `mutate`/`mutateAsync`. Use the `OAUTH_PROVIDERS` constant:
+
+- `OAUTH_PROVIDERS.GOOGLE` — Google OAuth
+
+## Return Types
+
+[TanStack Query mutation docs](https://tanstack.com/query/v5/docs/react/reference/useMutation)
+
+### mutate
+
+`(variables: { provider: OAuthProvider }) => void`
+
+The mutation function to start the OAuth flow. Opens the system auth browser for the user to sign in.
+
+### mutateAsync
+
+`(variables: { provider: OAuthProvider }) => Promise<void>`
+
+Similar to [`mutate`](#mutate) but returns a promise. Resolves when the OAuth flow completes and the wallet is connected.
+
+### data
+
+`void`
+
+This mutation does not return data. On success, the Wagmi connector is connected and the account is available via `useAccount`.
+
+<MutationResult />

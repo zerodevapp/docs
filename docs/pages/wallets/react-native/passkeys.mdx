@@ -1,0 +1,117 @@
+# Passkeys on React Native [Native WebAuthn on Android]
+
+:::danger[IMPORTANT]
+**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
+:::
+
+The [`useRegisterPasskey`](/wallets/hooks/use-register-passkey) and [`useLoginPasskey`](/wallets/hooks/use-login-passkey) hooks work identically to [the web](/wallets/auth/passkeys) on React Native, but they require a native passkey stamper and some platform setup.
+
+Passkeys (WebAuthn) require the installed APK's signing-cert SHA-256 to match what your domain publishes in `/.well-known/assetlinks.json` — that's the [Domain Association](/wallets/react-native/domain-association) setup.
+
+## Prerequisites
+
+- Complete the [Domain Association](/wallets/react-native/domain-association) setup: `RP_ID` points at your domain, `assetlinks.json` is served from it, and the domain is on the Dashboard's Origin allowlist if you use one.
+- Use an [Expo development build](https://docs.expo.dev/develop/development-builds/expo-go-to-dev-build/) — see the [quickstart](/wallets/react-native/quickstart#5-switch-to-an-expo-development-build).
+
+## 1. Add the passkey stamper
+
+Install the peer deps (native module — rebuild afterwards):
+
+:::code-group
+
+```bash [npm]
+npx expo install @turnkey/react-native-passkey-stamper uuid
+```
+
+```bash [yarn]
+yarn expo install @turnkey/react-native-passkey-stamper uuid
+```
+
+```bash [pnpm]
+pnpm expo install @turnkey/react-native-passkey-stamper uuid
+```
+
+```bash [bun]
+bunx expo install @turnkey/react-native-passkey-stamper uuid
+```
+
+:::
+
+Wire it into `wagmi.config.ts` (see [Configuration](/wallets/react-native/configuration) for all options):
+
+```ts
+import { createReactNativePasskeyStamper } from "@zerodev/wallet-core/react-native/stampers/passkey"; // [!code ++]
+import { createSecureStoreStamper } from "@zerodev/wallet-core/react-native/stampers/secure-store";
+import { asyncStorageAdapter } from "@zerodev/wallet-core/react-native/storage/async-storage";
+import { zeroDevWallet } from "@zerodev/wallet-react";
+import { createConfig, createStorage, http } from "wagmi";
+import { arbitrumSepolia, sepolia } from "wagmi/chains";
+
+const ZERODEV_PROJECT_ID = process.env.EXPO_PUBLIC_ZERODEV_PROJECT_ID ?? "";
+export const RP_ID = "example.com"; // [!code --]
+export const RP_ID = "<your domain>"; // [!code ++]
+
+const chains = [sepolia, arbitrumSepolia] as const;
+
+export const wagmiConfig = createConfig({
+  chains,
+  connectors: [
+    zeroDevWallet({
+      projectId: ZERODEV_PROJECT_ID,
+      chains,
+      rpId: RP_ID,
+      apiKeyStamper: createSecureStoreStamper(),
+      passkeyStamper: createReactNativePasskeyStamper({ rpId: RP_ID }), // [!code ++]
+      sessionStorage: asyncStorageAdapter,
+      persistStorage: asyncStorageAdapter,
+    }),
+  ],
+  transports: {
+    [sepolia.id]: http(),
+    [arbitrumSepolia.id]: http(),
+  },
+  storage: createStorage({ storage: asyncStorageAdapter }),
+  multiInjectedProviderDiscovery: false,
+});
+```
+
+## 2. Add register / login
+
+```tsx
+import { useLoginPasskey, useRegisterPasskey } from "@zerodev/wallet-react";
+import { Button, Platform, Text, View } from "react-native";
+import { useAccount } from "wagmi";
+
+/** Renders nothing once connected; native-only (RN passkey stamper). */
+export function PasskeyFlow() {
+  const { status } = useAccount();
+  const register = useRegisterPasskey();
+  const login = useLoginPasskey();
+
+  if (status === "connected" || Platform.OS === "web") return null;
+
+  return (
+    <View style={{ gap: 8, padding: 16, borderWidth: 1, borderRadius: 8 }}>
+      <Text style={{ fontWeight: "600" }}>Sign in (Passkey)</Text>
+      <Button
+        title={register.isPending ? "Creating…" : "Create passkey wallet"}
+        disabled={register.isPending}
+        onPress={() => register.mutate(undefined)}
+      />
+      <Button
+        title={login.isPending ? "Signing in…" : "Sign in with passkey"}
+        disabled={login.isPending}
+        onPress={() => login.mutate(undefined)}
+      />
+      {register.error ? (
+        <Text style={{ color: "red" }}>{register.error.message}</Text>
+      ) : null}
+      {login.error ? (
+        <Text style={{ color: "red" }}>{login.error.message}</Text>
+      ) : null}
+    </View>
+  );
+}
+```
+
+The OS handles the passkey UI (biometric/PIN); the hooks auto-connect the wallet on success. The device needs Google Play services and an enrolled screen lock.

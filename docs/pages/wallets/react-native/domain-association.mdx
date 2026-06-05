@@ -1,0 +1,164 @@
+# Domain Association [Link your app to a domain you own]
+
+:::danger[IMPORTANT]
+**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
+:::
+
+:::warning[Example setup — for development only]
+This guide continues from the Expo starter project set up in the [quickstart](/wallets/react-native/quickstart), and shows an example setup for development. The committed debug keystore and the throwaway Vercel deployment are not suitable for production — a production app signs with a securely managed release key (e.g. [EAS credentials](https://docs.expo.dev/app-signing/app-credentials/); with [Play App Signing](https://support.google.com/googleplay/android-developer/answer/9842756), `assetlinks.json` must list Google's app-signing certificate fingerprint, not your upload key) and serves `assetlinks.json` from your real product domain.
+:::
+
+Some features require Android to verify that your app and your domain belong together: the installed APK's signing-cert SHA-256 must match what the domain publishes in `/.well-known/assetlinks.json`. ([Expo guide](https://docs.expo.dev/linking/android-app-links/))
+
+Set this up once, and it unlocks:
+
+- [Passkeys](/wallets/react-native/passkeys) — WebAuthn requires the `rpId` domain to vouch for your app.
+- **App Links** — `https` links on your domain that open the app directly, used by [Magic Link](/wallets/react-native/magic-link) and optionally by the [OAuth redirect](/wallets/react-native/google-oauth#using-an-app-link-as-the-redirect).
+
+That means: a stable signing keystore, a hosted `assetlinks.json`, and an `rpId` pointing at that domain.
+
+## 1. Sign every build with the same keystore
+
+Android only trusts the association if the installed APK's signing cert matches the fingerprint your domain publishes. Two defaults get in the way:
+
+- Debug builds are signed with an auto-generated keystore that differs per machine — every contributor would have a different fingerprint, and at most one could match.
+- You can't fix it by editing `android/app/build.gradle`: Expo [regenerates the native project](https://docs.expo.dev/workflow/continuous-native-generation/) on every prebuild, wiping manual changes.
+
+The fix: commit one shared keystore, and apply it with a [config plugin](https://docs.expo.dev/config-plugins/introduction/) so every regeneration picks it up.
+
+### Create a debug keystore
+
+([source](https://coderwall.com/p/r09hoq/android-generate-release-debug-keystores))
+
+```sh
+keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey \
+  -keypass android -keyalg RSA -keysize 2048 -validity 10000
+```
+
+This creates a `debug.keystore` in your project root. Commit it so every build (and every contributor) signs with the same cert.
+
+### Apply it with a config plugin
+
+Create `withDebugKeystore.js` in the project root — it points the debug `signingConfig` at the committed keystore:
+
+```js
+const { withAppBuildGradle } = require("expo/config-plugins");
+
+/**
+ * Points Android's debug signingConfig at the committed keystore in the
+ * project root instead of the auto-generated one.
+ *
+ * Reason: Android passkeys (WebAuthn) require the installed APK's SHA-256
+ * to match what the RP publishes in `/.well-known/assetlinks.json`. If
+ * every contributor signs with `~/.android/debug.keystore` (different
+ * per machine), only one of them matches. Signing every build with the
+ * shared committed keystore makes the fingerprint stable across the team.
+ *
+ * Applied on every prebuild, so `pnpm android`, `npx expo run:android`,
+ * and `eas build` all produce APKs signed with the same cert.
+ */
+const STORE_FILE_LINE = "storeFile file('debug.keystore')";
+
+module.exports = function withDebugKeystore(config) {
+  return withAppBuildGradle(config, (config) => {
+    if (!config.modResults.contents.includes(STORE_FILE_LINE)) {
+      throw new Error(
+        `withDebugKeystore: did not find "${STORE_FILE_LINE}" in app/build.gradle — Expo prebuild template may have changed`,
+      );
+    }
+    config.modResults.contents = config.modResults.contents.replace(
+      STORE_FILE_LINE,
+      // The path is resolved from the `android/app` directory, so go up two
+      // levels to reach the project root where `debug.keystore` lives.
+      "storeFile file('../../debug.keystore')",
+    );
+    return config;
+  });
+};
+```
+
+Register it in `app.json` under `plugins`:
+
+```jsonc
+{
+  "expo": {
+    "plugins": [
+      "./withDebugKeystore",
+      // ...
+    ],
+  },
+}
+```
+
+> The plugin takes effect when the native project is regenerated — run `npx expo prebuild --clean`, or it happens automatically on the next `npx expo run:android` if the `android/` directory doesn't exist yet.
+
+## 2. Extract the SHA-256 fingerprint
+
+```sh
+keytool -list -v \
+  -keystore ./debug.keystore \
+  -alias androiddebugkey -storepass android -keypass android
+```
+
+Copy the line under `Certificate fingerprints` starting with `SHA256:`.
+
+## 3. Create and host `assetlinks.json`
+
+```sh
+mkdir -p assetlinks/public/.well-known && touch ./assetlinks/public/.well-known/assetlinks.json
+```
+
+Paste this in, with your package name (from `app.json` → `android.package`) and the fingerprint from the previous step:
+
+```json
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.get_login_creds"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "<your app package name>",
+      "sha256_cert_fingerprints": ["<your sha256 fingerprint>"]
+    }
+  }
+]
+```
+
+Host it on Vercel:
+
+:::code-group
+
+```bash [npm]
+cd ./assetlinks
+npx vercel
+```
+
+```bash [yarn]
+cd ./assetlinks
+yarn dlx vercel
+```
+
+```bash [pnpm]
+cd ./assetlinks
+pnpm dlx vercel
+```
+
+```bash [bun]
+cd ./assetlinks
+bunx vercel
+```
+
+:::
+
+Then check `https://<vercel_project_name>.vercel.app/.well-known/assetlinks.json` to confirm it deployed correctly.
+
+## 4. Point the SDK at the domain
+
+- Change `RP_ID` in `wagmi.config.ts` to the deployed domain (no scheme): `<vercel_project_name>.vercel.app`.
+- If you specify an Access Control List of whitelisted Origins on the [ZeroDev Dashboard](https://dashboard.zerodev.app/), add `https://<vercel_project_name>.vercel.app/` to the allowlist.
+
+:::info[On iOS]
+The same association goes through `ios.associatedDomains` (`webcredentials:<domain>` for passkeys, `applinks:<domain>` for Universal Links), and that entitlement only works with a paid [Apple Developer](https://developer.apple.com/programs/) membership — see Expo's [iOS Universal Links guide](https://docs.expo.dev/linking/ios-universal-links/).
+:::

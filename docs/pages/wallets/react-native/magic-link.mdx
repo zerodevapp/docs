@@ -1,0 +1,149 @@
+# Magic Link on React Native [Sign in with a link sent by email]
+
+:::danger[IMPORTANT]
+**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
+:::
+
+The [`useSendMagicLink`](/wallets/hooks/use-send-magic-link) and [`useVerifyMagicLink`](/wallets/hooks/use-verify-magic-link) hooks work identically to [the web](/wallets/auth/magic-link) on React Native, but the redirect needs platform setup.
+
+A magic link needs an **App Link** callback so that tapping the link in the email opens the app — email clients (e.g. Gmail) don't render custom-scheme links, so a plain `https` link on your verified domain is required.
+
+The flow: send → the backend emails `${redirectURL}?code=<otp>` → the user taps it → the app opens at `/verify-email` → the route pairs the `code` from the URL with the persisted `otpId`/`otpEncryptionTargetBundle` and verifies.
+
+## Prerequisites
+
+- Complete the [Domain Association](/wallets/react-native/domain-association) setup — App Links only work on a domain that serves your `assetlinks.json`.
+- Use an [Expo development build](https://docs.expo.dev/develop/development-builds/expo-go-to-dev-build/) — see the [quickstart](/wallets/react-native/quickstart#5-switch-to-an-expo-development-build).
+
+## Add an App Link for `/verify-email`
+
+With the domain association in place, `https://<your domain>/...` links can open the app directly ([Expo guide](https://docs.expo.dev/linking/android-app-links/)). Each path your app should catch needs its own filter in `app.json` — add one for `/verify-email`:
+
+```jsonc
+{
+  "expo": {
+    "android": {
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "<your domain>",
+              "pathPrefix": "/verify-email",
+            },
+          ],
+          "category": ["BROWSABLE", "DEFAULT"],
+        },
+      ],
+    },
+  },
+}
+```
+
+> After `app.json` changes, regenerate the native project: `npx expo prebuild --clean`, then rebuild. Intent filters land in `AndroidManifest.xml` and App Link verification happens at install time.
+
+On the [ZeroDev Dashboard](https://dashboard.zerodev.app/), add `https://<your domain>/verify-email` as an allowlisted **Magic Link Redirect URL**.
+
+## Magic link flow
+
+### 1. Persist the send result
+
+The emailed link only carries `code`; verification also needs the `otpId` and `otpEncryptionTargetBundle` returned by the send step. Persist them in AsyncStorage so the flow survives backgrounding and cold start (the user may not return until after the OS killed the app).
+
+`lib/magic-link-pending.ts`:
+
+```ts
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const KEY = "magic-link-pending";
+type Pending = { otpId: string; otpEncryptionTargetBundle: string };
+
+export const savePendingMagicLink = (p: Pending) =>
+  AsyncStorage.setItem(KEY, JSON.stringify(p));
+
+export const loadPendingMagicLink = async (): Promise<Pending | null> => {
+  const raw = await AsyncStorage.getItem(KEY);
+  return raw ? JSON.parse(raw) : null;
+};
+```
+
+### 2. Add the send panel with `useSendMagicLink`
+
+```tsx
+import { useSendMagicLink } from "@zerodev/wallet-react";
+import { useState } from "react";
+import { Button, Text, TextInput } from "react-native";
+
+import { savePendingMagicLink } from "@/lib/magic-link-pending";
+import { RP_ID } from "@/wagmi.config";
+
+export function MagicLinkFlow() {
+  const [email, setEmail] = useState("");
+  const send = useSendMagicLink();
+
+  if (send.isSuccess) return <Text>Check your email.</Text>;
+
+  return (
+    <>
+      <TextInput
+        value={email}
+        onChangeText={setEmail}
+        autoCapitalize="none"
+        placeholder="you@example.com"
+      />
+      <Button
+        title="Send magic link"
+        disabled={send.isPending || !email}
+        onPress={() =>
+          send.mutate(
+            { email, redirectURL: `https://${RP_ID}/verify-email` },
+            { onSuccess: savePendingMagicLink },
+          )
+        }
+      />
+    </>
+  );
+}
+```
+
+- `redirectURL` must match the intent-filter host and the route path exactly; the backend emails `${redirectURL}?code=<otp>`.
+- The mutation's response is exactly what the saver takes, so `onSuccess: savePendingMagicLink` passes it directly. TanStack Query awaits async `onSuccess` callbacks before flipping `isSuccess`, so "Check your email" can't appear before the bundle is persisted.
+
+### 3. Add the `verify-email` route
+
+`app/verify-email.tsx` — must match the path in the link, or Expo Router shows "Unmatched Route":
+
+```tsx
+import { useVerifyMagicLink } from "@zerodev/wallet-react";
+import { Redirect, useLocalSearchParams } from "expo-router";
+import { useEffect, useRef } from "react";
+import { Text } from "react-native";
+import { useAccount } from "wagmi";
+
+import { loadPendingMagicLink } from "@/lib/magic-link-pending";
+
+export default function VerifyEmail() {
+  const { code } = useLocalSearchParams<{ code?: string }>();
+  const { status } = useAccount();
+  const verify = useVerifyMagicLink();
+  const started = useRef(false);
+
+  useEffect(() => {
+    if (started.current || !code) return;
+    started.current = true;
+    // Load the persisted `otpId` and `otpEncryptionTargetBundle`.
+    loadPendingMagicLink().then(
+      (pending) => pending && verify.mutate({ code, ...pending }),
+    );
+  }, [code]);
+
+  if (status === "connected") return <Redirect href="/" />;
+  return <Text>Verifying…</Text>;
+}
+```
+
+- `useLocalSearchParams` reads `code` from the inbound link — search params belong to the route that received the deep link.
+- The `started` ref guards against double-firing: the code is single-use, so the effect must run exactly once.
+- `verifyMagicLink` auto-connects the wallet on success — the `status === "connected"` check is the success signal and redirects home.

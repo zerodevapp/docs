@@ -1,0 +1,84 @@
+# Export Wallet on React Native [Reveal the seed phrase or private key via WebView]
+
+:::danger[IMPORTANT]
+**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
+:::
+
+The web export hooks ([`useExportWallet`](/wallets/hooks/use-export-wallet) and [`useExportPrivateKey`](/wallets/hooks/use-export-private-key)) are **not available on React Native**.
+
+Export can't go through a plain hook — the secret must never touch your JS. Use [`ZeroDevExportWebView`](/wallets/hooks/export-web-view) instead: it renders Turnkey's export iframe inside an isolated WebView, so the plaintext stays in the iframe's context.
+
+:::info
+This flow requires an [Expo development build](https://docs.expo.dev/develop/development-builds/expo-go-to-dev-build/) — see the [quickstart](/wallets/react-native/quickstart#5-switch-to-an-expo-development-build).
+:::
+
+## 1. Install peer dependencies
+
+It needs `react-native-webview` and `uuid` (native module — rebuild the dev client afterwards):
+
+:::code-group
+
+```bash [npm]
+npx expo install react-native-webview uuid
+npx expo run:android
+```
+
+```bash [yarn]
+yarn expo install react-native-webview uuid
+yarn expo run:android
+```
+
+```bash [pnpm]
+pnpm expo install react-native-webview uuid
+pnpm expo run:android
+```
+
+```bash [bun]
+bunx expo install react-native-webview uuid
+bunx expo run:android
+```
+
+:::
+
+## 2. Add the component
+
+```tsx
+import { ZeroDevExportWebView } from "@zerodev/wallet-react/react-native/export/webview";
+import { useState } from "react";
+import { Button, Text } from "react-native";
+
+export function ExportWallet() {
+  const [show, setShow] = useState(false);
+  const [ready, setReady] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  return (
+    <>
+      <Button title="Export wallet" onPress={() => setShow(true)} />
+
+      {show && !ready && !error ? <Text>Loading…</Text> : null}
+      {error ? <Text style={{ color: "red" }}>{error}</Text> : null}
+
+      {show && !error ? (
+        <ZeroDevExportWebView
+          kind="wallet"
+          onReady={() => setReady(true)}
+          onError={(message) => setError(message)}
+          style={ready ? { height: 240 } : { height: 0 }}
+        />
+      ) : null}
+    </>
+  );
+}
+```
+
+- `onReady` fires once the secret is on screen → flips `ready`, which clears the "Loading…" line and gives the WebView its height.
+- `onError` captures the message → the `!error` guard unmounts the WebView and the red error line shows instead.
+- The loading message shows while mounted-but-not-yet-ready (`show && !ready && !error`).
+- Use `kind="privateKey"` to export the account's private key instead of the seed phrase.
+
+See the [`ZeroDevExportWebView` reference](/wallets/hooks/export-web-view) for the full props.
+
+## How it stays secure
+
+Mounting the component starts the export; unmounting it dismisses the secret. The decrypted seed phrase or private key is only ever rendered inside Turnkey's export iframe within the WebView — it never crosses into your app's JavaScript context.

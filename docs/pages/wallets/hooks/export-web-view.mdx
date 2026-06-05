@@ -1,0 +1,81 @@
+# ZeroDevExportWebView [Component for exporting a wallet on React Native]
+
+:::danger[IMPORTANT]
+**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
+:::
+
+A React Native component that renders Turnkey's export iframe inside an isolated WebView, so the decrypted seed phrase or private key never touches your app's JavaScript. It replaces the web-only [`useExportWallet`](/wallets/hooks/use-export-wallet) and [`useExportPrivateKey`](/wallets/hooks/use-export-private-key) hooks on React Native.
+
+Mounting the component starts the export; unmounting it dismisses the secret. See [Export Wallet on React Native](/wallets/react-native/export-wallet) for the full guide.
+
+Requires the `react-native-webview` and `uuid` peer dependencies, and an `rpId` configured on the connector (see [Configuration](/wallets/react-native/configuration)).
+
+## Import
+
+```tsx
+import { ZeroDevExportWebView } from "@zerodev/wallet-react/react-native/export/webview";
+```
+
+## Usage
+
+```tsx
+import { ZeroDevExportWebView } from "@zerodev/wallet-react/react-native/export/webview";
+import { useState } from "react";
+import { Button, Text } from "react-native";
+
+function ExportWallet() {
+  const [show, setShow] = useState(false);
+  const [ready, setReady] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  return (
+    <>
+      <Button title="Export wallet" onPress={() => setShow(true)} />
+
+      {show && !ready && !error ? <Text>Loading…</Text> : null}
+      {error ? <Text style={{ color: "red" }}>{error}</Text> : null}
+
+      {show && !error ? (
+        <ZeroDevExportWebView
+          kind="wallet"
+          onReady={() => setReady(true)}
+          onError={(message) => setError(message)}
+          style={ready ? { height: 240 } : { height: 0 }}
+        />
+      ) : null}
+    </>
+  );
+}
+```
+
+## Props
+
+### kind
+
+`'wallet' | 'privateKey'`
+
+**Required.** What to export: `'wallet'` reveals the account's seed phrase, `'privateKey'` reveals the account's private key.
+
+### onReady
+
+`() => void`
+
+Optional. Called once the secret is rendered inside the WebView. Use it to hide your loading state and give the WebView a visible height.
+
+### onError
+
+`(message: string) => void`
+
+Optional. Called with an error message if the export fails. Unmount the component and surface the message to the user.
+
+### style
+
+`StyleProp<ViewStyle>`
+
+Optional. Style for the WebView container. A common pattern is `{ height: 0 }` until [`onReady`](#onready) fires, then a visible height.
+
+## Notes
+
+- The component holds no state — mount it to start an export, unmount it to dismiss the secret.
+- The decrypted secret is only ever rendered inside Turnkey's export iframe within the WebView; it never crosses into your app's JavaScript context.
+- Requires a [development build](https://docs.expo.dev/develop/development-builds/expo-go-to-dev-build/) on Expo, since `react-native-webview` is a native module.
