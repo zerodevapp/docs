@@ -1,0 +1,170 @@
+# React Native Configuration [Stampers, storage, and connector options]
+
+:::danger[IMPORTANT]
+**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
+:::
+
+On the web, the `zeroDevWallet` connector falls back to platform defaults for key storage and session persistence. React Native has no equivalent defaults, so the storages and stampers must be configured explicitly.
+
+## Full example
+
+```ts
+import { createReactNativePasskeyStamper } from "@zerodev/wallet-core/react-native/stampers/passkey";
+import { createSecureStoreStamper } from "@zerodev/wallet-core/react-native/stampers/secure-store";
+import { asyncStorageAdapter } from "@zerodev/wallet-core/react-native/storage/async-storage";
+import { zeroDevWallet } from "@zerodev/wallet-react";
+import { createConfig, createStorage, http } from "wagmi";
+import { arbitrumSepolia, sepolia } from "wagmi/chains";
+
+const ZERODEV_PROJECT_ID = process.env.EXPO_PUBLIC_ZERODEV_PROJECT_ID ?? "";
+export const RP_ID = "example.com";
+
+const chains = [sepolia, arbitrumSepolia] as const;
+
+export const wagmiConfig = createConfig({
+  chains,
+  connectors: [
+    zeroDevWallet({
+      projectId: ZERODEV_PROJECT_ID,
+      chains,
+      rpId: RP_ID,
+      apiKeyStamper: createSecureStoreStamper(),
+      passkeyStamper: createReactNativePasskeyStamper({ rpId: RP_ID }),
+      sessionStorage: asyncStorageAdapter,
+      persistStorage: asyncStorageAdapter,
+    }),
+  ],
+  transports: {
+    [sepolia.id]: http(),
+    [arbitrumSepolia.id]: http(),
+  },
+  storage: createStorage({ storage: asyncStorageAdapter }),
+  multiInjectedProviderDiscovery: false,
+});
+```
+
+## Connector options
+
+On React Native, `zeroDevWallet` takes these options in addition to the shared ones (`projectId`, `chains`, …):
+
+| Option           | Required | Description                                                                                                                                                                            |
+| ---------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `rpId`           | Yes      | The relying party ID — your app's domain (no scheme), e.g. `example.com`. Used for passkeys and as the `Origin` of the SDK's requests. See [Domain Association](/wallets/react-native/domain-association). |
+| `apiKeyStamper`  | Yes      | Signs SDK requests with a device-bound API key. Use [`createSecureStoreStamper`](#createsecurestorestamper).                                                                           |
+| `sessionStorage` | Yes      | Storage adapter for session data. Use [`asyncStorageAdapter`](#asyncstorageadapter).                                                                                                   |
+| `persistStorage` | No       | Storage adapter for persisting wallet state across app restarts. Usually also [`asyncStorageAdapter`](#asyncstorageadapter).                                                           |
+| `passkeyStamper` | No       | Only needed for passkey auth. Use [`createReactNativePasskeyStamper`](#createreactnativepasskeystamper).                                                                               |
+
+The `rpId` is a domain, as defined by [the WebAuthn standard](https://web.dev/articles/webauthn-rp-id). As long as you don't use [passkeys](/wallets/react-native/passkeys) or App Links for [OAuth](/wallets/react-native/google-oauth) / [magic-link](/wallets/react-native/magic-link) redirects, it doesn't have to be a valid domain you own; otherwise the [domain association](/wallets/react-native/domain-association) must be served from it.
+
+The connector automatically sends `Origin: https://<rpId>` on its requests — so if you specify an Access Control List of whitelisted Origins on the [ZeroDev Dashboard](https://dashboard.zerodev.app/), the same domain needs to be on the allowlist as `https://<rpId>/`.
+
+## Stampers
+
+### createSecureStoreStamper
+
+Creates the API-key stamper that signs the SDK's requests. The keypair is generated on first use and stored in [`expo-secure-store`](https://docs.expo.dev/versions/latest/sdk/securestore/) (Keychain on iOS, Keystore-backed storage on Android).
+
+```ts
+import { createSecureStoreStamper } from "@zerodev/wallet-core/react-native/stampers/secure-store";
+
+const apiKeyStamper = createSecureStoreStamper();
+```
+
+Requires the `expo-secure-store` peer dependency:
+
+:::code-group
+
+```bash [npm]
+npx expo install expo-secure-store
+```
+
+```bash [yarn]
+yarn expo install expo-secure-store
+```
+
+```bash [pnpm]
+pnpm expo install expo-secure-store
+```
+
+```bash [bun]
+bunx expo install expo-secure-store
+```
+
+:::
+
+### createReactNativePasskeyStamper
+
+Creates the passkey stamper used by [`useRegisterPasskey`](/wallets/hooks/use-register-passkey) and [`useLoginPasskey`](/wallets/hooks/use-login-passkey). It wraps the native platform passkey APIs and requires the `rpId` to match a domain your app is associated with — see [Domain Association](/wallets/react-native/domain-association) and [Passkeys on React Native](/wallets/react-native/passkeys) for the full setup.
+
+```ts
+import { createReactNativePasskeyStamper } from "@zerodev/wallet-core/react-native/stampers/passkey";
+
+const passkeyStamper = createReactNativePasskeyStamper({ rpId: "example.com" });
+```
+
+Requires these peer dependencies (native module — rebuild your dev client after installing):
+
+:::code-group
+
+```bash [npm]
+npx expo install @turnkey/react-native-passkey-stamper uuid
+```
+
+```bash [yarn]
+yarn expo install @turnkey/react-native-passkey-stamper uuid
+```
+
+```bash [pnpm]
+pnpm expo install @turnkey/react-native-passkey-stamper uuid
+```
+
+```bash [bun]
+bunx expo install @turnkey/react-native-passkey-stamper uuid
+```
+
+:::
+
+If your app doesn't use passkeys, omit `passkeyStamper` — the OTP, magic-link, and OAuth flows work without it.
+
+## Storage
+
+### asyncStorageAdapter
+
+A storage adapter backed by [`@react-native-async-storage/async-storage`](https://react-native-async-storage.github.io/async-storage/). Use it for the connector's `sessionStorage` and `persistStorage`, and for Wagmi's own `createStorage`:
+
+```ts
+import { asyncStorageAdapter } from "@zerodev/wallet-core/react-native/storage/async-storage";
+import { createStorage } from "wagmi";
+
+const storage = createStorage({ storage: asyncStorageAdapter });
+```
+
+Requires the `@react-native-async-storage/async-storage` peer dependency:
+
+:::code-group
+
+```bash [npm]
+npx expo install @react-native-async-storage/async-storage
+```
+
+```bash [yarn]
+yarn expo install @react-native-async-storage/async-storage
+```
+
+```bash [pnpm]
+pnpm expo install @react-native-async-storage/async-storage
+```
+
+```bash [bun]
+bunx expo install @react-native-async-storage/async-storage
+```
+
+:::
+
+## How React Native differs from web
+
+- **No platform defaults** — `rpId`, `apiKeyStamper`, and `sessionStorage` are required on React Native; on the web they have built-in defaults.
+- **Crypto polyfill** — import `react-native-get-random-values` at the very top of your app's entry file (see the [quickstart](/wallets/react-native/quickstart)).
+- **Wallet export is a component, not a hook** — [`useExportWallet`](/wallets/hooks/use-export-wallet) and [`useExportPrivateKey`](/wallets/hooks/use-export-private-key) are not available on React Native. Use [`ZeroDevExportWebView`](/wallets/react-native/export-wallet) instead.
+- **OAuth uses deep links** — instead of the web popup flow, use [`useAuthenticateOAuthWithExpoWebBrowser`](/wallets/hooks/use-authenticate-oauth-with-expo-web-browser).

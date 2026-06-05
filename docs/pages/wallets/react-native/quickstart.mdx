@@ -1,0 +1,403 @@
+# React Native Quickstart [Get an Embedded Wallet running in Expo]
+
+:::danger[IMPORTANT]
+**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
+:::
+
+ZeroDev Wallet runs on React Native. The same Wagmi-based API you use [on the web](/wallets/quickstart) works in native apps — the main difference is that on React Native the storages and stampers must be configured explicitly, since there are no platform defaults.
+
+This guide walks you through setting up the SDK in an [Expo](https://expo.dev/) app and signing in with email OTP. Once connected, sending transactions and signing messages is plain Wagmi.
+
+## Prerequisites
+
+1. Create a new project on the [ZeroDev Dashboard](https://dashboard.zerodev.app/).
+2. Enable **Sepolia** and **Arbitrum Sepolia**.
+
+## 1. Set up the project
+
+Create a new Expo app:
+
+:::code-group
+
+```bash [npm]
+npx create-expo-app@latest <app_name>
+```
+
+```bash [yarn]
+yarn create expo-app <app_name>
+```
+
+```bash [pnpm]
+pnpm create expo-app@latest <app_name>
+```
+
+```bash [bun]
+bun create expo-app@latest <app_name>
+```
+
+:::
+
+Copy the project ID from the [prerequisites](#prerequisites) into a `.env` file in the project root:
+
+```sh
+EXPO_PUBLIC_ZERODEV_PROJECT_ID=<your project id>
+```
+
+Install the SDK:
+
+:::code-group
+
+```bash [npm]
+npm i @zerodev/wallet-core @zerodev/wallet-react
+```
+
+```bash [yarn]
+yarn add @zerodev/wallet-core @zerodev/wallet-react
+```
+
+```bash [pnpm]
+pnpm i @zerodev/wallet-core @zerodev/wallet-react
+```
+
+```bash [bun]
+bun add @zerodev/wallet-core @zerodev/wallet-react
+```
+
+:::
+
+Install Wagmi (per the [Wagmi getting started guide](https://wagmi.sh/react/getting-started)):
+
+:::code-group
+
+```bash [npm]
+npm i wagmi viem@2.x @tanstack/react-query
+```
+
+```bash [yarn]
+yarn add wagmi viem@2.x @tanstack/react-query
+```
+
+```bash [pnpm]
+pnpm i wagmi viem@2.x @tanstack/react-query
+```
+
+```bash [bun]
+bun add wagmi viem@2.x @tanstack/react-query
+```
+
+:::
+
+Install the crypto polyfill:
+
+:::code-group
+
+```bash [npm]
+npx expo install react-native-get-random-values
+```
+
+```bash [yarn]
+yarn expo install react-native-get-random-values
+```
+
+```bash [pnpm]
+pnpm expo install react-native-get-random-values
+```
+
+```bash [bun]
+bunx expo install react-native-get-random-values
+```
+
+:::
+
+Add the polyfill **at the very top** of your root `_layout.tsx`:
+
+```tsx
+import "react-native-get-random-values"; // [!code ++]
+
+import { DarkTheme, DefaultTheme, ThemeProvider } from "expo-router";
+import { useColorScheme } from "react-native";
+
+import { AnimatedSplashOverlay } from "@/components/animated-icon";
+import AppTabs from "@/components/app-tabs";
+
+export default function TabLayout() {
+  const colorScheme = useColorScheme();
+  return (
+    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+      <AnimatedSplashOverlay />
+      <AppTabs />
+    </ThemeProvider>
+  );
+}
+```
+
+## 2. Configure the SDK
+
+Install the SDK's remaining peer deps — the storage adapter and the secure store backing the API-key stamper:
+
+:::code-group
+
+```bash [npm]
+npx expo install @react-native-async-storage/async-storage expo-secure-store
+```
+
+```bash [yarn]
+yarn expo install @react-native-async-storage/async-storage expo-secure-store
+```
+
+```bash [pnpm]
+pnpm expo install @react-native-async-storage/async-storage expo-secure-store
+```
+
+```bash [bun]
+bunx expo install @react-native-async-storage/async-storage expo-secure-store
+```
+
+:::
+
+Create `wagmi.config.ts` with the `zeroDevWallet` connector. This replaces the plain config from Wagmi's getting-started guide:
+
+```ts
+import { createSecureStoreStamper } from "@zerodev/wallet-core/react-native/stampers/secure-store";
+import { asyncStorageAdapter } from "@zerodev/wallet-core/react-native/storage/async-storage";
+import { zeroDevWallet } from "@zerodev/wallet-react";
+import { createConfig, createStorage, http } from "wagmi";
+import { arbitrumSepolia, sepolia } from "wagmi/chains";
+
+const ZERODEV_PROJECT_ID = process.env.EXPO_PUBLIC_ZERODEV_PROJECT_ID ?? "";
+// A domain — see the note below.
+export const RP_ID = "example.com";
+
+const chains = [sepolia, arbitrumSepolia] as const;
+
+export const wagmiConfig = createConfig({
+  chains,
+  connectors: [
+    zeroDevWallet({
+      projectId: ZERODEV_PROJECT_ID,
+      chains,
+      rpId: RP_ID,
+      apiKeyStamper: createSecureStoreStamper(),
+      sessionStorage: asyncStorageAdapter,
+      persistStorage: asyncStorageAdapter,
+    }),
+  ],
+  transports: {
+    [sepolia.id]: http(),
+    [arbitrumSepolia.id]: http(),
+  },
+  storage: createStorage({ storage: asyncStorageAdapter }),
+  multiInjectedProviderDiscovery: false,
+});
+
+declare module "wagmi" {
+  interface Register {
+    config: typeof wagmiConfig;
+  }
+}
+```
+
+:::info[About `RP_ID`]
+`RP_ID` is a **domain**, as defined by [the WebAuthn standard](https://web.dev/articles/webauthn-rp-id). As long as you don't use [passkeys](/wallets/react-native/passkeys) or App Links for [OAuth](/wallets/react-native/google-oauth) / [magic-link](/wallets/react-native/magic-link) redirects, it doesn't have to be a valid domain you own. If you do use those features, the [domain association](/wallets/react-native/domain-association) must be set up and served from this same domain. Also, if you specify an Access Control List of whitelisted Origins on the [ZeroDev Dashboard](https://dashboard.zerodev.app/), the same domain needs to be on the allowlist as `https://${RP_ID}/`.
+:::
+
+See [Configuration](/wallets/react-native/configuration) for what each option does and which ones are required on React Native.
+
+Then wrap the app in the Wagmi and React Query providers in `_layout.tsx`:
+
+```tsx
+import "react-native-get-random-values";
+
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"; // [!code ++]
+import { DarkTheme, DefaultTheme, ThemeProvider } from "expo-router";
+import { useColorScheme } from "react-native";
+import { WagmiProvider } from "wagmi"; // [!code ++]
+
+import { AnimatedSplashOverlay } from "@/components/animated-icon";
+import AppTabs from "@/components/app-tabs";
+import { wagmiConfig } from "@/wagmi.config"; // [!code ++]
+
+const queryClient = new QueryClient(); // [!code ++]
+
+export default function TabLayout() {
+  const colorScheme = useColorScheme();
+  return (
+    <WagmiProvider config={wagmiConfig}> {/* [!code ++] */}
+      <QueryClientProvider client={queryClient}> {/* [!code ++] */}
+        <ThemeProvider
+          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+        >
+          <AnimatedSplashOverlay />
+          <AppTabs />
+        </ThemeProvider>
+      </QueryClientProvider> {/* [!code ++] */}
+    </WagmiProvider> // [!code ++]
+  );
+}
+```
+
+## 3. Add OTP email auth
+
+Email OTP is a two-step flow: send a code, then verify it. Verification connects the wallet (Wagmi's `useAccount().status` flips to `"connected"`).
+
+```tsx
+import { useSendOTP, useVerifyOTP } from "@zerodev/wallet-react"; // [!code focus]
+import { useState } from "react";
+import { Button, Text, TextInput } from "react-native";
+
+const input = { borderWidth: 1, padding: 8, borderRadius: 4 };
+
+export function OtpEmailFlow() {
+  const [email, setEmail] = useState("");
+  const [code, setCode] = useState("");
+  const [otp, setOtp] = useState<{
+    otpId: string;
+    otpEncryptionTargetBundle: string;
+  } | null>(null);
+
+  const sendOTP = useSendOTP(); // [!code focus]
+  const verifyOTP = useVerifyOTP(); // [!code focus]
+
+  // Step 1: email -> send a code
+  if (otp === null) {
+    return (
+      <>
+        <TextInput
+          value={email}
+          onChangeText={setEmail}
+          placeholder="you@example.com"
+          autoCapitalize="none"
+          keyboardType="email-address"
+          style={input}
+        />
+        <Button
+          title={sendOTP.isPending ? "Sending…" : "Send code"}
+          disabled={sendOTP.isPending || !email}
+          onPress={() => sendOTP.mutate({ email }, { onSuccess: setOtp })} // [!code focus]
+        />
+        {sendOTP.error ? (
+          <Text style={{ color: "red" }}>{sendOTP.error.message}</Text>
+        ) : null}
+      </>
+    );
+  }
+
+  // Step 2: code -> verify and connect the wallet
+  return (
+    <>
+      <TextInput
+        value={code}
+        onChangeText={setCode}
+        placeholder="123456"
+        keyboardType="number-pad"
+        style={input}
+      />
+      <Button
+        title={verifyOTP.isPending ? "Verifying…" : "Verify"}
+        disabled={verifyOTP.isPending || !code}
+        onPress={() => verifyOTP.mutate({ code, ...otp })} // [!code focus]
+      />
+      {verifyOTP.error ? (
+        <Text style={{ color: "red" }}>{verifyOTP.error.message}</Text>
+      ) : null}
+    </>
+  );
+}
+```
+
+The [`useSendOTP`](/wallets/hooks/use-send-otp) and [`useVerifyOTP`](/wallets/hooks/use-verify-otp) hooks work identically to the web — see [Email OTP](/wallets/auth/email-otp) for the full flow.
+
+## 4. Send a transaction
+
+Sending a transaction is plain Wagmi (`useSendTransaction`, `useBalance`, `useAccount`, …) — no ZeroDev-specific code needed:
+
+```tsx
+import { parseEther } from "viem";
+import { Button, Text } from "react-native";
+import { useAccount, useSendTransaction } from "wagmi";
+
+export function SendTransaction() {
+  const { status } = useAccount();
+  const { sendTransaction, isPending, data: hash, error } = useSendTransaction();
+
+  if (status !== "connected") return null;
+
+  return (
+    <>
+      <Button
+        title={isPending ? "Sending…" : "Send 0.001 ETH"}
+        disabled={isPending}
+        onPress={() =>
+          sendTransaction({
+            to: "0xd2135CfB216b74109775236E36d4b433F1DF507B",
+            value: parseEther("0.001"),
+          })
+        }
+      />
+      {hash ? <Text>Transaction hash: {hash}</Text> : null}
+      {error ? <Text style={{ color: "red" }}>{error.message}</Text> : null}
+    </>
+  );
+}
+```
+
+Run the app — you now have a fully working wallet app: sign in with the email OTP flow to connect the wallet, then send a transaction.
+
+## 5. Switch to an Expo development build
+
+The features in the next guides (OAuth deep links, WebView export, passkeys) rely on native modules that Expo Go doesn't ship, so switch to a [development build](https://docs.expo.dev/develop/development-builds/expo-go-to-dev-build/):
+
+:::code-group
+
+```bash [npm]
+npx expo install expo-dev-client
+```
+
+```bash [yarn]
+yarn expo install expo-dev-client
+```
+
+```bash [pnpm]
+pnpm expo install expo-dev-client
+```
+
+```bash [bun]
+bunx expo install expo-dev-client
+```
+
+:::
+
+Build and run on Android:
+
+:::code-group
+
+```bash [npm]
+npx expo run:android
+```
+
+```bash [yarn]
+yarn expo run:android
+```
+
+```bash [pnpm]
+pnpm expo run:android
+```
+
+```bash [bun]
+bunx expo run:android
+```
+
+:::
+
+:::info[Why Android?]
+These guides demonstrate the native flows on Android because a debug build runs on a device with no paid developer account. On iOS, the same [domain association](/wallets/react-native/domain-association) is required for passkeys and Universal Links (the `webcredentials:` and `applinks:` entries in `ios.associatedDomains`), and that entitlement only works with a paid [Apple Developer](https://developer.apple.com/programs/) membership. The flows themselves are identical — see Expo's [iOS Universal Links guide](https://docs.expo.dev/linking/ios-universal-links/) for the iOS setup.
+:::
+
+## Next Steps
+
+- [Configuration](/wallets/react-native/configuration) — Stampers, storage adapters, and connector options
+- [Google OAuth](/wallets/react-native/google-oauth) — Social login with Expo WebBrowser
+- [Domain Association](/wallets/react-native/domain-association) — Link your app to a domain for passkeys and App Links
+- [Magic Link](/wallets/react-native/magic-link) — Sign in with a link sent by email
+- [Passkeys](/wallets/react-native/passkeys) — Native WebAuthn
+- [Export Wallet](/wallets/react-native/export-wallet) — Reveal the seed phrase or private key via WebView

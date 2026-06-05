@@ -1,0 +1,148 @@
+# Google OAuth on React Native [Native OAuth with Expo WebBrowser]
+
+:::danger[IMPORTANT]
+**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
+:::
+
+On the web, [Google OAuth](/wallets/auth/google-oauth) uses a popup. Native apps don't have popups — instead, the SDK opens the system auth browser and returns to your app via a deep link. The [`useAuthenticateOAuthWithExpoWebBrowser`](/wallets/hooks/use-authenticate-oauth-with-expo-web-browser) hook handles both ends of that round trip.
+
+:::info
+This flow requires an [Expo development build](https://docs.expo.dev/develop/development-builds/expo-go-to-dev-build/) — see the [quickstart](/wallets/react-native/quickstart#5-switch-to-an-expo-development-build).
+:::
+
+## 1. Install peer dependencies
+
+Install the peer deps (already present in the default Expo starter):
+
+:::code-group
+
+```bash [npm]
+npx expo install expo-linking expo-web-browser
+```
+
+```bash [yarn]
+yarn expo install expo-linking expo-web-browser
+```
+
+```bash [pnpm]
+pnpm expo install expo-linking expo-web-browser
+```
+
+```bash [bun]
+bunx expo install expo-linking expo-web-browser
+```
+
+:::
+
+## 2. Add a deep-link scheme
+
+Make sure a custom `scheme` is defined in `app.json` (deep link back into the app):
+
+```jsonc
+{
+  "expo": {
+    "scheme": "<your custom scheme>",
+  },
+}
+```
+
+## 3. Add the sign-in component
+
+```tsx
+import { OAUTH_PROVIDERS } from "@zerodev/wallet-react";
+import { useAuthenticateOAuthWithExpoWebBrowser } from "@zerodev/wallet-react/react-native/oauth/with-expo-web-browser";
+import * as Linking from "expo-linking";
+import { Button, Text, View } from "react-native";
+import { useAccount } from "wagmi";
+
+/** Renders nothing once the wallet is connected. */
+export function GoogleOauthFlow() {
+  const { status } = useAccount();
+  const auth = useAuthenticateOAuthWithExpoWebBrowser({
+    redirectUri: Linking.createURL("oauth-callback"),
+  });
+
+  if (status === "connected") return null;
+
+  return (
+    <View style={{ gap: 8, padding: 16, borderWidth: 1, borderRadius: 8 }}>
+      <Text style={{ fontWeight: "600" }}>Sign in (Google)</Text>
+      <Button
+        title={auth.isPending ? "Signing in..." : "Continue with Google"}
+        disabled={auth.isPending}
+        onPress={() => auth.mutate({ provider: OAUTH_PROVIDERS.GOOGLE })}
+      />
+      {auth.error ? (
+        <Text style={{ color: "red" }}>{auth.error.message}</Text>
+      ) : null}
+    </View>
+  );
+}
+```
+
+See the [`useAuthenticateOAuthWithExpoWebBrowser` reference](/wallets/hooks/use-authenticate-oauth-with-expo-web-browser) for the full API.
+
+## 4. Add the callback route
+
+Add an OAuth callback route, e.g. `app/oauth-callback.tsx`:
+
+```tsx
+import { Redirect } from "expo-router";
+
+/**
+ * Catches the OAuth deep-link redirect (`<scheme>://oauth-callback?...`) so
+ * Expo Router doesn't show "Unmatched Route". The ZeroDev SDK reads the
+ * session_id from the URL via its own `Linking` listener, so this screen
+ * just needs to bounce back to /.
+ */
+export default function OAuthCallback() {
+  return <Redirect href="/" />;
+}
+```
+
+## 5. Allowlist the redirect URL
+
+On the [ZeroDev Dashboard](https://dashboard.zerodev.app/), **allowlist the redirect URL**. After a successful sign-in the browser redirects back into the app.
+
+## Using an App Link as the redirect
+
+Once the [Domain Association](/wallets/react-native/domain-association) is set up on your domain, you can use an `https` **App Link** instead of the custom scheme — `https://<your domain>/...` links then open the app directly ([Expo guide](https://docs.expo.dev/linking/android-app-links/)).
+
+Add an `intentFilter` for `/oauth-callback` in `app.json`:
+
+```jsonc
+{
+  "expo": {
+    "android": {
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "<your domain>",
+              "pathPrefix": "/oauth-callback",
+            },
+          ],
+          "category": ["BROWSABLE", "DEFAULT"],
+        },
+      ],
+    },
+  },
+}
+```
+
+> After `app.json` changes, regenerate the native project: `npx expo prebuild --clean`, then rebuild. Intent filters land in `AndroidManifest.xml` and App Link verification happens at install time.
+
+Then use the App Link as the redirect:
+
+```tsx
+import { RP_ID } from "@/wagmi.config";
+// ...
+const auth = useAuthenticateOAuthWithExpoWebBrowser({
+  redirectUri: `https://${RP_ID}/oauth-callback`,
+});
+```
+
+Since this is a new redirect URL, remember to [allowlist it on the Dashboard](#5-allowlist-the-redirect-url) as well.
