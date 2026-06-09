@@ -1,0 +1,285 @@
+# React Native Web [Run your Expo app on the web]
+
+:::danger[IMPORTANT]
+**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
+:::
+
+The Expo app from the [quickstart](/wallets/react-native/quickstart) also runs on the web via [`react-native-web`](https://necolas.github.io/react-native-web/). The only work is adding web variants of the few files that import React-Native-only modules, plus a small routing tweak so the auth callback routes mount.
+
+:::info[The web build auto-defaults everything]
+On web the SDK fills in every platform piece for you — `apiKeyStamper → IndexedDB`, `passkeyStamper → WebAuthn`, `sessionStorage → localStorage`, `rpId → window.location.hostname`. So the web connector is just `zeroDevWallet({ projectId, chains })`, and **passkeys work on web for free**. See [Connector Options](/wallets/connector-options).
+:::
+
+## Prerequisites
+
+The default Expo starter already ships everything web needs — confirm it's there:
+
+- `react-dom` and `react-native-web` in `package.json`
+- a `"web": "expo start --web"` script
+- `app.json` → `"web": { "output": "static", "favicon": … }`
+
+## 1. Add web variants of the native-only files
+
+The `@zerodev/wallet-core/react-native/*` subpaths are throw-on-use stubs on web, and `wagmi.config.ts` imports them at module load — so the app throws before it renders. The fix is Metro's platform resolution: a `foo.web.tsx` file is used on web, `foo.tsx` everywhere else (the starter already does this for `animated-icon` and `app-tabs`). Add a `.web` sibling for each file that touches an RN-only module; the base file stays native.
+
+### `wagmi.config.web.ts`
+
+The web connector needs only `projectId` and `chains`:
+
+```ts
+import { zeroDevWallet } from "@zerodev/wallet-react";
+import { createConfig, http } from "wagmi";
+import { arbitrumSepolia, sepolia } from "wagmi/chains";
+
+const ZERODEV_PROJECT_ID = process.env.EXPO_PUBLIC_ZERODEV_PROJECT_ID ?? "";
+export const RP_ID = "zdwalletdemo.vercel.app"; // kept for parity; unused on web
+
+const chains = [sepolia, arbitrumSepolia] as const;
+
+export const wagmiConfig = createConfig({
+  chains,
+  connectors: [zeroDevWallet({ projectId: ZERODEV_PROJECT_ID, chains })],
+  transports: { [sepolia.id]: http(), [arbitrumSepolia.id]: http() },
+  multiInjectedProviderDiscovery: false,
+});
+
+declare module "wagmi" {
+  interface Register {
+    config: typeof wagmiConfig;
+  }
+}
+```
+
+Leave `rpId` unset so WebAuthn matches the serving origin (localhost in dev, your https domain in prod), and omit Wagmi's `storage` (it defaults to `localStorage`).
+
+### `magic-link-pending.web.ts`
+
+The same async API as the native AsyncStorage helper, backed by `localStorage`:
+
+```ts
+const KEY = "magic-link-pending";
+type Pending = { otpId: string; otpEncryptionTargetBundle: string };
+
+export const savePendingMagicLink = async (p: Pending) =>
+  localStorage.setItem(KEY, JSON.stringify(p));
+
+export const loadPendingMagicLink = async (): Promise<Pending | null> => {
+  const raw = localStorage.getItem(KEY);
+  return raw ? JSON.parse(raw) : null;
+};
+```
+
+### `google-oauth-flow.web.tsx`
+
+The web [`useAuthenticateOAuth`](/wallets/hooks/use-authenticate-oauth) runs a popup instead of a deep link, so it takes no arguments:
+
+```tsx
+import { OAUTH_PROVIDERS, useAuthenticateOAuth } from "@zerodev/wallet-react";
+import { Button, Text, View } from "react-native";
+import { useAccount } from "wagmi";
+
+export function GoogleOauthFlow() {
+  const { status } = useAccount();
+  const auth = useAuthenticateOAuth();
+
+  if (status === "connected") return null;
+
+  return (
+    <View style={{ gap: 8, padding: 16, borderWidth: 1, borderRadius: 8 }}>
+      <Button
+        title={auth.isPending ? "Signing in..." : "Continue with Google"}
+        disabled={auth.isPending}
+        onPress={() => auth.mutate({ provider: OAUTH_PROVIDERS.GOOGLE })}
+      />
+      {auth.error ? <Text style={{ color: "red" }}>{auth.error.message}</Text> : null}
+    </View>
+  );
+}
+```
+
+### `wallet-export.web.tsx`
+
+Web export uses the [`useExportWallet`](/wallets/hooks/use-export-wallet) / [`useExportPrivateKey`](/wallets/hooks/use-export-private-key) hooks (in place of the native [`ZeroDevExportWebView`](/wallets/react-native/export-wallet)). They render the Turnkey iframe into a DOM node, which a `<View nativeID>` becomes under react-native-web:
+
+```tsx
+import { useExportPrivateKey, useExportWallet } from "@zerodev/wallet-react";
+import { Button, Text, View } from "react-native";
+import { useAccount } from "wagmi";
+
+const CONTAINER = "zd-export-container";
+
+export function WalletExport() {
+  const { status } = useAccount();
+  const wallet = useExportWallet();
+  const key = useExportPrivateKey();
+
+  if (status !== "connected") return null;
+
+  return (
+    <View style={{ gap: 12, padding: 16, borderWidth: 1, borderRadius: 8 }}>
+      <Button
+        title={wallet.isPending ? "Exporting…" : "Export seed phrase"}
+        disabled={wallet.isPending || key.isPending}
+        onPress={() => wallet.mutate({ iframeContainerId: CONTAINER })}
+      />
+      <Button
+        title={key.isPending ? "Exporting…" : "Export private key"}
+        disabled={wallet.isPending || key.isPending}
+        onPress={() => key.mutate({ iframeContainerId: CONTAINER })}
+      />
+      <View nativeID={CONTAINER} style={{ minHeight: 240, width: "100%" }} />
+    </View>
+  );
+}
+```
+
+### Cross-platform components
+
+Components with no RN-only imports — `passkey-flow.tsx` and `magic-link-flow.tsx` — need no `.web` variant; the same file runs on both platforms. For magic link, just make the `redirectURL` point at the right origin per platform:
+
+```ts
+const redirectURL =
+  Platform.OS === "web"
+    ? `${window.location.origin}/verify-email`
+    : `https://${RP_ID}/verify-email`;
+```
+
+## 2. Restructure routing so callback routes mount
+
+OAuth and magic link return through a route (`/oauth-callback`, `/verify-email?code=…`). If your **root layout is a tab navigator**, routes that aren't tabs never mount — the URL changes but the home tab keeps rendering, so `useVerifyMagicLink` never fires. Move the tabs into a `(tabs)` group and make the root a `Stack`, so the callback routes mount over it:
+
+```
+src/app/
+  _layout.tsx          → providers + <Stack screenOptions={{ headerShown: false }} />
+  (tabs)/
+    _layout.tsx        → <AppTabs/>
+    index.tsx          ← moved
+    explore.tsx        ← moved
+  oauth-callback.tsx
+  verify-email.tsx
+```
+
+`(tabs)` is a groupless segment, so `/` and `/explore` are unchanged. Keep the providers wrapping the `Stack` so the callback screens can use the wallet hooks:
+
+```tsx
+// src/app/_layout.tsx
+import "react-native-get-random-values";
+
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Stack } from "expo-router";
+import { WagmiProvider } from "wagmi";
+
+import { wagmiConfig } from "@/wagmi.config";
+
+const queryClient = new QueryClient();
+
+export default function RootLayout() {
+  return (
+    <WagmiProvider config={wagmiConfig}>
+      <QueryClientProvider client={queryClient}>
+        <Stack screenOptions={{ headerShown: false }} />
+      </QueryClientProvider>
+    </WagmiProvider>
+  );
+}
+```
+
+```tsx
+// src/app/(tabs)/_layout.tsx
+import AppTabs from "@/components/app-tabs";
+
+export default function TabsLayout() {
+  return <AppTabs />;
+}
+```
+
+The callback routes themselves don't change. This restructure is what makes magic link work on **both** web and native.
+
+## 3. Type-check the web files
+
+Expo's base tsconfig sets `customConditions: ["react-native"]`, so `tsc` resolves the **native** typings of `@zerodev/*` for every file — including `.web` ones, where the web-only hooks and connector shape won't match (even though Metro bundles the right build at runtime). Check the two sets of files in separate passes.
+
+`tsconfig.json` — exclude the web files from the native pass:
+
+```jsonc
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "paths": { "@/*": ["./src/*"], "@/assets/*": ["./assets/*"] }
+  },
+  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"],
+  "exclude": ["**/*.web.ts", "**/*.web.tsx"]
+}
+```
+
+`tsconfig.web.json` — `customConditions: []` makes `@zerodev/*` resolve its web (`import`) typings:
+
+```jsonc
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "customConditions": [],
+    "paths": { "@/*": ["./src/*"], "@/assets/*": ["./assets/*"] }
+  },
+  "include": ["src/**/*.web.ts", "src/**/*.web.tsx", "expo-env.d.ts"]
+}
+```
+
+Add a script that runs both passes, and use it instead of a bare `tsc`:
+
+```jsonc
+"scripts": { "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.web.json" }
+```
+
+> A bare `tsc` (and Expo's default) only runs the native config, which *excludes* the `.web` files — so they'd go unchecked. Editor types still resolve correctly, since each file is included by exactly one config.
+
+## 4. Allowlist your web origin
+
+Redirect and origin allowlists are origin-specific, so add your web origins next to the native entries on the [ZeroDev Dashboard](https://dashboard.zerodev.app/):
+
+- **OAuth** — allowlist the web origin (dev `http://localhost:8081`, plus any deployed URL).
+- **Magic link** — allowlist `<web-origin>/verify-email` as a redirect URL.
+
+## Run it
+
+Run `pnpm typecheck` (both passes should be clean), then `npx expo start --web`. The app loads without the native-stub crash, and every flow works: passkey (WebAuthn prompt), Google (popup), magic link (open the emailed link in the **same browser**), and export (Turnkey iframe). Re-run `npx expo run:android` to confirm the native build is unchanged.
+
+## Caveats
+
+- **Passkeys** need a secure context — `localhost` in dev, `https` in prod.
+- **Magic link** is same-browser only: the pending bundle lives in `localStorage`, so a link opened in another browser can't verify.
+- **`rpId`** differs by platform (native domain vs. `window.location.hostname`), so a passkey registered on one origin won't work on the other.
+
+## Troubleshooting
+
+If the web bundle throws `Cannot destructure property '__extends' of 'tslib.default'`, a transitive dependency (`tsyringe`, pulled in via `@turnkey/crypto`) is tripping a `tslib` ESM-interop bug under Metro's web bundler — it's not a ZeroDev requirement. Add `tslib` to your dependencies and point web at its self-contained ESM build:
+
+```js
+// metro.config.js
+const { getDefaultConfig } = require("expo/metro-config");
+
+const config = getDefaultConfig(__dirname);
+
+config.resolver.resolveRequest = (context, moduleName, platform) => {
+  if (platform === "web" && moduleName === "tslib") {
+    return context.resolveRequest(
+      context,
+      require.resolve("tslib/tslib.es6.js"),
+      platform,
+    );
+  }
+  return context.resolveRequest(context, moduleName, platform);
+};
+
+module.exports = config;
+```
+
+Then restart Metro with a cleared cache: `npx expo start -c`.
+
+## Next Steps
+
+- [Connector Options](/wallets/connector-options) — Every `zeroDevWallet` option and its web default
+- [Configuration](/wallets/react-native/configuration) — Stampers, storage adapters, and connector options on native
+- [Magic Link](/wallets/react-native/magic-link) — The native magic-link flow
