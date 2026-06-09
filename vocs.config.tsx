@@ -491,6 +491,10 @@ export default defineConfig({
                 text: "Export Wallet",
                 link: "/wallets/react-native/export-wallet",
               },
+              {
+                text: "React Native Web",
+                link: "/wallets/react-native/web",
+              },
             ],
           },
           {
@@ -536,8 +540,8 @@ export default defineConfig({
                 link: "/wallets/wallet-api/sign-typed-message",
               },
               {
-                text: "Export Wallet",
-                link: "/wallets/export",
+                text: "useAuthenticators",
+                link: "/wallets/hooks/use-authenticators",
               },
               {
                 text: "useAuthenticateOAuthWithExpoWebBrowser",
