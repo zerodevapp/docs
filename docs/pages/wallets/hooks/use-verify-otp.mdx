@@ -15,7 +15,13 @@ import { useState } from 'react'
 import { useVerifyOTP } from '@zerodev/wallet-react'
 import { useAccount } from 'wagmi'
 
-function VerifyCode({ otpId }: { otpId: string }) {
+function VerifyCode({
+  otpId,
+  otpEncryptionTargetBundle,
+}: {
+  otpId: string
+  otpEncryptionTargetBundle: string
+}) {
   const [code, setCode] = useState('')
   const verifyOTP = useVerifyOTP()
   const { address, isConnected } = useAccount()
@@ -33,7 +39,9 @@ function VerifyCode({ otpId }: { otpId: string }) {
         placeholder="Enter verification code"
       />
       <button
-        onClick={() => verifyOTP.mutateAsync({ code, otpId })}
+        onClick={() =>
+          verifyOTP.mutateAsync({ code, otpId, otpEncryptionTargetBundle })
+        }
         disabled={verifyOTP.isPending || !code}
       >
         {verifyOTP.isPending ? 'Verifying...' : 'Verify'}
@@ -58,19 +66,31 @@ function VerifyCode({ otpId }: { otpId: string }) {
 
 **Required.** The OTP identifier returned by [`useSendOTP`](/wallets/hooks/use-send-otp).
 
+### otpEncryptionTargetBundle
+
+`string`
+
+**Required.** The encrypted OTP target bundle returned by [`useSendOTP`](/wallets/hooks/use-send-otp). Pass it verbatim to the verify step.
+
+### connector
+
+`Connector | undefined`
+
+Optional Wagmi connector to verify the OTP with. If omitted, the hook uses the configured ZeroDev connector.
+
 ## Return Types
 
 [TanStack Query mutation docs](https://tanstack.com/query/v5/docs/react/reference/useMutation)
 
 ### mutate
 
-`(variables: { code: string; otpId: string }) => void`
+`(variables: { code: string; otpId: string; otpEncryptionTargetBundle: string; connector?: Connector }) => void`
 
 The mutation function to verify the OTP.
 
 ### mutateAsync
 
-`(variables: { code: string; otpId: string }) => Promise<void>`
+`(variables: { code: string; otpId: string; otpEncryptionTargetBundle: string; connector?: Connector }) => Promise<void>`
 
 Similar to [`mutate`](#mutate) but returns a promise. Resolves when the code is verified and the wallet is connected.
 
