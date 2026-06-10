@@ -100,6 +100,8 @@ export default function OAuthCallback() {
 }
 ```
 
+This route is for the **native** OAuth flow. If the same Expo app also runs on web, the `.web` variant should use [`useAuthenticateOAuth`](/wallets/hooks/use-authenticate-oauth) and return to the current page instead of relying on `app/oauth-callback.tsx`.
+
 ## 5. Allowlist the redirect URL
 
 On the [ZeroDev Dashboard](https://dashboard.zerodev.app/), **allowlist the redirect URL**. After a successful sign-in the browser redirects back into the app.

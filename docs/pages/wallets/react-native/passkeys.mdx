@@ -79,16 +79,16 @@ export const wagmiConfig = createConfig({
 
 ```tsx
 import { useLoginPasskey, useRegisterPasskey } from "@zerodev/wallet-react";
-import { Button, Platform, Text, View } from "react-native";
+import { Button, Text, View } from "react-native";
 import { useAccount } from "wagmi";
 
-/** Renders nothing once connected; native-only (RN passkey stamper). */
+/** Renders nothing once connected. The same component can be reused on web. */
 export function PasskeyFlow() {
   const { status } = useAccount();
   const register = useRegisterPasskey();
   const login = useLoginPasskey();
 
-  if (status === "connected" || Platform.OS === "web") return null;
+  if (status === "connected") return null;
 
   return (
     <View style={{ gap: 8, padding: 16, borderWidth: 1, borderRadius: 8 }}>
@@ -115,3 +115,5 @@ export function PasskeyFlow() {
 ```
 
 The OS handles the passkey UI (biometric/PIN); the hooks auto-connect the wallet on success. The device needs Google Play services and an enrolled screen lock.
+
+If the same Expo app also runs on web, keep this component shared. The [React Native Web guide](/wallets/react-native/web) uses the same `PasskeyFlow` and lets the web build auto-default its WebAuthn stamper, so you do not need a separate `.web` variant for the passkey UI.

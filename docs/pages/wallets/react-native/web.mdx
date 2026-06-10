@@ -4,7 +4,7 @@
 **USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
 :::
 
-The Expo app from the [quickstart](/wallets/react-native/quickstart) also runs on the web via [`react-native-web`](https://necolas.github.io/react-native-web/). The only work is adding web variants of the few files that import React-Native-only modules, plus a small routing tweak so the auth callback routes mount.
+The Expo app from the [quickstart](/wallets/react-native/quickstart) also runs on the web via [`react-native-web`](https://necolas.github.io/react-native-web/). The only work is swapping a few React-Native-only integrations for web variants, then adjusting routing so the auth routes that still matter on web can mount.
 
 :::info[The web build auto-defaults everything]
 On web the SDK fills in every platform piece for you — `apiKeyStamper → IndexedDB`, `passkeyStamper → WebAuthn`, `sessionStorage → localStorage`, `rpId → window.location.hostname`. So the web connector is just `zeroDevWallet({ projectId, chains })`, and **passkeys work on web for free**. See [Connector Options](/wallets/connector-options).
@@ -18,9 +18,18 @@ The default Expo starter already ships everything web needs — confirm it's the
 - a `"web": "expo start --web"` script
 - `app.json` → `"web": { "output": "static", "favicon": … }`
 
+## What changes from quickstart
+
+The quickstart already gives you the native OTP flow. To make the same Expo app work on web:
+
+- add `.web` siblings for files that call React-Native-only wallet helpers
+- keep the passkey UI shared, but swap the native OAuth and export implementations for web ones
+- move tabs under a root `Stack` so `app/verify-email.tsx` can mount
+- type-check `.web` files separately and allowlist your web origin on the Dashboard
+
 ## 1. Add web variants of the native-only files
 
-The `@zerodev/wallet-core/react-native/*` subpaths are throw-on-use stubs on web, and `wagmi.config.ts` imports them at module load — so the app throws before it renders. The fix is Metro's platform resolution: a `foo.web.tsx` file is used on web, `foo.tsx` everywhere else (the starter already does this for `animated-icon` and `app-tabs`). Add a `.web` sibling for each file that touches an RN-only module; the base file stays native.
+The `@zerodev/wallet-core/react-native/*` and `@zerodev/wallet-react/react-native/*` subpaths resolve to throw-on-use stubs on web. If a universal file calls one of those helpers during startup — for example, `wagmi.config.ts` creating native stampers at module load — the app fails before React renders. The fix is Metro's platform resolution: a `foo.web.tsx` file is used on web, `foo.tsx` everywhere else (the starter already does this for `animated-icon` and `app-tabs`). Add a `.web` sibling for each file that touches an RN-only module; the base file stays native.
 
 ### `wagmi.config.web.ts`
 
@@ -71,7 +80,7 @@ export const loadPendingMagicLink = async (): Promise<Pending | null> => {
 
 ### `google-oauth-flow.web.tsx`
 
-The web [`useAuthenticateOAuth`](/wallets/hooks/use-authenticate-oauth) runs a popup instead of a deep link, so it takes no arguments:
+The web [`useAuthenticateOAuth`](/wallets/hooks/use-authenticate-oauth) runs a popup instead of a deep link. It returns to the same page that started auth, so it takes no arguments and does not need a dedicated `/oauth-callback` route on web:
 
 ```tsx
 import { OAUTH_PROVIDERS, useAuthenticateOAuth } from "@zerodev/wallet-react";
@@ -144,25 +153,29 @@ const redirectURL =
     : `https://${RP_ID}/verify-email`;
 ```
 
-## 2. Restructure routing so callback routes mount
+## 2. Route only the callbacks that still matter on web
 
-OAuth and magic link return through a route (`/oauth-callback`, `/verify-email?code=…`). If your **root layout is a tab navigator**, routes that aren't tabs never mount — the URL changes but the home tab keeps rendering, so `useVerifyMagicLink` never fires. Move the tabs into a `(tabs)` group and make the root a `Stack`, so the callback routes mount over it:
+- **Web OAuth** uses a popup and returns to the same page that started auth. No dedicated `app/oauth-callback.tsx` route is required for the web flow.
+- **Magic link** still needs a real `app/verify-email.tsx` screen on both web and native, because the emailed link lands there with `?code=...`.
+- **Native OAuth** still needs `app/oauth-callback.tsx` if the same Expo app also runs on iOS/Android.
+
+If your **root layout is a tab navigator**, non-tab routes like `app/verify-email.tsx` never mount — the URL changes but the home tab keeps rendering, so `useVerifyMagicLink` never fires. Move the tabs into a `(tabs)` group and make the root a `Stack`, so these routes mount over it:
 
 ```
-src/app/
+app/
   _layout.tsx          → providers + <Stack screenOptions={{ headerShown: false }} />
   (tabs)/
     _layout.tsx        → <AppTabs/>
     index.tsx          ← moved
     explore.tsx        ← moved
-  oauth-callback.tsx
-  verify-email.tsx
+  verify-email.tsx     ← required for magic link on web + native
+  oauth-callback.tsx   ← keep if the same app also supports native OAuth
 ```
 
-`(tabs)` is a groupless segment, so `/` and `/explore` are unchanged. Keep the providers wrapping the `Stack` so the callback screens can use the wallet hooks:
+`(tabs)` is a groupless segment, so `/` and `/explore` are unchanged. On a web-only app you can omit `app/oauth-callback.tsx`; keep it if the same codebase also runs native OAuth. In either case, keep the providers wrapping the `Stack` so `app/verify-email.tsx` and any native callback screen can use the wallet hooks:
 
 ```tsx
-// src/app/_layout.tsx
+// app/_layout.tsx
 import "react-native-get-random-values";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -185,7 +198,7 @@ export default function RootLayout() {
 ```
 
 ```tsx
-// src/app/(tabs)/_layout.tsx
+// app/(tabs)/_layout.tsx
 import AppTabs from "@/components/app-tabs";
 
 export default function TabsLayout() {
@@ -193,7 +206,7 @@ export default function TabsLayout() {
 }
 ```
 
-The callback routes themselves don't change. This restructure is what makes magic link work on **both** web and native.
+The route files themselves don't change. This restructure is what makes magic link work on **both** web and native, while still leaving room for `app/oauth-callback.tsx` in the native flow.
 
 ## 3. Type-check the web files
 
@@ -242,19 +255,11 @@ Redirect and origin allowlists are origin-specific, so add your web origins next
 - **OAuth** — allowlist the web origin (dev `http://localhost:8081`, plus any deployed URL).
 - **Magic link** — allowlist `<web-origin>/verify-email` as a redirect URL.
 
-## Run it
+## Optional troubleshooting
 
-Run `pnpm typecheck` (both passes should be clean), then `npx expo start --web`. The app loads without the native-stub crash, and every flow works: passkey (WebAuthn prompt), Google (popup), magic link (open the emailed link in the **same browser**), and export (Turnkey iframe). Re-run `npx expo run:android` to confirm the native build is unchanged.
+Most apps will not need this. Only apply it if the web bundle throws `Cannot destructure property '__extends' of 'tslib.default'`.
 
-## Caveats
-
-- **Passkeys** need a secure context — `localhost` in dev, `https` in prod.
-- **Magic link** is same-browser only: the pending bundle lives in `localStorage`, so a link opened in another browser can't verify.
-- **`rpId`** differs by platform (native domain vs. `window.location.hostname`), so a passkey registered on one origin won't work on the other.
-
-## Troubleshooting
-
-If the web bundle throws `Cannot destructure property '__extends' of 'tslib.default'`, a transitive dependency (`tsyringe`, pulled in via `@turnkey/crypto`) is tripping a `tslib` ESM-interop bug under Metro's web bundler — it's not a ZeroDev requirement. Add `tslib` to your dependencies and point web at its self-contained ESM build:
+That error comes from a transitive dependency (`tsyringe`, pulled in via `@turnkey/crypto`) hitting a `tslib` ESM-interop bug under Metro's web bundler — it's not a ZeroDev requirement. Add `tslib` to your dependencies and point web at its self-contained ESM build:
 
 ```js
 // metro.config.js
