@@ -6,16 +6,18 @@
 
 The [`useSendMagicLink`](/wallets/hooks/use-send-magic-link) and [`useVerifyMagicLink`](/wallets/hooks/use-verify-magic-link) hooks work identically to [the web](/wallets/auth/magic-link) on React Native, but the redirect needs platform setup.
 
-A magic link needs an **App Link** callback so that tapping the link in the email opens the app — email clients (e.g. Gmail) don't render custom-scheme links, so a plain `https` link on your verified domain is required.
+A magic link needs a verified `https` callback — an **App Link** on Android, a **Universal Link** on iOS — so that tapping the link in the email opens the app. Email clients (e.g. Gmail) don't render custom-scheme links, so a plain `https` link on your verified domain is required.
 
 The flow: send → the backend emails `${redirectURL}?code=<otp>` → the user taps it → the app opens at `/verify-email` → the route pairs the `code` from the URL with the persisted `otpId`/`otpEncryptionTargetBundle` and verifies.
 
 ## Prerequisites
 
-- Complete the [Domain Association](/wallets/react-native/domain-association) setup — App Links only work on a domain that serves your `assetlinks.json`.
+- Complete the [Domain Association](/wallets/react-native/domain-association) setup — App Links and Universal Links only work on a domain that serves your verification files (`assetlinks.json` on Android, `apple-app-site-association` on iOS).
 - Use an [Expo development build](https://docs.expo.dev/develop/development-builds/expo-go-to-dev-build/) — see the [quickstart](/wallets/react-native/quickstart#5-switch-to-an-expo-development-build).
 
-## Add an App Link for `/verify-email`
+## Set up the `/verify-email` link
+
+### Android: add an intent filter
 
 With the domain association in place, `https://<your domain>/...` links can open the app directly ([Expo guide](https://docs.expo.dev/linking/android-app-links/)). Each path your app should catch needs its own filter in `app.json` — add one for `/verify-email`:
 
@@ -43,6 +45,16 @@ With the domain association in place, `https://<your domain>/...` links can open
 ```
 
 > After `app.json` changes, regenerate the native project: `npx expo prebuild --clean`, then rebuild. Intent filters land in `AndroidManifest.xml` and App Link verification happens at install time.
+
+### iOS: the Universal Link is already claimed
+
+On iOS there is no per-path entry in `app.json` — the `applinks:<your domain>` entitlement plus the AASA's `components` rule (`{ "/": "/verify-email*" }`) from the [Domain Association](/wallets/react-native/domain-association) setup already claim the path. Keep in mind:
+
+- If you change which paths the AASA claims, redeploy it; entitlement changes additionally need `npx expo prebuild --clean` and a rebuild.
+- iOS only triggers Universal Links from a **tap in another app** (e.g. Mail) — typing the URL into Safari's address bar opens the website, not the app.
+- Apple's CDN caches the AASA; during development use the `?mode=developer` flag (see [Domain Association](/wallets/react-native/domain-association#2-ios-add-the-associated-domains-entitlement)) so the device fetches it straight from your origin.
+
+### Allowlist the redirect URL
 
 On the [ZeroDev Dashboard](https://dashboard.zerodev.app/), add `https://<your domain>/verify-email` as an allowlisted **Magic Link Redirect URL**.
 

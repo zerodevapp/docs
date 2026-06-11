@@ -367,7 +367,7 @@ bunx expo install expo-dev-client
 
 :::
 
-Build and run on Android:
+Build and run on Android ([environment setup](https://docs.expo.dev/get-started/set-up-your-environment/?mode=development-build&buildEnv=local&platform=android&device=simulated)):
 
 :::code-group
 
@@ -389,8 +389,32 @@ bunx expo run:android
 
 :::
 
-:::info[Why Android?]
-These guides demonstrate the native flows on Android because a debug build runs on a device with no paid developer account. On iOS, the same [domain association](/wallets/react-native/domain-association) is required for passkeys and Universal Links (the `webcredentials:` and `applinks:` entries in `ios.associatedDomains`), and that entitlement only works with a paid [Apple Developer](https://developer.apple.com/programs/) membership. The flows themselves are identical — see Expo's [iOS Universal Links guide](https://docs.expo.dev/linking/ios-universal-links/) for the iOS setup.
+Or on iOS — requires a Mac with Xcode ([environment setup](https://docs.expo.dev/get-started/set-up-your-environment/?mode=development-build&buildEnv=local&platform=ios&device=simulated)):
+
+:::code-group
+
+```bash [npm]
+npx expo run:ios
+```
+
+```bash [yarn]
+yarn expo run:ios
+```
+
+```bash [pnpm]
+pnpm expo run:ios
+```
+
+```bash [bun]
+bunx expo run:ios
+```
+
+:::
+
+The first run generates the native project (`expo prebuild`), builds it, installs the dev client on the emulator / Simulator, and starts the bundler. If `app.json` doesn't define `android.package` / `ios.bundleIdentifier` yet, the CLI prompts for one.
+
+:::info[What runs where]
+Email OTP, [Google OAuth](/wallets/react-native/google-oauth), and [wallet export](/wallets/react-native/export-wallet) work on both platforms with no further setup — on iOS they run in the Simulator with a free Apple account. [Passkeys](/wallets/react-native/passkeys) and verified `https` links ([Magic Link](/wallets/react-native/magic-link)) additionally require the [domain association](/wallets/react-native/domain-association) setup: free on Android, while the iOS half (the Associated Domains entitlement) needs a paid [Apple Developer](https://developer.apple.com/programs/) membership and is best tested on a physical device.
 :::
 
 ## Next Steps

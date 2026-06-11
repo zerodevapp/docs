@@ -49,7 +49,7 @@ function OAuthLogin() {
 
 `string`
 
-**Required.** The URI the OAuth flow redirects back to after sign-in. Either a custom-scheme deep link (e.g. `Linking.createURL('oauth-callback')`) or an [App Link](/wallets/react-native/google-oauth#using-an-app-link-as-the-redirect) on your verified domain (e.g. `https://<your domain>/oauth-callback`). The URL must be allowlisted on the [ZeroDev Dashboard](https://dashboard.zerodev.app/), and your app must have a route that catches it.
+**Required.** The URI the OAuth flow redirects back to after sign-in. Either a custom-scheme deep link (e.g. `Linking.createURL('oauth-callback')`) or a [verified `https` link](/wallets/react-native/google-oauth#using-a-verified-https-link-as-the-redirect) on your domain (e.g. `https://<your domain>/oauth-callback` — delivered as an App Link on Android and via the auth session's `https` callback on iOS 17.4+). The URL must be allowlisted on the [ZeroDev Dashboard](https://dashboard.zerodev.app/), and your app must have a route that catches it.
 
 ## Mutation Parameters
 

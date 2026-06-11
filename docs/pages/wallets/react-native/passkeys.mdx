@@ -1,4 +1,4 @@
-# Passkeys on React Native [Native WebAuthn on Android]
+# Passkeys on React Native [Native WebAuthn on Android & iOS]
 
 :::danger[IMPORTANT]
 **USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
@@ -6,11 +6,11 @@
 
 The [`useRegisterPasskey`](/wallets/hooks/use-register-passkey) and [`useLoginPasskey`](/wallets/hooks/use-login-passkey) hooks work identically to [the web](/wallets/auth/passkeys) on React Native, but they require a native passkey stamper and some platform setup.
 
-Passkeys (WebAuthn) require the installed APK's signing-cert SHA-256 to match what your domain publishes in `/.well-known/assetlinks.json` — that's the [Domain Association](/wallets/react-native/domain-association) setup.
+Passkeys (WebAuthn) require the OS to verify that your app and your `rpId` domain belong together. On Android, the installed APK's signing-cert SHA-256 must match what the domain publishes in `/.well-known/assetlinks.json`; on iOS, the app's Team ID + bundle identifier must appear in the domain's `/.well-known/apple-app-site-association` and the app must carry the matching `webcredentials:` entitlement. Both are covered by the [Domain Association](/wallets/react-native/domain-association) setup.
 
 ## Prerequisites
 
-- Complete the [Domain Association](/wallets/react-native/domain-association) setup: `RP_ID` points at your domain, `assetlinks.json` is served from it, and the domain is on the Dashboard's Origin allowlist if you use one.
+- Complete the [Domain Association](/wallets/react-native/domain-association) setup: `RP_ID` points at your domain, the verification files (`assetlinks.json` and `apple-app-site-association`) are served from it, and the domain is on the Dashboard's Origin allowlist if you use one. On iOS this includes the Associated Domains entitlement, which needs a paid [Apple Developer](https://developer.apple.com/programs/) membership.
 - Use an [Expo development build](https://docs.expo.dev/develop/development-builds/expo-go-to-dev-build/) — see the [quickstart](/wallets/react-native/quickstart#5-switch-to-an-expo-development-build).
 
 ## 1. Add the passkey stamper
@@ -114,6 +114,9 @@ export function PasskeyFlow() {
 }
 ```
 
-The OS handles the passkey UI (biometric/PIN); the hooks auto-connect the wallet on success. The device needs Google Play services and an enrolled screen lock.
+The OS handles the passkey UI (biometric/PIN); the hooks auto-connect the wallet on success.
+
+- **Android** needs Google Play services and an enrolled screen lock.
+- **iOS** needs a device passcode (plus Face ID / Touch ID where available) — test on a physical device. An opaque *"The operation couldn't be completed"* error almost always means the AASA file and the app's entitlement don't match: re-run the verification checks in [Domain Association](/wallets/react-native/domain-association#3-create-and-host-the-verification-files), and remember that entitlement changes only land after `npx expo prebuild --clean` and a fresh build.
 
 If the same Expo app also runs on web, keep this component shared. The [React Native Web guide](/wallets/react-native/web) uses the same `PasskeyFlow` and lets the web build auto-default its WebAuthn stamper, so you do not need a separate `.web` variant for the passkey UI.
