@@ -14,7 +14,7 @@ For any given Kernel account, it will have one **sudo validator** and any number
 - The **sudo validator** is the "owner" of the account.  It's the only validator that can enable other validators.
 - A **regular validator** represents an alternative form of access to the smart account.  For example, a session key or a guardian would be a regular validator.  Regular validators cannot enable other validators.
 
-When you set up a [Kernel account object](/smart-accounts/create-a-smart-account#create-a-kernel-account) with the SDK, you must specify a sudo validator, a regular validator, or both.  Let's walk through the three cases:
+When you set up a [Kernel account object](/onboarding/create-a-smart-account#create-a-kernel-account) with the SDK, you must specify a sudo validator, a regular validator, or both.  Let's walk through the three cases:
 
 ### Using only a sudo validator
 
@@ -69,4 +69,4 @@ const account = await createKernelAccount(publicClient, {
 
 ## Next Steps
 
-Learn more about plugins such as [passkeys](/smart-accounts/use-plugins/passkeys/overview) and [permissions](/smart-accounts/permissions/intro).
+Learn more about plugins such as [passkeys](/onboarding/passkeys/overview) and [permissions](/smart-accounts/permissions/intro).

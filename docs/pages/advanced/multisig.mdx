@@ -1,0 +1,234 @@
+# Multisig
+
+:::info
+Impatient? Check out our examples:
+- [ECDSA multisig example](https://github.com/zerodevapp/zerodev-examples/tree/main/multisig/main.ts)
+- [Passkey + ECDSA multisig example](https://github.com/zerodevapp/multi-sig-with-passkey-demo)
+:::
+
+With Kernel, it's possible to configure multiple signers for your smart account. The plugin that supports this functionality is named `WeightedValidator`, which supports multiple signers (including both ECDSA and WebAuthn/passkey signers), each having a specific "weight."
+
+## How it works
+
+Each signer is set up with a **weight**, and for any given signature, there must be enough combined weight to reach or surpass the **threshold** for the signature to be considered valid.
+
+For example, let's say we have:
+
+- Threshold: 100
+- Weights:
+  - Signer A (ECDSA or Passkey): 100
+  - Signer B (ECDSA or Passkey): 50
+  - Signer C (ECDSA or Passkey): 50
+
+In this case, we are setting up a multisig where either signer A alone (100 = 100), or signer B and C together (50 + 50 = 100) can provide a valid signature. You can mix and match ECDSA and passkey signers as needed.
+
+## Installation
+
+:::code-group
+```bash [npm]
+npm i @zerodev/weighted-validator
+```
+
+```bash [yarn]
+yarn add @zerodev/weighted-validator
+```
+
+```bash [pnpm]
+pnpm i @zerodev/weighted-validator
+```
+
+```bash [bun]
+bun i @zerodev/weighted-validator
+```
+:::
+
+## Setting up a new multisig account
+
+To set up a new multisig account, start by creating a validator. Here are examples for both ECDSA and passkey signers:
+
+### With ECDSA Signers
+
+```ts
+import { createWeightedValidator } from "@zerodev/weighted-validator"
+import { toECDSASigner, WeightedValidatorContractVersion } from "@zerodev/weighted-validator"
+
+const validatorContractVersion = WeightedValidatorContractVersion.V0_0_2_PATCHED
+// Create ECDSA signers from private keys
+const ecdsaSigner1 = await toECDSASigner({ signer: eoaAccount1 })
+const ecdsaSigner2 = await toECDSASigner({ signer: eoaAccount2 })
+
+const multiSigValidator = await createWeightedValidator(publicClient, {
+  entryPoint,
+  kernelVersion,
+  validatorContractVersion,
+  signer: ecdsaSigner1, // The current signer being used
+  config: {
+    threshold: 100,
+    signers: [
+      { publicKey: ecdsaSigner1.account.address, weight: 50 },
+      { publicKey: ecdsaSigner2.account.address, weight: 50 }
+    ]
+  },
+})
+```
+
+### With Passkey Signers
+
+```ts
+import { createWeightedValidator } from "@zerodev/weighted-validator"
+import { toWebAuthnSigner } from "@zerodev/weighted-validator"
+import { toWebAuthnKey, WebAuthnKey } from "@zerodev/webauthn-key"
+
+// Create or get WebAuthn keys
+const webAuthnKey1 = await toWebAuthnKey({
+  passkeyName: "passkey1",
+  passkeyServerUrl: PASSKEY_URL,
+  webAuthnKey: publicKey1,
+  rpID: publicKey1.rpID,
+})
+
+const webAuthnKey2 = await toWebAuthnKey({
+  passkeyName: "passkey2",
+  passkeyServerUrl: PASSKEY_URL,
+  webAuthnKey: publicKey2,
+  rpID: publicKey2.rpID,
+})
+
+// Create WebAuthn signers
+const passKeySigner1 = await toWebAuthnSigner(publicClient, {
+  webAuthnKey: webAuthnKey1,
+})
+
+const passKeySigner2 = await toWebAuthnSigner(publicClient, {
+  webAuthnKey: webAuthnKey2,
+})
+
+const multiSigValidator = await createWeightedValidator(publicClient, {
+  entryPoint,
+  kernelVersion,
+  validatorContractVersion,
+  signer: passKeySigner1, // The current signer being used
+  config: {
+    threshold: 100,
+    signers: [
+      { publicKey: publicKey1, weight: 50 },
+      { publicKey: publicKey2, weight: 50 }
+    ]
+  },
+})
+```
+
+After creating the validator, you can [set up a Kernel account using the validator](/onboarding/create-a-smart-account#create-a-kernel-account) as usual:
+
+```ts
+const account = await createKernelAccount(publicClient, {
+  entryPoint,
+  kernelVersion,
+  plugins: {
+    sudo: multiSigValidator,
+  }
+})
+
+// Create the client
+const client = createWeightedKernelAccountClient({
+  account,
+  chain,
+  bundlerTransport: http(BUNDLER_URL),
+  // ... other configuration options
+})
+```
+
+## Using a multisig account
+
+When using a multisig account, sending transactions requires gathering enough signatures to meet the threshold. This is a two-step process:
+
+1. First, get approvals from the required signers
+2. Then, send the UserOperation with the collected signatures
+
+Here's how to implement this flow:
+
+```ts
+// First, create the callData that needs to be signed
+const callData = await client.account.encodeCalls([
+    {
+      target: targetAddress,
+      data: encodeFunctionData(...),
+      value: 0n,
+    }
+])
+
+// Each signer can approve the UserOperation
+// This can be done by different signers at different times/places
+// For example, with two different passkey signers:
+const sig1 = await client1.approveUserOperation({
+  callData,
+  validatorContractVersion
+})
+const sig2 = await client2.approveUserOperation({
+  callData,
+  validatorContractVersion
+})
+
+// Or with ECDSA signers:
+const sig1 = await ecdsaClient1.approveUserOperation({
+  callData,
+  validatorContractVersion
+})
+const sig2 = await ecdsaClient2.approveUserOperation({
+  callData,
+  validatorContractVersion
+})
+
+// Once you have enough signatures to meet the threshold,
+// you can send the UserOperation with all collected signatures
+const hash = await client.sendUserOperationWithSignatures({
+  callData,
+  signatures: [sig1, sig2]
+})
+
+// You can wait for the UserOperation to be included in a block
+const receipt = await client.waitForUserOperationReceipt({
+  hash: userOpHash
+})
+```
+
+Note that:
+- The signatures can be collected asynchronously from different signers
+- You need to collect enough signatures to meet the threshold weight
+- The same UserOperation object must be used for all signatures
+- Each signer must use their own client instance configured with their signer
+- You can mix signatures from both ECDSA and passkey signers as long as their combined weight meets the threshold
+
+## Updating multisig config
+
+To update the multisig configuration (like adding or removing signers), you can use the update config functionality. This works the same way for both ECDSA and passkey signers:
+
+```ts
+import { getUpdateConfigCall } from "@zerodev/weighted-validator"
+
+// Example updating config with ECDSA signers
+await kernelClient.sendTransaction(
+  getUpdateConfigCall({
+    threshold: 100,
+    signers: [
+      { publicKey: ecdsaSigner1.account.address, weight: 50 },
+      { publicKey: ecdsaSigner2.account.address, weight: 50 },
+      { publicKey: ecdsaSigner3.account.address, weight: 50 },
+    ]
+  }),
+)
+
+// Example updating config with passkey signers
+await kernelClient.sendTransaction(
+  getUpdateConfigCall({
+    threshold: 100,
+    signers: [
+      { publicKey: publicKey1, weight: 50 }, // WebAuthn key
+      { publicKey: publicKey2, weight: 50 }, // WebAuthn key
+      { publicKey: publicKey3, weight: 50 }, // WebAuthn key
+    ]
+  }),
+)
+```
+
+Note that `kernelClient` here must itself be a correctly set-up instance of a multisig account client with sufficient signing authority to make the change.

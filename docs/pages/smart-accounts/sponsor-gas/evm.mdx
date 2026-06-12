@@ -20,7 +20,7 @@ Note that you MUST set up a gas policy to begin sponsoring.  Without setting up 
 Impatient?  Check out [complete examples here](https://github.com/zerodevapp/zerodev-examples/blob/main/create-account/main.ts).
 :::
 
-When [setting up an account](/smart-accounts/create-a-smart-account), you can specify a `getPaymasterData` function in `paymaster` when you [create the account client](/smart-accounts/create-a-smart-account#create-an-account-client).
+When [setting up an account](/onboarding/create-a-smart-account), you can specify a `getPaymasterData` function in `paymaster` when you [create the account client](/onboarding/create-a-smart-account#create-an-account-client).
 
 The `getPaymasterData` function essentially takes a UserOp and then returns a UserOp with the `paymasterAndData` field set.  For example, if you are using the ZeroDev paymaster, use the `createZeroDevPaymasterClient` helper function:
 

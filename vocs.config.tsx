@@ -10,38 +10,37 @@ const REDIRECTS: Record<string, string> = {
   // Get Started
   "/sdk/getting-started/quickstart": "/get-started/quickstart",
   "/sdk/getting-started/tutorial": "/get-started/quickstart",
-  "/sdk/getting-started/tutorial-passkeys":
-    "/smart-accounts/use-plugins/passkeys/tutorial",
-  "/sdk/getting-started/quickstart-7702":
-    "/smart-accounts/eip-7702/quickstart",
+  "/sdk/getting-started/tutorial-passkeys": "/onboarding/passkeys/tutorial",
+  "/sdk/getting-started/quickstart-7702": "/get-started/eip-7702/quickstart",
   "/sdk/getting-started/quickstart-agentkit":
     "/smart-accounts/permissions/agentkit",
   "/sdk/getting-started/migration": "/advanced/migration",
 
-  // Core API → Smart Accounts (build) + Advanced + Resources/Tools
-  "/sdk/core-api/create-account": "/smart-accounts/create-a-smart-account",
+  // Core API → Onboarding + Smart Account + API & Tooling
+  "/sdk/core-api/create-account": "/onboarding/create-a-smart-account",
   "/sdk/core-api/using-plugins": "/smart-accounts/use-plugins/overview",
   "/sdk/core-api/send-transactions": "/smart-accounts/send-transactions",
   "/sdk/core-api/batch-transactions": "/smart-accounts/batch-transactions",
   "/sdk/core-api/sponsor-gas": "/smart-accounts/sponsor-gas/evm",
   "/sdk/core-api/pay-gas-with-erc20s": "/smart-accounts/pay-gas-with-erc20s",
   "/sdk/core-api/sign-and-verify": "/smart-accounts/sign-and-verify",
-  "/sdk/core-api/deploy-contract": "/advanced/deploy-contract",
-  "/sdk/core-api/delegatecall": "/advanced/delegatecall",
-  "/sdk/core-api/status": "/resources/tools/status",
-  "/sdk/core-api/debugger": "/resources/tools/debugger",
+  "/sdk/core-api/deploy-contract": "/smart-accounts/deploy-contract",
+  "/sdk/core-api/delegatecall": "/smart-accounts/delegatecall",
+  "/sdk/core-api/status": "/api-and-toolings/tools/status",
+  "/sdk/core-api/debugger": "/api-and-toolings/tools/debugger",
 
-  // Advanced → split between Smart Accounts, Cross-Chain, and Advanced
-  "/sdk/advanced/chain-abstraction": "/cross-chain/chain-abstraction/overview",
-  "/sdk/advanced/passkeys": "/smart-accounts/use-plugins/passkeys/overview",
-  "/sdk/advanced/multisig": "/smart-accounts/use-plugins/multisig",
-  "/sdk/advanced/social-login": "/smart-accounts/authentication/social-login",
+  // Old SDK advanced section → split across the journey pillars
+  "/sdk/advanced/chain-abstraction":
+    "/smart-accounts/chain-abstraction/overview",
+  "/sdk/advanced/passkeys": "/onboarding/passkeys/overview",
+  "/sdk/advanced/multisig": "/advanced/multisig",
+  "/sdk/advanced/social-login": "/onboarding/social-login",
   "/sdk/advanced/session-keys": "/smart-accounts/permissions/session-keys",
-  "/sdk/advanced/recovery": "/smart-accounts/account-recovery/sdk-recovery",
-  "/sdk/advanced/multi-chain-signing": "/advanced/multi-chain-signing",
+  "/sdk/advanced/recovery": "/advanced/account-recovery/sdk-recovery",
+  "/sdk/advanced/multi-chain-signing": "/smart-accounts/multi-chain-signing",
   "/sdk/advanced/key-storage": "/advanced/key-storage",
-  "/sdk/advanced/defi": "/advanced/defi",
-  "/sdk/advanced/parallel-orders": "/advanced/parallel-transactions",
+  "/sdk/advanced/defi": "/smart-accounts/defi",
+  "/sdk/advanced/parallel-orders": "/smart-accounts/parallel-transactions",
   "/sdk/advanced/wallet-connect": "/advanced/wallet-connect",
   "/sdk/advanced/fallback-providers": "/advanced/fallback-providers",
   "/sdk/advanced/run-solidity-code-on-init":
@@ -51,9 +50,9 @@ const REDIRECTS: Record<string, string> = {
   "/advanced/go-sdk": "/get-started/sdks/server-side/go",
   "/sdk/advanced/userop-builder-api": "/advanced/userop-builder-api",
   "/sdk/advanced/supported-base-tokens":
-    "/cross-chain/chain-abstraction/supported-base-tokens",
+    "/smart-accounts/chain-abstraction/supported-base-tokens",
   "/sdk/advanced/supported-defi-tokens":
-    "/cross-chain/chain-abstraction/supported-defi-tokens",
+    "/smart-accounts/chain-abstraction/supported-defi-tokens",
 
   // Permissions (preserved structure)
   "/sdk/permissions/intro": "/smart-accounts/permissions/intro",
@@ -63,18 +62,15 @@ const REDIRECTS: Record<string, string> = {
     "/smart-accounts/permissions/install-with-init-config",
   "/sdk/permissions/1-click-trading":
     "/smart-accounts/permissions/1-click-trading",
-  "/sdk/permissions/signers/ecdsa":
-    "/smart-accounts/permissions/signers/ecdsa",
+  "/sdk/permissions/signers/ecdsa": "/smart-accounts/permissions/signers/ecdsa",
   "/sdk/permissions/signers/passkeys":
     "/smart-accounts/permissions/signers/passkeys",
   "/sdk/permissions/signers/multisig":
     "/smart-accounts/permissions/signers/multisig",
   "/sdk/permissions/signers/build-your-own":
     "/smart-accounts/permissions/signers/build-your-own",
-  "/sdk/permissions/policies/sudo":
-    "/smart-accounts/permissions/policies/sudo",
-  "/sdk/permissions/policies/call":
-    "/smart-accounts/permissions/policies/call",
+  "/sdk/permissions/policies/sudo": "/smart-accounts/permissions/policies/sudo",
+  "/sdk/permissions/policies/call": "/smart-accounts/permissions/policies/call",
   "/sdk/permissions/policies/gas": "/smart-accounts/permissions/policies/gas",
   "/sdk/permissions/policies/signature":
     "/smart-accounts/permissions/policies/signature",
@@ -88,61 +84,62 @@ const REDIRECTS: Record<string, string> = {
     "/smart-accounts/permissions/actions/build-your-own",
 
   // Signers (auth providers + intro)
-  "/sdk/signers/intro": "/smart-accounts/use-plugins/signers-intro",
-  "/sdk/signers/dynamic": "/smart-accounts/authentication/dynamic",
-  "/sdk/signers/privy": "/smart-accounts/authentication/privy",
-  "/sdk/signers/magic": "/smart-accounts/authentication/magic",
-  "/sdk/signers/web3auth": "/smart-accounts/authentication/web3auth",
-  "/sdk/signers/smart-wallet": "/smart-accounts/authentication/smart-wallet",
-  "/sdk/signers/portal": "/smart-accounts/authentication/portal",
-  "/sdk/signers/turnkey": "/smart-accounts/authentication/turnkey",
-  "/sdk/signers/fireblocks": "/smart-accounts/authentication/fireblocks",
-  "/sdk/signers/capsule": "/smart-accounts/authentication/capsule",
-  "/sdk/signers/lit-protocol": "/smart-accounts/authentication/lit-protocol",
-  "/sdk/signers/particle": "/smart-accounts/authentication/particle",
-  "/sdk/signers/dfns": "/smart-accounts/authentication/dfns",
-  "/sdk/signers/arcana": "/smart-accounts/authentication/arcana",
-  "/sdk/signers/eoa": "/smart-accounts/authentication/eoa",
-  "/sdk/signers/custom-signer":
-    "/smart-accounts/authentication/custom-signer",
+  "/sdk/signers/intro": "/onboarding/auth-providers",
+  "/sdk/signers/dynamic": "/onboarding/dynamic",
+  "/sdk/signers/privy": "/onboarding/privy",
+  "/sdk/signers/magic": "/onboarding/magic",
+  "/sdk/signers/web3auth": "/onboarding/web3auth",
+  "/sdk/signers/smart-wallet": "/onboarding/smart-wallet",
+  "/sdk/signers/portal": "/onboarding/portal",
+  "/sdk/signers/turnkey": "/onboarding/turnkey",
+  "/sdk/signers/fireblocks": "/onboarding/fireblocks",
+  "/sdk/signers/capsule": "/onboarding/capsule",
+  "/sdk/signers/lit-protocol": "/onboarding/lit-protocol",
+  "/sdk/signers/particle": "/onboarding/particle",
+  "/sdk/signers/dfns": "/onboarding/dfns",
+  "/sdk/signers/arcana": "/onboarding/arcana",
+  "/sdk/signers/eoa": "/onboarding/eoa",
+  "/sdk/signers/custom-signer": "/onboarding/custom-signer",
 
   // Solana
   "/sdk/solana/sponsor-gas": "/smart-accounts/sponsor-gas/solana",
 
   // Infra (formerly orphan in main sidebar)
-  "/sdk/infra/intro": "/resources/infrastructure/choose-an-infra-provider",
-  "/sdk/infra/zerodev": "/resources/infrastructure/zerodev",
-  "/sdk/infra/pimlico": "/resources/infrastructure/pimlico",
-  "/sdk/infra/coinbase": "/resources/infrastructure/coinbase",
+  "/sdk/infra/intro":
+    "/api-and-toolings/infrastructure/choose-an-infra-provider",
+  "/sdk/infra/zerodev": "/api-and-toolings/infrastructure/zerodev",
+  "/sdk/infra/pimlico": "/api-and-toolings/infrastructure/pimlico",
+  "/sdk/infra/coinbase": "/api-and-toolings/infrastructure/coinbase",
 
   // Presets (formerly orphan)
-  "/sdk/presets/intro": "/resources/presets/intro",
-  "/sdk/presets/zerodev": "/resources/presets/zerodev",
+  "/sdk/presets/intro": "/api-and-toolings/presets/intro",
+  "/sdk/presets/zerodev": "/api-and-toolings/presets/zerodev",
 
   // FAQs
-  "/sdk/faqs/chains": "/resources/faqs/chains",
-  "/sdk/faqs/audits": "/resources/faqs/audits",
-  "/sdk/faqs/debug-userop": "/resources/faqs/debug-userop",
-  "/sdk/faqs/use-with-ethers": "/resources/faqs/use-with-ethers",
-  "/sdk/faqs/use-with-gelato": "/resources/faqs/use-with-gelato",
-  "/sdk/faqs/use-with-react-native": "/resources/faqs/use-with-react-native",
+  "/sdk/faqs/chains": "/api-and-toolings/faqs/chains",
+  "/sdk/faqs/audits": "/api-and-toolings/faqs/audits",
+  "/sdk/faqs/debug-userop": "/api-and-toolings/faqs/debug-userop",
+  "/sdk/faqs/use-with-ethers": "/api-and-toolings/faqs/use-with-ethers",
+  "/sdk/faqs/use-with-gelato": "/api-and-toolings/faqs/use-with-gelato",
+  "/sdk/faqs/use-with-react-native":
+    "/api-and-toolings/faqs/use-with-react-native",
 
-  // Meta-infra → Resources › Infrastructure
-  "/meta-infra/intro": "/resources/infrastructure/intro",
-  "/meta-infra/gas-policies": "/resources/infrastructure/gas-policies",
+  // Meta-infra → API & Tooling › Infrastructure
+  "/meta-infra/intro": "/api-and-toolings/infrastructure/intro",
+  "/meta-infra/gas-policies": "/api-and-toolings/infrastructure/gas-policies",
   "/meta-infra/custom-gas-policies":
-    "/resources/infrastructure/custom-gas-policies",
-  "/meta-infra/rpcs": "/resources/infrastructure/rpcs",
-  "/meta-infra/api": "/resources/infrastructure/api",
+    "/api-and-toolings/infrastructure/custom-gas-policies",
+  "/meta-infra/rpcs": "/api-and-toolings/infrastructure/rpcs",
+  "/meta-infra/api": "/api-and-toolings/infrastructure/api",
 
-  // Recovery flow → Smart Accounts › Account Recovery
-  "/recovery-flow/intro": "/smart-accounts/account-recovery/flow-intro",
-  "/recovery-flow/setup": "/smart-accounts/account-recovery/flow-setup",
-  "/recovery-flow/portal": "/smart-accounts/account-recovery/portal",
+  // Recovery flow → Advanced › Account Recovery
+  "/recovery-flow/intro": "/advanced/account-recovery/flow-intro",
+  "/recovery-flow/setup": "/advanced/account-recovery/flow-setup",
+  "/recovery-flow/portal": "/advanced/account-recovery/portal",
 
   // Smart Routing Address (and global-address duplicate)
-  "/smart-routing-address": "/cross-chain/smart-routing-address",
-  "/global-address": "/cross-chain/smart-routing-address",
+  "/smart-routing-address": "/onramp/smart-routing-address",
+  "/global-address": "/onramp/smart-routing-address",
 
   // Embedded Wallet docs live at /wallets/* (alpha — unlisted in sidebars).
 
@@ -163,8 +160,7 @@ const REDIRECTS: Record<string, string> = {
   "/react/use-disconnect-kernelclient":
     "/advanced/react-hooks/use-disconnect-kernelclient",
   "/react/use-kernelclient": "/advanced/react-hooks/use-kernelclient",
-  "/react/use-send-transaction":
-    "/advanced/react-hooks/use-send-transaction",
+  "/react/use-send-transaction": "/advanced/react-hooks/use-send-transaction",
   "/react/use-send-transaction-with-session":
     "/advanced/react-hooks/use-send-transaction-with-session",
   "/react/use-send-useroperation":
@@ -174,31 +170,30 @@ const REDIRECTS: Record<string, string> = {
   "/react/use-sessions": "/advanced/react-hooks/use-sessions",
   "/react/use-session-kernelclient":
     "/advanced/react-hooks/use-session-kernelclient",
-  "/react/use-set-kernelclient":
-    "/advanced/react-hooks/use-set-kernelclient",
+  "/react/use-set-kernelclient": "/advanced/react-hooks/use-set-kernelclient",
   "/react/use-switch-chain": "/advanced/react-hooks/use-switch-chain",
   "/react/use-wallet-connect": "/advanced/react-hooks/use-wallet-connect",
 
   // Orphan /smart-wallet/* (deleted) → canonical homes in the new tree
-  "/smart-wallet/which-sdk": "/smart-accounts/create-a-smart-account",
+  "/smart-wallet/which-sdk": "/onboarding/create-a-smart-account",
   "/smart-wallet/quickstart-core": "/get-started/quickstart",
   "/smart-wallet/quickstart-react": "/get-started/quickstart",
   "/smart-wallet/quickstart-capabilities": "/get-started/quickstart",
-  "/smart-wallet/creating-wallets": "/smart-accounts/create-a-smart-account",
+  "/smart-wallet/creating-wallets": "/onboarding/create-a-smart-account",
   "/smart-wallet/setting-up-zerodev-projects": "/",
   "/smart-wallet/sending-transactions": "/smart-accounts/send-transactions",
   "/smart-wallet/batching-transactions": "/smart-accounts/batch-transactions",
   "/smart-wallet/pay-gas-in-erc20s": "/smart-accounts/pay-gas-with-erc20s",
   "/smart-wallet/sponsoring-gas": "/smart-accounts/sponsor-gas/evm",
-  "/smart-wallet/delegatecall": "/advanced/delegatecall",
-  "/smart-wallet/multisig": "/smart-accounts/use-plugins/multisig",
-  "/smart-wallet/account-recovery":
-    "/smart-accounts/account-recovery/sdk-recovery",
-  "/smart-wallet/importing-assets": "/smart-accounts/create-a-smart-account",
-  "/smart-wallet/defi-integrations": "/advanced/defi",
+  "/smart-wallet/delegatecall": "/smart-accounts/delegatecall",
+  "/smart-wallet/multisig": "/advanced/multisig",
+  "/smart-wallet/account-recovery": "/advanced/account-recovery/sdk-recovery",
+  "/smart-wallet/importing-assets": "/onboarding/create-a-smart-account",
+  "/smart-wallet/defi-integrations": "/smart-accounts/defi",
   "/smart-wallet/one-click-trading":
     "/smart-accounts/permissions/transaction-automation",
-  "/smart-wallet/parallel-transactions": "/advanced/parallel-transactions",
+  "/smart-wallet/parallel-transactions":
+    "/smart-accounts/parallel-transactions",
   "/smart-wallet/transaction-automation":
     "/smart-accounts/permissions/transaction-automation",
   "/smart-wallet/wallet-connect": "/advanced/wallet-connect",
@@ -233,6 +228,83 @@ const REDIRECTS: Record<string, string> = {
     "/smart-accounts/permissions/actions/build-your-own",
   "/smart-wallet/permissions/1-click-trading":
     "/smart-accounts/permissions/1-click-trading",
+
+  // 2026-06 user-journey IA: pillars are now Getting Started / Onboarding /
+  // Onramp / Smart Account / Advanced / API & Tooling. Old homes → new homes.
+  "/smart-accounts/create-a-smart-account":
+    "/onboarding/create-a-smart-account",
+  "/smart-accounts/authentication/social-login": "/onboarding/social-login",
+  "/smart-accounts/authentication/eoa": "/onboarding/eoa",
+  "/smart-accounts/authentication/custom-signer": "/onboarding/custom-signer",
+  "/smart-accounts/authentication/dynamic": "/onboarding/dynamic",
+  "/smart-accounts/authentication/privy": "/onboarding/privy",
+  "/smart-accounts/authentication/magic": "/onboarding/magic",
+  "/smart-accounts/authentication/web3auth": "/onboarding/web3auth",
+  "/smart-accounts/authentication/particle": "/onboarding/particle",
+  "/smart-accounts/authentication/arcana": "/onboarding/arcana",
+  "/smart-accounts/authentication/turnkey": "/onboarding/turnkey",
+  "/smart-accounts/authentication/fireblocks": "/onboarding/fireblocks",
+  "/smart-accounts/authentication/dfns": "/onboarding/dfns",
+  "/smart-accounts/authentication/lit-protocol": "/onboarding/lit-protocol",
+  "/smart-accounts/authentication/capsule": "/onboarding/capsule",
+  "/smart-accounts/authentication/portal": "/onboarding/portal",
+  "/smart-accounts/authentication/smart-wallet": "/onboarding/smart-wallet",
+  "/smart-accounts/use-plugins/signers-intro": "/onboarding/auth-providers",
+  "/smart-accounts/use-plugins/passkeys/overview":
+    "/onboarding/passkeys/overview",
+  "/smart-accounts/use-plugins/passkeys/tutorial":
+    "/onboarding/passkeys/tutorial",
+  "/smart-accounts/use-plugins/multisig": "/advanced/multisig",
+  "/smart-accounts/account-recovery/sdk-recovery":
+    "/advanced/account-recovery/sdk-recovery",
+  "/smart-accounts/account-recovery/flow-intro":
+    "/advanced/account-recovery/flow-intro",
+  "/smart-accounts/account-recovery/flow-setup":
+    "/advanced/account-recovery/flow-setup",
+  "/smart-accounts/account-recovery/portal":
+    "/advanced/account-recovery/portal",
+  "/smart-accounts/eip-7702/quickstart": "/get-started/eip-7702/quickstart",
+  "/cross-chain/smart-routing-address": "/onramp/smart-routing-address",
+  "/cross-chain/chain-abstraction/overview":
+    "/smart-accounts/chain-abstraction/overview",
+  "/cross-chain/chain-abstraction/supported-base-tokens":
+    "/smart-accounts/chain-abstraction/supported-base-tokens",
+  "/cross-chain/chain-abstraction/supported-defi-tokens":
+    "/smart-accounts/chain-abstraction/supported-defi-tokens",
+  "/advanced/defi": "/smart-accounts/defi",
+  "/advanced/multi-chain-signing": "/smart-accounts/multi-chain-signing",
+  "/advanced/parallel-transactions": "/smart-accounts/parallel-transactions",
+  "/advanced/deploy-contract": "/smart-accounts/deploy-contract",
+  "/advanced/delegatecall": "/smart-accounts/delegatecall",
+
+  // /resources/* URLs never existed as files (content lives at
+  // /api-and-toolings/*); map them in case old links escaped into the wild.
+  "/resources/infrastructure/intro": "/api-and-toolings/infrastructure/intro",
+  "/resources/infrastructure/gas-policies":
+    "/api-and-toolings/infrastructure/gas-policies",
+  "/resources/infrastructure/custom-gas-policies":
+    "/api-and-toolings/infrastructure/custom-gas-policies",
+  "/resources/infrastructure/rpcs": "/api-and-toolings/infrastructure/rpcs",
+  "/resources/infrastructure/api": "/api-and-toolings/infrastructure/api",
+  "/resources/infrastructure/choose-an-infra-provider":
+    "/api-and-toolings/infrastructure/choose-an-infra-provider",
+  "/resources/infrastructure/zerodev":
+    "/api-and-toolings/infrastructure/zerodev",
+  "/resources/infrastructure/pimlico":
+    "/api-and-toolings/infrastructure/pimlico",
+  "/resources/infrastructure/coinbase":
+    "/api-and-toolings/infrastructure/coinbase",
+  "/resources/presets/intro": "/api-and-toolings/presets/intro",
+  "/resources/presets/zerodev": "/api-and-toolings/presets/zerodev",
+  "/resources/tools/status": "/api-and-toolings/tools/status",
+  "/resources/tools/debugger": "/api-and-toolings/tools/debugger",
+  "/resources/faqs/chains": "/api-and-toolings/faqs/chains",
+  "/resources/faqs/audits": "/api-and-toolings/faqs/audits",
+  "/resources/faqs/debug-userop": "/api-and-toolings/faqs/debug-userop",
+  "/resources/faqs/use-with-ethers": "/api-and-toolings/faqs/use-with-ethers",
+  "/resources/faqs/use-with-gelato": "/api-and-toolings/faqs/use-with-gelato",
+  "/resources/faqs/use-with-react-native":
+    "/api-and-toolings/faqs/use-with-react-native",
 };
 
 export default defineConfig({
@@ -282,8 +354,8 @@ export default defineConfig({
       />
     </>
   ),
-  // Pillars (Get Started, Smart Accounts & Wallets, Cross-Chain Workflows,
-  // Advanced, Resources) are rendered by the `inject-pillar-bar` Vite plugin
+  // Pillars (Getting Started, Onboarding, Onramp, Smart Account, Advanced,
+  // API & Tooling) are rendered by the `inject-pillar-bar` Vite plugin
   // below as a separate horizontal bar BELOW this top nav. Only utility links
   // live in topNav itself.
   topNav: [
@@ -304,6 +376,20 @@ export default defineConfig({
         items: [
           { text: "Introduction", link: "/" },
           { text: "Quickstart", link: "/get-started/quickstart" },
+          {
+            text: "EIP-7702",
+            collapsed: false,
+            items: [
+              {
+                text: "Quickstart",
+                link: "/get-started/eip-7702/quickstart",
+              },
+              {
+                text: "Examples (external)",
+                link: "https://7702.zerodev.app/",
+              },
+            ],
+          },
           {
             text: "SDKs",
             collapsed: false,
@@ -366,85 +452,130 @@ export default defineConfig({
         ],
       },
     ],
+    "/onboarding": [
+      {
+        text: "Onboarding",
+        collapsed: false,
+        items: [
+          {
+            text: "Create a Smart Account",
+            link: "/onboarding/create-a-smart-account",
+          },
+          {
+            text: "Auth Providers",
+            link: "/onboarding/auth-providers",
+          },
+          {
+            text: "Passkeys",
+            link: "/onboarding/passkeys/overview",
+            collapsed: false,
+            items: [
+              {
+                text: "Code Example: Tutorial",
+                link: "/onboarding/passkeys/tutorial",
+              },
+            ],
+          },
+          {
+            text: "Social Login",
+            link: "/onboarding/social-login",
+          },
+          {
+            text: "EOA Wallets",
+            link: "/onboarding/eoa",
+          },
+          {
+            text: "Custom Signer",
+            link: "/onboarding/custom-signer",
+          },
+          {
+            text: "Dynamic",
+            link: "/onboarding/dynamic",
+          },
+          {
+            text: "Privy",
+            link: "/onboarding/privy",
+          },
+          {
+            text: "Magic",
+            link: "/onboarding/magic",
+          },
+          {
+            text: "Web3Auth",
+            link: "/onboarding/web3auth",
+          },
+          {
+            text: "Particle",
+            link: "/onboarding/particle",
+          },
+          {
+            text: "Arcana",
+            link: "/onboarding/arcana",
+          },
+          {
+            text: "Turnkey",
+            link: "/onboarding/turnkey",
+          },
+          {
+            text: "Fireblocks",
+            link: "/onboarding/fireblocks",
+          },
+          {
+            text: "Dfns",
+            link: "/onboarding/dfns",
+          },
+          {
+            text: "Lit Protocol",
+            link: "/onboarding/lit-protocol",
+          },
+          {
+            text: "Para",
+            link: "/onboarding/capsule",
+          },
+          {
+            text: "Portal",
+            link: "/onboarding/portal",
+          },
+          {
+            text: "Coinbase Smart Wallet",
+            link: "/onboarding/smart-wallet",
+          },
+        ],
+      },
+    ],
+    "/onramp": [
+      {
+        text: "Smart Routing Address",
+        collapsed: false,
+        items: [
+          {
+            text: "Introduction",
+            link: "/onramp/smart-routing-address",
+          },
+          {
+            text: "Quickstart",
+            link: "/onramp/smart-routing-address/quickstart",
+          },
+          {
+            text: "Fetching Status",
+            link: "/onramp/smart-routing-address/fetching-status",
+          },
+          {
+            text: "Fee Sponsorship",
+            link: "/onramp/smart-routing-address/fee-sponsorship",
+          },
+          {
+            text: "Supported Chains & Tokens",
+            link: "/onramp/smart-routing-address/supported-chains",
+          },
+        ],
+      },
+    ],
     "/smart-accounts": [
       {
         text: "Smart Account",
         collapsed: false,
         items: [
-          {
-            text: "Create a Smart Account",
-            link: "/smart-accounts/create-a-smart-account",
-          },
-          {
-            text: "Authentication",
-            collapsed: true,
-            items: [
-              {
-                text: "Social Login",
-                link: "/smart-accounts/authentication/social-login",
-              },
-              {
-                text: "EOA Wallets",
-                link: "/smart-accounts/authentication/eoa",
-              },
-              {
-                text: "Custom Signer",
-                link: "/smart-accounts/authentication/custom-signer",
-              },
-              {
-                text: "Dynamic",
-                link: "/smart-accounts/authentication/dynamic",
-              },
-              {
-                text: "Privy",
-                link: "/smart-accounts/authentication/privy",
-              },
-              {
-                text: "Magic",
-                link: "/smart-accounts/authentication/magic",
-              },
-              {
-                text: "Web3Auth",
-                link: "/smart-accounts/authentication/web3auth",
-              },
-              {
-                text: "Particle",
-                link: "/smart-accounts/authentication/particle",
-              },
-              {
-                text: "Arcana",
-                link: "/smart-accounts/authentication/arcana",
-              },
-              {
-                text: "Turnkey",
-                link: "/smart-accounts/authentication/turnkey",
-              },
-              {
-                text: "Fireblocks",
-                link: "/smart-accounts/authentication/fireblocks",
-              },
-              {
-                text: "Dfns",
-                link: "/smart-accounts/authentication/dfns",
-              },
-              {
-                text: "Lit Protocol",
-                link: "/smart-accounts/authentication/lit-protocol",
-              },
-              {
-                text: "Para",
-                link: "/smart-accounts/authentication/capsule",
-              },
-              {
-                text: "Portal",
-                link: "/smart-accounts/authentication/portal",
-              },
-              {
-                text: "Coinbase Smart Wallet",
-                link: "/smart-accounts/authentication/smart-wallet",
-              },
-            ],
-          },
           {
             text: "Send Transactions",
             link: "/smart-accounts/send-transactions",
@@ -468,6 +599,10 @@ export default defineConfig({
           {
             text: "Sign and Verify Messages",
             link: "/smart-accounts/sign-and-verify",
+          },
+          {
+            text: "Using Plugins",
+            link: "/smart-accounts/use-plugins/overview",
           },
           {
             text: "Permissions (Session Keys)",
@@ -562,69 +697,42 @@ export default defineConfig({
             ],
           },
           {
-            text: "Account Recovery",
-            collapsed: true,
-            items: [
-              {
-                text: "SDK Recovery",
-                link: "/smart-accounts/account-recovery/sdk-recovery",
-              },
-              {
-                text: "Flow Intro",
-                link: "/smart-accounts/account-recovery/flow-intro",
-              },
-              {
-                text: "Flow Setup",
-                link: "/smart-accounts/account-recovery/flow-setup",
-              },
-              {
-                text: "Portal",
-                link: "/smart-accounts/account-recovery/portal",
-              },
-            ],
-          },
-          {
-            text: "EIP-7702",
-            collapsed: true,
-            items: [
-              {
-                text: "Code Example: Quickstart",
-                link: "/smart-accounts/eip-7702/quickstart",
-              },
-              {
-                text: "Examples (external)",
-                link: "https://7702.zerodev.app/",
-              },
-            ],
-          },
-          {
-            text: "Use Plugins",
+            text: "Chain Abstraction (CAB)",
             collapsed: true,
             items: [
               {
                 text: "Overview",
-                link: "/smart-accounts/use-plugins/overview",
+                link: "/smart-accounts/chain-abstraction/overview",
               },
               {
-                text: "Signers Introduction",
-                link: "/smart-accounts/use-plugins/signers-intro",
+                text: "Supported Base Tokens",
+                link: "/smart-accounts/chain-abstraction/supported-base-tokens",
               },
               {
-                text: "Passkeys",
-                link: "/smart-accounts/use-plugins/passkeys/overview",
-                collapsed: true,
-                items: [
-                  {
-                    text: "Code Example: Tutorial",
-                    link: "/smart-accounts/use-plugins/passkeys/tutorial",
-                  },
-                ],
-              },
-              {
-                text: "Multisig",
-                link: "/smart-accounts/use-plugins/multisig",
+                text: "Supported DeFi Tokens",
+                link: "/smart-accounts/chain-abstraction/supported-defi-tokens",
               },
             ],
+          },
+          {
+            text: "DeFi Integrations",
+            link: "/smart-accounts/defi",
+          },
+          {
+            text: "Multi-chain Signing",
+            link: "/smart-accounts/multi-chain-signing",
+          },
+          {
+            text: "Parallel Transactions (2D Nonces)",
+            link: "/smart-accounts/parallel-transactions",
+          },
+          {
+            text: "Deploy Contracts",
+            link: "/smart-accounts/deploy-contract",
+          },
+          {
+            text: "Delegatecall",
+            link: "/smart-accounts/delegatecall",
           },
         ],
       },
@@ -755,36 +863,6 @@ export default defineConfig({
         ],
       },
     ],
-    "/cross-chain": [
-      {
-        text: "Cross-Chain Workflows",
-        collapsed: false,
-        items: [
-          {
-            text: "Smart Routing Address",
-            link: "/cross-chain/smart-routing-address",
-          },
-          {
-            text: "Chain Abstraction",
-            collapsed: true,
-            items: [
-              {
-                text: "Overview",
-                link: "/cross-chain/chain-abstraction/overview",
-              },
-              {
-                text: "Supported Base Tokens",
-                link: "/cross-chain/chain-abstraction/supported-base-tokens",
-              },
-              {
-                text: "Supported DeFi Tokens",
-                link: "/cross-chain/chain-abstraction/supported-defi-tokens",
-              },
-            ],
-          },
-        ],
-      },
-    ],
     "/advanced": [
       {
         text: "Advanced",
@@ -792,25 +870,37 @@ export default defineConfig({
         items: [
           { text: "Migration Guide", link: "/advanced/migration" },
           {
-            text: "Multi-chain Signing",
-            link: "/advanced/multi-chain-signing",
+            text: "Account Recovery",
+            collapsed: true,
+            items: [
+              {
+                text: "SDK Recovery",
+                link: "/advanced/account-recovery/sdk-recovery",
+              },
+              {
+                text: "Flow Intro",
+                link: "/advanced/account-recovery/flow-intro",
+              },
+              {
+                text: "Flow Setup",
+                link: "/advanced/account-recovery/flow-setup",
+              },
+              {
+                text: "Portal",
+                link: "/advanced/account-recovery/portal",
+              },
+            ],
           },
-          {
-            text: "Parallel Transactions (2D Nonces)",
-            link: "/advanced/parallel-transactions",
-          },
+          { text: "Multisig", link: "/advanced/multisig" },
           {
             text: "Fallback Providers",
             link: "/advanced/fallback-providers",
           },
           { text: "Key Storage", link: "/advanced/key-storage" },
-          { text: "DeFi Integrations", link: "/advanced/defi" },
           {
             text: "Connect Wallet with Other DApps",
             link: "/advanced/wallet-connect",
           },
-          { text: "Deploy Contracts", link: "/advanced/deploy-contract" },
-          { text: "Delegatecall", link: "/advanced/delegatecall" },
           {
             text: "Track deployed smart accounts",
             link: "/advanced/track-deployed-accounts",
@@ -834,15 +924,15 @@ export default defineConfig({
             items: [
               {
                 text: "Gas Policies",
-                link: "/resources/infrastructure/gas-policies",
+                link: "/api-and-toolings/infrastructure/gas-policies",
               },
               {
                 text: "Custom Gas Policies",
-                link: "/resources/infrastructure/custom-gas-policies",
+                link: "/api-and-toolings/infrastructure/custom-gas-policies",
               },
               {
                 text: "Admin API",
-                link: "/resources/infrastructure/api",
+                link: "/api-and-toolings/infrastructure/api",
               },
             ],
           },
@@ -863,27 +953,27 @@ export default defineConfig({
             items: [
               {
                 text: "Supported networks",
-                link: "/resources/faqs/chains",
+                link: "/api-and-toolings/faqs/chains",
               },
               {
                 text: "Audits",
-                link: "/resources/faqs/audits",
+                link: "/api-and-toolings/faqs/audits",
               },
               {
                 text: "Use with ethers.js",
-                link: "/resources/faqs/use-with-ethers",
+                link: "/api-and-toolings/faqs/use-with-ethers",
               },
               {
                 text: "Use with React Native",
-                link: "/resources/faqs/use-with-react-native",
+                link: "/api-and-toolings/faqs/use-with-react-native",
               },
               {
                 text: "Use with Gelato",
-                link: "/resources/faqs/use-with-gelato",
+                link: "/api-and-toolings/faqs/use-with-gelato",
               },
               {
                 text: "Debug a UserOp",
-                link: "/resources/faqs/debug-userop",
+                link: "/api-and-toolings/faqs/debug-userop",
               },
             ],
           },
@@ -1129,7 +1219,7 @@ export default defineConfig({
         collapsed: false,
         items: [
           { text: "Introduction", link: "/sdk/v5_3_x/infra/intro" },
-          { text: "ZeroDev", link: "/resources/infrastructure/intro" },
+          { text: "ZeroDev", link: "/api-and-toolings/infrastructure/intro" },
           { text: "Pimlico", link: "/sdk/v5_3_x/infra/pimlico" },
           { text: "Coinbase", link: "/sdk/v5_3_x/infra/coinbase" },
         ],
@@ -1142,8 +1232,14 @@ export default defineConfig({
             text: "Why chain abstraction?",
             link: "/sdk/v5_3_x/faqs/why-chain-abstraction",
           },
-          { text: "What networks do you support?", link: "/sdk/v5_3_x/faqs/chains" },
-          { text: "How to debug a UserOp?", link: "/sdk/v5_3_x/faqs/debug-userop" },
+          {
+            text: "What networks do you support?",
+            link: "/sdk/v5_3_x/faqs/chains",
+          },
+          {
+            text: "How to debug a UserOp?",
+            link: "/sdk/v5_3_x/faqs/debug-userop",
+          },
           {
             text: "Can I use a KernelClient with ethers.js?",
             link: "/sdk/v5_3_x/faqs/use-with-ethers",
@@ -1267,11 +1363,12 @@ export default defineConfig({
 <script id="zd-pillar-bar-script">
 (function() {
   var PILLARS = [
-    { href: '/', text: 'Get Started', match: function(p) { return p === '/' || p.indexOf('/get-started') === 0; } },
-    { href: '/smart-accounts/create-a-smart-account', text: 'Smart Accounts & Wallets', match: function(p) { return p.indexOf('/smart-accounts') === 0; } },
-    { href: '/cross-chain/smart-routing-address', text: 'Cross-Chain Workflows', match: function(p) { return p.indexOf('/cross-chain') === 0; } },
+    { href: '/', text: 'Getting Started', match: function(p) { return p === '/' || p.indexOf('/get-started') === 0; } },
+    { href: '/onboarding/create-a-smart-account', text: 'Onboarding', match: function(p) { return p.indexOf('/onboarding') === 0; } },
+    { href: '/onramp/smart-routing-address', text: 'Onramp', match: function(p) { return p.indexOf('/onramp') === 0; } },
+    { href: '/smart-accounts/send-transactions', text: 'Smart Account', match: function(p) { return p.indexOf('/smart-accounts') === 0; } },
     { href: '/advanced/migration', text: 'Advanced', match: function(p) { return p.indexOf('/advanced') === 0; } },
-    { href: '/api-and-toolings/infrastructure/intro', text: 'API and Tooling', match: function(p) { return p.indexOf('/resources') === 0; } }
+    { href: '/api-and-toolings/infrastructure/gas-policies', text: 'API & Tooling', match: function(p) { return p.indexOf('/api-and-toolings') === 0; } }
   ];
 
   function build() {
@@ -1408,10 +1505,7 @@ export default defineConfig({
 })();
 </script>`;
 
-          return html.replace(
-            "</head>",
-            `${externalLinkScript}\n</head>`,
-          );
+          return html.replace("</head>", `${externalLinkScript}\n</head>`);
         },
       },
       {
