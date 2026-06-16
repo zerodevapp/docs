@@ -4,16 +4,17 @@
 **USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
 :::
 
-EIP-712 typed data signing works through Wagmi's `useSignTypedData`.
+EIP-712 typed data signing works through Wagmi's `useSignTypedData`. The connector signs with the wallet signer required by the configured account mode.
 
 ```tsx
-import { useSignTypedData } from "wagmi";
+import { useAccount, useSignTypedData } from "wagmi";
+import { sepolia } from "wagmi/chains";
 
 const typedData = {
   domain: {
     name: "Ether Mail",
     version: "1",
-    chainId: 1,
+    chainId: sepolia.id,
     verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC",
   },
   types: {
@@ -42,13 +43,15 @@ const typedData = {
 } as const;
 
 export function SignTypedData() {
+  const { address } = useAccount();
   const { signTypedData, data, isPending, error } = useSignTypedData();
 
   const handleSign = () => signTypedData(typedData);
 
   return (
     <div>
-      <button onClick={handleSign} disabled={isPending}>
+      <p>Signer: {address}</p>
+      <button onClick={handleSign} disabled={isPending || !address}>
         {isPending ? "Signing..." : "Sign typed data"}
       </button>
 
@@ -58,3 +61,7 @@ export function SignTypedData() {
   );
 }
 ```
+
+If users should approve typed-data signatures in your UI, mount `SignatureRequest` from `@zerodev/wallet-react-kit`.
+
+Each wallet signature costs 10 credits from your existing ZeroDev plan credits.

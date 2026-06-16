@@ -4,7 +4,9 @@
 **USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
 :::
 
-The SDK supports exporting the user's wallet as a seed phrase or private key. The key material is displayed inside a secure iframe and never touches your application code.
+The SDK supports exporting the user's wallet as a seed phrase or private key. The key material is displayed inside a secure Turnkey iframe and never touches your application code.
+
+Only show export controls behind an explicit user action, and warn users before rendering the iframe. Anyone with the exported seed phrase or private key can control the wallet.
 
 ## Hooks
 
@@ -19,8 +21,42 @@ import { useExportWallet, useExportPrivateKey } from '@zerodev/wallet-react'
 
 function ExportModal() {
   const [showExport, setShowExport] = useState(false)
+  const [exporting, setExporting] = useState(false)
   const exportWallet = useExportWallet()
   const exportPrivateKey = useExportPrivateKey()
+
+  const iframeContainerId = 'export-container'
+
+  const showSeedPhrase = async () => {
+    setExporting(true)
+    await exportWallet.mutateAsync({
+      iframeContainerId,
+      iframeStyles: {
+        backgroundColor: '#ffffff',
+        color: '#1a1a1a',
+        fontFamily: 'monospace',
+        fontSize: '14px',
+        padding: '16px',
+        width: '100%',
+      },
+    })
+  }
+
+  const showPrivateKey = async () => {
+    setExporting(true)
+    await exportPrivateKey.mutateAsync({
+      iframeContainerId,
+      keyFormat: 'Hexadecimal',
+      iframeStyles: {
+        backgroundColor: '#ffffff',
+        color: '#1a1a1a',
+        fontFamily: 'monospace',
+        fontSize: '14px',
+        padding: '16px',
+        width: '100%',
+      },
+    })
+  }
 
   return (
     <div>
@@ -31,44 +67,36 @@ function ExportModal() {
       {showExport && (
         <div className="modal">
           <h3>Export Options</h3>
+          <p>
+            Never share your seed phrase or private key. Make sure no one is
+            watching your screen before continuing.
+          </p>
 
           {/* Container where the export iframe will render */}
-          <div id="export-container" style={{ minHeight: '200px' }} />
+          <div id={iframeContainerId} style={{ minHeight: '200px' }} />
 
           <button
-            onClick={() =>
-              exportWallet.mutateAsync({
-                iframeContainerId: 'export-container',
-                iframeStyles: {
-                  width: '400px',
-                  height: '200px',
-                  border: 'none',
-                },
-              })
-            }
+            onClick={showSeedPhrase}
             disabled={exportWallet.isPending}
           >
             {exportWallet.isPending ? 'Exporting...' : 'Show Seed Phrase'}
           </button>
 
           <button
-            onClick={() =>
-              exportPrivateKey.mutateAsync({
-                iframeContainerId: 'export-container',
-                keyFormat: 'Hexadecimal',
-                iframeStyles: {
-                  width: '400px',
-                  height: '100px',
-                  border: 'none',
-                },
-              })
-            }
+            onClick={showPrivateKey}
             disabled={exportPrivateKey.isPending}
           >
             {exportPrivateKey.isPending ? 'Exporting...' : 'Show Private Key'}
           </button>
 
-          <button onClick={() => setShowExport(false)}>
+          {exporting && (
+            <p>Save the exported material before closing this window.</p>
+          )}
+
+          <button onClick={() => {
+            setShowExport(false)
+            setExporting(false)
+          }}>
             Close
           </button>
         </div>
@@ -81,7 +109,7 @@ function ExportModal() {
 ## How it works
 
 1. You provide a container element ID where the secure iframe will be rendered.
-2. The SDK initiates a secure export session.
+2. The SDK initiates a secure export session with Turnkey.
 3. The seed phrase or private key is rendered inside a secure iframe.
 4. The key material is displayed directly to the user — it never passes through your application.
 

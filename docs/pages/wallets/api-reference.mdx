@@ -1,0 +1,232 @@
+# Public API Reference [Current package exports]
+
+:::danger[IMPORTANT]
+**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
+:::
+
+This page tracks the public exports from the current ZeroDev Wallet SDK packages.
+
+## @zerodev/wallet-react
+
+### Dashboard configuration
+
+The SDK enforces project security settings from the ZeroDev dashboard:
+
+- Allowlist every app origin in the access control list, including local development ports.
+- Allowlist OAuth and magic-link redirect URLs before using those auth methods.
+- Disable any auth method you do not want to support. Email, Google, and passkey auth methods are enabled by default for new projects.
+
+### Wallet operation credits
+
+ZeroDev Wallet operations consume the Credits included in your existing ZeroDev plan.
+
+| Wallet operation | Credit cost | Notes |
+|------------------|-------------|-------|
+| Signature | 10 credits | Any wallet signature, including `personal_sign`, EIP-712 typed data, and UserOperation signatures. |
+| Bundler broadcast | 20 credits | Same pricing as the core ZeroDev Account Abstraction service for sending a UserOperation through the bundler. |
+
+A standalone message or typed-data signature costs **10 credits**. A transaction sent in `7702` or `4337` mode costs **30 credits total**: **10 credits** for the wallet signature plus **20 credits** for the bundler broadcast that sends the UserOperation to the network.
+
+### zeroDevWallet
+
+```ts
+import { zeroDevWallet } from '@zerodev/wallet-react'
+```
+
+Wagmi connector factory for ZeroDev Wallet.
+
+```ts
+zeroDevWallet({
+  projectId: 'YOUR_ZERODEV_PROJECT_ID',
+  chains: [sepolia],
+  mode: '7702',
+})
+```
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `projectId` | `string` | Required. ZeroDev project ID. |
+| `chains` | `readonly Chain[]` | Required. Chains supported by this connector. |
+| `organizationId` | `string` | Optional Turnkey organization ID override. |
+| `proxyBaseUrl` | `string` | Optional KMS proxy URL. |
+| `aaUrl` | `string` | Optional bundler/paymaster URL override. |
+| `rpId` | `string` | Optional WebAuthn relying party ID. Defaults to the current hostname on web. |
+| `sessionStorage` | `StorageAdapter` | Optional storage for wallet sessions. |
+| `persistStorage` | `StateStorage` | Optional Zustand persistence storage for connector state. |
+| `apiKeyStamper` | `ApiKeyStamper \| Promise<ApiKeyStamper>` | Optional API-key stamper override. |
+| `passkeyStamper` | `PasskeyStamper \| Promise<PasskeyStamper>` | Optional passkey stamper override. |
+| `autoRefreshSession` | `boolean` | Defaults to `true`. Set to `false` to disable automatic refresh. |
+| `sessionWarningThreshold` | `number` | Milliseconds before expiry to refresh. Defaults to `60000`. |
+| `mode` | `'7702' \| '4337'` | Account mode. Defaults to `'7702'`. |
+| `autoInitialize` | `boolean \| (() => boolean)` | Controls whether connector setup initializes immediately. |
+
+`fetchOptions` is available on the lower-level `zeroDevWalletCore`, but intentionally omitted from the web `zeroDevWallet` export because browsers ignore custom `Origin` overrides.
+
+### Account modes
+
+| Mode | Address exposed to Wagmi | Transaction path |
+|------|--------------------------|------------------|
+| `'7702'` | Wallet address | Kernel account via EIP-7702 UserOperations submitted through a bundler. |
+| `'4337'` | Counterfactual Kernel smart account address | ERC-4337 UserOperations submitted through a bundler. |
+
+### Auth hooks
+
+| Export | Purpose |
+|--------|---------|
+| `useRegisterPasskey` | Register a new passkey and connect the wallet. |
+| `useLoginPasskey` | Login with an existing passkey and connect the wallet. |
+| `useAuthenticateOAuth` | Authenticate with Google OAuth. The web export opens a popup and accepts optional `timeoutMs`. |
+| `useSendOTP` | Send an email OTP. Returns `otpId` and `otpEncryptionTargetBundle`. |
+| `useVerifyOTP` | Verify an email OTP. Requires `code`, `otpId`, and `otpEncryptionTargetBundle`. |
+| `useSendMagicLink` | Send a magic link. Returns `otpId` and `otpEncryptionTargetBundle`. |
+| `useVerifyMagicLink` | Verify a magic link. Requires `code`, `otpId`, and `otpEncryptionTargetBundle`. |
+
+### Session and account hooks
+
+| Export | Purpose |
+|--------|---------|
+| `useRefreshSession` | Manually refresh the active session. |
+| `useAuthenticators` | Query OAuth providers, passkeys, email contacts, and API keys for the current user. |
+| `useExportWallet` | Render a secure Turnkey iframe for wallet seed phrase export. |
+| `useExportPrivateKey` | Render a secure Turnkey iframe for private key export. |
+
+### Actions and helpers
+
+| Export | Purpose |
+|--------|---------|
+| `getZeroDevConnector(config)` | Find the ZeroDev connector in a Wagmi config. Throws if it is not configured. |
+| `getZeroDevStore(connector)` | Get the connector's ZeroDev store. |
+| `getZeroDevWallet(store)` | Get the initialized core wallet SDK from the store. Throws if initialization has not completed. |
+| `createZeroDevWalletStore(options?)` | Create the connector state store. Advanced usage only. |
+| `NotAuthenticatedError` | Error thrown when wallet operations require an authenticated session. |
+| `OAUTH_PROVIDERS` | OAuth provider constants. Currently `{ GOOGLE: 'google' }`. |
+| `generateOAuthNonce(publicKey)` | Compute the Google OIDC nonce bound to the wallet public key. |
+| `verifyGoogleLoginUrl(loginUrl, publicKey)` | Validate Google OAuth login URL host and nonce before starting OAuth. |
+
+## Wallet provider methods
+
+The connector exposes an EIP-1193 provider. Supported `request` methods are:
+
+| Method | Description |
+|--------|-------------|
+| `eth_accounts` | Returns the active wallet address. |
+| `eth_requestAccounts` | Returns the active wallet address or throws `NotAuthenticatedError`. |
+| `eth_chainId` | Returns the active chain ID as hex. |
+| `eth_sendTransaction` | Sends a transaction. Uses UserOperations in `7702` and `4337` mode. |
+| `wallet_sendTransaction` | Same transaction path as `eth_sendTransaction`. |
+| `personal_sign` | Signs a message with the wallet signer for the configured mode. |
+| `eth_signTypedData_v4` | Signs EIP-712 typed data with the wallet signer for the configured mode. |
+| `wallet_switchEthereumChain` | Updates the active chain and emits `chainChanged`. |
+
+## @zerodev/wallet-core
+
+Use `@zerodev/wallet-core` directly when you need lower-level control without Wagmi.
+
+### createZeroDevWallet
+
+```ts
+import { createZeroDevWallet } from '@zerodev/wallet-core'
+
+const wallet = await createZeroDevWallet({
+  projectId: 'YOUR_ZERODEV_PROJECT_ID',
+})
+```
+
+On web, `rpId`, `sessionStorage`, `apiKeyStamper`, and `passkeyStamper` have browser defaults. React Native consumers should import from the React Native subpath and provide native storage/stamper adapters.
+
+### ZeroDevWalletSDK
+
+```ts
+type ZeroDevWalletSDK = {
+  client: ZeroDevWalletClient
+  auth: (params: AuthParams) => Promise<any>
+  getPublicKey: () => Promise<string | null>
+  getSession: () => Promise<ZeroDevWalletSession | undefined>
+  getAllSessions: () => Promise<Record<string, ZeroDevWalletSession>>
+  switchSession: (sessionId: string) => Promise<ZeroDevWalletSession | undefined>
+  clearSession: (sessionId: string) => Promise<void>
+  clearAllSessions: () => Promise<void>
+  refreshSession: (sessionId?: string) => Promise<ZeroDevWalletSession | undefined>
+  logout: () => Promise<boolean>
+  toAccount: () => Promise<LocalAccount>
+}
+```
+
+`auth` supports `oauth`, passkey `register`/`login`, OTP `sendOtp`/`verifyOtp`, and magic-link `send`/`verify`. OTP and magic-link verify calls require the `otpEncryptionTargetBundle` returned by the matching send call.
+
+### Core utilities
+
+| Export | Purpose |
+|--------|---------|
+| `toViemAccount` | Convert an authenticated wallet client/session into a viem `LocalAccount`. |
+| `createClient`, `createBaseClient`, `zeroDevWalletTransport` | Low-level client/transport primitives. |
+| `zeroDevWalletActions` | Client decorator for wallet actions. |
+| `createIframeStamper` | Create a Turnkey iframe stamper for secure export flows. |
+| `exportWallet` | Build a wallet export bundle for iframe injection. |
+| `exportPrivateKey` | Build a private-key export bundle for iframe injection. |
+| `normalizeTimestamp` | Normalize session expiry timestamps. |
+| `KMS_SERVER_URL` | Default KMS server URL. |
+
+### Root action exports
+
+These actions are exported from `@zerodev/wallet-core` and are also available through the decorated `wallet.client`.
+
+| Export | Purpose |
+|--------|---------|
+| `authenticateWithEmail` | Authenticate with an email-based session. |
+| `authenticateWithOAuth` | Authenticate with an OAuth session ID. |
+| `getAuthenticators` | Fetch OAuth authenticators, passkeys, email contacts, and API keys. |
+| `getUserWallet` | Fetch wallet addresses for the authenticated user. |
+| `getWhoami` | Fetch identity/session metadata for the current token. |
+| `loginWithOTP` | Login with an OTP attempt. |
+| `registerWithOTP` | Register an OTP contact and send an OTP. |
+| `sign7702Authorization` | Sign an EIP-7702 authorization. |
+| `signMessage` | Sign a message with a wallet key. |
+| `signTransaction` | Sign a serialized transaction. |
+| `signTypedDataV4` | Sign EIP-712 typed data. |
+| `signUserOperation` | Sign an ERC-4337 UserOperation. |
+
+### Actions subpath
+
+```ts
+import { getOAuthLoginUrl } from '@zerodev/wallet-core/actions'
+```
+
+The `@zerodev/wallet-core/actions` subpath exports the root actions above plus lower-level actions used by the React SDK:
+
+| Export | Purpose |
+|--------|---------|
+| `getAuthProxyConfigId` | Fetch the auth proxy config ID. |
+| `getOAuthLoginUrl` | Build the OAuth login URL for a provider and return URL. |
+| `loginWithStamp` | Login using an existing stamper. |
+| `registerWithPasskey` | Register a passkey credential. |
+
+## @zerodev/wallet-react-kit
+
+Use `@zerodev/wallet-react-kit` if you want prebuilt auth and signing UI.
+
+| Export | Purpose |
+|--------|---------|
+| `zeroDevWallet` | Enhanced connector wrapping `@zerodev/wallet-react` with optional auth/signing UI. |
+| `AuthFlow` | Prebuilt authentication flow component. |
+| `useAuth` | Access the kit auth state and navigation actions. |
+| `SignatureRequest` | Prebuilt request confirmation UI. |
+| `usePendingRequest` | Get the current pending signing request. |
+| `usePendingRequests` | Get all pending signing requests. |
+
+The kit connector accepts the same connector options as `@zerodev/wallet-react`, plus:
+
+```ts
+type ZeroDevKitConfig = {
+  signing?: { mode: 'background' } | { mode: 'prompt'; methods?: RequestMethod[] }
+  auth?: {
+    magicLinkBaseUrl: string
+    enabledMethods: ('email' | 'google' | 'passkey')[]
+    emailAuthMethod?: 'magicLink' | 'otp'
+    termsAndConditionsUrl?: string
+    privacyPolicyUrl?: string
+    onSuccess?: () => void
+    onError?: (error: unknown) => void
+  }
+}
+```

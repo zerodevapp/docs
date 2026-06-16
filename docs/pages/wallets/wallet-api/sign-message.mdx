@@ -4,12 +4,13 @@
 **USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
 :::
 
-To sign a message, use Wagmi's `useSignMessage` hook:
+To sign a message, use Wagmi's `useSignMessage` hook after the user authenticates. The connector routes the signing request to the correct signer for the configured account mode.
 
 ```tsx
-import { useSignMessage } from "wagmi";
+import { useAccount, useSignMessage } from "wagmi";
 
 export function SignMessage() {
+  const { address } = useAccount();
   const { signMessage, data, isPending, error } = useSignMessage();
 
   const handleSign = () =>
@@ -19,7 +20,8 @@ export function SignMessage() {
 
   return (
     <div>
-      <button onClick={handleSign} disabled={isPending}>
+      <p>Signer: {address}</p>
+      <button onClick={handleSign} disabled={isPending || !address}>
         {isPending ? "Signing..." : "Sign message"}
       </button>
 
@@ -29,3 +31,7 @@ export function SignMessage() {
   );
 }
 ```
+
+Mount `SignatureRequest` from `@zerodev/wallet-react-kit` if you want the user to review signing requests in a prebuilt confirmation UI. Otherwise, signing can run in the background.
+
+Each wallet signature costs 10 credits from your existing ZeroDev plan credits.

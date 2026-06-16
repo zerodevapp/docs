@@ -1,4 +1,4 @@
-# Quickstart [Get up and running in 5 minutes]
+# Quickstart [Set up ZeroDev Wallet]
 
 :::danger[IMPORTANT]
 **USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
@@ -9,31 +9,52 @@
 :::code-group
 
 ```bash [npm]
-npm i @zerodev/wallet-react @zerodev/sdk wagmi viem @tanstack/react-query
+npm i @zerodev/wallet-react @zerodev/wallet-react-kit @zerodev/wallet-core @zerodev/sdk wagmi viem @tanstack/react-query
 ```
 
 ```bash [yarn]
-yarn add @zerodev/wallet-react @zerodev/sdk wagmi viem @tanstack/react-query
+yarn add @zerodev/wallet-react @zerodev/wallet-react-kit @zerodev/wallet-core @zerodev/sdk wagmi viem @tanstack/react-query
 ```
 
 ```bash [pnpm]
-pnpm i @zerodev/wallet-react @zerodev/sdk wagmi viem @tanstack/react-query
+pnpm i @zerodev/wallet-react @zerodev/wallet-react-kit @zerodev/wallet-core @zerodev/sdk wagmi viem @tanstack/react-query
 ```
 
 ```bash [bun]
-bun add @zerodev/wallet-react @zerodev/sdk wagmi viem @tanstack/react-query
+bun add @zerodev/wallet-react @zerodev/wallet-react-kit @zerodev/wallet-core @zerodev/sdk wagmi viem @tanstack/react-query
 ```
 
 :::
 
-## 1. Configure Wagmi
+## 1. Configure the dashboard
 
-Create a Wagmi config with the `zeroDevWallet` connector:
+Before running the SDK locally, configure your ZeroDev project in the dashboard:
+
+- **Access control list**: allowlist your app origin, including the port. For local development this usually looks like `http://localhost:3000` or `http://localhost:5174`.
+- **Redirect URLs**: if you use Google OAuth or magic links, allowlist the exact redirect URLs that can complete auth, such as `http://localhost:3000/verify`.
+- **Auth methods**: email, Google, and passkey auth methods are enabled by default. Disable any method you do not want to support from the dashboard, even if the frontend does not show it.
+
+These dashboard checks are required for security. The SDK will reject requests from origins or redirect URLs that are not allowlisted.
+
+## 2. Configure Wagmi
+
+Create a Wagmi config with the `zeroDevWallet` connector.
+
+ZeroDev Wallet supports two UI paths:
+
+| Path | Use when |
+|------|----------|
+| Prebuilt UI with `@zerodev/wallet-react-kit` | You want the fastest path to a working embedded wallet with `AuthFlow` and `SignatureRequest`. |
+| Custom UI with `@zerodev/wallet-react` | You want to own every auth screen and request prompt in your product design system. |
+
+This quickstart uses the React Kit path, which is the fastest way to get a working embedded wallet flow in front of your team. The demo app uses the same approach.
 
 ```tsx
 import { createConfig, http } from 'wagmi'
 import { sepolia } from 'wagmi/chains'
-import { zeroDevWallet } from '@zerodev/wallet-react'
+import { zeroDevWallet } from '@zerodev/wallet-react-kit'
+
+const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
 
 export const config = createConfig({
   chains: [sepolia],
@@ -41,6 +62,14 @@ export const config = createConfig({
     zeroDevWallet({
       projectId: 'YOUR_ZERODEV_PROJECT_ID',
       chains: [sepolia],
+      mode: '7702',
+      config: {
+        auth: {
+          magicLinkBaseUrl: `${appUrl}/verify`,
+          enabledMethods: ['email', 'google', 'passkey'],
+          emailAuthMethod: 'otp',
+        },
+      },
     }),
   ],
   transports: {
@@ -51,7 +80,16 @@ export const config = createConfig({
 
 Get your project ID from the [ZeroDev Dashboard](https://dashboard.zerodev.app/).
 
-## 2. Wrap your app
+If you do not need the prebuilt UI, import `zeroDevWallet` from `@zerodev/wallet-react` and use the individual auth hooks documented in the [reference](/wallets/api-reference).
+
+`mode` controls the account exposed through Wagmi:
+
+| Mode | Description |
+|------|-------------|
+| `'7702'` | Default. Uses EIP-7702 with Kernel smart-account execution. Transactions are sent to a bundler as UserOperations and can be sponsored. |
+| `'4337'` | Exposes a counterfactual Kernel smart account address. Transactions are sent to a bundler as ERC-4337 UserOperations, and the account is deployed on the first UserOperation. |
+
+## 3. Wrap your app
 
 Wrap your application with `WagmiProvider` and `QueryClientProvider`:
 
@@ -73,7 +111,61 @@ export default function App({ children }: { children: React.ReactNode }) {
 }
 ```
 
-## 3. Add authentication
+## 4. Add prebuilt authentication UI
+
+The fastest path is the React Kit `AuthFlow` component. Call Wagmi's `connect` with the ZeroDev connector to start the flow; if a session already exists, the connector reconnects without showing the auth UI.
+
+```tsx
+import { AuthFlow, useAuth } from '@zerodev/wallet-react-kit'
+import { useAccount, useConnect } from 'wagmi'
+
+function AuthPage() {
+  const { isConnected } = useAccount()
+  const { connect, connectors } = useConnect()
+  const { step } = useAuth()
+
+  if (isConnected) {
+    return <p>Wallet connected</p>
+  }
+
+  return (
+    <div>
+      <AuthFlow />
+      {step === null && (
+        <button onClick={() => connectors[0] && connect({ connector: connectors[0] })}>
+          Continue
+        </button>
+      )}
+    </div>
+  )
+}
+```
+
+For magic link auth, render `AuthFlow` on the URL you configured as `magicLinkBaseUrl`:
+
+```tsx
+import { AuthFlow } from '@zerodev/wallet-react-kit'
+
+export default function VerifyPage() {
+  return <AuthFlow />
+}
+```
+
+After authentication, the user's wallet is available through standard Wagmi hooks like `useAccount`, `useSendTransaction`, `useWriteContract`, `useSignMessage`, and `useSignTypedData`.
+
+## 5. Optional: build a custom auth UI
+
+Use the lower-level React hooks when you want to control every auth screen yourself. Import the connector from `@zerodev/wallet-react` instead of `@zerodev/wallet-react-kit`, and keep UI configuration in your own components instead of `config.auth`.
+
+```tsx
+import { zeroDevWallet } from '@zerodev/wallet-react'
+
+zeroDevWallet({
+  projectId: 'YOUR_ZERODEV_PROJECT_ID',
+  chains: [sepolia],
+  mode: '7702',
+})
+```
 
 Here's a basic example with passkey registration and login:
 
@@ -118,7 +210,26 @@ function AuthPage() {
 }
 ```
 
-After authentication, the user's wallet is available through standard Wagmi hooks like `useAccount`, `useSendTransaction`, and `useSignMessage`.
+The email OTP and magic-link hooks require the `otpEncryptionTargetBundle` returned by the matching send call. See [Email OTP](/wallets/auth/email-otp) and [Magic Link](/wallets/auth/magic-link) for complete examples.
+
+## 6. Optional: request confirmation UI
+
+Mount `SignatureRequest` when you want the React Kit to ask users to review signing and transaction requests:
+
+```tsx
+import { SignatureRequest } from '@zerodev/wallet-react-kit'
+
+function AppShell() {
+  return (
+    <>
+      <SignatureRequest />
+      {/* your app */}
+    </>
+  )
+}
+```
+
+For background signing, omit `SignatureRequest` or configure the kit connector's signing mode. See the [public API reference](/wallets/api-reference) for the kit config type.
 
 ## Next Steps
 
@@ -127,4 +238,6 @@ After authentication, the user's wallet is available through standard Wagmi hook
 - [Google OAuth](/wallets/auth/google-oauth) — Social login with Google
 - [Send Transactions](/wallets/wallet-api/send-transaction) — Send gasless transactions
 - [Sign Messages](/wallets/wallet-api/sign-message) — Sign messages with the wallet
+- [Export Wallet](/wallets/export) — Let users export seed phrases or private keys
+- [Public API Reference](/wallets/api-reference) — Current package exports
 - [Session Management](/wallets/session-management) — Session lifecycle and refresh

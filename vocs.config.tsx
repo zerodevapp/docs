@@ -142,6 +142,7 @@ const REDIRECTS: Record<string, string> = {
   "/global-address": "/onramp/smart-routing-address",
 
   // Embedded Wallet docs live at /wallets/* (alpha — unlisted in sidebars).
+  "/wallets/evaluate": "/wallets/overview",
 
   // React WaaS hooks → Advanced › React Hooks (legacy)
   "/react/getting-started": "/advanced/react-hooks/getting-started",
@@ -741,12 +742,16 @@ export default defineConfig({
     // Lives at /wallets/* and is only navigable for users who know the URL.
     "/wallets": [
       {
-        text: "Embedded Wallet",
+        text: "Embedded Wallets",
         collapsed: false,
         items: [
           {
             text: "Introduction",
             link: "/wallets",
+          },
+          {
+            text: "Overview",
+            link: "/wallets/overview",
           },
           {
             text: "Quickstart",
@@ -758,62 +763,86 @@ export default defineConfig({
           },
           {
             text: "Authentication",
-            collapsed: true,
+            collapsed: false,
             items: [
               {
-                text: "Passkeys",
-                link: "/wallets/auth/passkeys",
+                text: "Overview",
+                link: "/wallets/auth",
               },
               {
-                text: "Email OTP",
-                link: "/wallets/auth/email-otp",
+                text: "Login",
+                collapsed: true,
+                items: [
+                  {
+                    text: "Passkeys",
+                    link: "/wallets/auth/passkeys",
+                  },
+                  {
+                    text: "Email OTP",
+                    link: "/wallets/auth/email-otp",
+                  },
+                  {
+                    text: "Magic Link",
+                    link: "/wallets/auth/magic-link",
+                  },
+                  {
+                    text: "Google OAuth",
+                    link: "/wallets/auth/google-oauth",
+                  },
+                ],
               },
-              {
-                text: "Magic Link",
-                link: "/wallets/auth/magic-link",
-              },
-              {
-                text: "Google OAuth",
-                link: "/wallets/auth/google-oauth",
-              },
-            ],
-          },
-          {
-            text: "Features",
-            collapsed: true,
-            items: [
               {
                 text: "Session Management",
                 link: "/wallets/session-management",
               },
+            ],
+          },
+          {
+            text: "Wallets",
+            collapsed: false,
+            items: [
               {
-                text: "Export Wallet",
-                link: "/wallets/export",
+                text: "Overview",
+                link: "/wallets/wallet-api",
+              },
+              {
+                text: "Features",
+                collapsed: true,
+                items: [
+                  {
+                    text: "Send a Transaction",
+                    link: "/wallets/wallet-api/send-transaction",
+                  },
+                  {
+                    text: "Sign a Message",
+                    link: "/wallets/wallet-api/sign-message",
+                  },
+                  {
+                    text: "Sign a Typed Message",
+                    link: "/wallets/wallet-api/sign-typed-message",
+                  },
+                ],
+              },
+              {
+                text: "Security",
+                collapsed: true,
+                items: [
+                  {
+                    text: "Export Wallet",
+                    link: "/wallets/export",
+                  },
+                ],
               },
             ],
           },
           {
-            text: "Wallet API",
+            text: "Reference",
             collapsed: true,
             items: [
               {
-                text: "Send a Transaction",
-                link: "/wallets/wallet-api/send-transaction",
+                text: "Public API Reference",
+                link: "/wallets/api-reference",
               },
-              {
-                text: "Sign a Message",
-                link: "/wallets/wallet-api/sign-message",
-              },
-              {
-                text: "Sign a Typed Message",
-                link: "/wallets/wallet-api/sign-typed-message",
-              },
-            ],
-          },
-          {
-            text: "Hooks",
-            collapsed: true,
-            items: [
               {
                 text: "useRegisterPasskey",
                 link: "/wallets/hooks/use-register-passkey",
@@ -843,8 +872,8 @@ export default defineConfig({
                 link: "/wallets/hooks/use-verify-magic-link",
               },
               {
-                text: "useGetUserEmail",
-                link: "/wallets/hooks/use-get-user-email",
+                text: "useAuthenticators",
+                link: "/wallets/hooks/use-authenticators",
               },
               {
                 text: "useRefreshSession",

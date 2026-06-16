@@ -1,0 +1,75 @@
+# Overview [Why ZeroDev Wallet]
+
+:::danger[IMPORTANT]
+**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
+:::
+
+ZeroDev Wallet is a smart embedded wallet for teams that want the smooth UX of embedded wallets with account-abstraction infrastructure built into the default transaction path.
+
+Most embedded wallet products start with key management and add smart accounts later. ZeroDev Wallet bundles embedded key management with Kernel smart accounts from day one, so sponsorship, batching, permissions, automation, and chain abstraction are part of the architecture instead of an integration project waiting for later.
+
+If you are comparing ZeroDev Wallet with embedded wallet providers like Privy, the main question is not just "can users log in without an extension?" It is whether the wallet stack is designed around smart-account execution from day one.
+
+## Why teams choose ZeroDev Wallet
+
+### Smart accounts by default
+
+ZeroDev Wallet is optimized for smart-account products, not just login. In `7702` and `4337` mode, transaction requests are routed through ZeroDev's bundler-backed account-abstraction infrastructure from the start.
+
+### Embedded auth without a separate wallet install
+
+Users can sign in with email OTP, magic links, Google OAuth, or passkeys. Your app can use the prebuilt `AuthFlow` from `@zerodev/wallet-react-kit`, or build a custom onboarding flow with lower-level React hooks.
+
+### Wagmi-compatible app code
+
+After authentication, your app uses familiar Wagmi hooks such as `useAccount`, `useSendTransaction`, `useWriteContract`, `useSignMessage`, and `useSignTypedData`.
+
+### Built for gasless and sponsored experiences
+
+In smart-account modes, transaction sends use the bundler path. If your project is configured for sponsorship, you can ship gasless product flows without stitching together a separate wallet vendor and smart-account stack.
+
+### User exit flows
+
+ZeroDev Wallet supports secure seed phrase and private key export through Turnkey iframe flows, so users are not locked into your frontend.
+
+## What you get
+
+| Capability | What it means for your app |
+|------------|----------------------------|
+| Embedded authentication | Email OTP, magic links, Google OAuth, and passkeys without requiring a browser extension. |
+| Smart-account execution | `7702` by default, with `4337` available when you need a counterfactual smart-account address. |
+| Bundler-backed transactions | In smart-account modes, transaction sends go through the UserOperation path. |
+| Gas sponsorship | Sponsored transaction flows can use the same account-abstraction infrastructure instead of a separate wallet workaround. |
+| Standard app integration | Wagmi hooks and an EIP-1193 provider for the operations most app teams already expect. |
+| Export support | Secure seed phrase and private key export through Turnkey iframe flows. |
+
+## Where to begin
+
+| If you are... | Start here |
+|---------------|------------|
+| Comparing embedded wallet providers | Read this page, run the [hosted demo](https://zerodev-signer-demo.vercel.app/), and inspect the [demo source](https://github.com/zerodevapp/zerodev-wallet-sdk/tree/main/apps/zerodev-signer-demo). |
+| Product or growth team | Review the value props above, then test the demo's login, gas sponsorship, signing, and export flows. |
+| Frontend engineer | Follow the [Quickstart](/wallets/quickstart) with `@zerodev/wallet-react-kit` and get a working embedded wallet flow quickly. |
+| Wallet/platform engineer | Read [Wallets](/wallets/wallet-api) for transaction and signing behavior, then review the [Public API Reference](/wallets/api-reference). |
+| Auth or security reviewer | Start with [Authentication](/wallets/auth), then review each login method and the dashboard requirements below. |
+
+## Before you build
+
+There are a few project settings that should be configured before local testing:
+
+- Allowlist your app origin in the dashboard access control list, including the local development port.
+- Allowlist redirect URLs for Google OAuth and magic links.
+- Decide early whether Google OAuth should use ZeroDev-managed credentials or your own Google credentials. If you switch to your own Google credentials later, use a new project ID because existing users from the old OAuth credential setup will not be able to log in.
+- Disable any auth methods you do not want to support. Email, Google, and passkeys are enabled by default for new projects.
+
+## Cost model
+
+Wallet operations consume the Credits included in your existing ZeroDev plan:
+
+| Operation | Credits |
+|-----------|---------|
+| Wallet signature | 10 credits |
+| Bundler broadcast | 20 credits |
+| Transaction in `7702` or `4337` mode | 30 credits total |
+
+A standalone message or typed-data signature is one wallet signature. A smart-account transaction signs the UserOperation and then broadcasts it through the bundler, so it uses both credit events.

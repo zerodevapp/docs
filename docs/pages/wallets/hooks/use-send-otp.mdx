@@ -34,7 +34,7 @@ function SendCode() {
         onClick={async () => {
           const result = await sendOTP.mutateAsync({ email })
           console.log('OTP ID:', result.otpId)
-          // Pass otpId to useVerifyOTP
+          // Pass otpId and otpEncryptionTargetBundle to useVerifyOTP
         }}
         disabled={sendOTP.isPending || !email}
       >
@@ -67,7 +67,7 @@ Custom template for the email content.
 
 ### otpCodeCustomization
 
-`{ length?: 6 | 7 | 8 | 9; alphanumeric?: boolean } | undefined`
+`{ length: 6 | 7 | 8 | 9; alphanumeric: boolean } | undefined`
 
 Optional customization for the generated OTP code.
 
@@ -89,19 +89,19 @@ Whether to use alphanumeric characters instead of digits only. Defaults to `fals
 
 ### mutate
 
-`(variables: { email: string; emailCustomization?: { magicLinkTemplate?: string } }) => void`
+`(variables: { email: string; emailCustomization?: { magicLinkTemplate?: string }; otpCodeCustomization?: { length: 6 | 7 | 8 | 9; alphanumeric: boolean }; connector?: Connector }) => void`
 
 The mutation function to send the OTP.
 
 ### mutateAsync
 
-`(variables: { email: string; emailCustomization?: { magicLinkTemplate?: string } }) => Promise<{ otpId: string }>`
+`(variables: { email: string; emailCustomization?: { magicLinkTemplate?: string }; otpCodeCustomization?: { length: 6 | 7 | 8 | 9; alphanumeric: boolean }; connector?: Connector }) => Promise<{ otpId: string; otpEncryptionTargetBundle: string }>`
 
 Similar to [`mutate`](#mutate) but returns a promise.
 
 ### data
 
-`{ otpId: string } | undefined`
+`{ otpId: string; otpEncryptionTargetBundle: string } | undefined`
 
 - Defaults to `undefined`
 - The data returned from the mutation on success.
@@ -111,5 +111,11 @@ Similar to [`mutate`](#mutate) but returns a promise.
 `string`
 
 The identifier for this OTP verification attempt. Pass this to [`useVerifyOTP`](/wallets/hooks/use-verify-otp) to complete authentication.
+
+#### otpEncryptionTargetBundle
+
+`string`
+
+The encryption target bundle for this OTP attempt. Store it with the matching `otpId` and pass it to [`useVerifyOTP`](/wallets/hooks/use-verify-otp).
 
 <MutationResult />

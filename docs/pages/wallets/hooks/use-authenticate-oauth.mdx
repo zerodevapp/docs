@@ -22,7 +22,9 @@ import {
 import { useAccount } from 'wagmi'
 
 function OAuthLogin() {
-  const authenticateOAuth = useAuthenticateOAuth()
+  const authenticateOAuth = useAuthenticateOAuth({
+    timeoutMs: 5 * 60 * 1000,
+  })
   const { address, isConnected } = useAccount()
 
   if (isConnected) {
@@ -45,6 +47,14 @@ function OAuthLogin() {
 ```
 
 ## Parameters
+
+The web hook takes optional hook-level parameters, then `provider` as the mutation variable.
+
+### timeoutMs
+
+`number | undefined`
+
+Optional popup timeout in milliseconds. Defaults to 5 minutes.
 
 ### provider
 

@@ -6,6 +6,11 @@
 
 Passkeys use the [WebAuthn](https://webauthn.guide/) standard for passwordless authentication. Users authenticate with biometrics (Face ID, Touch ID, fingerprint) or a hardware security key.
 
+## Dashboard requirements
+
+- Allowlist your app origin in the dashboard access control list, including the local development port.
+- Passkey auth is enabled by default for new projects. If you do not want users to authenticate with passkeys, explicitly disable passkey auth in the dashboard.
+
 ## Configure RP ID (optional)
 
 Set `rpId` on the connector if you need a custom [relying party identifier](https://www.w3.org/TR/webauthn-2/#relying-party-identifier) (defaults to the current hostname):

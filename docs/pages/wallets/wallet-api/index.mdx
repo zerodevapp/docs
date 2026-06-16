@@ -1,0 +1,42 @@
+# Wallets [Transactions, signing, and export]
+
+:::danger[IMPORTANT]
+**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
+:::
+
+After authentication, ZeroDev Wallet exposes a Wagmi-compatible account. Your app can use normal Wagmi hooks for transactions, contract writes, message signatures, and typed-data signatures.
+
+The important implementation detail is the account mode:
+
+| Mode | Transaction path |
+|------|------------------|
+| `7702` | Wagmi send/write calls are routed through a Kernel smart account and broadcast by the bundler as UserOperations. |
+| `4337` | Wagmi send/write calls are routed through a counterfactual Kernel smart account and broadcast by the bundler as UserOperations. |
+
+## Common wallet operations
+
+| Task | Guide | Credits |
+|------|-------|---------|
+| Send ETH, call contracts, or use Wagmi writes | [Send a transaction](/wallets/wallet-api/send-transaction) | 30 credits total in `7702` or `4337`: 10 for the signature and 20 for the bundler broadcast. |
+| Sign `personal_sign` messages | [Sign a message](/wallets/wallet-api/sign-message) | 10 credits per wallet signature. |
+| Sign EIP-712 typed data | [Sign typed data](/wallets/wallet-api/sign-typed-message) | 10 credits per wallet signature. |
+| Let users export wallet material | [Export wallet](/wallets/export) | Uses secure Turnkey iframe flows. |
+
+## Request confirmation UI
+
+If you use `@zerodev/wallet-react-kit`, mount `SignatureRequest` to show prebuilt approval UI for signing and transaction requests:
+
+```tsx
+import { SignatureRequest } from '@zerodev/wallet-react-kit'
+
+export function AppShell({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      <SignatureRequest />
+      {children}
+    </>
+  )
+}
+```
+
+If you omit `SignatureRequest`, make sure your own product flow still gives users appropriate context before signing messages or sending transactions.

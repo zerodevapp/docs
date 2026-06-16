@@ -4,25 +4,27 @@
 **USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
 :::
 
-Use standard Wagmi hooks to send transactions. The ZeroDev connector turns transactions into user operations (AA transactions) behind the scenes, achieving gas abstraction automatically so long as you have enabled it on the ZeroDev dashboard.
+Use standard Wagmi hooks to send transactions after the user authenticates. In `7702` and `4337` mode, the ZeroDev connector turns transaction requests into UserOperations behind the scenes and submits them through a bundler. Sponsorship applies automatically when it is enabled on the ZeroDev dashboard.
+
+The [demo app](https://github.com/zerodevapp/zerodev-wallet-sdk/tree/main/apps/zerodev-signer-demo) uses this same pattern with `useSendTransaction` for ETH transfers and `useWriteContract` for NFT minting.
 
 ## `useSendTransaction`
 
 ```tsx
 import { useState } from "react";
-import { parseEther } from "viem";
+import { isAddress, parseEther, type Address } from "viem";
 import { useAccount, useSendTransaction } from "wagmi";
 
 export function SendEth() {
   const { address, isConnected } = useAccount();
-  const { sendTransaction, data, isPending } = useSendTransaction();
+  const { sendTransaction, data, isPending, error } = useSendTransaction();
   const [to, setTo] = useState("0x...");
   const [amount, setAmount] = useState("0.001");
 
   const handleSend = () => {
-    if (!isConnected) return;
+    if (!isConnected || !isAddress(to)) return;
     sendTransaction({
-      to,
+      to: to as Address,
       value: parseEther(amount),
     });
   };
@@ -36,6 +38,7 @@ export function SendEth() {
         {isPending ? "Sending..." : "Send"}
       </button>
       {data && <p>Tx hash: {data}</p>}
+      {error && <p>Transaction failed: {error.message}</p>}
     </div>
   );
 }
@@ -45,13 +48,13 @@ export function SendEth() {
 
 ```tsx
 import { useWriteContract } from "wagmi";
-import { parseAbi } from "viem";
+import { parseAbi, type Address } from "viem";
 
 const NFT_ABI = parseAbi([
   "function mint(address _to) public",
 ]);
 
-export function MintNftGasless({ recipient }: { recipient: `0x${string}` }) {
+export function MintNftGasless({ recipient }: { recipient: Address }) {
   const { writeContract, data, isPending, error } = useWriteContract();
 
   const mint = () =>
@@ -73,3 +76,10 @@ export function MintNftGasless({ recipient }: { recipient: `0x${string}` }) {
   );
 }
 ```
+
+## Notes
+
+- `useSendTransaction` and `useWriteContract` return the submitted transaction hash.
+- In `7702` and `4337` mode, your app is interacting with bundler-backed smart-account infrastructure by default.
+- In `7702` and `4337` mode, sending a transaction costs 30 credits total: 10 credits for the wallet signature and 20 credits for the bundler broadcast.
+- If you mount `SignatureRequest` from `@zerodev/wallet-react-kit`, the kit can prompt the user to review supported signing and transaction requests.

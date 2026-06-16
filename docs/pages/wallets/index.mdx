@@ -6,15 +6,42 @@
 
 ZeroDev Wallet is the first **smart embedded wallet** -- an embedded wallet optimized for smart accounts.
 
+It combines embedded key management with Kernel smart accounts, so the wallet can use account-abstraction features as part of the default transaction path instead of adding smart accounts as a secondary layer later.
+
 ## Demo
 
 Check out [this demo](https://zerodev-signer-demo.vercel.app/) for a self-custodial wallet powered by social logins and gas sponsorship.
+
+The demo source is available on [GitHub](https://github.com/zerodevapp/zerodev-wallet-sdk/tree/main/apps/zerodev-signer-demo). It uses `@zerodev/wallet-react-kit` for `AuthFlow` and `SignatureRequest`, then uses standard Wagmi hooks for transactions, contract writes, and signing.
+
+## What it includes
+
+- Embedded authentication with email, Google OAuth, magic links, and passkeys
+- `7702` mode by default, with `4337` mode available when your product needs a counterfactual smart-account address
+- Bundler-backed transaction routing in `7702` and `4337` mode, including gas sponsorship through the ZeroDev dashboard
+- Wagmi-compatible account, transaction, contract write, and signature flows
+- Secure seed phrase and private key export through Turnkey iframes
+- Optional prebuilt UI through `@zerodev/wallet-react-kit`, plus lower-level hooks for custom onboarding
+
+## When to use it
+
+### You want embedded wallets and native smart-account behavior
+
+Use ZeroDev Wallet when your app needs an embedded wallet, but the transaction path should be account-abstraction native: sponsorship, batching, automation, permissions, and cross-chain execution should be first-class product primitives rather than a later migration.
+
+### You want to stay on Wagmi
+
+After authentication, your app uses the wallet through Wagmi hooks like `useAccount`, `useSendTransaction`, `useWriteContract`, `useSignMessage`, and `useSignTypedData`. In `7702` and `4337` mode, send/write calls go through the bundler-backed UserOperation path.
+
+### You need a clear smart-account story
+
+Start with `7702` for the default smart embedded wallet path. Use `4337` when the product should expose a counterfactual smart-account address.
 
 ## Why ZeroDev Wallet
 
 ### Smart by Default
 
-Most embedded wallets use EOAs by default, and only support smart accounts as a secondary option.  On the other hand, ZeroDev Wallet uses smart accounts *by default* through EIP-7702 and ERC-4337.
+Most embedded wallets start with key management and only support smart accounts as a secondary option. On the other hand, ZeroDev Wallet uses smart accounts *by default* through EIP-7702 and ERC-4337.
 
 As a result, smart account features such as gas sponsorship, transaction batching, transaction automation, and chain abstraction are available as native APIs with ZeroDev Wallet, while other embedded wallets typically only support a subset of these features.
 
@@ -34,4 +61,4 @@ On the other hand, ZeroDev Wallet is a complete embedded wallet solution that bu
 
 ## Getting Started
 
-Check out [the quickstart](/wallets/quickstart) to get started!
+If you are comparing embedded wallet options, start with the [overview](/wallets/overview). If you are ready to build, use the [quickstart](/wallets/quickstart), or review the [public API reference](/wallets/api-reference) if you are updating an existing integration.

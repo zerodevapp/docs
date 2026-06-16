@@ -1,0 +1,65 @@
+# Authentication [Login methods and dashboard controls]
+
+:::danger[IMPORTANT]
+**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
+:::
+
+ZeroDev Wallet supports email OTP, magic links, Google OAuth, and passkeys. You can use the prebuilt `AuthFlow` from `@zerodev/wallet-react-kit`, or build your own screens with the lower-level hooks from `@zerodev/wallet-react`.
+
+| UI path | Best for |
+|---------|----------|
+| Prebuilt `AuthFlow` | Fast POCs, standard embedded-wallet onboarding, and teams that want a complete auth flow without designing every screen first. |
+| Custom hooks | Production apps with strict design-system, copy, routing, analytics, or compliance requirements around each auth step. |
+
+## Dashboard requirements
+
+Authentication is gated by dashboard configuration, not only frontend code:
+
+- Allowlist the exact app origin in the access control list, including the local development port.
+- Allowlist OAuth and magic-link redirect URLs before testing those flows.
+- Disable any auth method you do not want available. Email, Google, and passkeys are enabled by default.
+
+These controls exist because a technical user can inspect or modify frontend code. Treat dashboard auth-method configuration as the source of truth for what your project allows.
+
+## Pick a login path
+
+| Method | Use when | Notes |
+|--------|----------|-------|
+| [Passkeys](/wallets/auth/passkeys) | You want device-native authentication with strong phishing resistance. | Requires browser/platform passkey support and correct relying-party behavior. |
+| [Email OTP](/wallets/auth/email-otp) | You want a familiar code-based login flow. | The verify call needs the `otpEncryptionTargetBundle` returned by the send call. |
+| [Magic Link](/wallets/auth/magic-link) | You want email links that complete auth on a redirect URL. | The redirect URL must match the dashboard allowlist and your `magicLinkBaseUrl`. |
+| [Google OAuth](/wallets/auth/google-oauth) | You want social login. | ZeroDev-managed credentials work out of the box; bring-your-own Google credentials should be decided before onboarding users. |
+
+## Prebuilt UI path
+
+Use `AuthFlow` when you want the fastest complete auth flow. `AuthFlow` is paired with the React Kit connector from `@zerodev/wallet-react-kit`; the connector opens the flow when Wagmi `connect` runs and no session is available.
+
+```tsx
+import { AuthFlow } from '@zerodev/wallet-react-kit'
+
+export function LoginPage() {
+  return <AuthFlow />
+}
+```
+
+Render the same component on your magic-link verify URL:
+
+```tsx
+import { AuthFlow } from '@zerodev/wallet-react-kit'
+
+export default function VerifyPage() {
+  return <AuthFlow />
+}
+```
+
+## Custom UI path
+
+Use the lower-level hooks when your app needs custom onboarding copy, layout, or auth-method selection. In this path, import `zeroDevWallet` from `@zerodev/wallet-react` and build each screen yourself.
+
+- `useRegisterPasskey` and `useLoginPasskey`
+- `useSendOTP` and `useVerifyOTP`
+- `useSendMagicLink` and `useVerifyMagicLink`
+- `useAuthenticateOAuth`
+- `useAuthenticators`
+
+See the [public API reference](/wallets/api-reference) for current exports.

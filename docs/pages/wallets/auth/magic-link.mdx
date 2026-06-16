@@ -6,6 +6,12 @@
 
 Magic links let users authenticate by clicking a link in their email. The link redirects to your app where the SDK completes the verification.
 
+## Dashboard requirements
+
+- Allowlist your app origin in the dashboard access control list, including the local development port.
+- Allowlist every magic-link redirect URL you plan to use, such as `http://localhost:3000/verify` for local development.
+- Email auth is enabled by default for new projects. If you do not want users to authenticate with email or magic links, explicitly disable email auth in the dashboard.
+
 ## Hooks
 
 - [`useSendMagicLink`](/wallets/hooks/use-send-magic-link) — Send a magic link to an email address
@@ -37,8 +43,12 @@ function MagicLinkLogin() {
             email,
             redirectURL: `${window.location.origin}/verify`,
           })
-          // Store otpId for the verify page
+          // Store both values for the verify page
           sessionStorage.setItem('magicLinkOtpId', result.otpId)
+          sessionStorage.setItem(
+            'magicLinkOtpEncryptionTargetBundle',
+            result.otpEncryptionTargetBundle,
+          )
         }}
         disabled={sendMagicLink.isPending || !email}
       >
@@ -74,9 +84,16 @@ function VerifyMagicLink() {
   useEffect(() => {
     const code = searchParams.get('code')
     const otpId = sessionStorage.getItem('magicLinkOtpId')
+    const otpEncryptionTargetBundle = sessionStorage.getItem(
+      'magicLinkOtpEncryptionTargetBundle',
+    )
 
-    if (code && otpId && !isConnected) {
-      verifyMagicLink.mutateAsync({ otpId, code })
+    if (code && otpId && otpEncryptionTargetBundle && !isConnected) {
+      verifyMagicLink.mutateAsync({
+        otpId,
+        code,
+        otpEncryptionTargetBundle,
+      })
     }
   }, [searchParams])
 
@@ -98,10 +115,10 @@ function VerifyMagicLink() {
 
 ## How it works
 
-1. **Send link**: `useSendMagicLink` sends an email with a magic link pointing to your `redirectURL`. It returns an `otpId` that you need for verification.
+1. **Send link**: `useSendMagicLink` sends an email with a magic link pointing to your `redirectURL`. It returns an `otpId` and `otpEncryptionTargetBundle` that you need for verification.
 
 2. **User clicks link**: The user clicks the link in their email, which redirects them to your app with a `code` query parameter.
 
-3. **Verify**: Your verify page calls `useVerifyMagicLink` with the `otpId` and `code`. If valid, the SDK authenticates and creates a session.
+3. **Verify**: Your verify page calls `useVerifyMagicLink` with the `otpId`, `code`, and `otpEncryptionTargetBundle`. If valid, the SDK authenticates and creates a session.
 
 After verification, the Wagmi connector is connected and the user's address is available via `useAccount`.

@@ -36,8 +36,12 @@ function SendMagicLink() {
             email,
             redirectURL: `${window.location.origin}/verify`,
           })
-          // Store otpId for the verify page
+          // Store both values for the verify page
           sessionStorage.setItem('magicLinkOtpId', result.otpId)
+          sessionStorage.setItem(
+            'magicLinkOtpEncryptionTargetBundle',
+            result.otpEncryptionTargetBundle,
+          )
         }}
         disabled={sendMagicLink.isPending || !email}
       >
@@ -66,7 +70,7 @@ function SendMagicLink() {
 
 ### otpCodeCustomization
 
-`{ length?: 6 | 7 | 8 | 9; alphanumeric?: boolean } | undefined`
+`{ length: 6 | 7 | 8 | 9; alphanumeric: boolean } | undefined`
 
 Optional customization for the generated verification code.
 
@@ -88,19 +92,19 @@ Whether to use alphanumeric characters instead of digits only. Defaults to `fals
 
 ### mutate
 
-`(variables: { email: string; redirectURL: string }) => void`
+`(variables: { email: string; redirectURL: string; otpCodeCustomization?: { length: 6 | 7 | 8 | 9; alphanumeric: boolean }; connector?: Connector }) => void`
 
 The mutation function to send the magic link.
 
 ### mutateAsync
 
-`(variables: { email: string; redirectURL: string }) => Promise<{ otpId: string }>`
+`(variables: { email: string; redirectURL: string; otpCodeCustomization?: { length: 6 | 7 | 8 | 9; alphanumeric: boolean }; connector?: Connector }) => Promise<{ otpId: string; otpEncryptionTargetBundle: string }>`
 
 Similar to [`mutate`](#mutate) but returns a promise.
 
 ### data
 
-`{ otpId: string } | undefined`
+`{ otpId: string; otpEncryptionTargetBundle: string } | undefined`
 
 - Defaults to `undefined`
 - The data returned from the mutation on success.
@@ -110,5 +114,11 @@ Similar to [`mutate`](#mutate) but returns a promise.
 `string`
 
 The identifier for this magic link verification. Store this value and pass it to [`useVerifyMagicLink`](/wallets/hooks/use-verify-magic-link) on the redirect page.
+
+#### otpEncryptionTargetBundle
+
+`string`
+
+The encryption target bundle for this magic link attempt. Store it with the matching `otpId` and pass it to [`useVerifyMagicLink`](/wallets/hooks/use-verify-magic-link) on the redirect page.
 
 <MutationResult />

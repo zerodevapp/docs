@@ -6,6 +6,11 @@
 
 Email OTP is a two-step flow: send a verification code to the user's email, then verify the code they enter.
 
+## Dashboard requirements
+
+- Allowlist your app origin in the dashboard access control list, including the local development port.
+- Email auth is enabled by default for new projects. If you do not want users to authenticate with email, explicitly disable email auth in the dashboard.
+
 ## Hooks
 
 - [`useSendOTP`](/wallets/hooks/use-send-otp) — Send a one-time code to an email address
@@ -22,6 +27,8 @@ function EmailOTPAuth() {
   const [email, setEmail] = useState('')
   const [code, setCode] = useState('')
   const [otpId, setOtpId] = useState<string | null>(null)
+  const [otpEncryptionTargetBundle, setOtpEncryptionTargetBundle] =
+    useState<string | null>(null)
 
   const { address, isConnected } = useAccount()
   const { disconnectAsync } = useDisconnect()
@@ -50,6 +57,7 @@ function EmailOTPAuth() {
           onClick={async () => {
             const result = await sendOTP.mutateAsync({ email })
             setOtpId(result.otpId)
+            setOtpEncryptionTargetBundle(result.otpEncryptionTargetBundle)
           }}
           disabled={sendOTP.isPending || !email}
         >
@@ -59,6 +67,8 @@ function EmailOTPAuth() {
       </div>
     )
   }
+
+  if (!otpEncryptionTargetBundle) return null
 
   return (
     <div>
@@ -70,7 +80,13 @@ function EmailOTPAuth() {
         onChange={(e) => setCode(e.target.value)}
       />
       <button
-        onClick={() => verifyOTP.mutateAsync({ code, otpId })}
+        onClick={() =>
+          verifyOTP.mutateAsync({
+            code,
+            otpId,
+            otpEncryptionTargetBundle,
+          })
+        }
         disabled={verifyOTP.isPending || !code}
       >
         {verifyOTP.isPending ? 'Verifying...' : 'Verify Code'}
@@ -83,8 +99,8 @@ function EmailOTPAuth() {
 
 ## How it works
 
-1. **Send code**: `useSendOTP` sends a one-time verification code to the provided email address. It returns an `otpId` that identifies this verification attempt.
+1. **Send code**: `useSendOTP` sends a one-time verification code to the provided email address. It returns an `otpId` and `otpEncryptionTargetBundle` for this verification attempt.
 
-2. **Verify code**: `useVerifyOTP` takes the `otpId` and the code the user entered. If the code is valid, the SDK authenticates and creates a session.
+2. **Verify code**: `useVerifyOTP` takes the `otpId`, `otpEncryptionTargetBundle`, and the code the user entered. If the code is valid, the SDK authenticates and creates a session.
 
 After verification, the Wagmi connector is connected and the user's address is available via `useAccount`.

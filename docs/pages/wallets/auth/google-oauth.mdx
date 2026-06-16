@@ -6,9 +6,21 @@
 
 Google OAuth lets users sign in with their Google account using a popup-based flow. The SDK handles the popup, redirect, and session creation automatically.
 
-By default, the Google OAuth flow uses a Zerodev-managed Google account for authentication. This allows you to get started quickly without any additional configuration. You can customize the OAuth flow by providing your own Google OAuth client ID and secret in the developer dashboard.
+By default, the Google OAuth flow uses ZeroDev-managed Google credentials. This lets you get started quickly without creating a Google OAuth client first.
 
-> **Important:** Using custom credentials requires creating a new project with no wallets already created. You cannot switch an existing project from the default Zerodev-managed OAuth setup to a custom client configuration.
+You can customize the OAuth flow by providing your own Google OAuth client ID and secret in the developer dashboard.
+
+:::warning[Choose OAuth credentials before onboarding users]
+If you switch from ZeroDev-managed credentials to your own Google credentials, create a new project and use a new project ID. Existing users from the old OAuth credential setup will not be able to log in to the new setup. A migration path is planned, but for now we recommend deciding this before users create wallets.
+:::
+
+## Dashboard requirements
+
+- Enable Google auth in the dashboard.
+- Allowlist your app origin in the dashboard access control list, including the local development port.
+- Allowlist the OAuth redirect URL used by your app. The SDK rejects redirect URLs that are not configured for the project.
+
+Google auth is enabled by default for new projects. If you do not want users to authenticate with Google, explicitly disable it in the dashboard.
 
 ## Hook
 
