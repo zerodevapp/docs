@@ -1428,18 +1428,30 @@ export default defineConfig({
     updateActive();
   }
 
-  function tryMount() {
-    mount();
-    // Retry briefly in case body isn't ready yet (very early script execution).
-    if (!document.getElementById('zd-pillar-bar')) {
-      var attempts = 0;
-      var interval = setInterval(function() {
+  // Re-insert whenever React's layout lacks the bar. mount() is a no-op when the
+  // bar already exists, so our own insertion can't loop the observer.
+  function watch() {
+    var observer = new MutationObserver(function() {
+      mount();
+      updateActive();
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+  }
+
+  // Mount only AFTER React has hydrated. Inserting our node into Vocs's
+  // server-rendered subtree before hydration makes the real DOM diverge from the
+  // server HTML, so React reports a hydration mismatch and regenerates the whole
+  // tree — wiping the bar (the visible flicker). Waiting for 'load' + two rAFs
+  // lets hydration finish first; the observer then keeps it mounted across
+  // React's own re-renders and SPA navigations.
+  function start() {
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
         mount();
-        if (document.getElementById('zd-pillar-bar') || ++attempts > 20) {
-          clearInterval(interval);
-        }
-      }, 50);
-    }
+        updateActive();
+        watch();
+      });
+    });
   }
 
   // Patch history APIs so SPA navigation triggers our updater.
@@ -1460,10 +1472,10 @@ export default defineConfig({
     updateActive();
   });
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', tryMount);
+  if (document.readyState === 'complete') {
+    start();
   } else {
-    tryMount();
+    window.addEventListener('load', start);
   }
 })();
 </script>`;
@@ -1515,10 +1527,21 @@ export default defineConfig({
 
   window.addEventListener('zd-locationchange', markExternalLinks);
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', start);
+  // Run only AFTER React hydrates. Marking anchors earlier writes
+  // data-zd-external-checked / target / rel onto the server-rendered HTML, so
+  // React sees attributes the server didn't emit and reports a hydration
+  // mismatch. 'load' + two rAFs lets hydration finish; the MutationObserver
+  // then handles every anchor React renders afterward.
+  function deferredStart() {
+    requestAnimationFrame(function() {
+      requestAnimationFrame(start);
+    });
+  }
+
+  if (document.readyState === 'complete') {
+    deferredStart();
   } else {
-    start();
+    window.addEventListener('load', deferredStart);
   }
 })();
 </script>`;
