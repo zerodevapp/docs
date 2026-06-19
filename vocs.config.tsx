@@ -1301,9 +1301,8 @@ export default defineConfig({
     margin-top: var(--zd-pillar-bar-height);
   }
 
-  /* Pillar bar: horizontal nav directly below the top header. Inserted in-flow
-     right after Vocs's gutterTop; pinned fixed on desktop (below), in-flow on
-     mobile (see media query). */
+  /* Pillar bar: fixed horizontal nav directly below the top header.
+     Mounted at document.body so it escapes the fixed-height gutterTop. */
   .zd-pillar-bar {
     position: fixed;
     top: var(--vocs-topNav_height, 56px);
@@ -1314,16 +1313,13 @@ export default defineConfig({
     align-items: center;
     gap: 4px;
     height: var(--zd-pillar-bar-height);
-    /* Start the bar AFTER the sidebar gutter instead of spanning full width.
-       Vocs's leftGutterWidth var is scoped to .vocs_DocsLayout (not visible on
-       body), so recompute the same max() here. Anchoring left to it keeps the
-       bar from overlapping the fixed sidebar (gutterLeft, z-index 14) — the
-       pillar bar's z-index 50 would otherwise paint over the sidebar's top. */
-    left: max(
+    /* Match Vocs's leftGutterWidth calc — that variable is scoped to
+       .vocs_DocsLayout so it's not visible on body. Recompute it here using
+       :root-scoped vars so the bar's content aligns with the search bar. */
+    padding-left: max(
       calc((100vw - var(--vocs-content_width)) / 2),
       var(--vocs-sidebar_width)
     );
-    padding-left: 0;
     padding-right: 24px;
     border-bottom: 1px solid var(--vocs-color_border);
     background: var(--vocs-color_background);
@@ -1353,21 +1349,12 @@ export default defineConfig({
     background: var(--vocs-color_backgroundIrisTint);
   }
 
-  /* On narrow viewports Vocs makes the top nav position:initial (in normal flow)
-     and shows a sticky section curtain below it. The bar is inserted in-flow
-     right after the top nav, so drop the fixed positioning and let it stack
-     naturally — a fixed bar would float over and hide that curtain. No sidebar
-     gutter here either, so span full width. */
+  /* On narrow viewports, Vocs hides the desktop top nav and shows a mobile drawer.
+     Hide the pillar bar there too — Vocs's mobile menu will surface pillar links via
+     the sidebar. */
   @media (max-width: 1080px) {
-    .zd-pillar-bar {
-      position: static;
-      padding-left: 8px;
-      /* Match the mobile top nav / curtain background (both use backgroundDark). */
-      background: var(--vocs-color_backgroundDark);
-    }
-    /* Top nav is in-flow on mobile, so content needs no extra top padding;
-       the in-flow bar already occupies its own space. */
-    .vocs_DocsLayout_content { padding-top: 0 !important; }
+    .zd-pillar-bar { display: none; }
+    .vocs_DocsLayout_content { padding-top: var(--vocs-topNav_height, 56px) !important; }
     .vocs_DocsLayout_gutterRight { margin-top: 0; }
   }
 </style>`;
@@ -1415,16 +1402,11 @@ export default defineConfig({
 
   function mount() {
     if (document.getElementById('zd-pillar-bar')) return;
-    // Insert as a sibling right after Vocs's top-nav container so the bar lives
-    // in normal document flow. On desktop (>=1081px) the CSS pins it with
-    // position:fixed (DOM position irrelevant). On mobile (<=1080px) Vocs makes
-    // the top nav position:initial (in-flow) and shows a sticky section curtain;
-    // an in-flow bar here sits correctly below the nav instead of a fixed bar
-    // floating over and hiding that curtain.
-    var gutterTop = document.querySelector('.vocs_DocsLayout_gutterTop');
-    if (!gutterTop || !gutterTop.parentNode) return;
+    if (!document.body) return;
     var bar = build();
-    gutterTop.parentNode.insertBefore(bar, gutterTop.nextSibling);
+    // Mount at body level so it escapes Vocs's fixed-height gutterTop container.
+    // The CSS pins it via position:fixed below the existing top nav.
+    document.body.appendChild(bar);
     updateActive();
   }
 
