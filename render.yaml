@@ -1,0 +1,683 @@
+# Render Blueprint — adopts the existing, manually-created "docs" static site.
+#
+# Adoption is by `name`: it MUST stay "docs" to match the live service, or Render
+# will spin up a suffixed duplicate instead of updating the real one. The service
+# settings below mirror the Render dashboard export.
+#
+# Routing note: Render applies the FIRST matching rule by priority, top to bottom
+# (https://render.com/docs/redirects-rewrites). The generated specific redirects
+# MUST therefore stay ABOVE the broad SPA-fallback rewrites at the bottom — else
+# `/sdk/*`, `/react/*`, `/smart-wallet/*` etc. would swallow ~145 legacy URLs into
+# the app shell (which then 404s). The redirect block is generated from
+# redirects.config.js by `npm run sync-redirects` — edit that file, not this one.
+version: "1"
+services:
+  - type: web
+    name: docs
+    runtime: static
+    repo: https://github.com/zerodevapp/docs
+    envVars:
+      - key: VITE_POSTHOG_HOST
+        sync: false
+      - key: VITE_POSTHOG
+        sync: false
+      - key: NODE_VERSION
+        sync: false
+    buildCommand: bun i; bun run build
+    staticPublishPath: ./docs/dist
+    domains:
+      - docs.zerodev.app
+      - new-docs.zerodev.app
+    autoDeployTrigger: commit
+    routes:
+      # >>> BEGIN GENERATED REDIRECTS — produced by `npm run sync-redirects`; do not edit by hand
+      - type: redirect
+        source: "/sdk/getting-started/quickstart"
+        destination: "/get-started/quickstart"
+      - type: redirect
+        source: "/sdk/getting-started/tutorial"
+        destination: "/get-started/quickstart"
+      - type: redirect
+        source: "/sdk/getting-started/tutorial-passkeys"
+        destination: "/onboarding/passkeys/tutorial"
+      - type: redirect
+        source: "/sdk/getting-started/quickstart-7702"
+        destination: "/get-started/eip-7702/quickstart"
+      - type: redirect
+        source: "/sdk/getting-started/quickstart-agentkit"
+        destination: "/smart-accounts/permissions/agentkit"
+      - type: redirect
+        source: "/sdk/getting-started/migration"
+        destination: "/advanced/migration"
+      - type: redirect
+        source: "/sdk/core-api/create-account"
+        destination: "/onboarding/create-a-smart-account"
+      - type: redirect
+        source: "/sdk/core-api/using-plugins"
+        destination: "/smart-accounts/use-plugins/overview"
+      - type: redirect
+        source: "/sdk/core-api/send-transactions"
+        destination: "/smart-accounts/send-transactions"
+      - type: redirect
+        source: "/sdk/core-api/batch-transactions"
+        destination: "/smart-accounts/batch-transactions"
+      - type: redirect
+        source: "/sdk/core-api/sponsor-gas"
+        destination: "/smart-accounts/sponsor-gas/evm"
+      - type: redirect
+        source: "/sdk/core-api/pay-gas-with-erc20s"
+        destination: "/smart-accounts/pay-gas-with-erc20s"
+      - type: redirect
+        source: "/sdk/core-api/sign-and-verify"
+        destination: "/smart-accounts/sign-and-verify"
+      - type: redirect
+        source: "/sdk/core-api/deploy-contract"
+        destination: "/smart-accounts/deploy-contract"
+      - type: redirect
+        source: "/sdk/core-api/delegatecall"
+        destination: "/smart-accounts/delegatecall"
+      - type: redirect
+        source: "/sdk/core-api/status"
+        destination: "/api-and-toolings/tools/status"
+      - type: redirect
+        source: "/sdk/core-api/debugger"
+        destination: "/api-and-toolings/tools/debugger"
+      - type: redirect
+        source: "/sdk/advanced/chain-abstraction"
+        destination: "/smart-accounts/chain-abstraction/overview"
+      - type: redirect
+        source: "/sdk/advanced/passkeys"
+        destination: "/onboarding/passkeys/overview"
+      - type: redirect
+        source: "/sdk/advanced/multisig"
+        destination: "/advanced/multisig"
+      - type: redirect
+        source: "/sdk/advanced/social-login"
+        destination: "/onboarding/social-login"
+      - type: redirect
+        source: "/sdk/advanced/session-keys"
+        destination: "/smart-accounts/permissions/session-keys"
+      - type: redirect
+        source: "/sdk/advanced/recovery"
+        destination: "/advanced/account-recovery/sdk-recovery"
+      - type: redirect
+        source: "/sdk/advanced/multi-chain-signing"
+        destination: "/smart-accounts/multi-chain-signing"
+      - type: redirect
+        source: "/sdk/advanced/key-storage"
+        destination: "/advanced/key-storage"
+      - type: redirect
+        source: "/sdk/advanced/defi"
+        destination: "/smart-accounts/defi"
+      - type: redirect
+        source: "/sdk/advanced/parallel-orders"
+        destination: "/smart-accounts/parallel-transactions"
+      - type: redirect
+        source: "/sdk/advanced/wallet-connect"
+        destination: "/advanced/wallet-connect"
+      - type: redirect
+        source: "/sdk/advanced/fallback-providers"
+        destination: "/advanced/fallback-providers"
+      - type: redirect
+        source: "/sdk/advanced/run-solidity-code-on-init"
+        destination: "/advanced/track-deployed-accounts"
+      - type: redirect
+        source: "/sdk/advanced/upgrade-kernel"
+        destination: "/advanced/upgrade-kernel"
+      - type: redirect
+        source: "/sdk/advanced/go-sdk"
+        destination: "/get-started/sdks/server-side/go"
+      - type: redirect
+        source: "/advanced/go-sdk"
+        destination: "/get-started/sdks/server-side/go"
+      - type: redirect
+        source: "/sdk/advanced/userop-builder-api"
+        destination: "/advanced/userop-builder-api"
+      - type: redirect
+        source: "/sdk/advanced/supported-base-tokens"
+        destination: "/smart-accounts/chain-abstraction/supported-base-tokens"
+      - type: redirect
+        source: "/sdk/advanced/supported-defi-tokens"
+        destination: "/smart-accounts/chain-abstraction/supported-defi-tokens"
+      - type: redirect
+        source: "/sdk/permissions/intro"
+        destination: "/smart-accounts/permissions/intro"
+      - type: redirect
+        source: "/sdk/permissions/transaction-automation"
+        destination: "/smart-accounts/permissions/transaction-automation"
+      - type: redirect
+        source: "/sdk/permissions/install-with-init-config"
+        destination: "/smart-accounts/permissions/install-with-init-config"
+      - type: redirect
+        source: "/sdk/permissions/1-click-trading"
+        destination: "/smart-accounts/permissions/1-click-trading"
+      - type: redirect
+        source: "/sdk/permissions/signers/ecdsa"
+        destination: "/smart-accounts/permissions/signers/ecdsa"
+      - type: redirect
+        source: "/sdk/permissions/signers/passkeys"
+        destination: "/smart-accounts/permissions/signers/passkeys"
+      - type: redirect
+        source: "/sdk/permissions/signers/multisig"
+        destination: "/smart-accounts/permissions/signers/multisig"
+      - type: redirect
+        source: "/sdk/permissions/signers/build-your-own"
+        destination: "/smart-accounts/permissions/signers/build-your-own"
+      - type: redirect
+        source: "/sdk/permissions/policies/sudo"
+        destination: "/smart-accounts/permissions/policies/sudo"
+      - type: redirect
+        source: "/sdk/permissions/policies/call"
+        destination: "/smart-accounts/permissions/policies/call"
+      - type: redirect
+        source: "/sdk/permissions/policies/gas"
+        destination: "/smart-accounts/permissions/policies/gas"
+      - type: redirect
+        source: "/sdk/permissions/policies/signature"
+        destination: "/smart-accounts/permissions/policies/signature"
+      - type: redirect
+        source: "/sdk/permissions/policies/rate-limit"
+        destination: "/smart-accounts/permissions/policies/rate-limit"
+      - type: redirect
+        source: "/sdk/permissions/policies/timestamp"
+        destination: "/smart-accounts/permissions/policies/timestamp"
+      - type: redirect
+        source: "/sdk/permissions/policies/build-your-own"
+        destination: "/smart-accounts/permissions/policies/build-your-own"
+      - type: redirect
+        source: "/sdk/permissions/actions/build-your-own"
+        destination: "/smart-accounts/permissions/actions/build-your-own"
+      - type: redirect
+        source: "/sdk/signers/intro"
+        destination: "/onboarding/auth-providers"
+      - type: redirect
+        source: "/sdk/signers/dynamic"
+        destination: "/onboarding/dynamic"
+      - type: redirect
+        source: "/sdk/signers/privy"
+        destination: "/onboarding/privy"
+      - type: redirect
+        source: "/sdk/signers/magic"
+        destination: "/onboarding/magic"
+      - type: redirect
+        source: "/sdk/signers/web3auth"
+        destination: "/onboarding/web3auth"
+      - type: redirect
+        source: "/sdk/signers/smart-wallet"
+        destination: "/onboarding/smart-wallet"
+      - type: redirect
+        source: "/sdk/signers/portal"
+        destination: "/onboarding/portal"
+      - type: redirect
+        source: "/sdk/signers/turnkey"
+        destination: "/onboarding/turnkey"
+      - type: redirect
+        source: "/sdk/signers/fireblocks"
+        destination: "/onboarding/fireblocks"
+      - type: redirect
+        source: "/sdk/signers/capsule"
+        destination: "/onboarding/capsule"
+      - type: redirect
+        source: "/sdk/signers/lit-protocol"
+        destination: "/onboarding/lit-protocol"
+      - type: redirect
+        source: "/sdk/signers/particle"
+        destination: "/onboarding/particle"
+      - type: redirect
+        source: "/sdk/signers/dfns"
+        destination: "/onboarding/dfns"
+      - type: redirect
+        source: "/sdk/signers/arcana"
+        destination: "/onboarding/arcana"
+      - type: redirect
+        source: "/sdk/signers/eoa"
+        destination: "/onboarding/eoa"
+      - type: redirect
+        source: "/sdk/signers/custom-signer"
+        destination: "/onboarding/custom-signer"
+      - type: redirect
+        source: "/sdk/solana/sponsor-gas"
+        destination: "/smart-accounts/sponsor-gas/solana"
+      - type: redirect
+        source: "/sdk/infra/intro"
+        destination: "/api-and-toolings/infrastructure/choose-an-infra-provider"
+      - type: redirect
+        source: "/sdk/infra/zerodev"
+        destination: "/api-and-toolings/infrastructure/zerodev"
+      - type: redirect
+        source: "/sdk/infra/pimlico"
+        destination: "/api-and-toolings/infrastructure/pimlico"
+      - type: redirect
+        source: "/sdk/infra/coinbase"
+        destination: "/api-and-toolings/infrastructure/coinbase"
+      - type: redirect
+        source: "/sdk/presets/intro"
+        destination: "/api-and-toolings/presets/intro"
+      - type: redirect
+        source: "/sdk/presets/zerodev"
+        destination: "/api-and-toolings/presets/zerodev"
+      - type: redirect
+        source: "/sdk/faqs/chains"
+        destination: "/api-and-toolings/faqs/chains"
+      - type: redirect
+        source: "/sdk/faqs/audits"
+        destination: "/api-and-toolings/faqs/audits"
+      - type: redirect
+        source: "/sdk/faqs/debug-userop"
+        destination: "/api-and-toolings/faqs/debug-userop"
+      - type: redirect
+        source: "/sdk/faqs/use-with-ethers"
+        destination: "/api-and-toolings/faqs/use-with-ethers"
+      - type: redirect
+        source: "/sdk/faqs/use-with-gelato"
+        destination: "/api-and-toolings/faqs/use-with-gelato"
+      - type: redirect
+        source: "/sdk/faqs/use-with-react-native"
+        destination: "/api-and-toolings/faqs/use-with-react-native"
+      - type: redirect
+        source: "/meta-infra/intro"
+        destination: "/api-and-toolings/infrastructure/intro"
+      - type: redirect
+        source: "/meta-infra/gas-policies"
+        destination: "/api-and-toolings/infrastructure/gas-policies"
+      - type: redirect
+        source: "/meta-infra/custom-gas-policies"
+        destination: "/api-and-toolings/infrastructure/custom-gas-policies"
+      - type: redirect
+        source: "/meta-infra/rpcs"
+        destination: "/api-and-toolings/infrastructure/rpcs"
+      - type: redirect
+        source: "/meta-infra/api"
+        destination: "/api-and-toolings/infrastructure/api"
+      - type: redirect
+        source: "/recovery-flow/intro"
+        destination: "/advanced/account-recovery/flow-intro"
+      - type: redirect
+        source: "/recovery-flow/setup"
+        destination: "/advanced/account-recovery/flow-setup"
+      - type: redirect
+        source: "/recovery-flow/portal"
+        destination: "/advanced/account-recovery/portal"
+      - type: redirect
+        source: "/smart-routing-address"
+        destination: "/onramp/smart-routing-address"
+      - type: redirect
+        source: "/global-address"
+        destination: "/onramp/smart-routing-address"
+      - type: redirect
+        source: "/magic-account"
+        destination: "/smart-accounts/chain-abstraction/overview"
+      - type: redirect
+        source: "/react/getting-started"
+        destination: "/advanced/react-hooks/getting-started"
+      - type: redirect
+        source: "/react/use-balance"
+        destination: "/advanced/react-hooks/use-balance"
+      - type: redirect
+        source: "/react/use-chainid"
+        destination: "/advanced/react-hooks/use-chainid"
+      - type: redirect
+        source: "/react/use-chains"
+        destination: "/advanced/react-hooks/use-chains"
+      - type: redirect
+        source: "/react/use-create-basic-session"
+        destination: "/advanced/react-hooks/use-create-basic-session"
+      - type: redirect
+        source: "/react/use-create-kernelclient-eoa"
+        destination: "/advanced/react-hooks/use-create-kernelclient-eoa"
+      - type: redirect
+        source: "/react/use-create-kernelclient-passkey"
+        destination: "/advanced/react-hooks/use-create-kernelclient-passkey"
+      - type: redirect
+        source: "/react/use-create-kernelclient-social"
+        destination: "/advanced/react-hooks/use-create-kernelclient-social"
+      - type: redirect
+        source: "/react/use-create-session"
+        destination: "/advanced/react-hooks/use-create-session"
+      - type: redirect
+        source: "/react/use-disconnect-kernelclient"
+        destination: "/advanced/react-hooks/use-disconnect-kernelclient"
+      - type: redirect
+        source: "/react/use-kernelclient"
+        destination: "/advanced/react-hooks/use-kernelclient"
+      - type: redirect
+        source: "/react/use-send-transaction"
+        destination: "/advanced/react-hooks/use-send-transaction"
+      - type: redirect
+        source: "/react/use-send-transaction-with-session"
+        destination: "/advanced/react-hooks/use-send-transaction-with-session"
+      - type: redirect
+        source: "/react/use-send-useroperation"
+        destination: "/advanced/react-hooks/use-send-useroperation"
+      - type: redirect
+        source: "/react/use-send-useroperation-with-session"
+        destination: "/advanced/react-hooks/use-send-useroperation-with-session"
+      - type: redirect
+        source: "/react/use-sessions"
+        destination: "/advanced/react-hooks/use-sessions"
+      - type: redirect
+        source: "/react/use-session-kernelclient"
+        destination: "/advanced/react-hooks/use-session-kernelclient"
+      - type: redirect
+        source: "/react/use-set-kernelclient"
+        destination: "/advanced/react-hooks/use-set-kernelclient"
+      - type: redirect
+        source: "/react/use-switch-chain"
+        destination: "/advanced/react-hooks/use-switch-chain"
+      - type: redirect
+        source: "/react/use-wallet-connect"
+        destination: "/advanced/react-hooks/use-wallet-connect"
+      - type: redirect
+        source: "/smart-wallet/which-sdk"
+        destination: "/onboarding/create-a-smart-account"
+      - type: redirect
+        source: "/smart-wallet/quickstart-core"
+        destination: "/get-started/quickstart"
+      - type: redirect
+        source: "/smart-wallet/quickstart-react"
+        destination: "/get-started/quickstart"
+      - type: redirect
+        source: "/smart-wallet/quickstart-capabilities"
+        destination: "/get-started/quickstart"
+      - type: redirect
+        source: "/smart-wallet/creating-wallets"
+        destination: "/onboarding/create-a-smart-account"
+      - type: redirect
+        source: "/smart-wallet/setting-up-zerodev-projects"
+        destination: "/"
+      - type: redirect
+        source: "/smart-wallet/sending-transactions"
+        destination: "/smart-accounts/send-transactions"
+      - type: redirect
+        source: "/smart-wallet/batching-transactions"
+        destination: "/smart-accounts/batch-transactions"
+      - type: redirect
+        source: "/smart-wallet/pay-gas-in-erc20s"
+        destination: "/smart-accounts/pay-gas-with-erc20s"
+      - type: redirect
+        source: "/smart-wallet/sponsoring-gas"
+        destination: "/smart-accounts/sponsor-gas/evm"
+      - type: redirect
+        source: "/smart-wallet/delegatecall"
+        destination: "/smart-accounts/delegatecall"
+      - type: redirect
+        source: "/smart-wallet/multisig"
+        destination: "/advanced/multisig"
+      - type: redirect
+        source: "/smart-wallet/account-recovery"
+        destination: "/advanced/account-recovery/sdk-recovery"
+      - type: redirect
+        source: "/smart-wallet/importing-assets"
+        destination: "/onboarding/create-a-smart-account"
+      - type: redirect
+        source: "/smart-wallet/defi-integrations"
+        destination: "/smart-accounts/defi"
+      - type: redirect
+        source: "/smart-wallet/one-click-trading"
+        destination: "/smart-accounts/permissions/transaction-automation"
+      - type: redirect
+        source: "/smart-wallet/parallel-transactions"
+        destination: "/smart-accounts/parallel-transactions"
+      - type: redirect
+        source: "/smart-wallet/transaction-automation"
+        destination: "/smart-accounts/permissions/transaction-automation"
+      - type: redirect
+        source: "/smart-wallet/wallet-connect"
+        destination: "/advanced/wallet-connect"
+      - type: redirect
+        source: "/smart-wallet/infra-fallbacks"
+        destination: "/advanced/fallback-providers"
+      - type: redirect
+        source: "/smart-wallet/code-examples"
+        destination: "/"
+      - type: redirect
+        source: "/smart-wallet/permissions/intro"
+        destination: "/smart-accounts/permissions/intro"
+      - type: redirect
+        source: "/smart-wallet/permissions/transaction-automation"
+        destination: "/smart-accounts/permissions/transaction-automation"
+      - type: redirect
+        source: "/smart-wallet/permissions/signers/ecdsa"
+        destination: "/smart-accounts/permissions/signers/ecdsa"
+      - type: redirect
+        source: "/smart-wallet/permissions/signers/passkeys"
+        destination: "/smart-accounts/permissions/signers/passkeys"
+      - type: redirect
+        source: "/smart-wallet/permissions/signers/multisig"
+        destination: "/smart-accounts/permissions/signers/multisig"
+      - type: redirect
+        source: "/smart-wallet/permissions/signers/build-your-own"
+        destination: "/smart-accounts/permissions/signers/build-your-own"
+      - type: redirect
+        source: "/smart-wallet/permissions/policies/sudo"
+        destination: "/smart-accounts/permissions/policies/sudo"
+      - type: redirect
+        source: "/smart-wallet/permissions/policies/call"
+        destination: "/smart-accounts/permissions/policies/call"
+      - type: redirect
+        source: "/smart-wallet/permissions/policies/gas"
+        destination: "/smart-accounts/permissions/policies/gas"
+      - type: redirect
+        source: "/smart-wallet/permissions/policies/signature"
+        destination: "/smart-accounts/permissions/policies/signature"
+      - type: redirect
+        source: "/smart-wallet/permissions/policies/rate-limit"
+        destination: "/smart-accounts/permissions/policies/rate-limit"
+      - type: redirect
+        source: "/smart-wallet/permissions/policies/timestamp"
+        destination: "/smart-accounts/permissions/policies/timestamp"
+      - type: redirect
+        source: "/smart-wallet/permissions/policies/build-your-own"
+        destination: "/smart-accounts/permissions/policies/build-your-own"
+      - type: redirect
+        source: "/smart-wallet/permissions/actions/build-your-own"
+        destination: "/smart-accounts/permissions/actions/build-your-own"
+      - type: redirect
+        source: "/smart-wallet/permissions/1-click-trading"
+        destination: "/smart-accounts/permissions/1-click-trading"
+      - type: redirect
+        source: "/smart-accounts/create-a-smart-account"
+        destination: "/onboarding/create-a-smart-account"
+      - type: redirect
+        source: "/smart-accounts/authentication/social-login"
+        destination: "/onboarding/social-login"
+      - type: redirect
+        source: "/smart-accounts/authentication/eoa"
+        destination: "/onboarding/eoa"
+      - type: redirect
+        source: "/smart-accounts/authentication/custom-signer"
+        destination: "/onboarding/custom-signer"
+      - type: redirect
+        source: "/smart-accounts/authentication/dynamic"
+        destination: "/onboarding/dynamic"
+      - type: redirect
+        source: "/smart-accounts/authentication/privy"
+        destination: "/onboarding/privy"
+      - type: redirect
+        source: "/smart-accounts/authentication/magic"
+        destination: "/onboarding/magic"
+      - type: redirect
+        source: "/smart-accounts/authentication/web3auth"
+        destination: "/onboarding/web3auth"
+      - type: redirect
+        source: "/smart-accounts/authentication/particle"
+        destination: "/onboarding/particle"
+      - type: redirect
+        source: "/smart-accounts/authentication/arcana"
+        destination: "/onboarding/arcana"
+      - type: redirect
+        source: "/smart-accounts/authentication/turnkey"
+        destination: "/onboarding/turnkey"
+      - type: redirect
+        source: "/smart-accounts/authentication/fireblocks"
+        destination: "/onboarding/fireblocks"
+      - type: redirect
+        source: "/smart-accounts/authentication/dfns"
+        destination: "/onboarding/dfns"
+      - type: redirect
+        source: "/smart-accounts/authentication/lit-protocol"
+        destination: "/onboarding/lit-protocol"
+      - type: redirect
+        source: "/smart-accounts/authentication/capsule"
+        destination: "/onboarding/capsule"
+      - type: redirect
+        source: "/smart-accounts/authentication/portal"
+        destination: "/onboarding/portal"
+      - type: redirect
+        source: "/smart-accounts/authentication/smart-wallet"
+        destination: "/onboarding/smart-wallet"
+      - type: redirect
+        source: "/smart-accounts/use-plugins/signers-intro"
+        destination: "/onboarding/auth-providers"
+      - type: redirect
+        source: "/smart-accounts/use-plugins/passkeys/overview"
+        destination: "/onboarding/passkeys/overview"
+      - type: redirect
+        source: "/smart-accounts/use-plugins/passkeys/tutorial"
+        destination: "/onboarding/passkeys/tutorial"
+      - type: redirect
+        source: "/smart-accounts/use-plugins/multisig"
+        destination: "/advanced/multisig"
+      - type: redirect
+        source: "/smart-accounts/account-recovery/sdk-recovery"
+        destination: "/advanced/account-recovery/sdk-recovery"
+      - type: redirect
+        source: "/smart-accounts/account-recovery/flow-intro"
+        destination: "/advanced/account-recovery/flow-intro"
+      - type: redirect
+        source: "/smart-accounts/account-recovery/flow-setup"
+        destination: "/advanced/account-recovery/flow-setup"
+      - type: redirect
+        source: "/smart-accounts/account-recovery/portal"
+        destination: "/advanced/account-recovery/portal"
+      - type: redirect
+        source: "/smart-accounts/eip-7702/quickstart"
+        destination: "/get-started/eip-7702/quickstart"
+      - type: redirect
+        source: "/cross-chain/smart-routing-address"
+        destination: "/onramp/smart-routing-address"
+      - type: redirect
+        source: "/cross-chain/chain-abstraction/overview"
+        destination: "/smart-accounts/chain-abstraction/overview"
+      - type: redirect
+        source: "/cross-chain/chain-abstraction/supported-base-tokens"
+        destination: "/smart-accounts/chain-abstraction/supported-base-tokens"
+      - type: redirect
+        source: "/cross-chain/chain-abstraction/supported-defi-tokens"
+        destination: "/smart-accounts/chain-abstraction/supported-defi-tokens"
+      - type: redirect
+        source: "/advanced/defi"
+        destination: "/smart-accounts/defi"
+      - type: redirect
+        source: "/advanced/multi-chain-signing"
+        destination: "/smart-accounts/multi-chain-signing"
+      - type: redirect
+        source: "/advanced/parallel-transactions"
+        destination: "/smart-accounts/parallel-transactions"
+      - type: redirect
+        source: "/advanced/deploy-contract"
+        destination: "/smart-accounts/deploy-contract"
+      - type: redirect
+        source: "/advanced/delegatecall"
+        destination: "/smart-accounts/delegatecall"
+      - type: redirect
+        source: "/resources/infrastructure/intro"
+        destination: "/api-and-toolings/infrastructure/intro"
+      - type: redirect
+        source: "/resources/infrastructure/gas-policies"
+        destination: "/api-and-toolings/infrastructure/gas-policies"
+      - type: redirect
+        source: "/resources/infrastructure/custom-gas-policies"
+        destination: "/api-and-toolings/infrastructure/custom-gas-policies"
+      - type: redirect
+        source: "/resources/infrastructure/rpcs"
+        destination: "/api-and-toolings/infrastructure/rpcs"
+      - type: redirect
+        source: "/resources/infrastructure/api"
+        destination: "/api-and-toolings/infrastructure/api"
+      - type: redirect
+        source: "/resources/infrastructure/choose-an-infra-provider"
+        destination: "/api-and-toolings/infrastructure/choose-an-infra-provider"
+      - type: redirect
+        source: "/resources/infrastructure/zerodev"
+        destination: "/api-and-toolings/infrastructure/zerodev"
+      - type: redirect
+        source: "/resources/infrastructure/pimlico"
+        destination: "/api-and-toolings/infrastructure/pimlico"
+      - type: redirect
+        source: "/resources/infrastructure/coinbase"
+        destination: "/api-and-toolings/infrastructure/coinbase"
+      - type: redirect
+        source: "/resources/presets/intro"
+        destination: "/api-and-toolings/presets/intro"
+      - type: redirect
+        source: "/resources/presets/zerodev"
+        destination: "/api-and-toolings/presets/zerodev"
+      - type: redirect
+        source: "/resources/tools/status"
+        destination: "/api-and-toolings/tools/status"
+      - type: redirect
+        source: "/resources/tools/debugger"
+        destination: "/api-and-toolings/tools/debugger"
+      - type: redirect
+        source: "/resources/faqs/chains"
+        destination: "/api-and-toolings/faqs/chains"
+      - type: redirect
+        source: "/resources/faqs/audits"
+        destination: "/api-and-toolings/faqs/audits"
+      - type: redirect
+        source: "/resources/faqs/debug-userop"
+        destination: "/api-and-toolings/faqs/debug-userop"
+      - type: redirect
+        source: "/resources/faqs/use-with-ethers"
+        destination: "/api-and-toolings/faqs/use-with-ethers"
+      - type: redirect
+        source: "/resources/faqs/use-with-gelato"
+        destination: "/api-and-toolings/faqs/use-with-gelato"
+      - type: redirect
+        source: "/resources/faqs/use-with-react-native"
+        destination: "/api-and-toolings/faqs/use-with-react-native"
+      # <<< END GENERATED REDIRECTS
+      # ---- hand-maintained; keep BELOW the generated redirects (first match wins) ----
+      # Legacy Magic Account subpaths (the exact /magic-account is in the block above).
+      - type: redirect
+        source: "/magic-account/*"
+        destination: "/smart-accounts/chain-abstraction/overview"
+      # SPA fallbacks: serve the app shell for any unmapped legacy path under these
+      # prefixes so it gets the in-app 404 rather than Render's raw 404. Keep last.
+      - type: rewrite
+        source: "/sdk/*"
+        destination: "/index.html"
+      - type: rewrite
+        source: "/sdk"
+        destination: "/index.html"
+      - type: rewrite
+        source: "/meta-infra/*"
+        destination: "/index.html"
+      - type: rewrite
+        source: "/meta-infra"
+        destination: "/index.html"
+      - type: rewrite
+        source: "/recovery-flow/*"
+        destination: "/index.html"
+      - type: rewrite
+        source: "/recovery-flow"
+        destination: "/index.html"
+      - type: rewrite
+        source: "/blog/*"
+        destination: "/index.html"
+      - type: rewrite
+        source: "/blog"
+        destination: "/index.html"
+      - type: rewrite
+        source: "/react/*"
+        destination: "/index.html"
+      - type: rewrite
+        source: "/react"
+        destination: "/index.html"
+      - type: rewrite
+        source: "/smart-wallet/*"
+        destination: "/index.html"
+      - type: rewrite
+        source: "/smart-wallet"
+        destination: "/index.html"

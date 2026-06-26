@@ -5,8 +5,8 @@ import { redirects } from "./redirects.config.js";
 dotenv.config();
 
 // Lookup table for the dev-server redirect middleware below. The redirect list
-// lives in redirects.config.js (single source of truth) and is mirrored into
-// vercel.json for production by `npm run sync-redirects`.
+// lives in redirects.config.js (single source of truth) and is spliced into
+// render.yaml for production by `npm run sync-redirects`.
 const REDIRECT_MAP: Record<string, string> = Object.fromEntries(
   redirects.map((r) => [r.from, r.to]),
 );
