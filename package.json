@@ -3,8 +3,8 @@
   "type": "module",
   "scripts": {
     "dev": "vocs dev",
-    "sync-redirects": "node scripts/sync-vercel-redirects.mjs",
-    "prebuild": "node scripts/sync-vercel-redirects.mjs",
+    "sync-redirects": "node scripts/sync-render-redirects.mjs",
+    "prebuild": "node scripts/sync-render-redirects.mjs",
     "build": "vocs build",
     "preview": "vocs preview",
     "format": "prettier --write ."

@@ -3,10 +3,10 @@
  *
  * Single source of truth for redirects. Consumed in two places:
  *   - the dev-server redirect middleware in vocs.config.tsx (local `vocs dev`)
- *   - `npm run sync-redirects`, which mirrors these into vercel.json so Vercel
+ *   - `npm run sync-redirects`, which splices these into render.yaml so Render
  *     serves them in production (Vocs has no build-time redirect support).
  *
- * After editing, run `npm run sync-redirects` and commit the updated vercel.json.
+ * After editing, run `npm run sync-redirects` and commit the updated render.yaml.
  *
  * Follows the OffchainLabs/arbitrum-docs redirects.config.js pattern. Kept as a
  * `.js` module (types in redirects.config.d.ts) so it resolves natively in both
@@ -127,6 +127,11 @@ export const redirects = [
   // Smart Routing Address (and global-address duplicate)
   { from: "/smart-routing-address", to: "/onramp/smart-routing-address" },
   { from: "/global-address", to: "/onramp/smart-routing-address" },
+
+  // Magic Account (legacy) → Chain Abstraction. Was a manual Render redirect to
+  // /sdk/advanced/chain-abstraction, itself now legacy; collapse the hop straight
+  // to the live page. (/magic-account/* subpaths are handled in render.yaml.)
+  { from: "/magic-account", to: "/smart-accounts/chain-abstraction/overview" },
 
   // Embedded Wallet docs live at /wallets/* (alpha — unlisted in sidebars).
 
