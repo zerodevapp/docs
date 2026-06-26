@@ -1,0 +1,35 @@
+name: redirects-in-sync
+
+# Guarantees vercel.json matches redirects.config.js (the single source of
+# truth). Vercel reads vercel.json at the start of a deployment, so a commit
+# that edits redirects.config.js without regenerating vercel.json would ship
+# stale production redirects. This job regenerates the file and fails if it
+# differs from what's committed.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # No `npm install` needed: the sync script uses only Node built-ins and
+      # imports the local redirects.config.js.
+      - name: Regenerate vercel.json from redirects.config.js
+        run: node scripts/sync-vercel-redirects.mjs
+
+      - name: Fail if vercel.json is out of date
+        run: |
+          if [ -n "$(git status --porcelain vercel.json)" ]; then
+            echo "::error::vercel.json is out of sync with redirects.config.js. Run 'npm run sync-redirects' and commit the result."
+            git --no-pager diff vercel.json
+            exit 1
+          fi
+          echo "vercel.json is in sync with redirects.config.js."
