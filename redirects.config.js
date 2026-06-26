@@ -3,10 +3,10 @@
  *
  * Single source of truth for redirects. Consumed in two places:
  *   - the dev-server redirect middleware in vocs.config.tsx (local `vocs dev`)
- *   - `npm run sync-redirects`, which splices these into render.yaml so Render
- *     serves them in production (Vocs has no build-time redirect support).
+ *   - server.mjs, which applies them on the Render web service in production.
  *
- * After editing, run `npm run sync-redirects` and commit the updated render.yaml.
+ * Both do a direct lookup against this list, so a redirect added here takes
+ * effect in dev and prod with no extra build/sync steps.
  *
  * Follows the OffchainLabs/arbitrum-docs redirects.config.js pattern. Kept as a
  * `.js` module (types in redirects.config.d.ts) so it resolves natively in both
