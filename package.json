@@ -12,6 +12,7 @@
     "dotenv": "^17.2.3",
     "react": "19",
     "react-dom": "19",
+    "sirv": "^3.0.2",
     "vocs": "1.0.1"
   },
   "devDependencies": {

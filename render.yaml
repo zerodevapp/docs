@@ -4,7 +4,7 @@ version: "1"
 services:
   - type: web
     runtime: node
-    name: docs
+    name: docs-dynamic
     repo: https://github.com/zerodevapp/docs
     plan: starter
     buildCommand: npm install && npm run build
