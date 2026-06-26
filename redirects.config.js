@@ -3,10 +3,13 @@
  *
  * Single source of truth for redirects. Consumed in two places:
  *   - the dev-server redirect middleware in vocs.config.tsx (local `vocs dev`)
- *   - `npm run sync-redirects`, which splices these into render.yaml so Render
- *     serves them in production (Vocs has no build-time redirect support).
+ *   - scripts/sync-render-routes.mjs, which consolidates these (collapsing
+ *     prefix groups into wildcard rules to fit Render's 200-route cap) and
+ *     applies them to the Render static site via the API. Routes are NOT in
+ *     render.yaml — Render Blueprints merge routes and never delete them.
  *
- * After editing, run `npm run sync-redirects` and commit the updated render.yaml.
+ * To change redirects: edit this file and open a PR. CI validates the resulting
+ * route count (<=200); merging to main applies them to Render.
  *
  * Follows the OffchainLabs/arbitrum-docs redirects.config.js pattern. Kept as a
  * `.js` module (types in redirects.config.d.ts) so it resolves natively in both

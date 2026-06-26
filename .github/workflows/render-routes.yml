@@ -1,0 +1,46 @@
+name: render-routes
+
+# Routes for the Render static site are managed in code (redirects.config.js),
+# not in the Blueprint — Render Blueprints merge routes, never delete them, and
+# cap a service at 200 routes. This workflow validates the consolidated route
+# list on every PR, and applies it to Render via the API on pushes to main.
+#
+# Requires two repo secrets for the apply step:
+#   RENDER_API_KEY     - a Render API key (Account Settings -> API Keys)
+#   RENDER_SERVICE_ID  - the prod "docs" service id (srv-...)
+
+on:
+  pull_request:
+    paths:
+      - redirects.config.js
+      - scripts/sync-render-routes.mjs
+      - .github/workflows/render-routes.yml
+  push:
+    branches: [main]
+    paths:
+      - redirects.config.js
+      - scripts/sync-render-routes.mjs
+      - .github/workflows/render-routes.yml
+
+jobs:
+  routes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # Build + validate. No secrets needed: uses only Node built-ins and the
+      # local redirects.config.js. Fails if the consolidated set exceeds Render's
+      # 200-route cap or has duplicate sources.
+      - name: Validate routes
+        run: node scripts/sync-render-routes.mjs
+
+      # Apply to Render only on pushes to main.
+      - name: Apply routes to Render
+        if: github.ref == 'refs/heads/main'
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+        run: node scripts/sync-render-routes.mjs --apply
