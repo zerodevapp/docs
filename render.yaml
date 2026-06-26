@@ -1,17 +1,22 @@
-# TEST dynamic web service (on the fork) — validates serving the Vocs build from
-# a Node web service with redirects handled in server.mjs (no 200-route cap, no
-# Blueprint route merging). Standalone: fork repo, distinct name, no prod
-# domains, free plan.
-#
-# For PROD, this becomes: name "docs", repo zerodevapp/docs, the real domains,
-# and plan "starter" (always-on; the free plan spins down after 15m idle).
+# Render Blueprint for the production docs site (dynamic web service).
+# Redirects are handled in server.mjs — no 200-route cap, no Blueprint route merge.
 version: "1"
 services:
   - type: web
     runtime: node
-    name: docs-dynamic-test
-    repo: https://github.com/a-thomas-22/docs
-    plan: free
+    name: docs
+    repo: https://github.com/zerodevapp/docs
+    plan: starter
     buildCommand: npm install && npm run build
     startCommand: npm start
+    envVars:
+      - key: VITE_POSTHOG_HOST
+        sync: false
+      - key: VITE_POSTHOG
+        sync: false
+      - key: NODE_VERSION
+        sync: false
+    domains:
+      - docs.zerodev.app
+      - new-docs.zerodev.app
     autoDeployTrigger: commit
