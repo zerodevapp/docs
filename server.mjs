@@ -21,6 +21,10 @@ const assets = sirv(DIR, {
   etag: true,
   gzip: true,
   brotli: true,
+  // Vocs writes its search index to docs/dist/.vocs/search-index-<hash>.json and
+  // the client fetches it from /.vocs/...; sirv skips dot-directories unless this
+  // is set, which 404'd the index and broke site search.
+  dotfiles: true,
   setHeaders(res, pathname) {
     if (pathname.startsWith("/assets/")) {
       res.setHeader("cache-control", "public, max-age=31536000, immutable");
