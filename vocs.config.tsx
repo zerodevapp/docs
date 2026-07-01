@@ -441,8 +441,7 @@ export default defineConfig({
         ],
       },
     ],
-    // Embedded Wallet (alpha) — not advertised in the public pillar bar.
-    // Lives at /wallets/* and is only navigable for users who know the URL.
+    // Embedded Wallet.
     "/wallets": [
       {
         text: "Embedded Wallet",
@@ -1084,6 +1083,7 @@ export default defineConfig({
     { href: '/onboarding/create-a-smart-account', text: 'Onboarding', match: function(p) { return p.indexOf('/onboarding') === 0; } },
     { href: '/onramp/smart-routing-address', text: 'Onramp', match: function(p) { return p.indexOf('/onramp') === 0; } },
     { href: '/smart-accounts/send-transactions', text: 'Smart Account', match: function(p) { return p.indexOf('/smart-accounts') === 0; } },
+    { href: '/wallets', text: 'Wallets', match: function(p) { return p.indexOf('/wallets') === 0; } },
     { href: '/advanced/migration', text: 'Advanced', match: function(p) { return p.indexOf('/advanced') === 0; } },
     { href: '/api-and-toolings/infrastructure/gas-policies', text: 'API & Tooling', match: function(p) { return p.indexOf('/api-and-toolings') === 0; } }
   ];
