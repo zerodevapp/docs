@@ -60,24 +60,6 @@ function SendMagicLink() {
 
 **Required.** The URL the user will be redirected to after clicking the magic link. This should be a page in your app that calls [`useVerifyMagicLink`](/wallets/hooks/use-verify-magic-link).
 
-### otpCodeCustomization
-
-`{ length?: 6 | 7 | 8 | 9; alphanumeric?: boolean } | undefined`
-
-Optional customization for the generated verification code.
-
-#### length
-
-`6 | 7 | 8 | 9 | undefined`
-
-The number of characters in the code. Defaults to `6`.
-
-#### alphanumeric
-
-`boolean | undefined`
-
-Whether to use alphanumeric characters instead of digits only. Defaults to `false`.
-
 ## Return Types
 
 [TanStack Query mutation docs](https://tanstack.com/query/v5/docs/react/reference/useMutation)

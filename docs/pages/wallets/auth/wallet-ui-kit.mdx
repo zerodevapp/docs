@@ -1,0 +1,190 @@
+# Wallet UI Kit [Optional prebuilt login UI]
+
+Use the Wallet UI Kit when you want a prebuilt login flow instead of building your own forms with the authentication hooks. The kit still uses a Wagmi-compatible ZeroDev connector, so after the user signs in you can use standard Wagmi hooks such as `useAccount`, `useSignMessage`, and `useSendTransaction`.
+
+For a fully custom UI, use the hook-based authentication pages instead:
+
+- [Passkeys](/wallets/auth/passkeys)
+- [Email OTP](/wallets/auth/email-otp)
+- [Magic Link](/wallets/auth/magic-link)
+- [Google OAuth](/wallets/auth/google-oauth)
+
+## Install packages
+
+:::code-group
+
+```bash [npm]
+npm i @zerodev/wallet-react-kit @zerodev/wallet-react @zerodev/wallet-core wagmi viem @tanstack/react-query
+```
+
+```bash [yarn]
+yarn add @zerodev/wallet-react-kit @zerodev/wallet-react @zerodev/wallet-core wagmi viem @tanstack/react-query
+```
+
+```bash [pnpm]
+pnpm i @zerodev/wallet-react-kit @zerodev/wallet-react @zerodev/wallet-core wagmi viem @tanstack/react-query
+```
+
+```bash [bun]
+bun add @zerodev/wallet-react-kit @zerodev/wallet-react @zerodev/wallet-core wagmi viem @tanstack/react-query
+```
+
+:::
+
+## Configure Wagmi
+
+Import `zeroDevWallet` from `@zerodev/wallet-react-kit`. This connector wraps the base ZeroDev Wallet connector and controls the kit's auth UI state.
+
+```tsx
+import { zeroDevWallet } from '@zerodev/wallet-react-kit'
+import { createConfig, http } from 'wagmi'
+import { arbitrumSepolia } from 'wagmi/chains'
+
+const projectId = '<your-project-id>'
+const aaUrl = '<your-chain-specific-zerodev-rpc-url>'
+const chainRpcUrl = 'https://sepolia-rollup.arbitrum.io/rpc'
+
+export const config = createConfig({
+  chains: [arbitrumSepolia],
+  connectors: [
+    zeroDevWallet({
+      projectId,
+      aaUrl,
+      chains: [arbitrumSepolia],
+      mode: '7702',
+      config: {
+        auth: {
+          enabledMethods: ['email', 'google', 'passkey'],
+          emailAuthMethod: 'otp',
+        },
+      },
+    }),
+  ],
+  transports: {
+    [arbitrumSepolia.id]: http(chainRpcUrl),
+  },
+})
+```
+
+Only enable authentication methods that are configured for your project. This example uses OTP for email authentication.
+
+## Add providers and styles
+
+Import the kit stylesheet once at your app entry, then wrap your app with Wagmi and TanStack Query providers.
+
+```tsx
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import '@zerodev/wallet-react-kit/styles.css'
+import type { ReactNode } from 'react'
+import { WagmiProvider } from 'wagmi'
+import { config } from './wagmi'
+
+const queryClient = new QueryClient()
+
+export function WalletProviders({ children }: { children: ReactNode }) {
+  return (
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        {children}
+      </QueryClientProvider>
+    </WagmiProvider>
+  )
+}
+```
+
+## Render the login flow
+
+Call Wagmi's `connect` with the ZeroDev connector to start login. Render `<AuthFlow />` in the same provider tree; it displays the active auth screen while the connector is waiting for the user to finish authentication.
+
+```tsx
+import { AuthFlow } from '@zerodev/wallet-react-kit'
+import { useAccount, useConnect, useDisconnect } from 'wagmi'
+
+export function WalletLogin() {
+  const { address, isConnected } = useAccount()
+  const { connect, connectors, isPending } = useConnect()
+  const { disconnect } = useDisconnect()
+  const zeroDevConnector = connectors.find(
+    (connector) => connector.id === 'zerodev-wallet',
+  )
+
+  return (
+    <div>
+      {isConnected ? (
+        <div>
+          <p>Connected: {address}</p>
+          <button type="button" onClick={() => disconnect()}>
+            Disconnect
+          </button>
+        </div>
+      ) : (
+        <button
+          type="button"
+          disabled={!zeroDevConnector || isPending}
+          onClick={() =>
+            zeroDevConnector && connect({ connector: zeroDevConnector })
+          }
+        >
+          {isPending ? 'Opening login...' : 'Connect wallet'}
+        </button>
+      )}
+
+      <AuthPanel />
+    </div>
+  )
+}
+
+function AuthPanel() {
+  return (
+    <div style={{ width: '100%', maxWidth: 420, margin: '0 auto' }}>
+      <AuthFlow />
+    </div>
+  )
+}
+```
+
+## Size the container
+
+`AuthFlow` renders into the width you give it. Put it in a constrained container, modal, or drawer instead of letting it stretch across the full page on large screens.
+
+```tsx
+<div style={{ width: '100%', maxWidth: 420, margin: '0 auto' }}>
+  <AuthFlow onClose={() => setLoginOpen(false)} />
+</div>
+```
+
+The `onClose` prop is optional. Use it when your app owns surrounding UI state, such as closing a modal after the user clicks the kit's close button.
+
+## Add signing confirmations beta
+
+The UI kit also includes `SignatureRequest`, an experimental prebuilt confirmation feature for signing and transaction requests. Mount it once in the same provider tree as your wallet UI.
+
+```tsx
+import { AuthFlow, SignatureRequest } from '@zerodev/wallet-react-kit'
+
+export function WalletOverlays() {
+  return (
+    <>
+      <div style={{ width: '100%', maxWidth: 420, margin: '0 auto' }}>
+        <AuthFlow />
+      </div>
+
+      <div style={{ width: '100%', maxWidth: 420, margin: '0 auto' }}>
+        <SignatureRequest />
+      </div>
+    </>
+  )
+}
+```
+
+By default, the kit prompts for signing and transaction methods such as `personal_sign`, `eth_signTypedData_v4`, and `eth_sendTransaction`. This confirmation feature is in beta and will continue improving over time.
+
+## Coming soon
+
+The Wallet UI Kit will add more prebuilt wallet components and screens over time, including onramps, asset management and portfolio views, and transaction history. To request early access, reach out to the [ZeroDev sales team](https://zerodev.app/contact).
+
+## Next steps
+
+- [Send a transaction](/wallets/wallet-api/send-transaction)
+- [Sign a message](/wallets/wallet-api/sign-message)
+- Integrate other login methods: [Passkeys](/wallets/auth/passkeys), [Email OTP](/wallets/auth/email-otp), [Magic Link](/wallets/auth/magic-link), or [Google OAuth](/wallets/auth/google-oauth)

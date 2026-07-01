@@ -1,0 +1,518 @@
+# SDK Reference [ZeroDev Wallet React SDK]
+
+This page documents the public React SDK exports from `@zerodev/wallet-react`. Use the guide pages for complete workflows, and use this page when you need exact parameters and return values.
+
+## Import
+
+```ts
+import {
+  OAUTH_PROVIDERS,
+  createZeroDevWalletStore,
+  generateOAuthNonce,
+  getZeroDevConnector,
+  getZeroDevStore,
+  getZeroDevWallet,
+  useAuthenticateOAuth,
+  useAuthenticators,
+  useExportPrivateKey,
+  useExportWallet,
+  useLoginPasskey,
+  useRefreshSession,
+  useRegisterPasskey,
+  useSendMagicLink,
+  useSendOTP,
+  useVerifyMagicLink,
+  useVerifyOTP,
+  verifyGoogleLoginUrl,
+  zeroDevWallet,
+  type GetOAuthSessionIdFn,
+  type OAuthProvider,
+  type WalletMode,
+  type ZeroDevProvider,
+  type ZeroDevWalletConnectorParams,
+  type ZeroDevWalletState,
+} from "@zerodev/wallet-react";
+```
+
+## Connector
+
+### `zeroDevWallet(params)`
+
+Creates the Wagmi connector used by `createConfig`.
+
+```ts
+import { zeroDevWallet } from "@zerodev/wallet-react";
+
+const connector = zeroDevWallet({
+  projectId: "<your-project-id>",
+  aaUrl: "<your-chain-specific-zerodev-rpc-url>",
+  chains: [arbitrumSepolia],
+  mode: "7702",
+});
+```
+
+#### Parameters
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `projectId` | `string` | Yes | ZeroDev project ID from the dashboard. |
+| `chains` | `readonly Chain[]` | Yes | Viem/Wagmi chain objects enabled for the project. The first chain is used as the default active chain. |
+| `aaUrl` | `string` | No | Bundler/paymaster RPC URL. Required for `7702` and `4337` flows that send UserOperations or use gas sponsorship. If omitted, the connector derives the AA URL from `projectId` and chain ID. |
+| `mode` | `"7702" \| "4337"` | No | Wallet mode. Defaults to `"7702"`. |
+| `rpId` | `string` | No | Relying party ID for passkeys. For web apps, use the hostname that owns the passkey, for example `localhost` or `app.example.com`. |
+| `organizationId` | `string` | No | Existing Turnkey organization ID, when you need to bind the wallet to a known organization. Most apps omit this. |
+| `proxyBaseUrl` | `string` | No | Custom backend/proxy base URL for wallet services. Most apps use the default ZeroDev service. |
+| `sessionStorage` | `StorageAdapter` | No | Storage adapter used by the wallet core session layer. |
+| `persistStorage` | `StateStorage<void>` | No | Zustand persistence storage for React connector state. The default persists session data under `zerodev-wallet`. |
+| `apiKeyStamper` | `ApiKeyStamper \| Promise<ApiKeyStamper>` | No | Advanced stamper override. Usually used by native or custom key management flows. |
+| `passkeyStamper` | `PasskeyStamper \| Promise<PasskeyStamper>` | No | Advanced passkey stamper override. |
+| `fetchOptions` | `CreateTransportOptions["fetchOptions"]` | No | Forwarded to Turnkey and AA transports. Web apps usually do not need this because browsers ignore custom `Origin` overrides. |
+| `autoRefreshSession` | `boolean` | No | Enables automatic session refresh behavior in the provider layer. |
+| `sessionWarningThreshold` | `number` | No | Milliseconds before expiry when the session should be considered expiring. |
+| `autoInitialize` | `boolean \| () => boolean` | No | Controls whether connector setup initializes on mount. Defaults to true in browser and React Native environments. If false, initialization happens lazily on connect/provider/store access. |
+
+#### Returns
+
+`CreateConnectorFn`, suitable for Wagmi `createConfig({ connectors: [...] })`.
+
+#### Account modes
+
+| Mode | Address shown to Wagmi | Transaction path | When to use |
+| --- | --- | --- | --- |
+| `7702` | User wallet address | EIP-7702 Kernel UserOperations | Recommended default. Users keep a familiar wallet address while apps can use account abstraction features such as gas sponsorship. |
+| `4337` | Counterfactual Kernel smart account address | ERC-4337 UserOperations | Use when you explicitly want a 4337 smart account address. |
+
+## Hook options
+
+All authentication, session, and export hooks are TanStack Query hooks. Mutation hooks return `UseMutationResult`, so you can use `mutate`, `mutateAsync`, `isPending`, `error`, `data`, and `reset`.
+
+Most hooks accept an optional `config` field when you need to pass a specific Wagmi config instead of using the nearest `WagmiProvider`.
+
+```ts
+const { mutateAsync, isPending, error } = useRegisterPasskey({
+  mutation: {
+    onSuccess: () => console.log("signed in"),
+  },
+});
+```
+
+| Option | Type | Description |
+| --- | --- | --- |
+| `config` | `Config` | Optional Wagmi config override. |
+| `mutation` | `UseMutationOptions` | Mutation options for auth, session, and export hooks. Not available on query hooks. |
+| `query` | `UseQueryOptions` | Query options for `useAuthenticators`. |
+
+## Passkeys
+
+### `useRegisterPasskey(options?)`
+
+Registers a new passkey and authenticates the user. On success, the hook stores the session, derives the wallet account, and connects the ZeroDev connector in Wagmi.
+
+#### Mutation variables
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `connector` | `Connector` | No | ZeroDev Wagmi connector override. Defaults to the connector with ID `zerodev-wallet` in the active Wagmi config. |
+
+#### Returns
+
+`UseMutationResult<void, Error, void | { connector?: Connector }>`
+
+```tsx
+const registerPasskey = useRegisterPasskey();
+
+<button onClick={() => registerPasskey.mutateAsync()}>
+  Register passkey
+</button>;
+```
+
+### `useLoginPasskey(options?)`
+
+Authenticates with an existing passkey. On success, it stores the session, derives the wallet account, and connects the ZeroDev connector in Wagmi.
+
+#### Mutation variables
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `connector` | `Connector` | No | ZeroDev Wagmi connector override. |
+
+#### Returns
+
+`UseMutationResult<void, Error, void | { connector?: Connector }>`
+
+```tsx
+const loginPasskey = useLoginPasskey();
+
+<button onClick={() => loginPasskey.mutateAsync()}>
+  Login with passkey
+</button>;
+```
+
+## Email OTP
+
+### `useSendOTP(options?)`
+
+Sends an email OTP code.
+
+#### Mutation variables
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `email` | `string` | Yes | User email address. |
+| `emailCustomization` | `{ magicLinkTemplate?: string }` | No | Optional email template customization. |
+| `connector` | `Connector` | No | ZeroDev Wagmi connector override. |
+
+#### Returns
+
+`UseMutationResult<{ otpId: string; otpEncryptionTargetBundle: string }, Error, SendOTPVariables>`
+
+Store both returned values. `useVerifyOTP` needs the matching `otpId` and `otpEncryptionTargetBundle`.
+
+```tsx
+const sendOTP = useSendOTP();
+const verifyOTP = useVerifyOTP();
+
+const sent = await sendOTP.mutateAsync({ email });
+
+await verifyOTP.mutateAsync({
+  otpId: sent.otpId,
+  otpEncryptionTargetBundle: sent.otpEncryptionTargetBundle,
+  code,
+});
+```
+
+### `useVerifyOTP(options?)`
+
+Verifies an OTP code and authenticates the user. On success, it stores the session, derives the wallet account, and connects the ZeroDev connector in Wagmi.
+
+#### Mutation variables
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `otpId` | `string` | Yes | OTP ID returned by `useSendOTP`. |
+| `otpEncryptionTargetBundle` | `string` | Yes | Encryption target bundle returned by the matching `useSendOTP` call. |
+| `code` | `string` | Yes | Code entered by the user. |
+| `connector` | `Connector` | No | ZeroDev Wagmi connector override. |
+
+#### Returns
+
+`UseMutationResult<void, Error, VerifyOTPVariables>`
+
+## Magic links
+
+### `useSendMagicLink(options?)`
+
+Sends a magic link email.
+
+#### Mutation variables
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `email` | `string` | Yes | User email address. |
+| `redirectURL` | `string` | Yes | URL the email link should return to after the user opens it. The URL must be allowlisted for the project. |
+| `connector` | `Connector` | No | ZeroDev Wagmi connector override. |
+
+#### Returns
+
+`UseMutationResult<{ otpId: string; otpEncryptionTargetBundle: string }, Error, SendMagicLinkVariables>`
+
+Store both returned values. `useVerifyMagicLink` needs the matching `otpId` and `otpEncryptionTargetBundle`.
+
+```tsx
+const sendMagicLink = useSendMagicLink();
+
+const sent = await sendMagicLink.mutateAsync({
+  email,
+  redirectURL: `${window.location.origin}/wallets/callback`,
+});
+```
+
+### `useVerifyMagicLink(options?)`
+
+Verifies the magic link code and authenticates the user.
+
+#### Mutation variables
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `otpId` | `string` | Yes | OTP ID returned by `useSendMagicLink`. |
+| `otpEncryptionTargetBundle` | `string` | Yes | Encryption target bundle returned by the matching `useSendMagicLink` call. |
+| `code` | `string` | Yes | Code from the magic link redirect. |
+| `connector` | `Connector` | No | ZeroDev Wagmi connector override. |
+
+#### Returns
+
+`UseMutationResult<void, Error, VerifyMagicLinkVariables>`
+
+## OAuth
+
+### `useAuthenticateOAuth(options?)`
+
+Starts the web OAuth flow using a popup and authenticates the user after the popup returns a session ID. The web hook uses `window.location.href` as the redirect URI and `window.location.origin` for popup polling.
+
+#### Options
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `timeoutMs` | `number` | No | Popup polling timeout in milliseconds. Defaults to 5 minutes. |
+| `config` | `Config` | No | Optional Wagmi config override. |
+| `mutation` | `UseMutationOptions` | No | TanStack mutation options. |
+
+#### Mutation variables
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `provider` | `OAuthProvider` | Yes | OAuth provider. Use `OAUTH_PROVIDERS.GOOGLE` for Google. |
+
+#### Returns
+
+`UseMutationResult<void, Error, { provider: OAuthProvider }>`
+
+```tsx
+const google = useAuthenticateOAuth();
+
+<button
+  onClick={() => google.mutateAsync({ provider: OAUTH_PROVIDERS.GOOGLE })}
+>
+  Continue with Google
+</button>;
+```
+
+### `OAUTH_PROVIDERS`
+
+Supported OAuth provider constants.
+
+| Name | Value |
+| --- | --- |
+| `OAUTH_PROVIDERS.GOOGLE` | `"google"` |
+
+### `OAuthProvider`
+
+Type union of supported OAuth provider values. Currently `"google"`.
+
+### `GetOAuthSessionIdFn`
+
+Function type for custom OAuth adapters.
+
+```ts
+type GetOAuthSessionIdFn = (params: {
+  oauthUrl: string;
+  provider: OAuthProvider;
+}) => Promise<string>;
+```
+
+The web hook supplies this automatically. Custom platform flows use this shape to open the OAuth URL and return a session ID.
+
+## Sessions
+
+### `useRefreshSession(options?)`
+
+Refreshes the current authenticated session and updates connector state.
+
+#### Mutation variables
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `connector` | `Connector` | No | ZeroDev Wagmi connector override. |
+
+#### Returns
+
+`UseMutationResult<unknown, Error, { connector?: Connector }>`
+
+Throws when there is no active session to refresh.
+
+```tsx
+const refreshSession = useRefreshSession();
+
+await refreshSession.mutateAsync({});
+```
+
+## Authenticators
+
+### `useAuthenticators(options?)`
+
+Reads authenticators associated with the current user in the connected project/sub-organization. The result can include OAuth authenticators, passkeys, email contacts, and API keys.
+
+#### Options
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `config` | `Config` | No | Optional Wagmi config override. |
+| `query` | `UseQueryOptions` | No | TanStack query options, excluding `queryKey` and `queryFn`. |
+
+#### Returns
+
+`UseQueryResult<GetAuthenticatorsReturnType, Error>`
+
+```tsx
+const authenticators = useAuthenticators({
+  query: { enabled: isConnected },
+});
+```
+
+## Wallet export
+
+### `useExportWallet(options?)`
+
+Renders the secure Turnkey export iframe into a container element and injects the wallet export bundle.
+
+#### Mutation variables
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `iframeContainerId` | `string` | Yes | DOM element ID where the export iframe should be mounted. |
+| `iframeStyles` | `Record<string, string>` | No | CSS styles passed to the iframe stamper. |
+| `connector` | `Connector` | No | ZeroDev Wagmi connector override. |
+
+#### Returns
+
+`UseMutationResult<void, Error, ExportWalletVariables>`
+
+```tsx
+const exportWallet = useExportWallet();
+
+await exportWallet.mutateAsync({
+  iframeContainerId: "export-wallet",
+  iframeStyles: {
+    width: "100%",
+    height: "260px",
+  },
+});
+```
+
+### `useExportPrivateKey(options?)`
+
+Renders the secure Turnkey export iframe into a container element and injects a private key export bundle.
+
+#### Mutation variables
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `iframeContainerId` | `string` | Yes | DOM element ID where the export iframe should be mounted. |
+| `iframeStyles` | `Record<string, string>` | No | CSS styles passed to the iframe stamper. |
+| `address` | `string` | No | Specific wallet address/key to export. |
+| `keyFormat` | `"Hexadecimal" \| "Solana"` | No | Export format. Defaults to `"Hexadecimal"`. |
+| `connector` | `Connector` | No | ZeroDev Wagmi connector override. |
+
+#### Returns
+
+`UseMutationResult<void, Error, ExportPrivateKeyVariables>`
+
+```tsx
+const exportPrivateKey = useExportPrivateKey();
+
+await exportPrivateKey.mutateAsync({
+  iframeContainerId: "export-private-key",
+  keyFormat: "Hexadecimal",
+});
+```
+
+## Store and connector helpers
+
+These helpers are lower-level escape hatches. Most apps should use Wagmi hooks and ZeroDev auth hooks instead.
+
+### `getZeroDevConnector(config)`
+
+Finds the ZeroDev connector in a Wagmi config.
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `config` | `Config` | Wagmi config containing a `zerodev-wallet` connector. |
+
+Returns the ZeroDev connector, including `rpId` and `getStore()`. Throws if the connector is not found.
+
+### `getZeroDevStore(connector)`
+
+Gets the Zustand store associated with a ZeroDev connector.
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `connector` | `Connector` | ZeroDev connector returned by `zeroDevWallet`. |
+
+Returns `Promise<ReturnType<typeof createZeroDevWalletStore>>`.
+
+### `getZeroDevWallet(store)`
+
+Reads the initialized wallet SDK instance from the ZeroDev store.
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `store` | `ReturnType<typeof createZeroDevWalletStore>` | ZeroDev wallet store. |
+
+Returns `ZeroDevWalletSDK`. Throws `"Wallet not initialized"` if connector setup has not completed.
+
+### `createZeroDevWalletStore(options?)`
+
+Creates the internal Zustand store used by the connector.
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `options.storage` | `StateStorage<void>` | Optional custom persistence storage. |
+
+The store persists only `session` and `activeChainId` under the `zerodev-wallet` key.
+
+## OAuth utilities
+
+### `generateOAuthNonce(publicKey)`
+
+Computes the nonce expected in a Google OAuth URL for a wallet public key.
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `publicKey` | `string` | Wallet public key, with or without `0x` prefix. |
+
+Returns a lowercase hex SHA-256 hash string without `0x`.
+
+### `verifyGoogleLoginUrl(loginUrl, publicKey)`
+
+Verifies that a Google OAuth URL is valid for the wallet public key.
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `loginUrl` | `string` | OAuth URL returned by the backend. |
+| `publicKey` | `string` | Wallet public key used to verify the nonce. |
+
+Returns `void`. Throws if the URL is malformed, the host is not `accounts.google.com`, the nonce is missing, or the nonce does not match `generateOAuthNonce(publicKey)`.
+
+## Types
+
+### `WalletMode`
+
+```ts
+type WalletMode = "4337" | "7702";
+```
+
+### `ZeroDevWalletConnectorParams`
+
+Connector parameter type for `zeroDevWallet`. It matches the connector parameters above.
+
+### `ZeroDevProvider`
+
+ZeroDev EIP-1193 provider type returned by the connector's `getProvider()` method.
+
+### `ZeroDevWalletState`
+
+Zustand store state type used internally by the connector.
+
+Important fields include:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `wallet` | `ZeroDevWalletSDK \| null` | Core wallet SDK instance. |
+| `session` | `ZeroDevWalletSession \| null` | Active wallet session. |
+| `activeChainId` | `number \| null` | Active chain ID. |
+| `kernelAccounts` | `Map<number, SmartAccount>` | Per-chain Kernel accounts for `7702` and `4337` modes. |
+| `kernelClients` | `Map<number, KernelAccountClient>` | Per-chain Kernel clients for account abstraction transactions. |
+| `walletClients` | `Map<number, WalletClient>` | Per-chain Viem wallet clients used internally by the connector. |
+| `isExpiring` | `boolean` | Whether the session is near expiry. |
+
+## Related guides
+
+- [Quickstart](/wallets/quickstart)
+- [Passkeys](/wallets/auth/passkeys)
+- [Email OTP](/wallets/auth/email-otp)
+- [Magic Link](/wallets/auth/magic-link)
+- [Google OAuth](/wallets/auth/google-oauth)
+- [Session Management](/wallets/session-management)
+- [Send a Transaction](/wallets/wallet-api/send-transaction)
+- [Export Wallet](/wallets/export)

@@ -479,19 +479,9 @@ export default defineConfig({
                 text: "Google OAuth",
                 link: "/wallets/auth/google-oauth",
               },
-            ],
-          },
-          {
-            text: "Features",
-            collapsed: true,
-            items: [
               {
                 text: "Session Management",
                 link: "/wallets/session-management",
-              },
-              {
-                text: "Export Wallet",
-                link: "/wallets/export",
               },
             ],
           },
@@ -511,57 +501,19 @@ export default defineConfig({
                 text: "Sign a Typed Message",
                 link: "/wallets/wallet-api/sign-typed-message",
               },
+              {
+                text: "Export Wallet",
+                link: "/wallets/export",
+              },
             ],
           },
           {
-            text: "Hooks",
-            collapsed: true,
-            items: [
-              {
-                text: "useRegisterPasskey",
-                link: "/wallets/hooks/use-register-passkey",
-              },
-              {
-                text: "useLoginPasskey",
-                link: "/wallets/hooks/use-login-passkey",
-              },
-              {
-                text: "useAuthenticateOAuth",
-                link: "/wallets/hooks/use-authenticate-oauth",
-              },
-              {
-                text: "useSendOTP",
-                link: "/wallets/hooks/use-send-otp",
-              },
-              {
-                text: "useVerifyOTP",
-                link: "/wallets/hooks/use-verify-otp",
-              },
-              {
-                text: "useSendMagicLink",
-                link: "/wallets/hooks/use-send-magic-link",
-              },
-              {
-                text: "useVerifyMagicLink",
-                link: "/wallets/hooks/use-verify-magic-link",
-              },
-              {
-                text: "useGetUserEmail",
-                link: "/wallets/hooks/use-get-user-email",
-              },
-              {
-                text: "useRefreshSession",
-                link: "/wallets/hooks/use-refresh-session",
-              },
-              {
-                text: "useExportWallet",
-                link: "/wallets/hooks/use-export-wallet",
-              },
-              {
-                text: "useExportPrivateKey",
-                link: "/wallets/hooks/use-export-private-key",
-              },
-            ],
+            text: "Wallet UI Kit",
+            link: "/wallets/auth/wallet-ui-kit",
+          },
+          {
+            text: "SDK Reference",
+            link: "/wallets/sdk-reference",
           },
         ],
       },

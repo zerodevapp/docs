@@ -1,64 +1,113 @@
 # Quickstart [Get up and running in 5 minutes]
 
-## Installation
+Add ZeroDev Wallet to any React app that can render client-side React components. Authenticate users with ZeroDev hooks, then use standard Wagmi hooks for wallet actions.
+
+Want less code to get started even faster? Try the optional [Wallet UI Kit](/wallets/auth/wallet-ui-kit) for a prebuilt login flow.
+
+For a complete working reference, see the [ZeroDev Wallet SDK demo app](https://github.com/zerodevapp/zerodev-wallet-sdk/tree/main/apps/zerodev-signer-demo).
+
+## Prerequisites
+
+You will need:
+
+- A ZeroDev account in the [ZeroDev Dashboard](https://dashboard.zerodev.app/).
+- A project with at least one enabled network.
+- Your project ID.
+- The Bundler RPC URL for the network you want to use.
+- Your app origin added to the project's ACL allowlist.
+
+## Install packages
 
 :::code-group
 
 ```bash [npm]
-npm i @zerodev/wallet-react @zerodev/sdk wagmi viem @tanstack/react-query
+npm i @zerodev/wallet-react @zerodev/wallet-core wagmi viem @tanstack/react-query
 ```
 
 ```bash [yarn]
-yarn add @zerodev/wallet-react @zerodev/sdk wagmi viem @tanstack/react-query
+yarn add @zerodev/wallet-react @zerodev/wallet-core wagmi viem @tanstack/react-query
 ```
 
 ```bash [pnpm]
-pnpm i @zerodev/wallet-react @zerodev/sdk wagmi viem @tanstack/react-query
+pnpm i @zerodev/wallet-react @zerodev/wallet-core wagmi viem @tanstack/react-query
 ```
 
 ```bash [bun]
-bun add @zerodev/wallet-react @zerodev/sdk wagmi viem @tanstack/react-query
+bun add @zerodev/wallet-react @zerodev/wallet-core wagmi viem @tanstack/react-query
 ```
 
 :::
 
-## 1. Configure Wagmi
+## Allowlist your app origin
 
-Create a Wagmi config with the `zeroDevWallet` connector:
+Before testing authentication, add your app's origin to the project's ACL allowlist in the ZeroDev dashboard.
+
+For example, if you run your app at `http://localhost:3000` during development, add `http://localhost:3000` to the allowlist.
+
+## Add configuration values
+
+In the ZeroDev dashboard, open your project and copy its project ID. Then open the network you enabled for this app and copy its Bundler RPC URL.
+
+Add these values to your app's configuration. The exact environment variable prefix depends on your framework:
+
+```bash
+ZERODEV_PROJECT_ID="your-project-id"
+ZERODEV_AA_URL="your-chain-specific-zerodev-rpc-url"
+ARBITRUM_SEPOLIA_RPC_URL="https://sepolia-rollup.arbitrum.io/rpc"
+```
+
+- `ZERODEV_PROJECT_ID` is your ZeroDev project ID.
+- `ZERODEV_AA_URL` is the network-specific Bundler RPC URL from the dashboard.
+- `ARBITRUM_SEPOLIA_RPC_URL` is the chain RPC used by Wagmi's transport.
+
+This example uses Arbitrum Sepolia. Replace the chain and RPC URLs if your project uses a different chain.
+
+## Configure Wagmi
+
+Create `src/wagmi.ts`:
 
 ```tsx
-import { createConfig, http } from 'wagmi'
-import { sepolia } from 'wagmi/chains'
 import { zeroDevWallet } from '@zerodev/wallet-react'
+import { createConfig, http } from 'wagmi'
+import { arbitrumSepolia } from 'wagmi/chains'
+
+const projectId = '<your-project-id>'
+const aaUrl = '<your-chain-specific-zerodev-rpc-url>'
+const chainRpcUrl = 'https://sepolia-rollup.arbitrum.io/rpc'
 
 export const config = createConfig({
-  chains: [sepolia],
+  chains: [arbitrumSepolia],
   connectors: [
     zeroDevWallet({
-      projectId: 'YOUR_ZERODEV_PROJECT_ID',
-      chains: [sepolia],
+      projectId,
+      aaUrl,
+      chains: [arbitrumSepolia],
+      mode: '7702',
     }),
   ],
   transports: {
-    [sepolia.id]: http(),
+    [arbitrumSepolia.id]: http(chainRpcUrl),
   },
 })
 ```
 
-Get your project ID from the [ZeroDev Dashboard](https://dashboard.zerodev.app/).
+In your app, replace the inline constants with your framework's public runtime config or client-safe environment variable access.
 
-## 2. Wrap your app
+`7702` is the SDK default, but setting it explicitly makes the recommended mode clear.
 
-Wrap your application with `WagmiProvider` and `QueryClientProvider`:
+## Add providers
+
+Wrap your app with Wagmi and TanStack Query providers:
 
 ```tsx
-import { WagmiProvider } from 'wagmi'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { config } from './wagmi-config'
+import type { ReactNode } from 'react'
+import { WagmiProvider } from 'wagmi'
+import { config } from './wagmi'
 
 const queryClient = new QueryClient()
 
-export default function App({ children }: { children: React.ReactNode }) {
+export function WalletProviders({ children }: { children: ReactNode }) {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
@@ -69,17 +118,17 @@ export default function App({ children }: { children: React.ReactNode }) {
 }
 ```
 
-## 3. Add authentication
+## Authenticate users
 
-Here's a basic example with passkey registration and login:
+Start with passkeys for a minimal passwordless flow:
 
 ```tsx
+import { useLoginPasskey, useRegisterPasskey } from '@zerodev/wallet-react'
 import { useAccount, useDisconnect } from 'wagmi'
-import { useRegisterPasskey, useLoginPasskey } from '@zerodev/wallet-react'
 
-function AuthPage() {
+export function WalletLogin() {
   const { address, isConnected } = useAccount()
-  const { disconnectAsync } = useDisconnect()
+  const { disconnect } = useDisconnect()
   const registerPasskey = useRegisterPasskey()
   const loginPasskey = useLoginPasskey()
 
@@ -87,8 +136,8 @@ function AuthPage() {
     return (
       <div>
         <p>Connected: {address}</p>
-        <button onClick={() => disconnectAsync()}>
-          Logout
+        <button type="button" onClick={() => disconnect()}>
+          Disconnect
         </button>
       </div>
     )
@@ -97,30 +146,143 @@ function AuthPage() {
   return (
     <div>
       <button
-        onClick={() => registerPasskey.mutateAsync()}
+        type="button"
         disabled={registerPasskey.isPending}
+        onClick={() => registerPasskey.mutate()}
       >
-        {registerPasskey.isPending ? 'Registering...' : 'Register with Passkey'}
+        {registerPasskey.isPending ? 'Registering...' : 'Register passkey'}
       </button>
 
       <button
-        onClick={() => loginPasskey.mutateAsync()}
+        type="button"
         disabled={loginPasskey.isPending}
+        onClick={() => loginPasskey.mutate()}
       >
-        {loginPasskey.isPending ? 'Logging in...' : 'Login with Passkey'}
+        {loginPasskey.isPending ? 'Logging in...' : 'Login with passkey'}
       </button>
     </div>
   )
 }
 ```
 
-After authentication, the user's wallet is available through standard Wagmi hooks like `useAccount`, `useSendTransaction`, and `useSignMessage`.
+The auth hooks authenticate the user and connect the ZeroDev Wagmi connector. After auth succeeds, use normal Wagmi hooks such as `useAccount`, `useSignMessage`, and `useSendTransaction`.
 
-## Next Steps
+## Sign a message
 
-- [Passkey Authentication](/wallets/auth/passkeys) — Full passkey guide
-- [Email OTP](/wallets/auth/email-otp) — Authenticate with email codes
-- [Google OAuth](/wallets/auth/google-oauth) — Social login with Google
-- [Send Transactions](/wallets/wallet-api/send-transaction) — Send gasless transactions
-- [Sign Messages](/wallets/wallet-api/sign-message) — Sign messages with the wallet
-- [Session Management](/wallets/session-management) — Session lifecycle and refresh
+Message signing is offchain and does not require gas.
+
+```tsx
+import { useSignMessage } from 'wagmi'
+
+export function SignMessageButton() {
+  const signMessage = useSignMessage()
+
+  return (
+    <div>
+      <button
+        type="button"
+        disabled={signMessage.isPending}
+        onClick={() =>
+          signMessage.signMessage({
+            message: 'Hello from ZeroDev Wallet',
+          })
+        }
+      >
+        {signMessage.isPending ? 'Waiting for signature...' : 'Sign message'}
+      </button>
+
+      {signMessage.data ? <p>Signature: {signMessage.data}</p> : null}
+      {signMessage.error ? <p>{signMessage.error.message}</p> : null}
+    </div>
+  )
+}
+```
+
+## Send a gasless transaction
+
+To test gas sponsorship, configure a gas policy for your project and chain in the ZeroDev dashboard first. See [Gas Policies](/api-and-toolings/infrastructure/gas-policies) for setup details.
+
+This example sends a 0 ETH self-transfer. It exercises the full account abstraction transaction path without requiring the user to hold native gas.
+
+```tsx
+import {
+  useAccount,
+  useSendTransaction,
+  useWaitForTransactionReceipt,
+} from 'wagmi'
+
+export function SendTransactionButton() {
+  const { address } = useAccount()
+  const sendTransaction = useSendTransaction()
+  const receipt = useWaitForTransactionReceipt({
+    hash: sendTransaction.data,
+  })
+
+  const isPending =
+    sendTransaction.isPending ||
+    (Boolean(sendTransaction.data) && receipt.isLoading)
+
+  return (
+    <div>
+      <button
+        type="button"
+        disabled={!address || isPending}
+        onClick={() =>
+          address &&
+          sendTransaction.sendTransaction({
+            to: address,
+            value: 0n,
+          })
+        }
+      >
+        {isPending ? 'Sending transaction...' : 'Send gasless transaction'}
+      </button>
+
+      {sendTransaction.data ? <p>Hash: {sendTransaction.data}</p> : null}
+      {receipt.isSuccess ? <p>Transaction confirmed</p> : null}
+      {sendTransaction.error ? <p>{sendTransaction.error.message}</p> : null}
+      {receipt.error ? <p>{receipt.error.message}</p> : null}
+    </div>
+  )
+}
+```
+
+## Account modes
+
+ZeroDev Wallet supports two account modes:
+
+| Mode | Use when | Notes |
+| --- | --- | --- |
+| `7702` | You want the recommended default | Exposes the user's wallet address while enabling smart wallet features such as sponsorship. |
+| `4337` | You need a counterfactual smart account address | Exposes the Kernel smart account address. The first transaction can deploy the account. |
+
+For most apps, use `7702`.
+
+## Other auth methods
+
+Passkeys are only one option. The white-label SDK also supports:
+
+- [Email OTP](/wallets/auth/email-otp)
+- [Google OAuth](/wallets/auth/google-oauth)
+- [Magic Link](/wallets/auth/magic-link)
+
+Each auth method connects the same ZeroDev Wagmi connector after successful authentication.
+
+## Optional UI kit
+
+The examples above use `@zerodev/wallet-react` so you can build your own UI. If you want a prebuilt login flow, use the optional [Wallet UI Kit](/wallets/auth/wallet-ui-kit). Keep the white-label hooks path if you want full control over layout, styling, and bundle size.
+
+## Troubleshooting
+
+- **Allowlist errors**: confirm that the dashboard allowlists the exact origin you are opening in the browser.
+- **Sponsored transaction fails**: confirm that a gas policy exists for the project and chain.
+- **Wrong chain**: make sure the chain in `createConfig`, the `aaUrl`, and the gas policy all refer to the same chain.
+
+## Next steps
+
+- [Passkey Authentication](/wallets/auth/passkeys)
+- [Email OTP](/wallets/auth/email-otp)
+- [Google OAuth](/wallets/auth/google-oauth)
+- [Send Transactions](/wallets/wallet-api/send-transaction)
+- [Sign Messages](/wallets/wallet-api/sign-message)
+- [Session Management](/wallets/session-management)
