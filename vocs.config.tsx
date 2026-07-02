@@ -441,10 +441,10 @@ export default defineConfig({
         ],
       },
     ],
-    // Embedded Wallet.
+    // Smart Wallet.
     "/wallets": [
       {
-        text: "Embedded Wallet",
+        text: "Smart Wallet",
         collapsed: false,
         items: [
           {
