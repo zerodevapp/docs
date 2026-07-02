@@ -42,9 +42,9 @@ export function MagicLinkLogin() {
         onClick={async () => {
           const result = await sendMagicLink.mutateAsync({ email })
 
-          sessionStorage.setItem('zerodevMagicLinkOtpId', result.otpId)
+          sessionStorage.setItem('magicLinkOtpId', result.otpId)
           sessionStorage.setItem(
-            'zerodevMagicLinkBundle',
+            'magicLinkBundle',
             result.otpEncryptionTargetBundle,
           )
         }}
@@ -75,9 +75,9 @@ export function VerifyMagicLink() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const code = params.get('code')
-    const otpId = sessionStorage.getItem('zerodevMagicLinkOtpId')
+    const otpId = sessionStorage.getItem('magicLinkOtpId')
     const otpEncryptionTargetBundle = sessionStorage.getItem(
-      'zerodevMagicLinkBundle',
+      'magicLinkBundle',
     )
 
     if (
