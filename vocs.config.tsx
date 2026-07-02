@@ -460,6 +460,58 @@ export default defineConfig({
             link: "https://zerodev-signer-demo.vercel.app/",
           },
           {
+            text: "Authentication",
+            collapsed: true,
+            items: [
+              {
+                text: "Passkeys",
+                link: "/wallets/auth/passkeys",
+              },
+              {
+                text: "Email OTP",
+                link: "/wallets/auth/email-otp",
+              },
+              {
+                text: "Magic Link",
+                link: "/wallets/auth/magic-link",
+              },
+              {
+                text: "Google OAuth",
+                link: "/wallets/auth/google-oauth",
+              },
+              {
+                text: "Get Login Methods",
+                link: "/wallets/hooks/use-authenticators",
+              },
+              {
+                text: "Session Management",
+                link: "/wallets/session-management",
+              },
+            ],
+          },
+          {
+            text: "Wallet API",
+            collapsed: true,
+            items: [
+              {
+                text: "Send a Transaction",
+                link: "/wallets/wallet-api/send-transaction",
+              },
+              {
+                text: "Batch Transactions",
+                link: "/wallets/wallet-api/batch-transactions",
+              },
+              {
+                text: "Sign Messages",
+                link: "/wallets/wallet-api/sign-message",
+              },
+            ],
+          },
+          {
+            text: "Wallet UI Kit",
+            link: "/wallets/auth/wallet-ui-kit",
+          },
+          {
             text: "React Native",
             collapsed: true,
             items: [
@@ -504,62 +556,6 @@ export default defineConfig({
                 link: "/wallets/react-native/web",
               },
             ],
-          },
-          {
-            text: "Authentication",
-            collapsed: true,
-            items: [
-              {
-                text: "Passkeys",
-                link: "/wallets/auth/passkeys",
-              },
-              {
-                text: "Email OTP",
-                link: "/wallets/auth/email-otp",
-              },
-              {
-                text: "Magic Link",
-                link: "/wallets/auth/magic-link",
-              },
-              {
-                text: "Google OAuth",
-                link: "/wallets/auth/google-oauth",
-              },
-              {
-                text: "Get Login Methods",
-                link: "/wallets/hooks/use-authenticators",
-              },
-              {
-                text: "Session Management",
-                link: "/wallets/session-management",
-              },
-            ],
-          },
-          {
-            text: "Wallet API",
-            collapsed: true,
-            items: [
-              {
-                text: "Send a Transaction",
-                link: "/wallets/wallet-api/send-transaction",
-              },
-              {
-                text: "Batch Transactions",
-                link: "/wallets/wallet-api/batch-transactions",
-              },
-              {
-                text: "Sign a Message",
-                link: "/wallets/wallet-api/sign-message",
-              },
-              {
-                text: "Sign a Typed Message",
-                link: "/wallets/wallet-api/sign-typed-message",
-              },
-            ],
-          },
-          {
-            text: "Wallet UI Kit",
-            link: "/wallets/auth/wallet-ui-kit",
           },
         ],
       },

@@ -1,6 +1,10 @@
-# Sign a Message [Sign messages with Wagmi hooks]
+# Sign Messages [Sign messages and typed data with Wagmi hooks]
 
-Use Wagmi's `useSignMessage` hook to ask the connected ZeroDev wallet to sign an offchain message. Message signing does not submit a transaction and does not require gas.
+Use Wagmi's signing hooks to ask the connected ZeroDev wallet to sign offchain data. Signing does not submit a transaction and does not require gas.
+
+## Sign a Message
+
+Use `useSignMessage` for plain text messages.
 
 ```tsx
 import { useSignMessage } from 'wagmi'
@@ -26,8 +30,66 @@ export function SignMessage() {
 }
 ```
 
+## Sign Typed Data
+
+Use `useSignTypedData` for EIP-712 typed data.
+
+```tsx
+import { useSignTypedData } from 'wagmi'
+import { arbitrumSepolia } from 'wagmi/chains'
+
+const typedData = {
+  domain: {
+    name: 'Ether Mail',
+    version: '1',
+    chainId: arbitrumSepolia.id,
+    verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',
+  },
+  types: {
+    Person: [
+      { name: 'name', type: 'string' },
+      { name: 'wallet', type: 'address' },
+    ],
+    Mail: [
+      { name: 'from', type: 'Person' },
+      { name: 'to', type: 'Person' },
+      { name: 'contents', type: 'string' },
+    ],
+  },
+  primaryType: 'Mail',
+  message: {
+    from: {
+      name: 'Alice',
+      wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826',
+    },
+    to: {
+      name: 'Bob',
+      wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
+    },
+    contents: 'Hello, Bob!',
+  },
+} as const
+
+export function SignTypedData() {
+  const { signTypedData, data, isPending, error } = useSignTypedData()
+
+  const handleSign = () => signTypedData(typedData)
+
+  return (
+    <div>
+      <button type="button" onClick={handleSign} disabled={isPending}>
+        {isPending ? 'Signing...' : 'Sign typed data'}
+      </button>
+
+      {data ? <p>Signature: {data}</p> : null}
+      {error ? <p>Signing failed: {error.message}</p> : null}
+    </div>
+  )
+}
+```
+
 ## Next steps
 
 - [Send a transaction](/wallets/wallet-api/send-transaction)
-- [Sign typed data](/wallets/wallet-api/sign-typed-message)
+- [Batch transactions](/wallets/wallet-api/batch-transactions)
 - [Session management](/wallets/session-management)
