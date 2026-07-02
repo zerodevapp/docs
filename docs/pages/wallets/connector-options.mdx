@@ -1,0 +1,145 @@
+# Connector Options [Configure the zeroDevWallet connector]
+
+:::danger[IMPORTANT]
+**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
+:::
+
+The `zeroDevWallet` connector is configured through the options below. Only `projectId` and `chains` are required — on the web, everything else falls back to a sensible default.
+
+```tsx
+import { zeroDevWallet } from '@zerodev/wallet-react'
+import { sepolia } from 'wagmi/chains'
+
+zeroDevWallet({
+  projectId: 'YOUR_ZERODEV_PROJECT_ID',
+  chains: [sepolia],
+})
+```
+
+## Options
+
+### projectId
+
+`string`
+
+**Required.** Your ZeroDev project ID, from the [ZeroDev Dashboard](https://dashboard.zerodev.app/).
+
+### chains
+
+`readonly Chain[]`
+
+**Required.** The viem/wagmi chains the wallet supports. Usually the same array you pass to Wagmi's `createConfig`.
+
+### mode
+
+`'EOA' | '4337' | '7702'`
+
+The account mode exposed to Wagmi. Defaults to `'7702'`.
+
+- `'7702'` — An EOA delegated to a Kernel smart account via [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702). The address equals the EOA address; transactions are bundled as UserOperations and can be sponsored.
+- `'4337'` — A counterfactual [ERC-4337](https://eips.ethereum.org/EIPS/eip-4337) Kernel smart account. The address differs from the EOA and the account is deployed on the first UserOperation; transactions are bundled as UserOperations.
+- `'EOA'` — A plain EOA. Transactions are sent directly via the chain's RPC, with no bundler and no sponsorship.
+
+### rpId
+
+`string | undefined`
+
+The relying party ID — the domain used for [passkeys](/wallets/auth/passkeys#configure-rp-id-optional), as defined by the [WebAuthn standard](https://web.dev/articles/webauthn-rp-id). On the web it defaults to `window.location.hostname`, so you only need to set it to share passkeys across subdomains.
+
+### autoRefreshSession
+
+`boolean | undefined`
+
+Whether the SDK refreshes the session before it expires. Defaults to `true`. See [Session Management](/wallets/session-management#auto-refresh-configuration).
+
+### sessionWarningThreshold
+
+`number | undefined`
+
+How long before expiry (in milliseconds) the session is refreshed when `autoRefreshSession` is enabled. Defaults to `60000` (60 seconds).
+
+### autoInitialize
+
+`boolean | (() => boolean) | undefined`
+
+Whether the connector initializes automatically on mount. When `false`, the connector still initializes lazily on connect. Accepts a function for conditional initialization.
+
+### sessionStorage
+
+`StorageAdapter | undefined`
+
+Storage adapter for the wallet SDK's session backend. This is where the auth/session layer stores its session records. On the web it defaults to the browser's `localStorage`. Provide a custom [`StorageAdapter`](/wallets/session-management#custom-storage) for alternative storage.
+
+### persistStorage
+
+`CreateStoreOptions['storage'] | undefined`
+
+Storage used to persist the connector store across page reloads. This is a separate layer from `sessionStorage`. If omitted, the connector store uses its own default web persistence behavior rather than automatically reusing `sessionStorage`.
+
+### Storage model on web
+
+There are two storage layers on the web:
+
+- `sessionStorage` stores the wallet SDK's auth/session data.
+- `persistStorage` stores the ZeroDev connector's persisted state for rehydration.
+
+Most apps can leave both unset and use the built-in web defaults:
+
+```tsx
+zeroDevWallet({
+  projectId: 'YOUR_ZERODEV_PROJECT_ID',
+  chains: [sepolia],
+})
+```
+
+If you want both layers to use the same browser storage implementation, set them both explicitly:
+
+```tsx
+const browserStorage = {
+  getItem: (key: string) => window.localStorage.getItem(key),
+  setItem: (key: string, value: string) =>
+    window.localStorage.setItem(key, value),
+  removeItem: (key: string) => window.localStorage.removeItem(key),
+}
+
+zeroDevWallet({
+  projectId: 'YOUR_ZERODEV_PROJECT_ID',
+  chains: [sepolia],
+  sessionStorage: browserStorage,
+  persistStorage: browserStorage,
+})
+```
+
+### apiKeyStamper
+
+`ApiKeyStamper | Promise<ApiKeyStamper> | undefined`
+
+Advanced. Signs the SDK's requests with an API key. On the web it defaults to an IndexedDB-backed stamper.
+
+### passkeyStamper
+
+`PasskeyStamper | Promise<PasskeyStamper> | undefined`
+
+Advanced. Signs passkey operations. On the web it defaults to a WebAuthn stamper.
+
+### organizationId
+
+`string | undefined`
+
+Advanced. Overrides the sub-organization the SDK operates against.
+
+### proxyBaseUrl
+
+`string | undefined`
+
+Advanced. Base URL for a custom backend proxy in front of the ZeroDev wallet API.
+
+### aaUrl
+
+`string | undefined`
+
+Advanced. Overrides the account-abstraction bundler/paymaster URL.
+
+## React Native
+
+On React Native there are no platform defaults, so `rpId`, `apiKeyStamper`, and `sessionStorage` are **required** and configured through the adapters the SDK ships for Expo. See [React Native Configuration](/wallets/react-native/configuration).
