@@ -511,10 +511,6 @@ export default defineConfig({
             text: "Wallet UI Kit",
             link: "/wallets/auth/wallet-ui-kit",
           },
-          {
-            text: "SDK Reference",
-            link: "/wallets/sdk-reference",
-          },
         ],
       },
     ],
