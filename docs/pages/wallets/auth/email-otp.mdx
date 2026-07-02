@@ -115,7 +115,7 @@ export function EmailOTPLogin() {
 ## Notes
 
 - Keep the `otpId` and `otpEncryptionTargetBundle` on the client until verification completes. For a single-page flow, component state is enough.
-- The authenticated user's email is available through [`useGetUserEmail`](/wallets/hooks/use-get-user-email).
+- The authenticated user's email is available in `emailContacts` from [`useAuthenticators`](/wallets/hooks/use-authenticators).
 - If you need link-based email login instead of manual code entry, use [Magic Link](/wallets/auth/magic-link).
 
 ## Next steps

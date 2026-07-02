@@ -10,7 +10,7 @@ Adding ZeroDev Wallet takes three steps. Use the hook-based SDK for a fully cust
 
 1. **Authenticate** — a user signs in with a passkey, social login, email OTP, or magic link.
 2. **Provision** — a self-custodial smart account is created for them instantly, with their keys secured in isolated hardware.
-3. **Transact** — your app sends gasless, batched transactions through standard [Wagmi](https://wagmi.sh) and [viem](https://viem.sh) APIs.
+3. **Transact** — your app sends gasless transactions and [batched calls](/wallets/wallet-api/batch-transactions) through standard [Wagmi](https://wagmi.sh) and [viem](https://viem.sh) APIs.
 
 ## How we keep keys secure
 
@@ -28,7 +28,7 @@ That's what makes every wallet **self-custodial**: only the authenticated user c
 
 **Wallet actions**
 
-- [Send transactions](/wallets/wallet-api/send-transaction) and [sign messages](/wallets/wallet-api/sign-message) through the tooling you already use — sponsor gas and batch multiple actions into a single approval.
+- [Send transactions](/wallets/wallet-api/send-transaction), [batch multiple calls](/wallets/wallet-api/batch-transactions), and [sign messages](/wallets/wallet-api/sign-message) through the tooling you already use.
 - Fund wallets across chains with a [smart routing address](/onramp/smart-routing-address), and extend accounts with Kernel's [permissions](/smart-accounts/permissions/intro) and [modules](/smart-accounts/use-plugins/overview).
 - Let ZeroDev handle [session management](/wallets/session-management) for you.
 

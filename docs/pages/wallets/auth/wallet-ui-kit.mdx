@@ -4,9 +4,9 @@ The Wallet UI Kit gives you prebuilt React UI for ZeroDev Wallet. Use it when yo
 
 The kit uses a Wagmi-compatible ZeroDev connector, so after the user signs in you can use standard Wagmi hooks such as `useAccount`, `useSignMessage`, and `useSendTransaction`.
 
-The current kit covers login and an experimental confirmation screen for signature signing and transaction confirmations that is currently in beta. This confirmation UI will improve over time. More wallet UI components are coming, including onramps, asset management and portfolio views, transaction history, and chain-abstracted balances.
+The current kit covers login. More wallet UI components are coming, including signature and transaction confirmations, onramps, asset management and portfolio views, transaction history, and chain-abstracted balances.
 
-For a fully custom UI, use the hook-based authentication pages instead: [Passkeys](/wallets/auth/passkeys), [Email OTP](/wallets/auth/email-otp), [Magic Link](/wallets/auth/magic-link), or [Google OAuth](/wallets/auth/google-oauth).
+For a fully custom UI, use the hook-based authentication pages instead: [Passkeys](/wallets/auth/passkeys), [Email OTP](/wallets/auth/email-otp), [Magic Link](/wallets/auth/magic-link), or [Google OAuth](/wallets/auth/google-oauth). If you want to customize the UI Kit flow itself, use the kit's `useAuth` hook from `@zerodev/react-wallet-ui` to read and drive the auth state.
 
 ## Before you start
 
@@ -23,19 +23,19 @@ This guide uses Arbitrum Sepolia and email OTP. Replace the chain, chain RPC URL
 :::code-group
 
 ```bash [npm]
-npm i @zerodev/react-wallet-ui @zerodev/wallet-react @zerodev/wallet-core wagmi viem @tanstack/react-query
+npm i @zerodev/react-wallet-ui @zerodev/wallet-core @zerodev/wallet-react wagmi viem @wagmi/core @tanstack/react-query zustand
 ```
 
 ```bash [yarn]
-yarn add @zerodev/react-wallet-ui @zerodev/wallet-react @zerodev/wallet-core wagmi viem @tanstack/react-query
+yarn add @zerodev/react-wallet-ui @zerodev/wallet-core @zerodev/wallet-react wagmi viem @wagmi/core @tanstack/react-query zustand
 ```
 
 ```bash [pnpm]
-pnpm i @zerodev/react-wallet-ui @zerodev/wallet-react @zerodev/wallet-core wagmi viem @tanstack/react-query
+pnpm add @zerodev/react-wallet-ui @zerodev/wallet-core @zerodev/wallet-react wagmi viem @wagmi/core @tanstack/react-query zustand
 ```
 
 ```bash [bun]
-bun add @zerodev/react-wallet-ui @zerodev/wallet-react @zerodev/wallet-core wagmi viem @tanstack/react-query
+bun add @zerodev/react-wallet-ui @zerodev/wallet-core @zerodev/wallet-react wagmi viem @wagmi/core @tanstack/react-query zustand
 ```
 
 :::
@@ -147,11 +147,9 @@ function AuthPanel() {
   return (
     <div
       style={{
-        width: '100%',
-        maxWidth: 500,
-        height: 800,
-        maxHeight: '100vh',
-        margin: '0 auto',
+        display: 'grid',
+        placeItems: 'center',
+        minHeight: '100vh',
       }}
     >
       <AuthFlow />
@@ -160,18 +158,16 @@ function AuthPanel() {
 }
 ```
 
-## Size the container
+## Place the login flow
 
-`AuthFlow` renders into the space you give it. Put it in a constrained wallet-sized container, modal, or drawer instead of letting it stretch across the full page on large screens.
+`AuthFlow` comes with the UI Kit's recommended fixed wallet size. Place it in the part of your app where the login flow should appear, such as a modal, drawer, or centered auth area.
 
 ```tsx
 <div
   style={{
-    width: '100%',
-    maxWidth: 500,
-    height: 800,
-    maxHeight: '100vh',
-    margin: '0 auto',
+    display: 'grid',
+    placeItems: 'center',
+    minHeight: '100vh',
   }}
 >
   <AuthFlow onClose={() => setLoginOpen(false)} />
@@ -182,64 +178,18 @@ The `onClose` prop is optional. Use it when your app owns surrounding UI state, 
 
 ## Avoid global CSS conflicts
 
-Import the kit stylesheet once, and make sure your app's global CSS does not broadly restyle elements such as `button`, `input`, `h1`, or `p`. If your app has global element styles, scope them to your own app shell so they do not override the Wallet UI Kit screens.
+Import the kit stylesheet once. If your app has broad global element styles, scope them to your own app shell so the Wallet UI Kit can keep its intended styling.
 
-## Add beta signing confirmations
+## Signing and transactions
 
-The UI Kit also includes `SignatureRequest`, an experimental confirmation screen for signature signing and transaction requests that is currently in beta. Mount it once in the same provider tree as your wallet UI.
+The current Wallet UI Kit package is focused on login. After the user signs in, use the standard Wallet API pages for wallet actions:
 
-```tsx
-import { AuthFlow, SignatureRequest } from '@zerodev/react-wallet-ui'
+- [Sign a message](/wallets/wallet-api/sign-message)
+- [Sign typed data](/wallets/wallet-api/sign-typed-message)
+- [Send a transaction](/wallets/wallet-api/send-transaction)
+- [Batch transactions](/wallets/wallet-api/batch-transactions)
 
-export function WalletOverlays() {
-  return (
-    <>
-      <div
-        style={{
-          width: '100%',
-          maxWidth: 500,
-          height: 800,
-          maxHeight: '100vh',
-          margin: '0 auto',
-        }}
-      >
-        <AuthFlow />
-      </div>
-
-      <SignatureRequest
-        style={{
-          width: '100%',
-          maxWidth: 400,
-          height: 600,
-          maxHeight: '100vh',
-        }}
-      />
-    </>
-  )
-}
-```
-
-By default, the kit prompts for methods such as `personal_sign`, `eth_signTypedData_v4`, `eth_sendTransaction`, `wallet_sendTransaction`, and `wallet_sendCalls`. This confirmation feature is experimental, in beta, and will continue improving over time.
-
-If you only want the prebuilt login UI, you can omit `SignatureRequest`. To force signing and transaction requests to run in the background even if a confirmation listener is mounted later, set signing to `background` in the connector config:
-
-```tsx
-zeroDevWallet({
-  projectId,
-  aaHost,
-  chains: [arbitrumSepolia],
-  mode: '7702',
-  config: {
-    auth: {
-      enabledMethods: ['email', 'google', 'passkey'],
-      emailAuthMethod: 'otp',
-    },
-    signing: {
-      mode: 'background',
-    },
-  },
-})
-```
+Signature and transaction confirmation screens are coming soon. Reach out to the [ZeroDev sales team](https://zerodev.app/contact) if you want early access.
 
 ## Coming soon
 

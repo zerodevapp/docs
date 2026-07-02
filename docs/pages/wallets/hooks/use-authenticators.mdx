@@ -1,0 +1,76 @@
+import QueryResult from '../shared/query-result.mdx'
+
+# useAuthenticators [Hook for getting the authenticated user's login methods]
+
+## Import
+
+```tsx
+import { useAuthenticators } from '@zerodev/wallet-react'
+```
+
+## Usage
+
+```tsx
+import { useAuthenticators } from '@zerodev/wallet-react'
+import { useAccount } from 'wagmi'
+
+function UserProfile() {
+  const { isConnected } = useAccount()
+  const { data, isLoading } = useAuthenticators({
+    query: {
+      enabled: isConnected,
+    },
+  })
+
+  if (!isConnected) return null
+
+  if (isLoading) return <p>Loading user...</p>
+
+  const email = data?.emailContacts?.[0]?.email
+
+  return <p>Email: {email ?? 'Not available'}</p>
+}
+```
+
+## Parameters
+
+### query
+
+`UseQueryOptions | undefined`
+
+Optional TanStack Query options. Use this to control when the request runs, retry behavior, stale time, and other query settings.
+
+## Return Types
+
+### data
+
+`{ oauths: OAuthAuthenticator[] | null; passkeys: PasskeyAuthenticator[] | null; emailContacts: EmailContact[] | null; apiKeys: ApiKeyAuthenticator[] | null } | undefined`
+
+- Defaults to `undefined`
+- The authenticated user's linked authenticators, grouped by type.
+
+#### oauths
+
+`OAuthAuthenticator[] | null`
+
+OAuth authenticators linked to the user.
+
+#### passkeys
+
+`PasskeyAuthenticator[] | null`
+
+Passkey authenticators linked to the user.
+
+#### emailContacts
+
+`EmailContact[] | null`
+
+Email contacts linked to the user. Use `emailContacts?.[0]?.email` when you need the user's email address after Email OTP, Magic Link, or Google OAuth.
+
+#### apiKeys
+
+`ApiKeyAuthenticator[] | null`
+
+API key authenticators linked to the user.
+
+<QueryResult />

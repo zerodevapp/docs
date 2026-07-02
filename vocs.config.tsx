@@ -494,6 +494,10 @@ export default defineConfig({
                 link: "/wallets/wallet-api/send-transaction",
               },
               {
+                text: "Batch Transactions",
+                link: "/wallets/wallet-api/batch-transactions",
+              },
+              {
                 text: "Sign a Message",
                 link: "/wallets/wallet-api/sign-message",
               },

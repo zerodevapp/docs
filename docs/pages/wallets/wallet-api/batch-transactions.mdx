@@ -1,0 +1,82 @@
+# Batch Transactions [Multiple calls in one wallet request]
+
+Use Wagmi's `useSendCalls` hook to send multiple calls in one wallet request. ZeroDev Wallet handles the underlying `wallet_sendCalls` request and executes the calls through the user's smart account.
+
+Batching is useful for flows such as approve-and-swap, mint-and-stake, or any app action that should feel like one confirmation instead of several wallet prompts.
+
+By default, batches are atomic: if one call reverts, the whole batch reverts.
+
+## `useSendCalls`
+
+This example sends a 0 ETH self-transfer and an ERC-20 transfer in one batch. Replace the contract, calldata, and values with the calls your app needs.
+
+```tsx
+import { encodeFunctionData, erc20Abi } from 'viem'
+import { useAccount, useSendCalls, useWaitForCallsStatus } from 'wagmi'
+
+export function BatchCalls({
+  tokenAddress,
+}: {
+  tokenAddress: `0x${string}`
+}) {
+  const { address, isConnected } = useAccount()
+  const { sendCalls, data, isPending, error } = useSendCalls()
+  const callsStatus = useWaitForCallsStatus({
+    id: data?.id,
+    query: {
+      enabled: Boolean(data?.id),
+    },
+  })
+
+  const sendBatch = () => {
+    if (!isConnected || !address) return
+
+    sendCalls({
+      calls: [
+        {
+          to: address,
+          value: BigInt(0),
+        },
+        {
+          to: tokenAddress,
+          data: encodeFunctionData({
+            abi: erc20Abi,
+            functionName: 'transfer',
+            args: [address, BigInt(1_000_000)],
+          }),
+        },
+      ],
+    })
+  }
+
+  return (
+    <div>
+      <button type="button" onClick={sendBatch} disabled={isPending}>
+        {isPending ? 'Sending batch...' : 'Send batch'}
+      </button>
+
+      {data?.id ? <p>Batch ID: {data.id}</p> : null}
+      {callsStatus.data?.status ? (
+        <p>Status: {callsStatus.data.status}</p>
+      ) : null}
+      {error ? <p>Batch failed: {error.message}</p> : null}
+      {callsStatus.error ? <p>{callsStatus.error.message}</p> : null}
+    </div>
+  )
+}
+```
+
+## Notes
+
+- `useSendCalls` sends an EIP-5792 `wallet_sendCalls` request through the connected wallet.
+- Batches can be sponsored when your project has a matching gas policy for the chain.
+- In `7702` mode, the exposed wallet address stays the user's address while the batch still uses smart wallet execution.
+- In `4337` mode, the batch executes through the user's Kernel smart account.
+- Use `useWaitForCallsStatus` with the returned `id` to track confirmation.
+- Use `BigInt(...)` instead of BigInt literals such as `0n` if your TypeScript target is lower than `ES2020`.
+
+## Next steps
+
+- [Send a transaction](/wallets/wallet-api/send-transaction)
+- [Sign a message](/wallets/wallet-api/sign-message)
+- [Wallet UI Kit](/wallets/auth/wallet-ui-kit)
