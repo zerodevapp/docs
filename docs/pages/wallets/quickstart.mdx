@@ -46,18 +46,18 @@ For example, if you run your app at `http://localhost:3000` during development, 
 
 ## Add configuration values
 
-In the ZeroDev dashboard, open your project and copy its project ID. Then open the network you enabled for this app and copy its Bundler RPC URL.
+In the ZeroDev dashboard, open your project and copy its project ID. Make sure the network you want to use is enabled for the project.
 
 Add these values to your app's configuration. The exact environment variable prefix depends on your framework:
 
 ```bash
 ZERODEV_PROJECT_ID="your-project-id"
-ZERODEV_AA_URL="your-chain-specific-zerodev-rpc-url"
+ZERODEV_AA_HOST="https://rpc.zerodev.app"
 ARBITRUM_SEPOLIA_RPC_URL="https://sepolia-rollup.arbitrum.io/rpc"
 ```
 
 - `ZERODEV_PROJECT_ID` is your ZeroDev project ID.
-- `ZERODEV_AA_URL` is the network-specific Bundler RPC URL from the dashboard.
+- `ZERODEV_AA_HOST` is the ZeroDev bundler and paymaster host. It is optional and defaults to `https://rpc.zerodev.app`; set it only when you target staging or self-hosted infrastructure. The SDK derives the per-chain URL from this host, so the same value works across every chain.
 - `ARBITRUM_SEPOLIA_RPC_URL` is the chain RPC used by Wagmi's transport.
 
 This example uses Arbitrum Sepolia. Replace the chain and RPC URLs if your project uses a different chain.
@@ -72,7 +72,7 @@ import { createConfig, http } from 'wagmi'
 import { arbitrumSepolia } from 'wagmi/chains'
 
 const projectId = '<your-project-id>'
-const aaUrl = '<your-chain-specific-zerodev-rpc-url>'
+const aaHost = 'https://rpc.zerodev.app'
 const chainRpcUrl = 'https://sepolia-rollup.arbitrum.io/rpc'
 
 export const config = createConfig({
@@ -80,7 +80,7 @@ export const config = createConfig({
   connectors: [
     zeroDevWallet({
       projectId,
-      aaUrl,
+      aaHost,
       chains: [arbitrumSepolia],
       mode: '7702',
     }),
@@ -276,7 +276,7 @@ The examples above use `@zerodev/wallet-react` so you can build your own UI. If 
 
 - **Allowlist errors**: confirm that the dashboard allowlists the exact origin you are opening in the browser.
 - **Sponsored transaction fails**: confirm that a gas policy exists for the project and chain.
-- **Wrong chain**: make sure the chain in `createConfig`, the `aaUrl`, and the gas policy all refer to the same chain.
+- **Wrong chain**: make sure the chain in `createConfig` and the gas policy refer to the same chain, and that the chain is enabled for the project. `aaHost` is host-only, so the SDK derives the correct per-chain URL automatically.
 
 ## Next steps
 
