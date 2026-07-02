@@ -4,7 +4,7 @@ The [`useSendMagicLink`](/wallets/hooks/use-send-magic-link) and [`useVerifyMagi
 
 A magic link needs a verified `https` callback — an **App Link** on Android, a **Universal Link** on iOS — so that tapping the link in the email opens the app. Email clients (e.g. Gmail) don't render custom-scheme links, so a plain `https` link on your verified domain is required.
 
-The flow: send → the backend emails `${redirectURL}?code=<otp>` → the user taps it → the app opens at `/verify-email` → the route pairs the `code` from the URL with the persisted `otpId`/`otpEncryptionTargetBundle` and verifies.
+The flow: send → the backend emails the dashboard-configured redirect URL with `?code=<otp>` → the user taps it → the app opens at `/verify-email` → the route pairs the `code` from the URL with the persisted `otpId`/`otpEncryptionTargetBundle` and verifies.
 
 ## Prerequisites
 
@@ -85,7 +85,6 @@ import { useState } from "react";
 import { Button, Text, TextInput } from "react-native";
 
 import { savePendingMagicLink } from "@/lib/magic-link-pending";
-import { RP_ID } from "@/wagmi.config";
 
 export function MagicLinkFlow() {
   const [email, setEmail] = useState("");
@@ -105,10 +104,7 @@ export function MagicLinkFlow() {
         title="Send magic link"
         disabled={send.isPending || !email}
         onPress={() =>
-          send.mutate(
-            { email, redirectURL: `https://${RP_ID}/verify-email` },
-            { onSuccess: savePendingMagicLink },
-          )
+          send.mutate({ email }, { onSuccess: savePendingMagicLink })
         }
       />
     </>
@@ -116,7 +112,7 @@ export function MagicLinkFlow() {
 }
 ```
 
-- `redirectURL` must match the intent-filter host and the route path exactly; the backend emails `${redirectURL}?code=<otp>`.
+- The Magic Link Redirect URL configured in the dashboard must match the intent-filter host and route path exactly; the emailed link adds the `code` query parameter.
 - The mutation's response is exactly what the saver takes, so `onSuccess: savePendingMagicLink` passes it directly. TanStack Query awaits async `onSuccess` callbacks before flipping `isSuccess`, so "Check your email" can't appear before the bundle is persisted.
 
 ### 3. Add the `verify-email` route

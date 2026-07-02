@@ -140,13 +140,11 @@ export function WalletExport() {
 
 ### Cross-platform components
 
-Components with no RN-only imports — `passkey-flow.tsx` and `magic-link-flow.tsx` — need no `.web` variant; the same file runs on both platforms. For magic link, just make the `redirectURL` point at the right origin per platform:
+Components with no RN-only imports — `passkey-flow.tsx` and `magic-link-flow.tsx` — need no `.web` variant; the same file runs on both platforms. For magic link, configure the Magic Link Redirect URL in the ZeroDev Dashboard for each origin you support, such as your native App Link domain and your web app origin:
 
 ```ts
-const redirectURL =
-  Platform.OS === "web"
-    ? `${window.location.origin}/verify-email`
-    : `https://${RP_ID}/verify-email`;
+// Native: https://wallet.example.com/verify-email
+// Web: https://app.example.com/verify-email
 ```
 
 ## 2. Route only the callbacks that still matter on web
