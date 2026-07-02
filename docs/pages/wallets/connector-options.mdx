@@ -28,13 +28,12 @@ zeroDevWallet({
 
 ### mode
 
-`'EOA' | '4337' | '7702'`
+`'4337' | '7702'`
 
 The account mode exposed to Wagmi. Defaults to `'7702'`.
 
 - `'7702'` — An EOA delegated to a Kernel smart account via [EIP-7702](https://eips.ethereum.org/EIPS/eip-7702). The address equals the EOA address; transactions are bundled as UserOperations and can be sponsored.
 - `'4337'` — A counterfactual [ERC-4337](https://eips.ethereum.org/EIPS/eip-4337) Kernel smart account. The address differs from the EOA and the account is deployed on the first UserOperation; transactions are bundled as UserOperations.
-- `'EOA'` — A plain EOA. Transactions are sent directly via the chain's RPC, with no bundler and no sponsorship.
 
 ### rpId
 
@@ -130,11 +129,11 @@ Advanced. Overrides the sub-organization the SDK operates against.
 
 Advanced. Base URL for a custom backend proxy in front of the ZeroDev wallet API.
 
-### aaUrl
+### aaHost
 
 `string | undefined`
 
-Advanced. Overrides the account-abstraction bundler/paymaster URL.
+Advanced. Overrides the account-abstraction bundler and paymaster host. Pass only the host origin, such as `https://rpc.zerodev.app`; the SDK derives the per-chain URL from your project ID, active chain, and host.
 
 ## React Native
 

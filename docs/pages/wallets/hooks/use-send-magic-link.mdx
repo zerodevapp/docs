@@ -46,7 +46,7 @@ function SendMagicLink() {
 }
 ```
 
-## Parameters
+## Mutation Parameters
 
 ### email
 
@@ -56,19 +56,25 @@ function SendMagicLink() {
 
 Configure the magic-link URL template for your project in the ZeroDev dashboard. The redirect page should call [`useVerifyMagicLink`](/wallets/hooks/use-verify-magic-link).
 
+### connector
+
+`Connector | undefined`
+
+Optional Wagmi connector to send the magic link with. If omitted, the hook uses the configured ZeroDev connector.
+
 ## Return Types
 
 [TanStack Query mutation docs](https://tanstack.com/query/v5/docs/react/reference/useMutation)
 
 ### mutate
 
-`(variables: { email: string }) => void`
+`(variables: { email: string; connector?: Connector }) => void`
 
 The mutation function to send the magic link.
 
 ### mutateAsync
 
-`(variables: { email: string }) => Promise<{ otpId: string; otpEncryptionTargetBundle: string }>`
+`(variables: { email: string; connector?: Connector }) => Promise<{ otpId: string; otpEncryptionTargetBundle: string }>`
 
 Similar to [`mutate`](#mutate) but returns a promise.
 

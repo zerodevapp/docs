@@ -33,9 +33,15 @@ function Login() {
 }
 ```
 
-## Parameters
+## Mutation Parameters
 
-This hook takes no mutation variables. It triggers the browser's WebAuthn prompt to authenticate with an existing passkey.
+This hook can be called without mutation variables. It triggers the browser's WebAuthn prompt to authenticate with an existing passkey.
+
+### connector
+
+`Connector | undefined`
+
+Optional Wagmi connector to log in with. If omitted, the hook uses the configured ZeroDev connector.
 
 ## Return Types
 
@@ -43,13 +49,13 @@ This hook takes no mutation variables. It triggers the browser's WebAuthn prompt
 
 ### mutate
 
-`() => void`
+`(variables?: { connector?: Connector }) => void`
 
 The mutation function to log in with a passkey. Triggers the WebAuthn browser prompt.
 
 ### mutateAsync
 
-`() => Promise<void>`
+`(variables?: { connector?: Connector }) => Promise<void>`
 
 Similar to [`mutate`](#mutate) but returns a promise. Resolves when the passkey is verified and the wallet is connected.
 

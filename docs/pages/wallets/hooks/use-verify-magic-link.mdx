@@ -39,7 +39,7 @@ function VerifyPage() {
 }
 ```
 
-## Parameters
+## Mutation Parameters
 
 ### otpId
 
@@ -59,19 +59,25 @@ function VerifyPage() {
 
 **Required.** The encryption target bundle returned by [`useSendMagicLink`](/wallets/hooks/use-send-magic-link).
 
+### connector
+
+`Connector | undefined`
+
+Optional Wagmi connector to verify the magic link with. If omitted, the hook uses the configured ZeroDev connector.
+
 ## Return Types
 
 [TanStack Query mutation docs](https://tanstack.com/query/v5/docs/react/reference/useMutation)
 
 ### mutate
 
-`(variables: { otpId: string; otpEncryptionTargetBundle: string; code: string }) => void`
+`(variables: { otpId: string; otpEncryptionTargetBundle: string; code: string; connector?: Connector }) => void`
 
 The mutation function to verify the magic link.
 
 ### mutateAsync
 
-`(variables: { otpId: string; otpEncryptionTargetBundle: string; code: string }) => Promise<void>`
+`(variables: { otpId: string; otpEncryptionTargetBundle: string; code: string; connector?: Connector }) => Promise<void>`
 
 Similar to [`mutate`](#mutate) but returns a promise. Resolves when the magic link is verified and the wallet is connected.
 

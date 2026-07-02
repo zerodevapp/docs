@@ -33,9 +33,15 @@ function Register() {
 }
 ```
 
-## Parameters
+## Mutation Parameters
 
-This hook takes no mutation variables. It triggers the browser's WebAuthn prompt to create a new passkey.
+This hook can be called without mutation variables. It triggers the browser's WebAuthn prompt to create a new passkey.
+
+### connector
+
+`Connector | undefined`
+
+Optional Wagmi connector to register the passkey with. If omitted, the hook uses the configured ZeroDev connector.
 
 ## Return Types
 
@@ -43,13 +49,13 @@ This hook takes no mutation variables. It triggers the browser's WebAuthn prompt
 
 ### mutate
 
-`() => void`
+`(variables?: { connector?: Connector }) => void`
 
 The mutation function to register a passkey. Triggers the WebAuthn browser prompt.
 
 ### mutateAsync
 
-`() => Promise<void>`
+`(variables?: { connector?: Connector }) => Promise<void>`
 
 Similar to [`mutate`](#mutate) but returns a promise. Resolves when the passkey is registered and the wallet is connected.
 

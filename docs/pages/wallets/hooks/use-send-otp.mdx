@@ -40,7 +40,7 @@ function SendCode() {
 }
 ```
 
-## Parameters
+## Mutation Parameters
 
 ### email
 
@@ -48,19 +48,25 @@ function SendCode() {
 
 **Required.** The email address to send the verification code to.
 
+### connector
+
+`Connector | undefined`
+
+Optional Wagmi connector to send the OTP with. If omitted, the hook uses the configured ZeroDev connector.
+
 ## Return Types
 
 [TanStack Query mutation docs](https://tanstack.com/query/v5/docs/react/reference/useMutation)
 
 ### mutate
 
-`(variables: { email: string }) => void`
+`(variables: { email: string; connector?: Connector }) => void`
 
 The mutation function to send the OTP.
 
 ### mutateAsync
 
-`(variables: { email: string }) => Promise<{ otpId: string; otpEncryptionTargetBundle: string }>`
+`(variables: { email: string; connector?: Connector }) => Promise<{ otpId: string; otpEncryptionTargetBundle: string }>`
 
 Similar to [`mutate`](#mutate) but returns a promise.
 

@@ -11,8 +11,10 @@ By default, batches are atomic: if one call reverts, the whole batch reverts.
 This example sends a 0 ETH self-transfer and an ERC-20 transfer in one batch. Replace the contract, calldata, and values with the calls your app needs.
 
 ```tsx
-import { encodeFunctionData, erc20Abi } from 'viem'
-import { useAccount, useSendCalls, useWaitForCallsStatus } from 'wagmi'
+import { waitForCallsStatus } from '@wagmi/core'
+import { useState } from 'react'
+import { type Address, type Hex, encodeFunctionData, erc20Abi } from 'viem'
+import { useAccount, useConfig, useSendCalls } from 'wagmi'
 
 export function BatchCalls({
   tokenAddress,
@@ -20,33 +22,42 @@ export function BatchCalls({
   tokenAddress: `0x${string}`
 }) {
   const { address, isConnected } = useAccount()
-  const { sendCalls, data, isPending, error } = useSendCalls()
-  const callsStatus = useWaitForCallsStatus({
-    id: data?.id,
-    query: {
-      enabled: Boolean(data?.id),
-    },
-  })
+  const config = useConfig()
+  const { sendCallsAsync, isPending, error } = useSendCalls()
+  const [status, setStatus] = useState<string | null>(null)
+  const [transactionHash, setTransactionHash] = useState<
+    `0x${string}` | null
+  >(null)
 
-  const sendBatch = () => {
+  const sendBatch = async () => {
     if (!isConnected || !address) return
+    setStatus(null)
+    setTransactionHash(null)
 
-    sendCalls({
-      calls: [
-        {
-          to: address,
-          value: BigInt(0),
-        },
-        {
-          to: tokenAddress,
-          data: encodeFunctionData({
-            abi: erc20Abi,
-            functionName: 'transfer',
-            args: [address, BigInt(1_000_000)],
-          }),
-        },
-      ],
-    })
+    const calls: {
+      to: Address
+      value?: bigint
+      data?: Hex
+    }[] = [
+      {
+        to: address,
+        value: BigInt(0),
+      },
+      {
+        to: tokenAddress,
+        data: encodeFunctionData({
+          abi: erc20Abi,
+          functionName: 'transfer',
+          args: [address, BigInt(1_000_000)],
+        }),
+      },
+    ]
+
+    const { id } = await sendCallsAsync({ calls })
+
+    const result = await waitForCallsStatus(config, { id })
+    setStatus(result.status ?? null)
+    setTransactionHash(result.receipts?.[0]?.transactionHash ?? null)
   }
 
   return (
@@ -55,12 +66,9 @@ export function BatchCalls({
         {isPending ? 'Sending batch...' : 'Send batch'}
       </button>
 
-      {data?.id ? <p>Batch ID: {data.id}</p> : null}
-      {callsStatus.data?.status ? (
-        <p>Status: {callsStatus.data.status}</p>
-      ) : null}
+      {status ? <p>Status: {status}</p> : null}
+      {transactionHash ? <p>Hash: {transactionHash}</p> : null}
       {error ? <p>Batch failed: {error.message}</p> : null}
-      {callsStatus.error ? <p>{callsStatus.error.message}</p> : null}
     </div>
   )
 }
@@ -72,7 +80,7 @@ export function BatchCalls({
 - Batches can be sponsored when your project has a matching gas policy for the chain.
 - In `7702` mode, the exposed wallet address stays the user's address while the batch still uses smart wallet execution.
 - In `4337` mode, the batch executes through the user's Kernel smart account.
-- Use `useWaitForCallsStatus` with the returned `id` to track confirmation.
+- Use `waitForCallsStatus` with the returned `id` to wait for the batch result.
 - Use `BigInt(...)` instead of BigInt literals such as `0n` if your TypeScript target is lower than `ES2020`.
 
 ## Next steps
