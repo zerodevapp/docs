@@ -1,12 +1,12 @@
 # ZeroDev Smart Wallet
 
-ZeroDev Wallet is the first **smart embedded wallet** — an embedded wallet built natively on smart accounts. Your users sign in with a familiar login and get a self-custodial wallet where gasless transactions, batching, and chain abstraction work out of the box, with no seed phrases, gas tokens, or transaction pop-ups.
+ZeroDev Wallet is a **smart embedded wallet** — an embedded wallet built natively on smart accounts. Your users sign in with a familiar login and get a self-custodial wallet that can use gas sponsorship, batching, permissions, and chain abstraction without requiring seed phrases or gas tokens.
 
-Most embedded wallets are EOAs that treat smart accounts as an add-on. ZeroDev Wallet is the opposite: it's smart-account-first, so smart account features are native APIs rather than bolted-on extras.
+Most embedded wallets start as EOAs and add smart accounts later. ZeroDev Wallet is smart-account-first, so account abstraction features are part of the core wallet flow instead of a separate integration.
 
 ## How it works
 
-Adding ZeroDev Wallet takes three steps — or drop in the prebuilt [Wallet UI Kit](/wallets/auth/wallet-ui-kit) for a ready-made login flow and the fastest possible startup. See it in the [live demo](https://zerodev-signer-demo.vercel.app/), or follow the [quickstart](/wallets/quickstart) to build it yourself.
+Adding ZeroDev Wallet takes three steps. Use the hook-based SDK for a fully custom wallet experience, or drop in the prebuilt [Wallet UI Kit](/wallets/auth/wallet-ui-kit) when you want a ready-made login flow. See it in the [live demo](https://zerodev-signer-demo.vercel.app/), or follow the [quickstart](/wallets/quickstart) to build it yourself.
 
 1. **Authenticate** — a user signs in with a passkey, social login, email OTP, or magic link.
 2. **Provision** — a self-custodial smart account is created for them instantly, with their keys secured in isolated hardware.
@@ -14,7 +14,7 @@ Adding ZeroDev Wallet takes three steps — or drop in the prebuilt [Wallet UI K
 
 ## How we keep keys secure
 
-Every wallet's private key is created and stored inside secure hardware — an isolated, tamper-proof environment (called a *trusted execution environment*, or TEE) that nothing outside it can read into, not even the servers it runs on. When a user signs a transaction, the signing happens *inside* that secure hardware and only the signature comes out. The private key itself is never exposed to your app, to ZeroDev, or to anyone else.
+Every wallet's private key is created and stored inside secure hardware — an isolated environment called a *trusted execution environment*, or TEE. When a user signs a message or transaction, signing happens inside that environment and only the signature leaves. The private key itself is never exposed to your app, to ZeroDev, or to anyone else.
 
 That's what makes every wallet **self-custodial**: only the authenticated user can approve a signature, and users can [export their wallet](/wallets/export) at any time to take full custody of their keys.
 
@@ -23,7 +23,7 @@ That's what makes every wallet **self-custodial**: only the authenticated user c
 **Onboarding**
 
 - Authenticate with [passkeys](/wallets/auth/passkeys), [Google OAuth](/wallets/auth/google-oauth), [email OTP](/wallets/auth/email-otp), or [magic links](/wallets/auth/magic-link).
-- Drop in the prebuilt [Wallet UI Kit](/wallets/auth/wallet-ui-kit) for a login flow with even less code.
+- Drop in the prebuilt [Wallet UI Kit](/wallets/auth/wallet-ui-kit) for a faster login integration with less code.
 - Keep users self-custodial — they can [export their wallet](/wallets/export) at any time.
 
 **Wallet actions**
@@ -34,7 +34,7 @@ That's what makes every wallet **self-custodial**: only the authenticated user c
 
 ## Why ZeroDev Wallet
 
-ZeroDev Wallet is smart-account-first: every wallet is a smart account (via EIP-7702 and ERC-4337) from the moment a user signs in, not an EOA with features layered on top. That, plus a single platform for the whole account lifecycle, gives you everything to build a bespoke, app-native onchain experience:
+ZeroDev Wallet is smart-account-first: every wallet can use smart account execution through EIP-7702 or ERC-4337 from the moment a user signs in, instead of starting as a plain EOA with features layered on top. That, plus a single platform for the whole account lifecycle, gives you everything to build a bespoke, app-native onchain experience:
 
 - **Smart from the first transaction.** Users get a smart account the moment they sign in — no separate upgrade step, no migrating from an EOA later.
 - **App-like, one-click flows.** Sponsor gas and batch multiple onchain actions into a single tap, so users get flows that feel like a modern app instead of a string of wallet pop-ups, approvals, and gas prompts.
@@ -51,7 +51,7 @@ ZeroDev Wallet combines the best of off-chain and on-chain infrastructure — se
 - **Resource-lock chain abstraction** — let users spend a single balance across chains without bridging or holding gas on each network.
 - **An expanded UI Kit** — more prebuilt, data-driven components, including portfolio management, transaction history, chain-abstracted balances, and more.
 
-Interested in exploring these, or have another feature request? [Reach out](https://t.me/derek_chiang).
+Interested in exploring these, or have another feature request? [Contact us](https://zerodev.app/contact).
 
 ## ZeroDev SDK vs ZeroDev Wallet
 
@@ -73,7 +73,7 @@ ZeroDev Wallet is included in every ZeroDev plan. It draws from your existing cr
 
 - **Free plans:** if you run out of credits, signing pauses until your credits refresh the following month. Your users can always [export their keys](/wallets/export) to keep full control of their wallets.
 - **Paid plans:** you keep signing and transacting past your allotment and are billed for overage credits.
-- **Rate limits:** default per-user rate limits protect against spam draining your credits. They're flexible — [contact us](https://t.me/derek_chiang) to adjust them for your app.
+- **Rate limits:** default per-user rate limits protect against spam draining your credits. They're flexible — [contact us](https://zerodev.app/contact) to adjust them for your app.
 
 ## Get started
 

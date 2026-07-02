@@ -1,27 +1,33 @@
 # Sign a Message [Sign messages with Wagmi hooks]
 
-To sign a message, use Wagmi's `useSignMessage` hook:
+Use Wagmi's `useSignMessage` hook to ask the connected ZeroDev wallet to sign an offchain message. Message signing does not submit a transaction and does not require gas.
 
 ```tsx
-import { useSignMessage } from "wagmi";
+import { useSignMessage } from 'wagmi'
 
 export function SignMessage() {
-  const { signMessage, data, isPending, error } = useSignMessage();
+  const { signMessage, data, isPending, error } = useSignMessage()
 
   const handleSign = () =>
     signMessage({
-      message: "Hello from ZeroDev Wallet",
-    });
+      message: 'Hello from ZeroDev Wallet',
+    })
 
   return (
     <div>
-      <button onClick={handleSign} disabled={isPending}>
-        {isPending ? "Signing..." : "Sign message"}
+      <button type="button" onClick={handleSign} disabled={isPending}>
+        {isPending ? 'Signing...' : 'Sign message'}
       </button>
 
-      {data && <p>Signature: {data}</p>}
-      {error && <p>Signing failed: {error.message}</p>}
+      {data ? <p>Signature: {data}</p> : null}
+      {error ? <p>Signing failed: {error.message}</p> : null}
     </div>
-  );
+  )
 }
 ```
+
+## Next steps
+
+- [Send a transaction](/wallets/wallet-api/send-transaction)
+- [Sign typed data](/wallets/wallet-api/sign-typed-message)
+- [Session management](/wallets/session-management)
