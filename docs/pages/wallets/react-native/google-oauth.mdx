@@ -4,7 +4,7 @@
 **USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
 :::
 
-On the web, [Google OAuth](/wallets/auth/google-oauth) uses a popup. Native apps don't have popups — instead, the SDK opens the system auth browser and returns to your app via a deep link. The [`useAuthenticateOAuthWithExpoWebBrowser`](/wallets/hooks/use-authenticate-oauth-with-expo-web-browser) hook handles both ends of that round trip.
+On the web, [Google OAuth](/wallets/auth/google-oauth) uses a popup. Native apps don't have popups — instead, the SDK opens the system auth browser and returns to your app via a deep link. The [`useAuthenticateOAuthWithExpoWebBrowser`](/wallets/hooks/use-authenticate-oauth-with-expo-web-browser) hook handles both ends of that round trip on both platforms: the auth session (`ASWebAuthenticationSession` on iOS, Custom Tabs on Android) intercepts the custom-scheme redirect itself, so no domain setup is needed.
 
 :::info
 This flow requires an [Expo development build](https://docs.expo.dev/develop/development-builds/expo-go-to-dev-build/) — see the [quickstart](/wallets/react-native/quickstart#5-switch-to-an-expo-development-build).
@@ -106,9 +106,16 @@ This route is for the **native** OAuth flow. If the same Expo app also runs on w
 
 On the [ZeroDev Dashboard](https://dashboard.zerodev.app/), **allowlist the redirect URL**. After a successful sign-in the browser redirects back into the app.
 
-## Using an App Link as the redirect
+## Using a verified `https` link as the redirect
 
-Once the [Domain Association](/wallets/react-native/domain-association) is set up on your domain, you can use an `https` **App Link** instead of the custom scheme — `https://<your domain>/...` links then open the app directly ([Expo guide](https://docs.expo.dev/linking/android-app-links/)).
+Once the [Domain Association](/wallets/react-native/domain-association) is set up on your domain, you can use a verified `https` link (`https://<your domain>/oauth-callback`) instead of the custom scheme.
+
+The two platforms deliver this redirect through different mechanisms:
+
+- **Android** delivers it as a verified **App Link**: the OS hands the redirect to your app as an intent ([Expo guide](https://docs.expo.dev/linking/android-app-links/)). Requires an intent filter (below).
+- **iOS 17.4+** resolves it inside the auth session itself: `ASWebAuthenticationSession` observes the redirect to your domain and returns it to the SDK. This is *not* Universal Link routing — iOS only opens Universal Links from a user tap, never from the server-side redirect that ends an OAuth flow — so the AASA doesn't need to claim the `/oauth-callback` path. What it does require is the `webcredentials:<your domain>` entitlement (the same one passkeys use) from the [Domain Association](/wallets/react-native/domain-association#2-ios-add-the-associated-domains-entitlement) setup.
+
+### Android: add an intent filter
 
 Add an `intentFilter` for `/oauth-callback` in `app.json`:
 
@@ -137,7 +144,15 @@ Add an `intentFilter` for `/oauth-callback` in `app.json`:
 
 > After `app.json` changes, regenerate the native project: `npx expo prebuild --clean`, then rebuild. Intent filters land in `AndroidManifest.xml` and App Link verification happens at install time.
 
-Then use the App Link as the redirect:
+### iOS: check the requirements
+
+No OAuth-specific setup beyond the [Domain Association](/wallets/react-native/domain-association) — but three things must hold:
+
+- The build carries the `webcredentials:<your domain>` entitlement (paid Apple Developer team). Entitlement changes only land after `npx expo prebuild --clean` and a rebuild.
+- The hosted `apple-app-site-association` lists your `<team id>.<bundle id>` under `webcredentials`. If the entitlement or AASA is missing or stale, the flow strands the user on the redirect page inside the auth sheet — during development, keep the `?mode=developer` flag on the entitlement so the device fetches the AASA straight from your origin instead of Apple's CDN.
+- The device runs **iOS 17.4 or later**. Older versions can't observe `https` callbacks in the auth session — fall back to the custom scheme there (snippet below).
+
+### Pass the `https` redirect
 
 ```tsx
 import { RP_ID } from "@/wagmi.config";
@@ -147,4 +162,25 @@ const auth = useAuthenticateOAuthWithExpoWebBrowser({
 });
 ```
 
-Since this is a new redirect URL, remember to [allowlist it on the Dashboard](#5-allowlist-the-redirect-url) as well.
+The hook detects the `https` redirect and configures the auth session accordingly — no extra option needed on either platform.
+
+To keep older iOS versions working, pick the redirect per platform and version:
+
+```tsx
+import * as Linking from "expo-linking";
+import { Platform } from "react-native";
+
+import { RP_ID } from "@/wagmi.config";
+
+// iOS can only observe https auth-session callbacks on 17.4+.
+const supportsHttpsRedirect =
+  Platform.OS !== "ios" || Number.parseFloat(String(Platform.Version)) >= 17.4;
+
+const auth = useAuthenticateOAuthWithExpoWebBrowser({
+  redirectUri: supportsHttpsRedirect
+    ? `https://${RP_ID}/oauth-callback`
+    : Linking.createURL("oauth-callback"),
+});
+```
+
+Since these are new redirect URLs, remember to [allowlist them on the Dashboard](#5-allowlist-the-redirect-url) as well.
