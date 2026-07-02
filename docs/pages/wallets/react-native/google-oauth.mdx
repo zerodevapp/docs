@@ -1,9 +1,5 @@
 # Google OAuth on React Native [Native OAuth with Expo WebBrowser]
 
-:::danger[IMPORTANT]
-**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
-:::
-
 On the web, [Google OAuth](/wallets/auth/google-oauth) uses a popup. Native apps don't have popups — instead, the SDK opens the system auth browser and returns to your app via a deep link. The [`useAuthenticateOAuthWithExpoWebBrowser`](/wallets/hooks/use-authenticate-oauth-with-expo-web-browser) hook handles both ends of that round trip on both platforms: the auth session (`ASWebAuthenticationSession` on iOS, Custom Tabs on Android) intercepts the custom-scheme redirect itself, so no domain setup is needed.
 
 :::info
