@@ -34,32 +34,44 @@ function UserProfile() {
 
 ## Parameters
 
+```tsx
+import { type UseQueryOptions } from '@tanstack/react-query'
+import { type Config } from 'wagmi'
+```
+
+### config
+
+`Config | undefined`
+
+Optional Wagmi config. If omitted, the hook uses the nearest Wagmi config from context.
+
 ### query
 
-`UseQueryOptions | undefined`
+`Omit<UseQueryOptions<GetAuthenticatorsReturnType>, 'queryKey' | 'queryFn'> | undefined`
 
 Optional TanStack Query options. Use this to control when the request runs, retry behavior, stale time, and other query settings.
 
 ## Return Types
 
+[TanStack Query docs](https://tanstack.com/query/v5/docs/react/reference/useQuery)
+
 ### data
 
-`{ oauths: OAuthAuthenticator[] | null; passkeys: PasskeyAuthenticator[] | null; emailContacts: EmailContact[] | null; apiKeys: ApiKeyAuthenticator[] | null } | undefined`
+`GetAuthenticatorsReturnType | undefined`
 
-- Defaults to `undefined`
-- The authenticated user's linked authenticators, grouped by type.
+The authenticated user's linked authenticators, grouped by type. The query requires an active ZeroDev wallet session.
 
 #### oauths
 
 `OAuthAuthenticator[] | null`
 
-OAuth authenticators linked to the user.
+OAuth identities linked to the user.
 
 #### passkeys
 
 `PasskeyAuthenticator[] | null`
 
-Passkey authenticators linked to the user.
+Passkey authenticators registered for the user.
 
 #### emailContacts
 
@@ -71,6 +83,6 @@ Email contacts linked to the user. Use `emailContacts?.[0]?.email` when you need
 
 `ApiKeyAuthenticator[] | null`
 
-API key authenticators linked to the user.
+API-key authenticators associated with the user.
 
 <QueryResult />

@@ -6,7 +6,7 @@ The kit uses a Wagmi-compatible ZeroDev connector, so after the user signs in yo
 
 The current kit covers login. More wallet UI components are coming, including signature and transaction confirmations, onramps, asset management and portfolio views, transaction history, and chain-abstracted balances.
 
-For a fully custom UI, use the hook-based authentication pages instead: [Passkeys](/wallets/auth/passkeys), [Email OTP](/wallets/auth/email-otp), [Magic Link](/wallets/auth/magic-link), or [Google OAuth](/wallets/auth/google-oauth). If you want to customize the UI Kit flow itself, use the kit's `useAuth` hook from `@zerodev/react-wallet-ui` to read and drive the auth state.
+For a fully custom UI, use the hook-based authentication pages instead: [Passkeys](/wallets/auth/passkeys), [Email OTP](/wallets/auth/email-otp), [Magic Link](/wallets/auth/magic-link), or [Google OAuth](/wallets/auth/google-oauth). If you want to customize the UI Kit flow itself, use the kit's `useAuth` hook from `@zerodev/wallet-react-ui` to read and drive the auth state.
 
 ## Before you start
 
@@ -23,29 +23,29 @@ This guide uses Arbitrum Sepolia and email OTP. Replace the chain, chain RPC URL
 :::code-group
 
 ```bash [npm]
-npm i @zerodev/react-wallet-ui @zerodev/wallet-core @zerodev/wallet-react wagmi viem @wagmi/core @tanstack/react-query zustand
+npm i @zerodev/wallet-react-ui @zerodev/wallet-core @zerodev/wallet-react wagmi viem @wagmi/core @tanstack/react-query zustand
 ```
 
 ```bash [yarn]
-yarn add @zerodev/react-wallet-ui @zerodev/wallet-core @zerodev/wallet-react wagmi viem @wagmi/core @tanstack/react-query zustand
+yarn add @zerodev/wallet-react-ui @zerodev/wallet-core @zerodev/wallet-react wagmi viem @wagmi/core @tanstack/react-query zustand
 ```
 
 ```bash [pnpm]
-pnpm add @zerodev/react-wallet-ui @zerodev/wallet-core @zerodev/wallet-react wagmi viem @wagmi/core @tanstack/react-query zustand
+pnpm add @zerodev/wallet-react-ui @zerodev/wallet-core @zerodev/wallet-react wagmi viem @wagmi/core @tanstack/react-query zustand
 ```
 
 ```bash [bun]
-bun add @zerodev/react-wallet-ui @zerodev/wallet-core @zerodev/wallet-react wagmi viem @wagmi/core @tanstack/react-query zustand
+bun add @zerodev/wallet-react-ui @zerodev/wallet-core @zerodev/wallet-react wagmi viem @wagmi/core @tanstack/react-query zustand
 ```
 
 :::
 
 ## Configure Wagmi
 
-Import `zeroDevWallet` from `@zerodev/react-wallet-ui`. This connector wraps the base ZeroDev Wallet connector and controls the kit's auth UI state.
+Import `zeroDevWallet` from `@zerodev/wallet-react-ui`. This connector wraps the base ZeroDev Wallet connector and controls the kit's auth UI state.
 
 ```tsx
-import { zeroDevWallet } from '@zerodev/react-wallet-ui'
+import { zeroDevWallet } from '@zerodev/wallet-react-ui'
 import { createConfig, http } from 'wagmi'
 import { arbitrumSepolia } from 'wagmi/chains'
 
@@ -83,7 +83,7 @@ Import the kit stylesheet once at your app entry, then wrap your app with Wagmi 
 
 ```tsx
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import '@zerodev/react-wallet-ui/styles.css'
+import '@zerodev/wallet-react-ui/styles.css'
 import type { ReactNode } from 'react'
 import { WagmiProvider } from 'wagmi'
 import { config } from './wagmi'
@@ -106,7 +106,7 @@ export function WalletProviders({ children }: { children: ReactNode }) {
 Call Wagmi's `connect` with the ZeroDev connector to start login. Render `<AuthFlow />` in the same provider tree; it displays the active auth screen while the connector waits for the user to finish authentication.
 
 ```tsx
-import { AuthFlow } from '@zerodev/react-wallet-ui'
+import { AuthFlow } from '@zerodev/wallet-react-ui'
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
 
 export function WalletLogin() {
