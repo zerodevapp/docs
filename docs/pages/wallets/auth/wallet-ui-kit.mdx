@@ -14,9 +14,9 @@ In the [ZeroDev Dashboard](https://dashboard.zerodev.app/), make sure your proje
 
 - The app origin added to the project's ACL allowlist, such as `http://localhost:3000` for local development.
 - The auth methods you plan to show in the UI Kit configured for the project.
-- At least one enabled network and its Bundler RPC URL.
+- At least one enabled network.
 
-This guide uses Arbitrum Sepolia and email OTP. Replace the chain, RPC URLs, and enabled auth methods for your app.
+This guide uses Arbitrum Sepolia and email OTP. Replace the chain, chain RPC URL, and enabled auth methods for your app.
 
 ## Install packages
 
@@ -50,7 +50,6 @@ import { createConfig, http } from 'wagmi'
 import { arbitrumSepolia } from 'wagmi/chains'
 
 const projectId = '<your-project-id>'
-const aaUrl = '<your-chain-specific-zerodev-rpc-url>'
 const chainRpcUrl = 'https://sepolia-rollup.arbitrum.io/rpc'
 
 export const config = createConfig({
@@ -58,7 +57,6 @@ export const config = createConfig({
   connectors: [
     zeroDevWallet({
       projectId,
-      aaUrl,
       chains: [arbitrumSepolia],
       mode: '7702',
       config: {
@@ -226,7 +224,6 @@ If you only want the prebuilt login UI, you can omit `SignatureRequest`. To forc
 ```tsx
 zeroDevWallet({
   projectId,
-  aaUrl,
   chains: [arbitrumSepolia],
   mode: '7702',
   config: {

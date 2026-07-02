@@ -21,11 +21,9 @@ import { zeroDevWallet } from '@zerodev/wallet-react'
 import { arbitrumSepolia } from 'wagmi/chains'
 
 const projectId = '<your-project-id>'
-const aaUrl = '<your-chain-specific-zerodev-rpc-url>'
 
 zeroDevWallet({
   projectId,
-  aaUrl,
   chains: [arbitrumSepolia],
   autoRefreshSession: true,
   sessionWarningThreshold: 120_000,
@@ -90,7 +88,6 @@ import type { StorageAdapter } from '@zerodev/wallet-core'
 import { arbitrumSepolia } from 'wagmi/chains'
 
 const projectId = '<your-project-id>'
-const aaUrl = '<your-chain-specific-zerodev-rpc-url>'
 
 const sessionStorageAdapter: StorageAdapter = {
   getItem: async (key) => window.sessionStorage.getItem(key),
@@ -100,7 +97,6 @@ const sessionStorageAdapter: StorageAdapter = {
 
 zeroDevWallet({
   projectId,
-  aaUrl,
   chains: [arbitrumSepolia],
   sessionStorage: sessionStorageAdapter,
 })

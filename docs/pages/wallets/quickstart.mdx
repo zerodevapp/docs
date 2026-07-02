@@ -13,7 +13,6 @@ You will need:
 - A ZeroDev account in the [ZeroDev Dashboard](https://dashboard.zerodev.app/).
 - A project with at least one enabled network.
 - Your project ID.
-- The Bundler RPC URL for the network you want to use.
 - Your app origin added to the project's ACL allowlist.
 
 ## Install packages
@@ -46,18 +45,16 @@ For example, if you run your app at `http://localhost:3000` during development, 
 
 ## Add configuration values
 
-In the ZeroDev dashboard, open your project and copy its project ID. Then open the network you enabled for this app and copy its Bundler RPC URL.
+In the ZeroDev dashboard, open your project and copy its project ID. Make sure the network you want to use is enabled for the project.
 
 Add these values to your app's configuration. The exact environment variable prefix depends on your framework:
 
 ```bash
 ZERODEV_PROJECT_ID="your-project-id"
-ZERODEV_AA_URL="your-chain-specific-zerodev-rpc-url"
 ARBITRUM_SEPOLIA_RPC_URL="https://sepolia-rollup.arbitrum.io/rpc"
 ```
 
 - `ZERODEV_PROJECT_ID` is your ZeroDev project ID.
-- `ZERODEV_AA_URL` is the network-specific Bundler RPC URL from the dashboard.
 - `ARBITRUM_SEPOLIA_RPC_URL` is the chain RPC used by Wagmi's transport.
 
 This example uses Arbitrum Sepolia. Replace the chain and RPC URLs if your project uses a different chain.
@@ -72,7 +69,6 @@ import { createConfig, http } from 'wagmi'
 import { arbitrumSepolia } from 'wagmi/chains'
 
 const projectId = '<your-project-id>'
-const aaUrl = '<your-chain-specific-zerodev-rpc-url>'
 const chainRpcUrl = 'https://sepolia-rollup.arbitrum.io/rpc'
 
 export const config = createConfig({
@@ -80,7 +76,6 @@ export const config = createConfig({
   connectors: [
     zeroDevWallet({
       projectId,
-      aaUrl,
       chains: [arbitrumSepolia],
       mode: '7702',
     }),
@@ -94,6 +89,8 @@ export const config = createConfig({
 In your app, replace the inline constants with your framework's public runtime config or client-safe environment variable access.
 
 `7702` is the SDK default, but setting it explicitly makes the recommended mode clear.
+
+The SDK builds the bundler and paymaster URL from your project ID and the active chain. You usually do not need to configure this URL yourself. If you are using a custom or staging ZeroDev AA host, pass only the host origin with `aaHost`, for example `https://rpc.zerodev.app`, not a full `/api/v3/.../chain/...` URL.
 
 ## Add providers
 
@@ -276,7 +273,7 @@ The examples above use `@zerodev/wallet-react` so you can build your own UI. If 
 
 - **Allowlist errors**: confirm that the dashboard allowlists the exact origin you are opening in the browser.
 - **Sponsored transaction fails**: confirm that a gas policy exists for the project and chain.
-- **Wrong chain**: make sure the chain in `createConfig`, the `aaUrl`, and the gas policy all refer to the same chain.
+- **Wrong chain**: make sure the chain in `createConfig`, the enabled dashboard network, and the gas policy all refer to the same chain.
 
 ## Next steps
 
