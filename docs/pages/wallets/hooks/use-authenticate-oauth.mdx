@@ -40,7 +40,15 @@ function OAuthLogin() {
 }
 ```
 
-## Parameters
+## Hook Parameters
+
+### timeoutMs
+
+`number | undefined`
+
+Optional timeout for the popup polling flow, in milliseconds. Defaults to `300000` (5 minutes).
+
+## Mutation Parameters
 
 ### provider
 
@@ -58,7 +66,7 @@ function OAuthLogin() {
 
 `(variables: { provider: OAuthProvider }) => void`
 
-The mutation function to start the OAuth flow. Opens a popup window for the user to sign in.
+The mutation function to start the OAuth flow. Opens a popup window for the user to sign in, then waits for that popup to return to the current page's origin.
 
 ### mutateAsync
 

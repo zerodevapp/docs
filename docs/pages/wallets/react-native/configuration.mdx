@@ -168,3 +168,5 @@ bunx expo install @react-native-async-storage/async-storage
 - **Crypto polyfill** — import `react-native-get-random-values` at the very top of your app's entry file (see the [quickstart](/wallets/react-native/quickstart)).
 - **Wallet export is a component, not a hook** — [`useExportWallet`](/wallets/hooks/use-export-wallet) and [`useExportPrivateKey`](/wallets/hooks/use-export-private-key) are not available on React Native. Use [`ZeroDevExportWebView`](/wallets/react-native/export-wallet) instead.
 - **OAuth uses deep links** — instead of the web popup flow, use [`useAuthenticateOAuthWithExpoWebBrowser`](/wallets/hooks/use-authenticate-oauth-with-expo-web-browser).
+
+Running the same Expo app on the web too? See [React Native Web](/wallets/react-native/web) — the web build auto-defaults the stampers and storage, so the connector is just `zeroDevWallet({ projectId, chains })`.
