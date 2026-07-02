@@ -63,12 +63,11 @@ The address of the account to export the private key for. If omitted, uses the c
 
 ### keyFormat
 
-`'Hexadecimal' | 'Solana' | undefined`
+`'Hexadecimal' | undefined`
 
 The format for the exported private key.
 
 - `'Hexadecimal'` — Standard hex-encoded private key (default)
-- `'Solana'` — Solana-compatible key format
 
 ### connector
 
@@ -82,13 +81,13 @@ The Wagmi connector to export the key for. If omitted, uses the currently active
 
 ### mutate
 
-`(variables: { iframeContainerId: string; iframeStyles?: Record<string, string>; address?: string; keyFormat?: 'Hexadecimal' | 'Solana'; connector?: Connector }) => void`
+`(variables: { iframeContainerId: string; iframeStyles?: Record<string, string>; address?: string; keyFormat?: 'Hexadecimal'; connector?: Connector }) => void`
 
 The mutation function to initiate the private key export. Renders a secure iframe containing the private key in the specified container.
 
 ### mutateAsync
 
-`(variables: { iframeContainerId: string; iframeStyles?: Record<string, string>; address?: string; keyFormat?: 'Hexadecimal' | 'Solana'; connector?: Connector }) => Promise<void>`
+`(variables: { iframeContainerId: string; iframeStyles?: Record<string, string>; address?: string; keyFormat?: 'Hexadecimal'; connector?: Connector }) => Promise<void>`
 
 Similar to [`mutate`](#mutate) but returns a promise. Resolves when the export iframe is rendered.
 
