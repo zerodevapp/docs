@@ -14,6 +14,7 @@ import { createConfig, http } from 'wagmi'
 import { arbitrumSepolia } from 'wagmi/chains'
 
 const projectId = '<your-project-id>'
+const aaHost = 'https://rpc.zerodev.app'
 const chainRpcUrl = 'https://sepolia-rollup.arbitrum.io/rpc'
 
 export const config = createConfig({
@@ -21,6 +22,7 @@ export const config = createConfig({
   connectors: [
     zeroDevWallet({
       projectId,
+      aaHost,
       chains: [arbitrumSepolia],
       mode: '7702',
     }),
@@ -40,6 +42,7 @@ By default, the SDK uses the current hostname. Set `rpId` when you want passkeys
 ```tsx
 zeroDevWallet({
   projectId,
+  aaHost,
   chains: [arbitrumSepolia],
   rpId: 'example.com',
 })
