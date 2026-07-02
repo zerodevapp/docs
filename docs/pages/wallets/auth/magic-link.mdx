@@ -123,6 +123,7 @@ export function VerifyMagicLink() {
 - Store the `otpId` and `otpEncryptionTargetBundle` somewhere the verify route can read them. `sessionStorage` is enough for a same-browser flow.
 - If users open the link on a different device or browser, you need an app-specific way to recover both values.
 - Magic link email behavior depends on your project email configuration in the dashboard.
+- For full hook options and return values, see [`useSendMagicLink`](/wallets/hooks/use-send-magic-link) and [`useVerifyMagicLink`](/wallets/hooks/use-verify-magic-link).
 
 ## Next steps
 

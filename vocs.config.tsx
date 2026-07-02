@@ -505,6 +505,10 @@ export default defineConfig({
                 text: "Sign Messages",
                 link: "/wallets/wallet-api/sign-message",
               },
+              {
+                text: "Export Wallet",
+                link: "/wallets/export",
+              },
             ],
           },
           {
