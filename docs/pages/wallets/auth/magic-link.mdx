@@ -6,13 +6,13 @@ Use magic links when you want email login without asking the user to copy a code
 
 ## Configure your redirect URL
 
-Magic links need a route in your app that can receive the redirect and call `useVerifyMagicLink`. For local development, this might be:
+Magic links need a route in your app that can receive the redirect and call `useVerifyMagicLink`. Configure the magic-link URL template for your project in the ZeroDev dashboard. For local development, this might be:
 
 ```txt
 http://localhost:3000/verify
 ```
 
-Make sure the redirect origin is also added to the project's ACL allowlist in the ZeroDev dashboard. If your project uses custom email templates or custom link behavior, configure those settings in the dashboard before testing magic links.
+Make sure the redirect origin is also added to the project's ACL allowlist in the ZeroDev dashboard.
 
 ## Send the magic link
 
@@ -40,10 +40,7 @@ export function MagicLinkLogin() {
         type="button"
         disabled={sendMagicLink.isPending || !email}
         onClick={async () => {
-          const result = await sendMagicLink.mutateAsync({
-            email,
-            redirectURL: `${window.location.origin}/verify`,
-          })
+          const result = await sendMagicLink.mutateAsync({ email })
 
           sessionStorage.setItem('zerodevMagicLinkOtpId', result.otpId)
           sessionStorage.setItem(
@@ -116,7 +113,7 @@ export function VerifyMagicLink() {
 
 ## How it works
 
-1. `useSendMagicLink` sends an email with a link to your `redirectURL` and returns an `otpId` plus an `otpEncryptionTargetBundle`.
+1. `useSendMagicLink` sends an email with the configured magic link and returns an `otpId` plus an `otpEncryptionTargetBundle`.
 2. The user clicks the link and lands back in your app with a `code` query parameter.
 3. `useVerifyMagicLink` verifies the `otpId`, `otpEncryptionTargetBundle`, and `code`.
 4. After verification succeeds, the SDK creates a session and connects the ZeroDev Wagmi connector.

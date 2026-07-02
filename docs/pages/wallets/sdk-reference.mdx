@@ -209,7 +209,6 @@ Sends a magic link email.
 | Name | Type | Required | Description |
 | --- | --- | --- | --- |
 | `email` | `string` | Yes | User email address. |
-| `redirectURL` | `string` | Yes | URL the email link should return to after the user opens it. The URL must be allowlisted for the project. |
 | `connector` | `Connector` | No | ZeroDev Wagmi connector override. |
 
 #### Returns
@@ -223,7 +222,6 @@ const sendMagicLink = useSendMagicLink();
 
 const sent = await sendMagicLink.mutateAsync({
   email,
-  redirectURL: `${window.location.origin}/wallets/callback`,
 });
 ```
 

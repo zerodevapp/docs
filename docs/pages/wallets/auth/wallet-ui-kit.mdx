@@ -136,7 +136,15 @@ export function WalletLogin() {
 
 function AuthPanel() {
   return (
-    <div style={{ width: '100%', maxWidth: 420, margin: '0 auto' }}>
+    <div
+      style={{
+        width: '100%',
+        maxWidth: 500,
+        height: 800,
+        maxHeight: '100vh',
+        margin: '0 auto',
+      }}
+    >
       <AuthFlow />
     </div>
   )
@@ -145,10 +153,18 @@ function AuthPanel() {
 
 ## Size the container
 
-`AuthFlow` renders into the width you give it. Put it in a constrained container, modal, or drawer instead of letting it stretch across the full page on large screens.
+`AuthFlow` is designed to render as a wallet-sized panel. Put it in a constrained container, modal, or drawer instead of letting it stretch across the full page on large screens.
 
 ```tsx
-<div style={{ width: '100%', maxWidth: 420, margin: '0 auto' }}>
+<div
+  style={{
+    width: '100%',
+    maxWidth: 500,
+    height: 800,
+    maxHeight: '100vh',
+    margin: '0 auto',
+  }}
+>
   <AuthFlow onClose={() => setLoginOpen(false)} />
 </div>
 ```
@@ -165,13 +181,26 @@ import { AuthFlow, SignatureRequest } from '@zerodev/wallet-react-kit'
 export function WalletOverlays() {
   return (
     <>
-      <div style={{ width: '100%', maxWidth: 420, margin: '0 auto' }}>
+      <div
+        style={{
+          width: '100%',
+          maxWidth: 500,
+          height: 800,
+          maxHeight: '100vh',
+          margin: '0 auto',
+        }}
+      >
         <AuthFlow />
       </div>
 
-      <div style={{ width: '100%', maxWidth: 420, margin: '0 auto' }}>
-        <SignatureRequest />
-      </div>
+      <SignatureRequest
+        style={{
+          width: '100%',
+          maxWidth: 400,
+          height: 600,
+          maxHeight: '100vh',
+        }}
+      />
     </>
   )
 }

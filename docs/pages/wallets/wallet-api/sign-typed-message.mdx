@@ -4,12 +4,13 @@ EIP-712 typed data signing works through Wagmi's `useSignTypedData`.
 
 ```tsx
 import { useSignTypedData } from "wagmi";
+import { arbitrumSepolia } from "wagmi/chains";
 
 const typedData = {
   domain: {
     name: "Ether Mail",
     version: "1",
-    chainId: 1,
+    chainId: arbitrumSepolia.id,
     verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC",
   },
   types: {

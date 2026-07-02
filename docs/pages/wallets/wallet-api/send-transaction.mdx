@@ -6,17 +6,18 @@ Use standard Wagmi hooks to send transactions. The ZeroDev connector turns trans
 
 ```tsx
 import { useState } from "react";
-import { parseEther } from "viem";
+import { isAddress, parseEther } from "viem";
 import { useAccount, useSendTransaction } from "wagmi";
 
 export function SendEth() {
   const { address, isConnected } = useAccount();
   const { sendTransaction, data, isPending } = useSendTransaction();
-  const [to, setTo] = useState("0x...");
+  const [to, setTo] = useState("");
   const [amount, setAmount] = useState("0.001");
 
   const handleSend = () => {
-    if (!isConnected) return;
+    if (!isConnected || !isAddress(to)) return;
+
     sendTransaction({
       to,
       value: parseEther(amount),
@@ -47,12 +48,18 @@ const NFT_ABI = parseAbi([
   "function mint(address _to) public",
 ]);
 
-export function MintNftGasless({ recipient }: { recipient: `0x${string}` }) {
+export function MintNftGasless({
+  contractAddress,
+  recipient,
+}: {
+  contractAddress: `0x${string}`;
+  recipient: `0x${string}`;
+}) {
   const { writeContract, data, isPending, error } = useWriteContract();
 
   const mint = () =>
     writeContract({
-      address: "0xYourNftAddress",
+      address: contractAddress,
       abi: NFT_ABI,
       functionName: "mint",
       args: [recipient],
