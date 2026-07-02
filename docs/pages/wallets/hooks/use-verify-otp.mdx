@@ -2,10 +2,6 @@ import MutationResult from '../shared/mutation-result.mdx'
 
 # useVerifyOTP [Hook for verifying a one-time code and authenticating]
 
-:::danger[IMPORTANT]
-**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
-:::
-
 ## Import
 
 ```tsx
@@ -19,7 +15,13 @@ import { useState } from 'react'
 import { useVerifyOTP } from '@zerodev/wallet-react'
 import { useAccount } from 'wagmi'
 
-function VerifyCode({ otpId }: { otpId: string }) {
+function VerifyCode({
+  otpId,
+  otpEncryptionTargetBundle,
+}: {
+  otpId: string
+  otpEncryptionTargetBundle: string
+}) {
   const [code, setCode] = useState('')
   const verifyOTP = useVerifyOTP()
   const { address, isConnected } = useAccount()
@@ -37,7 +39,9 @@ function VerifyCode({ otpId }: { otpId: string }) {
         placeholder="Enter verification code"
       />
       <button
-        onClick={() => verifyOTP.mutateAsync({ code, otpId })}
+        onClick={() =>
+          verifyOTP.mutateAsync({ code, otpId, otpEncryptionTargetBundle })
+        }
         disabled={verifyOTP.isPending || !code}
       >
         {verifyOTP.isPending ? 'Verifying...' : 'Verify'}
@@ -48,7 +52,7 @@ function VerifyCode({ otpId }: { otpId: string }) {
 }
 ```
 
-## Parameters
+## Mutation Parameters
 
 ### code
 
@@ -62,19 +66,31 @@ function VerifyCode({ otpId }: { otpId: string }) {
 
 **Required.** The OTP identifier returned by [`useSendOTP`](/wallets/hooks/use-send-otp).
 
+### otpEncryptionTargetBundle
+
+`string`
+
+**Required.** The encrypted OTP target bundle returned by [`useSendOTP`](/wallets/hooks/use-send-otp). Pass it verbatim to the verify step.
+
+### connector
+
+`Connector | undefined`
+
+Optional Wagmi connector to verify the OTP with. If omitted, the hook uses the configured ZeroDev connector.
+
 ## Return Types
 
 [TanStack Query mutation docs](https://tanstack.com/query/v5/docs/react/reference/useMutation)
 
 ### mutate
 
-`(variables: { code: string; otpId: string }) => void`
+`(variables: { code: string; otpId: string; otpEncryptionTargetBundle: string; connector?: Connector }) => void`
 
 The mutation function to verify the OTP.
 
 ### mutateAsync
 
-`(variables: { code: string; otpId: string }) => Promise<void>`
+`(variables: { code: string; otpId: string; otpEncryptionTargetBundle: string; connector?: Connector }) => Promise<void>`
 
 Similar to [`mutate`](#mutate) but returns a promise. Resolves when the code is verified and the wallet is connected.
 

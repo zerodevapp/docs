@@ -1,37 +1,72 @@
-# Passkey Authentication [Register and login with WebAuthn passkeys]
+# Passkey Authentication [Register and login with WebAuthn]
 
-:::danger[IMPORTANT]
-**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
-:::
+Passkeys are the fastest passwordless option for most apps. Users authenticate with Face ID, Touch ID, a fingerprint, a device PIN, or a hardware security key.
 
-Passkeys use the [WebAuthn](https://webauthn.guide/) standard for passwordless authentication. Users authenticate with biometrics (Face ID, Touch ID, fingerprint) or a hardware security key.
+Use passkeys when you want an email-free wallet flow. Passkeys use [WebAuthn](https://webauthn.guide/), and the browser handles the passkey prompt.
 
-## Configure RP ID (optional)
+## Configure Wagmi
 
-Set `rpId` on the connector if you need a custom [relying party identifier](https://www.w3.org/TR/webauthn-2/#relying-party-identifier) (defaults to the current hostname):
-
-```ts
-zeroDevWallet({
-  projectId: process.env.NEXT_PUBLIC_ZERODEV_PROJECT_ID!,
-  chains: [sepolia],
-  rpId: "example.com",
-});
-```
-
-## Hooks
-
-- [`useRegisterPasskey`](/wallets/hooks/use-register-passkey) — Create a new wallet with a passkey
-- [`useLoginPasskey`](/wallets/hooks/use-login-passkey) — Sign in to an existing wallet
-
-## Example
+Passkeys work with the same connector setup from the [Quickstart](/wallets/quickstart):
 
 ```tsx
-import { useAccount, useDisconnect } from 'wagmi'
-import { useRegisterPasskey, useLoginPasskey } from '@zerodev/wallet-react'
+import { zeroDevWallet } from '@zerodev/wallet-react'
+import { createConfig, http } from 'wagmi'
+import { arbitrumSepolia } from 'wagmi/chains'
 
-function PasskeyAuth() {
+const projectId = '<your-project-id>'
+const aaHost = 'https://rpc.zerodev.app'
+const chainRpcUrl = 'https://sepolia-rollup.arbitrum.io/rpc'
+
+export const config = createConfig({
+  chains: [arbitrumSepolia],
+  connectors: [
+    zeroDevWallet({
+      projectId,
+      aaHost,
+      chains: [arbitrumSepolia],
+      mode: '7702',
+    }),
+  ],
+  transports: {
+    [arbitrumSepolia.id]: http(chainRpcUrl),
+  },
+})
+```
+
+## Set a custom RP ID
+
+The relying party ID, or RP ID, is the domain WebAuthn uses to scope a passkey. A passkey registered for one RP ID can only be used later with that same RP ID.
+
+By default, the SDK uses the current hostname. Set `rpId` when you want passkeys to work across subdomains of the same site.
+
+```tsx
+zeroDevWallet({
+  projectId,
+  aaHost,
+  chains: [arbitrumSepolia],
+  rpId: 'example.com',
+})
+```
+
+Use a domain only. Do not include a protocol, path, or port. For example, if your app runs on `https://app.example.com` and you want passkeys to work across your app's subdomains, use `example.com`.
+
+Choose the RP ID before users register passkeys. You cannot transfer an existing passkey from one RP ID to another; changing the RP ID later usually means users must register new passkeys.
+
+Learn more in the [WebAuthn RP ID docs](https://www.w3.org/TR/webauthn-3/#rp-id).
+
+## Add passkey login
+
+Use `useRegisterPasskey` for new users and `useLoginPasskey` for returning users.
+
+Registration creates a new passkey. Login asks the user to choose an existing passkey and approve the browser prompt. In Chrome, for example, that prompt may use the OS password manager, device biometrics, a PIN, or a hardware security key.
+
+```tsx
+import { useLoginPasskey, useRegisterPasskey } from '@zerodev/wallet-react'
+import { useAccount, useDisconnect } from 'wagmi'
+
+export function PasskeyLogin() {
   const { address, isConnected } = useAccount()
-  const { disconnectAsync } = useDisconnect()
+  const { disconnect } = useDisconnect()
   const registerPasskey = useRegisterPasskey()
   const loginPasskey = useLoginPasskey()
 
@@ -39,7 +74,9 @@ function PasskeyAuth() {
     return (
       <div>
         <p>Connected: {address}</p>
-        <button onClick={() => disconnectAsync()}>Logout</button>
+        <button type="button" onClick={() => disconnect()}>
+          Disconnect
+        </button>
       </div>
     )
   }
@@ -47,25 +84,23 @@ function PasskeyAuth() {
   return (
     <div>
       <button
-        onClick={() => registerPasskey.mutateAsync()}
+        type="button"
         disabled={registerPasskey.isPending}
+        onClick={() => registerPasskey.mutate()}
       >
-        {registerPasskey.isPending ? 'Registering...' : 'Create Wallet'}
+        {registerPasskey.isPending ? 'Registering...' : 'Register passkey'}
       </button>
 
       <button
-        onClick={() => loginPasskey.mutateAsync()}
+        type="button"
         disabled={loginPasskey.isPending}
+        onClick={() => loginPasskey.mutate()}
       >
-        {loginPasskey.isPending ? 'Logging in...' : 'Login'}
+        {loginPasskey.isPending ? 'Logging in...' : 'Login with passkey'}
       </button>
 
-      {registerPasskey.isError && (
-        <p>Registration error: {registerPasskey.error.message}</p>
-      )}
-      {loginPasskey.isError && (
-        <p>Login error: {loginPasskey.error.message}</p>
-      )}
+      {registerPasskey.error ? <p>{registerPasskey.error.message}</p> : null}
+      {loginPasskey.error ? <p>{loginPasskey.error.message}</p> : null}
     </div>
   )
 }
@@ -73,14 +108,21 @@ function PasskeyAuth() {
 
 ## How it works
 
-1. **Register**: `useRegisterPasskey` triggers the browser's WebAuthn prompt. The user creates a passkey stored on their device. A new wallet is created and linked to the passkey.
+1. `useRegisterPasskey` opens the browser's WebAuthn prompt and creates a wallet linked to the new passkey.
+2. `useLoginPasskey` opens the WebAuthn prompt and authenticates an existing passkey.
+3. After either flow succeeds, the SDK creates a session and connects the ZeroDev Wagmi connector.
 
-2. **Login**: `useLoginPasskey` triggers the WebAuthn prompt. The user selects their existing passkey. The SDK authenticates and creates a session.
-
-After either flow, the Wagmi connector is connected and the user's address is available via `useAccount`.
+Use `useAccount`, `useSignMessage`, and `useSendTransaction` after authentication.
 
 ## Notes
 
-- No email is required for passkey auth — the passkey itself is the credential
-- Passkeys are supported in all major browsers (Chrome, Safari, Firefox, Edge)
-- Passkeys can sync across devices via iCloud Keychain, Google Password Manager, etc.
+- Passkeys require a secure context. `localhost` works for local development; production apps should use HTTPS.
+- The dashboard ACL allowlist must include the exact origin you open in the browser.
+- Passkeys can sync across devices through platform password managers, depending on the user's device, browser, and account recovery settings.
+- For full hook options and return values, see [`useRegisterPasskey`](/wallets/hooks/use-register-passkey) and [`useLoginPasskey`](/wallets/hooks/use-login-passkey).
+
+## Next steps
+
+- [Send a transaction](/wallets/wallet-api/send-transaction)
+- [Sign a message](/wallets/wallet-api/sign-message)
+- Integrate other login methods: [Email OTP](/wallets/auth/email-otp), [Magic Link](/wallets/auth/magic-link), or [Google OAuth](/wallets/auth/google-oauth)

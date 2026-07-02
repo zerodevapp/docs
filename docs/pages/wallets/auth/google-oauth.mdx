@@ -1,38 +1,42 @@
-# Google OAuth [Authenticate with Google sign-in]
+# Google OAuth [Authenticate with Google]
 
-:::danger[IMPORTANT]
-**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
+Google OAuth lets users sign in with their Google account through a popup. The SDK opens the popup, handles the OAuth redirect, creates the session, and connects the ZeroDev Wagmi connector.
+
+Use Google OAuth when you want a familiar social login flow without building the OAuth exchange yourself.
+
+## Dashboard setup
+
+The default Google OAuth configuration works out of the box for getting started. Add your app origin to the project's ACL allowlist before testing the popup flow.
+
+If you want to use your own Google OAuth client, configure the client ID and secret in the ZeroDev dashboard.
+
+:::warning[Custom OAuth credentials]
+Custom Google OAuth credentials must be configured before wallets are created in the project. Create a new project if you need to switch from the default ZeroDev-managed OAuth configuration to your own credentials.
 :::
 
-Google OAuth lets users sign in with their Google account using a popup-based flow. The SDK handles the popup, redirect, and session creation automatically.
+## Add Google login
 
-By default, the Google OAuth flow uses a Zerodev-managed Google account for authentication. This allows you to get started quickly without any additional configuration. You can customize the OAuth flow by providing your own Google OAuth client ID and secret in the developer dashboard.
-
-> **Important:** Using custom credentials requires creating a new project with no wallets already created. You cannot switch an existing project from the default Zerodev-managed OAuth setup to a custom client configuration.
-
-## Hook
-
-- [`useAuthenticateOAuth`](/wallets/hooks/use-authenticate-oauth) — Trigger the OAuth flow
-
-## Example
+Use `useAuthenticateOAuth` with `OAUTH_PROVIDERS.GOOGLE`.
 
 ```tsx
-import { useAccount, useDisconnect } from 'wagmi'
 import {
-  useAuthenticateOAuth,
   OAUTH_PROVIDERS,
+  useAuthenticateOAuth,
 } from '@zerodev/wallet-react'
+import { useAccount, useDisconnect } from 'wagmi'
 
-function GoogleAuth() {
+export function GoogleLogin() {
   const { address, isConnected } = useAccount()
-  const { disconnectAsync } = useDisconnect()
+  const { disconnect } = useDisconnect()
   const authenticateOAuth = useAuthenticateOAuth()
 
   if (isConnected) {
     return (
       <div>
         <p>Connected: {address}</p>
-        <button onClick={() => disconnectAsync()}>Logout</button>
+        <button type="button" onClick={() => disconnect()}>
+          Disconnect
+        </button>
       </div>
     )
   }
@@ -40,21 +44,20 @@ function GoogleAuth() {
   return (
     <div>
       <button
+        type="button"
+        disabled={authenticateOAuth.isPending}
         onClick={() =>
-          authenticateOAuth.mutateAsync({
+          authenticateOAuth.mutate({
             provider: OAUTH_PROVIDERS.GOOGLE,
           })
         }
-        disabled={authenticateOAuth.isPending}
       >
-        {authenticateOAuth.isPending
-          ? 'Signing in...'
-          : 'Sign in with Google'}
+        {authenticateOAuth.isPending ? 'Signing in...' : 'Continue with Google'}
       </button>
 
-      {authenticateOAuth.isError && (
-        <p>Error: {authenticateOAuth.error.message}</p>
-      )}
+      {authenticateOAuth.error ? (
+        <p>{authenticateOAuth.error.message}</p>
+      ) : null}
     </div>
   )
 }
@@ -62,14 +65,22 @@ function GoogleAuth() {
 
 ## How it works
 
-1. **Open popup**: `useAuthenticateOAuth` opens a popup window to the KMS backend's OAuth endpoint.
+1. `useAuthenticateOAuth` opens the OAuth popup.
+2. The user signs in with Google.
+3. The SDK completes the OAuth callback and creates a ZeroDev session.
+4. The popup closes and the main window connects the ZeroDev Wagmi connector.
 
-2. **Google sign-in**: The backend initiates the Google OAuth flow with PKCE. The user signs in with their Google account.
+After the flow completes, use `useAccount`, `useSignMessage`, and `useSendTransaction` like any other Wagmi app.
 
-3. **Backend callback**: Google redirects back to the backend, which exchanges the auth code for tokens and sets a session cookie.
+## Notes
 
-4. **Popup redirect**: The backend redirects the popup to your app with `?oauth_success=true`.
+- Popup blockers can block OAuth if the mutation is not triggered directly from a user action.
+- The dashboard ACL allowlist must include the exact origin that opens the popup.
+- The authenticated user's email is available in `emailContacts` from [`useAuthenticators`](/wallets/hooks/use-authenticators).
+- For full hook options and return values, see [`useAuthenticateOAuth`](/wallets/hooks/use-authenticate-oauth).
 
-5. **Auto-detect**: The SDK detects the success parameter. If running in a popup, it sends a `postMessage` to the opener window and closes. The main window then calls the backend's auth endpoint (reading the session cookie) to get a session.
+## Next steps
 
-After the flow completes, the Wagmi connector is connected and the user's address is available via `useAccount`.
+- [Send a transaction](/wallets/wallet-api/send-transaction)
+- [Sign a message](/wallets/wallet-api/sign-message)
+- Integrate other login methods: [Passkeys](/wallets/auth/passkeys), [Email OTP](/wallets/auth/email-otp), or [Magic Link](/wallets/auth/magic-link)

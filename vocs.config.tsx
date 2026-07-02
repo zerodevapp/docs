@@ -441,11 +441,10 @@ export default defineConfig({
         ],
       },
     ],
-    // Embedded Wallet (alpha) — not advertised in the public pillar bar.
-    // Lives at /wallets/* and is only navigable for users who know the URL.
+    // Smart Wallet.
     "/wallets": [
       {
-        text: "Embedded Wallet",
+        text: "Smart Wallet",
         collapsed: false,
         items: [
           {
@@ -480,19 +479,13 @@ export default defineConfig({
                 text: "Google OAuth",
                 link: "/wallets/auth/google-oauth",
               },
-            ],
-          },
-          {
-            text: "Features",
-            collapsed: true,
-            items: [
+              {
+                text: "Get Login Methods",
+                link: "/wallets/hooks/use-authenticators",
+              },
               {
                 text: "Session Management",
                 link: "/wallets/session-management",
-              },
-              {
-                text: "Export Wallet",
-                link: "/wallets/export",
               },
             ],
           },
@@ -505,62 +498,66 @@ export default defineConfig({
                 link: "/wallets/wallet-api/send-transaction",
               },
               {
-                text: "Sign a Message",
+                text: "Batch Transactions",
+                link: "/wallets/wallet-api/batch-transactions",
+              },
+              {
+                text: "Sign Messages",
                 link: "/wallets/wallet-api/sign-message",
               },
               {
-                text: "Sign a Typed Message",
-                link: "/wallets/wallet-api/sign-typed-message",
+                text: "Export Wallet",
+                link: "/wallets/export",
               },
             ],
           },
           {
-            text: "Hooks",
+            text: "Wallet UI Kit",
+            link: "/wallets/auth/wallet-ui-kit",
+          },
+          {
+            text: "React Native",
             collapsed: true,
             items: [
               {
-                text: "useRegisterPasskey",
-                link: "/wallets/hooks/use-register-passkey",
+                text: "Expo Quickstart",
+                link: "/wallets/react-native/quickstart",
               },
               {
-                text: "useLoginPasskey",
-                link: "/wallets/hooks/use-login-passkey",
+                text: "Configuration",
+                link: "/wallets/react-native/configuration",
               },
               {
-                text: "useAuthenticateOAuth",
-                link: "/wallets/hooks/use-authenticate-oauth",
+                text: "Google OAuth",
+                link: "/wallets/react-native/google-oauth",
               },
               {
-                text: "useSendOTP",
-                link: "/wallets/hooks/use-send-otp",
+                text: "Expo OAuth API",
+                link: "/wallets/hooks/use-authenticate-oauth-with-expo-web-browser",
               },
               {
-                text: "useVerifyOTP",
-                link: "/wallets/hooks/use-verify-otp",
+                text: "Domain Association",
+                link: "/wallets/react-native/domain-association",
               },
               {
-                text: "useSendMagicLink",
-                link: "/wallets/hooks/use-send-magic-link",
+                text: "Magic Link",
+                link: "/wallets/react-native/magic-link",
               },
               {
-                text: "useVerifyMagicLink",
-                link: "/wallets/hooks/use-verify-magic-link",
+                text: "Passkeys",
+                link: "/wallets/react-native/passkeys",
               },
               {
-                text: "useGetUserEmail",
-                link: "/wallets/hooks/use-get-user-email",
+                text: "Export Wallet",
+                link: "/wallets/react-native/export-wallet",
               },
               {
-                text: "useRefreshSession",
-                link: "/wallets/hooks/use-refresh-session",
+                text: "Export WebView API",
+                link: "/wallets/hooks/export-web-view",
               },
               {
-                text: "useExportWallet",
-                link: "/wallets/hooks/use-export-wallet",
-              },
-              {
-                text: "useExportPrivateKey",
-                link: "/wallets/hooks/use-export-private-key",
+                text: "React Native Web",
+                link: "/wallets/react-native/web",
               },
             ],
           },
@@ -1084,6 +1081,7 @@ export default defineConfig({
     { href: '/onboarding/create-a-smart-account', text: 'Onboarding', match: function(p) { return p.indexOf('/onboarding') === 0; } },
     { href: '/onramp/smart-routing-address', text: 'Onramp', match: function(p) { return p.indexOf('/onramp') === 0; } },
     { href: '/smart-accounts/send-transactions', text: 'Smart Account', match: function(p) { return p.indexOf('/smart-accounts') === 0; } },
+    { href: '/wallets', text: 'Wallets', match: function(p) { return p.indexOf('/wallets') === 0; } },
     { href: '/advanced/migration', text: 'Advanced', match: function(p) { return p.indexOf('/advanced') === 0; } },
     { href: '/api-and-toolings/infrastructure/gas-policies', text: 'API & Tooling', match: function(p) { return p.indexOf('/api-and-toolings') === 0; } }
   ];

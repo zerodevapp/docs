@@ -1,0 +1,201 @@
+# Wallet UI Kit
+
+The Wallet UI Kit gives you prebuilt React UI for ZeroDev Wallet. Use it when you want to get started faster with a ready-made login flow instead of building every authentication screen yourself.
+
+The kit uses a Wagmi-compatible ZeroDev connector, so after the user signs in you can use standard Wagmi hooks such as `useAccount`, `useSignMessage`, and `useSendTransaction`.
+
+The current kit covers login. More wallet UI components are coming, including signature and transaction confirmations, onramps, asset management and portfolio views, transaction history, and chain-abstracted balances.
+
+For a fully custom UI, use the hook-based authentication pages instead: [Passkeys](/wallets/auth/passkeys), [Email OTP](/wallets/auth/email-otp), [Magic Link](/wallets/auth/magic-link), or [Google OAuth](/wallets/auth/google-oauth). If you want to customize the UI Kit flow itself, use the kit's `useAuth` hook from `@zerodev/wallet-react-ui` to read and drive the auth state.
+
+## Before you start
+
+In the [ZeroDev Dashboard](https://dashboard.zerodev.app/), make sure your project has:
+
+- The app origin added to the project's ACL allowlist, such as `http://localhost:3000` for local development.
+- The auth methods you plan to show in the UI Kit configured for the project.
+- At least one enabled network.
+
+This guide uses Arbitrum Sepolia and email OTP. Replace the chain, chain RPC URL, and enabled auth methods for your app.
+
+## Install packages
+
+:::code-group
+
+```bash [npm]
+npm i @zerodev/wallet-react-ui @zerodev/wallet-core @zerodev/wallet-react wagmi viem @wagmi/core @tanstack/react-query zustand
+```
+
+```bash [yarn]
+yarn add @zerodev/wallet-react-ui @zerodev/wallet-core @zerodev/wallet-react wagmi viem @wagmi/core @tanstack/react-query zustand
+```
+
+```bash [pnpm]
+pnpm add @zerodev/wallet-react-ui @zerodev/wallet-core @zerodev/wallet-react wagmi viem @wagmi/core @tanstack/react-query zustand
+```
+
+```bash [bun]
+bun add @zerodev/wallet-react-ui @zerodev/wallet-core @zerodev/wallet-react wagmi viem @wagmi/core @tanstack/react-query zustand
+```
+
+:::
+
+## Configure Wagmi
+
+Import `zeroDevWallet` from `@zerodev/wallet-react-ui`. This connector wraps the base ZeroDev Wallet connector and controls the kit's auth UI state.
+
+```tsx
+import { zeroDevWallet } from '@zerodev/wallet-react-ui'
+import { createConfig, http } from 'wagmi'
+import { arbitrumSepolia } from 'wagmi/chains'
+
+const projectId = '<your-project-id>'
+const aaHost = 'https://rpc.zerodev.app'
+const chainRpcUrl = 'https://sepolia-rollup.arbitrum.io/rpc'
+
+export const config = createConfig({
+  chains: [arbitrumSepolia],
+  connectors: [
+    zeroDevWallet({
+      projectId,
+      aaHost,
+      chains: [arbitrumSepolia],
+      mode: '7702',
+      config: {
+        auth: {
+          enabledMethods: ['email', 'google', 'passkey'],
+          emailAuthMethod: 'otp',
+        },
+      },
+    }),
+  ],
+  transports: {
+    [arbitrumSepolia.id]: http(chainRpcUrl),
+  },
+})
+```
+
+Only include auth methods that are enabled for your project. This example uses OTP for email authentication; use the hook-based [Magic Link](/wallets/auth/magic-link) guide if you want to build a magic-link flow yourself.
+
+## Add providers and styles
+
+Import the kit stylesheet once at your app entry, then wrap your app with Wagmi and TanStack Query providers.
+
+```tsx
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import '@zerodev/wallet-react-ui/styles.css'
+import type { ReactNode } from 'react'
+import { WagmiProvider } from 'wagmi'
+import { config } from './wagmi'
+
+const queryClient = new QueryClient()
+
+export function WalletProviders({ children }: { children: ReactNode }) {
+  return (
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        {children}
+      </QueryClientProvider>
+    </WagmiProvider>
+  )
+}
+```
+
+## Render the login flow
+
+Call Wagmi's `connect` with the ZeroDev connector to start login. Render `<AuthFlow />` in the same provider tree; it displays the active auth screen while the connector waits for the user to finish authentication.
+
+```tsx
+import { AuthFlow } from '@zerodev/wallet-react-ui'
+import { useAccount, useConnect, useDisconnect } from 'wagmi'
+
+export function WalletLogin() {
+  const { address, isConnected } = useAccount()
+  const { connect, connectors, isPending } = useConnect()
+  const { disconnect } = useDisconnect()
+  const zeroDevConnector = connectors.find(
+    (connector) => connector.id === 'zerodev-wallet',
+  )
+
+  return (
+    <div>
+      {isConnected ? (
+        <div>
+          <p>Connected: {address}</p>
+          <button type="button" onClick={() => disconnect()}>
+            Disconnect
+          </button>
+        </div>
+      ) : (
+        <button
+          type="button"
+          disabled={!zeroDevConnector || isPending}
+          onClick={() =>
+            zeroDevConnector && connect({ connector: zeroDevConnector })
+          }
+        >
+          {isPending ? 'Opening login...' : 'Connect wallet'}
+        </button>
+      )}
+
+      <AuthPanel />
+    </div>
+  )
+}
+
+function AuthPanel() {
+  return (
+    <div
+      style={{
+        display: 'grid',
+        placeItems: 'center',
+        minHeight: '100vh',
+      }}
+    >
+      <AuthFlow />
+    </div>
+  )
+}
+```
+
+## Place the login flow
+
+`AuthFlow` comes with the UI Kit's recommended fixed wallet size. Place it in the part of your app where the login flow should appear, such as a modal, drawer, or centered auth area.
+
+```tsx
+<div
+  style={{
+    display: 'grid',
+    placeItems: 'center',
+    minHeight: '100vh',
+  }}
+>
+  <AuthFlow onClose={() => setLoginOpen(false)} />
+</div>
+```
+
+The `onClose` prop is optional. Use it when your app owns surrounding UI state, such as closing a modal after the user clicks the kit's close button.
+
+## Avoid global CSS conflicts
+
+Import the kit stylesheet once. If your app has broad global element styles, scope them to your own app shell so the Wallet UI Kit can keep its intended styling.
+
+## Signing and transactions
+
+The current Wallet UI Kit package is focused on login. After the user signs in, use the standard Wallet API pages for wallet actions:
+
+- [Sign a message](/wallets/wallet-api/sign-message)
+- [Send a transaction](/wallets/wallet-api/send-transaction)
+- [Batch transactions](/wallets/wallet-api/batch-transactions)
+
+Signature confirmation UI is experimental and transaction confirmation screens are coming soon. Reach out to the [ZeroDev sales team](https://zerodev.app/contact) if you want early access.
+
+## Coming soon
+
+The Wallet UI Kit will add more prebuilt wallet components and screens over time, including onramps, asset management and portfolio views, transaction history, and chain-abstracted balances. To request early access, reach out to the [ZeroDev sales team](https://zerodev.app/contact).
+
+## Next steps
+
+- [Send a transaction](/wallets/wallet-api/send-transaction)
+- [Sign a message](/wallets/wallet-api/sign-message)
+- Integrate other login methods: [Passkeys](/wallets/auth/passkeys), [Email OTP](/wallets/auth/email-otp), [Magic Link](/wallets/auth/magic-link), or [Google OAuth](/wallets/auth/google-oauth)

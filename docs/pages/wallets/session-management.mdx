@@ -1,101 +1,117 @@
-# Session Management [Understand and control the session lifecycle]
+# Session Management [Control authenticated wallet sessions]
 
-:::danger[IMPORTANT]
-**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
-:::
+The Wallet SDK creates a session after any successful authentication flow: passkey, email OTP, magic link, or Google OAuth. The session lets the SDK reconnect the ZeroDev Wagmi connector across reloads and sign wallet actions without asking the user to log in again each time.
 
-The ZeroDev Wallet SDK manages sessions automatically. Sessions are created during authentication and persist across page reloads.
+For most apps, the defaults are enough.
 
 ## Session lifecycle
 
+```txt
+Authenticate -> session created -> reconnect on reload -> refresh before expiry -> re-authenticate if expired
 ```
-Authenticate → Session Created → Auto-refresh → Expiry → Re-authenticate
+
+The connector checks for an existing session when your app loads. If the session is valid, Wagmi reconnects and `useAccount` returns the wallet address.
+
+## Configure session behavior
+
+Session behavior is configured on the ZeroDev connector.
+
+```tsx
+import { zeroDevWallet } from '@zerodev/wallet-react'
+import { arbitrumSepolia } from 'wagmi/chains'
+
+const projectId = '<your-project-id>'
+const aaHost = 'https://rpc.zerodev.app'
+
+zeroDevWallet({
+  projectId,
+  aaHost,
+  chains: [arbitrumSepolia],
+  autoRefreshSession: true,
+  sessionWarningThreshold: 120_000,
+})
 ```
 
-1. **Created**: A session is created when the user authenticates (passkey, OTP, OAuth, or magic link). The session contains a credential that allows the SDK to sign transactions.
+- `autoRefreshSession` refreshes the session before it expires. The default is `true`.
+- `sessionWarningThreshold` controls how early the SDK refreshes the session before expiry.
 
-2. **Persisted**: Sessions are stored in `localStorage` by default (configurable via `sessionStorage` connector option). On page reload, the connector checks for an existing session and reconnects automatically.
+Set `autoRefreshSession: false` only if you want to handle expiry yourself.
 
-3. **Auto-refresh**: When `autoRefreshSession` is enabled (default), the SDK refreshes the session before it expires. The refresh happens `sessionWarningThreshold` milliseconds before expiry (default: 60 seconds).
+## Refresh a session manually
 
-4. **Expiry**: If a session expires without being refreshed, the Wagmi connector disconnects and the user needs to re-authenticate.
-
-## Refreshing sessions
-
-Use the [`useRefreshSession`](/wallets/hooks/use-refresh-session) hook to manually refresh the current session:
+Use `useRefreshSession` if your app wants an explicit refresh action.
 
 ```tsx
 import { useRefreshSession } from '@zerodev/wallet-react'
 
-function SessionControls() {
+export function RefreshSessionButton() {
   const refreshSession = useRefreshSession()
 
   return (
     <button
-      onClick={() => refreshSession.mutateAsync({})}
+      type="button"
       disabled={refreshSession.isPending}
+      onClick={() => refreshSession.mutate({})}
     >
-      {refreshSession.isPending ? 'Refreshing...' : 'Refresh Session'}
+      {refreshSession.isPending ? 'Refreshing...' : 'Refresh session'}
     </button>
   )
 }
 ```
 
-## Auto-refresh configuration
+For full hook options and return values, see [`useRefreshSession`](/wallets/hooks/use-refresh-session).
 
-Configure auto-refresh via the connector options:
+## Detect disconnected sessions
 
-```tsx
-zeroDevWallet({
-  projectId: 'YOUR_PROJECT_ID',
-  chains: [sepolia],
-  autoRefreshSession: true,           // default: true
-  sessionWarningThreshold: 120_000,   // refresh 2 minutes before expiry
-})
-```
-
-Set `autoRefreshSession: false` to disable auto-refresh and handle session expiry manually.
-
-## Custom storage
-
-By default, sessions are stored in `localStorage`. Provide a custom `StorageAdapter` for alternative storage:
-
-```tsx
-import { type StorageAdapter } from '@zerodev/wallet-core'
-
-const customStorage: StorageAdapter = {
-  getItem: async (key: string) => { /* ... */ },
-  setItem: async (key: string, value: string) => { /* ... */ },
-  removeItem: async (key: string) => { /* ... */ },
-}
-
-zeroDevWallet({
-  projectId: 'YOUR_PROJECT_ID',
-  chains: [sepolia],
-  sessionStorage: customStorage,
-})
-```
-
-This is useful for React Native apps where `localStorage` is not available.
-
-## Detecting session expiry
-
-When a session expires, the Wagmi connector disconnects. You can detect this using the Wagmi `useAccount` hook:
+When a session expires and cannot be refreshed, the connector disconnects. Use Wagmi's `useAccount` hook to update your UI.
 
 ```tsx
 import { useAccount } from 'wagmi'
 
-function SessionStatus() {
-  const { status, isConnected } = useAccount()
+export function SessionStatus() {
+  const { address, status } = useAccount()
 
-  if (status === 'disconnected') {
-    return <p>Session expired — please sign in again</p>
+  if (status === 'connected') {
+    return <p>Connected: {address}</p>
   }
 
-  if (isConnected) {
-    return <p>Connected</p>
+  if (status === 'reconnecting') {
+    return <p>Reconnecting...</p>
   }
 
-  return null
+  return <p>Signed out</p>
 }
 ```
+
+## Use custom storage
+
+On the web, sessions use browser storage by default. Provide a custom storage adapter if your environment needs something else.
+
+```tsx
+import type { StorageAdapter } from '@zerodev/wallet-core'
+import { arbitrumSepolia } from 'wagmi/chains'
+
+const projectId = '<your-project-id>'
+const aaHost = 'https://rpc.zerodev.app'
+
+const sessionStorageAdapter: StorageAdapter = {
+  getItem: async (key) => window.sessionStorage.getItem(key),
+  setItem: async (key, value) => window.sessionStorage.setItem(key, value),
+  removeItem: async (key) => window.sessionStorage.removeItem(key),
+}
+
+zeroDevWallet({
+  projectId,
+  aaHost,
+  chains: [arbitrumSepolia],
+  sessionStorage: sessionStorageAdapter,
+})
+```
+
+Custom storage is also required in environments that do not provide browser `localStorage`, such as React Native  — see [React Native Configuration](/wallets/react-native/configuration) for the storage adapters the SDK ships for Expo.
+
+## Next steps
+
+- [Send a transaction](/wallets/wallet-api/send-transaction)
+- [Sign a message](/wallets/wallet-api/sign-message)
+- Integrate other login methods: [Passkeys](/wallets/auth/passkeys), [Email OTP](/wallets/auth/email-otp), [Magic Link](/wallets/auth/magic-link), or [Google OAuth](/wallets/auth/google-oauth)

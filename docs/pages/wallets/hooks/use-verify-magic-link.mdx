@@ -2,10 +2,6 @@ import MutationResult from '../shared/mutation-result.mdx'
 
 # useVerifyMagicLink [Hook for verifying a magic link and authenticating]
 
-:::danger[IMPORTANT]
-**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
-:::
-
 ## Import
 
 ```tsx
@@ -28,9 +24,10 @@ function VerifyPage() {
   useEffect(() => {
     const code = searchParams.get('code')
     const otpId = sessionStorage.getItem('magicLinkOtpId')
+    const otpEncryptionTargetBundle = sessionStorage.getItem('magicLinkBundle')
 
-    if (code && otpId && !isConnected) {
-      verifyMagicLink.mutateAsync({ otpId, code })
+    if (code && otpId && otpEncryptionTargetBundle && !isConnected) {
+      verifyMagicLink.mutateAsync({ otpId, otpEncryptionTargetBundle, code })
     }
   }, [searchParams])
 
@@ -42,7 +39,7 @@ function VerifyPage() {
 }
 ```
 
-## Parameters
+## Mutation Parameters
 
 ### otpId
 
@@ -56,19 +53,31 @@ function VerifyPage() {
 
 **Required.** The verification code from the magic link URL query parameters.
 
+### otpEncryptionTargetBundle
+
+`string`
+
+**Required.** The encryption target bundle returned by [`useSendMagicLink`](/wallets/hooks/use-send-magic-link).
+
+### connector
+
+`Connector | undefined`
+
+Optional Wagmi connector to verify the magic link with. If omitted, the hook uses the configured ZeroDev connector.
+
 ## Return Types
 
 [TanStack Query mutation docs](https://tanstack.com/query/v5/docs/react/reference/useMutation)
 
 ### mutate
 
-`(variables: { otpId: string; code: string }) => void`
+`(variables: { otpId: string; otpEncryptionTargetBundle: string; code: string; connector?: Connector }) => void`
 
 The mutation function to verify the magic link.
 
 ### mutateAsync
 
-`(variables: { otpId: string; code: string }) => Promise<void>`
+`(variables: { otpId: string; otpEncryptionTargetBundle: string; code: string; connector?: Connector }) => Promise<void>`
 
 Similar to [`mutate`](#mutate) but returns a promise. Resolves when the magic link is verified and the wallet is connected.
 

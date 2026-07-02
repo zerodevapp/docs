@@ -1,0 +1,90 @@
+import QueryResult from '../shared/query-result.mdx'
+
+# Get Login Methods [Read the authenticated user's login methods]
+
+Use `useAuthenticators` after the wallet is connected to read the login methods linked to the current user, such as email contacts, OAuth identities, and passkeys.
+
+## Import
+
+```tsx
+import { useAuthenticators } from '@zerodev/wallet-react'
+```
+
+## Usage
+
+```tsx
+import { useAuthenticators } from '@zerodev/wallet-react'
+import { useAccount } from 'wagmi'
+
+function UserProfile() {
+  const { isConnected } = useAccount()
+  const { data, isLoading } = useAuthenticators({
+    query: {
+      enabled: isConnected,
+    },
+  })
+
+  if (!isConnected) return null
+
+  if (isLoading) return <p>Loading user...</p>
+
+  const email = data?.emailContacts?.[0]?.email
+
+  return <p>Email: {email ?? 'Not available'}</p>
+}
+```
+
+## Parameters
+
+```tsx
+import { type UseQueryOptions } from '@tanstack/react-query'
+import { type Config } from 'wagmi'
+```
+
+### config
+
+`Config | undefined`
+
+Optional Wagmi config. If omitted, the hook uses the nearest Wagmi config from context.
+
+### query
+
+`Omit<UseQueryOptions<GetAuthenticatorsReturnType>, 'queryKey' | 'queryFn'> | undefined`
+
+Optional TanStack Query options. Use this to control when the request runs, retry behavior, stale time, and other query settings.
+
+## Return Types
+
+[TanStack Query docs](https://tanstack.com/query/v5/docs/react/reference/useQuery)
+
+### data
+
+`GetAuthenticatorsReturnType | undefined`
+
+The authenticated user's linked authenticators, grouped by type. The query requires an active ZeroDev wallet session.
+
+#### oauths
+
+`OAuthAuthenticator[] | null`
+
+OAuth identities linked to the user.
+
+#### passkeys
+
+`PasskeyAuthenticator[] | null`
+
+Passkey authenticators registered for the user.
+
+#### emailContacts
+
+`EmailContact[] | null`
+
+Email contacts linked to the user. Use `emailContacts?.[0]?.email` when you need the user's email address after Email OTP, Magic Link, or Google OAuth.
+
+#### apiKeys
+
+`ApiKeyAuthenticator[] | null`
+
+API-key authenticators associated with the user.
+
+<QueryResult />

@@ -1,30 +1,25 @@
-# Email OTP Authentication [Authenticate with a one-time code sent by email]
+# Email OTP [Authenticate with a one-time code]
 
-:::danger[IMPORTANT]
-**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
-:::
+Email OTP is a two-step login flow: send a code to the user's email address, then verify the code they enter. Use OTP when you want a familiar email-based flow without redirecting the user away from your app. After verification succeeds, the ZeroDev Wagmi connector is connected.
 
-Email OTP is a two-step flow: send a verification code to the user's email, then verify the code they enter.
+## Add OTP login
 
-## Hooks
-
-- [`useSendOTP`](/wallets/hooks/use-send-otp) — Send a one-time code to an email address
-- [`useVerifyOTP`](/wallets/hooks/use-verify-otp) — Verify the code and authenticate
-
-## Example
+Use `useSendOTP` to send the code and `useVerifyOTP` to complete authentication.
 
 ```tsx
+import { useSendOTP, useVerifyOTP } from '@zerodev/wallet-react'
 import { useState } from 'react'
 import { useAccount, useDisconnect } from 'wagmi'
-import { useSendOTP, useVerifyOTP } from '@zerodev/wallet-react'
 
-function EmailOTPAuth() {
+export function EmailOTPLogin() {
   const [email, setEmail] = useState('')
   const [code, setCode] = useState('')
   const [otpId, setOtpId] = useState<string | null>(null)
+  const [otpEncryptionTargetBundle, setOtpEncryptionTargetBundle] =
+    useState<string | null>(null)
 
   const { address, isConnected } = useAccount()
-  const { disconnectAsync } = useDisconnect()
+  const { disconnect } = useDisconnect()
   const sendOTP = useSendOTP()
   const verifyOTP = useVerifyOTP()
 
@@ -32,7 +27,9 @@ function EmailOTPAuth() {
     return (
       <div>
         <p>Connected: {address}</p>
-        <button onClick={() => disconnectAsync()}>Logout</button>
+        <button type="button" onClick={() => disconnect()}>
+          Disconnect
+        </button>
       </div>
     )
   }
@@ -42,20 +39,25 @@ function EmailOTPAuth() {
       <div>
         <input
           type="email"
-          placeholder="Enter your email"
+          autoComplete="email"
+          placeholder="you@example.com"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(event) => setEmail(event.target.value)}
         />
+
         <button
+          type="button"
+          disabled={sendOTP.isPending || !email}
           onClick={async () => {
             const result = await sendOTP.mutateAsync({ email })
             setOtpId(result.otpId)
+            setOtpEncryptionTargetBundle(result.otpEncryptionTargetBundle)
           }}
-          disabled={sendOTP.isPending || !email}
         >
-          {sendOTP.isPending ? 'Sending...' : 'Send Code'}
+          {sendOTP.isPending ? 'Sending code...' : 'Send code'}
         </button>
-        {sendOTP.isError && <p>Error: {sendOTP.error.message}</p>}
+
+        {sendOTP.error ? <p>{sendOTP.error.message}</p> : null}
       </div>
     )
   }
@@ -63,19 +65,41 @@ function EmailOTPAuth() {
   return (
     <div>
       <p>Code sent to {email}</p>
+
       <input
-        type="text"
-        placeholder="Enter verification code"
+        inputMode="numeric"
+        autoComplete="one-time-code"
+        placeholder="Enter code"
         value={code}
-        onChange={(e) => setCode(e.target.value)}
+        onChange={(event) => setCode(event.target.value)}
       />
+
       <button
-        onClick={() => verifyOTP.mutateAsync({ code, otpId })}
-        disabled={verifyOTP.isPending || !code}
+        type="button"
+        disabled={verifyOTP.isPending || !code || !otpEncryptionTargetBundle}
+        onClick={() =>
+          otpEncryptionTargetBundle &&
+          verifyOTP.mutate({
+            otpId,
+            otpEncryptionTargetBundle,
+            code,
+          })
+        }
       >
-        {verifyOTP.isPending ? 'Verifying...' : 'Verify Code'}
+        {verifyOTP.isPending ? 'Verifying...' : 'Verify code'}
       </button>
-      {verifyOTP.isError && <p>Error: {verifyOTP.error.message}</p>}
+
+      <button
+        type="button"
+        onClick={() => {
+          setOtpId(null)
+          setOtpEncryptionTargetBundle(null)
+        }}
+      >
+        Use a different email
+      </button>
+
+      {verifyOTP.error ? <p>{verifyOTP.error.message}</p> : null}
     </div>
   )
 }
@@ -83,8 +107,20 @@ function EmailOTPAuth() {
 
 ## How it works
 
-1. **Send code**: `useSendOTP` sends a one-time verification code to the provided email address. It returns an `otpId` that identifies this verification attempt.
+1. `useSendOTP` sends a one-time code and returns an `otpId` plus an `otpEncryptionTargetBundle`.
+2. Store both values while the user enters the code.
+3. `useVerifyOTP` verifies the `otpId`, `otpEncryptionTargetBundle`, and `code`.
+4. After verification succeeds, the SDK creates a session and connects the ZeroDev Wagmi connector.
 
-2. **Verify code**: `useVerifyOTP` takes the `otpId` and the code the user entered. If the code is valid, the SDK authenticates and creates a session.
+## Notes
 
-After verification, the Wagmi connector is connected and the user's address is available via `useAccount`.
+- Keep the `otpId` and `otpEncryptionTargetBundle` on the client until verification completes. For a single-page flow, component state is enough.
+- The authenticated user's email is available in `emailContacts` from [`useAuthenticators`](/wallets/hooks/use-authenticators).
+- If you need link-based email login instead of manual code entry, use [Magic Link](/wallets/auth/magic-link).
+- For full hook options and return values, see [`useSendOTP`](/wallets/hooks/use-send-otp) and [`useVerifyOTP`](/wallets/hooks/use-verify-otp).
+
+## Next steps
+
+- [Send a transaction](/wallets/wallet-api/send-transaction)
+- [Sign a message](/wallets/wallet-api/sign-message)
+- Integrate other login methods: [Passkeys](/wallets/auth/passkeys), [Magic Link](/wallets/auth/magic-link), or [Google OAuth](/wallets/auth/google-oauth)

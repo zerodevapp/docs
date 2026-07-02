@@ -2,10 +2,6 @@ import MutationResult from '../shared/mutation-result.mdx'
 
 # useExportPrivateKey [Hook for exporting a private key]
 
-:::danger[IMPORTANT]
-**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
-:::
-
 ## Import
 
 ```tsx
@@ -45,7 +41,7 @@ function ExportKey() {
 }
 ```
 
-## Parameters
+## Mutation Parameters
 
 ### iframeContainerId
 
@@ -67,12 +63,11 @@ The address of the account to export the private key for. If omitted, uses the c
 
 ### keyFormat
 
-`'Hexadecimal' | 'Solana' | undefined`
+`'Hexadecimal' | undefined`
 
 The format for the exported private key.
 
 - `'Hexadecimal'` — Standard hex-encoded private key (default)
-- `'Solana'` — Solana-compatible key format
 
 ### connector
 
@@ -86,13 +81,13 @@ The Wagmi connector to export the key for. If omitted, uses the currently active
 
 ### mutate
 
-`(variables: { iframeContainerId: string; iframeStyles?: Record<string, string>; address?: string; keyFormat?: 'Hexadecimal' | 'Solana'; connector?: Connector }) => void`
+`(variables: { iframeContainerId: string; iframeStyles?: Record<string, string>; address?: string; keyFormat?: 'Hexadecimal'; connector?: Connector }) => void`
 
 The mutation function to initiate the private key export. Renders a secure iframe containing the private key in the specified container.
 
 ### mutateAsync
 
-`(variables: { iframeContainerId: string; iframeStyles?: Record<string, string>; address?: string; keyFormat?: 'Hexadecimal' | 'Solana'; connector?: Connector }) => Promise<void>`
+`(variables: { iframeContainerId: string; iframeStyles?: Record<string, string>; address?: string; keyFormat?: 'Hexadecimal'; connector?: Connector }) => Promise<void>`
 
 Similar to [`mutate`](#mutate) but returns a promise. Resolves when the export iframe is rendered.
 

@@ -2,10 +2,6 @@ import MutationResult from '../shared/mutation-result.mdx'
 
 # useSendMagicLink [Hook for sending a magic link email]
 
-:::danger[IMPORTANT]
-**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
-:::
-
 ## Import
 
 ```tsx
@@ -32,12 +28,12 @@ function SendMagicLink() {
       />
       <button
         onClick={async () => {
-          const result = await sendMagicLink.mutateAsync({
-            email,
-            redirectURL: `${window.location.origin}/verify`,
-          })
-          // Store otpId for the verify page
+          const result = await sendMagicLink.mutateAsync({ email })
           sessionStorage.setItem('magicLinkOtpId', result.otpId)
+          sessionStorage.setItem(
+            'magicLinkBundle',
+            result.otpEncryptionTargetBundle,
+          )
         }}
         disabled={sendMagicLink.isPending || !email}
       >
@@ -50,7 +46,7 @@ function SendMagicLink() {
 }
 ```
 
-## Parameters
+## Mutation Parameters
 
 ### email
 
@@ -58,29 +54,13 @@ function SendMagicLink() {
 
 **Required.** The email address to send the magic link to.
 
-### redirectURL
+Configure the magic-link URL template for your project in the ZeroDev dashboard. The redirect page should call [`useVerifyMagicLink`](/wallets/hooks/use-verify-magic-link).
 
-`string`
+### connector
 
-**Required.** The URL the user will be redirected to after clicking the magic link. This should be a page in your app that calls [`useVerifyMagicLink`](/wallets/hooks/use-verify-magic-link).
+`Connector | undefined`
 
-### otpCodeCustomization
-
-`{ length?: 6 | 7 | 8 | 9; alphanumeric?: boolean } | undefined`
-
-Optional customization for the generated verification code.
-
-#### length
-
-`6 | 7 | 8 | 9 | undefined`
-
-The number of characters in the code. Defaults to `6`.
-
-#### alphanumeric
-
-`boolean | undefined`
-
-Whether to use alphanumeric characters instead of digits only. Defaults to `false`.
+Optional Wagmi connector to send the magic link with. If omitted, the hook uses the configured ZeroDev connector.
 
 ## Return Types
 
@@ -88,19 +68,19 @@ Whether to use alphanumeric characters instead of digits only. Defaults to `fals
 
 ### mutate
 
-`(variables: { email: string; redirectURL: string }) => void`
+`(variables: { email: string; connector?: Connector }) => void`
 
 The mutation function to send the magic link.
 
 ### mutateAsync
 
-`(variables: { email: string; redirectURL: string }) => Promise<{ otpId: string }>`
+`(variables: { email: string; connector?: Connector }) => Promise<{ otpId: string; otpEncryptionTargetBundle: string }>`
 
 Similar to [`mutate`](#mutate) but returns a promise.
 
 ### data
 
-`{ otpId: string } | undefined`
+`{ otpId: string; otpEncryptionTargetBundle: string } | undefined`
 
 - Defaults to `undefined`
 - The data returned from the mutation on success.
@@ -110,5 +90,11 @@ Similar to [`mutate`](#mutate) but returns a promise.
 `string`
 
 The identifier for this magic link verification. Store this value and pass it to [`useVerifyMagicLink`](/wallets/hooks/use-verify-magic-link) on the redirect page.
+
+#### otpEncryptionTargetBundle
+
+`string`
+
+The encryption target bundle for this magic link verification. Store this value with `otpId` and pass it to [`useVerifyMagicLink`](/wallets/hooks/use-verify-magic-link).
 
 <MutationResult />

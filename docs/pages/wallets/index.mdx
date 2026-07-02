@@ -1,37 +1,79 @@
-# ZeroDev Wallet [Smart embedded wallet for your app]
+# Smart Wallet
 
-:::danger[IMPORTANT]
-**USE FOR INTERNAL TESTING PURPOSES ONLY.** You may use these features solely for internal evaluation purposes on supported testnets. DO NOT use for production use or share with your users. Wallets created during this preview ("Alpha Wallets") will be discontinued. Any tokens remaining within Alpha Wallets will be permanently lost upon discontinuance. Any mainnet tokens sent to an Alpha Wallet will not be deposited and will be permanently lost when discontinued. We are unable to help recover any lost funds from Alpha Wallets. We provide all previews on an "as is" basis without warranty of any kind, and we may terminate or suspend the availability of any preview at any time.
-:::
+ZeroDev Smart Wallet is a smart-account-first embedded wallet for apps that need onboarding, signing, and transactions in one SDK. Users sign in with familiar login methods, then get a self-custodial web3 wallet they can use to interact onchain while your app gets a Wagmi-compatible wallet stack you can fully control.
 
-ZeroDev Wallet is the first **smart embedded wallet** -- an embedded wallet optimized for smart accounts.
+## How it works
 
-## Demo
+Adding ZeroDev Wallet takes three steps. Use the hook-based SDK for a fully custom wallet experience, or drop in the prebuilt [Wallet UI Kit](/wallets/auth/wallet-ui-kit) when you want a ready-made login flow. See it in the [live demo](https://zerodev-signer-demo.vercel.app/), or follow the [quickstart](/wallets/quickstart) to build it yourself.
 
-Check out [this demo](https://zerodev-signer-demo.vercel.app/) for a self-custodial wallet powered by social logins and gas sponsorship.
+1. **Authenticate** — a user signs in with a passkey, social login, email OTP, or magic link.
+2. **Provision** — a self-custodial smart account is created for them instantly, with their keys secured in isolated hardware.
+3. **Transact** — your app sends gasless transactions and [batched calls](/wallets/wallet-api/batch-transactions) through standard [Wagmi](https://wagmi.sh) and [viem](https://viem.sh) APIs.
+
+## How we keep keys secure
+
+Every wallet's private key is created and stored inside secure hardware — an isolated environment called a *trusted execution environment*, or TEE. When a user signs a message or transaction, signing happens inside that environment and only the signature leaves. The private key itself is never exposed to your app, to ZeroDev, or to anyone else.
+
+That's what makes every wallet **self-custodial**: only the authenticated user can approve a signature, and users can [export their wallet](/wallets/export) at any time to take full custody of their keys.
+
+## What you can build
+
+**Onboarding**
+
+- Authenticate with [passkeys](/wallets/auth/passkeys), [Google OAuth](/wallets/auth/google-oauth), [email OTP](/wallets/auth/email-otp), or [magic links](/wallets/auth/magic-link).
+- Drop in the prebuilt [Wallet UI Kit](/wallets/auth/wallet-ui-kit) for a faster login integration with less code.
+- Let users [export their wallet](/wallets/export) at any time.
+
+**Wallet actions**
+
+- [Send transactions](/wallets/wallet-api/send-transaction), [batch multiple calls](/wallets/wallet-api/batch-transactions), and [sign messages](/wallets/wallet-api/sign-message) through the tooling you already use.
+- Fund wallets across chains with a [smart routing address](/onramp/smart-routing-address), and extend accounts with Kernel's [permissions](/smart-accounts/permissions/intro) and [modules](/smart-accounts/use-plugins/overview).
+- Let ZeroDev handle [session management](/wallets/session-management) for you.
 
 ## Why ZeroDev Wallet
 
-### Smart by Default
+Most embedded wallets start with a signer and leave smart account infrastructure for you to assemble later. ZeroDev Wallet is built around the full account lifecycle, so you can build a bespoke, app-native onchain experience:
 
-Most embedded wallets use EOAs by default, and only support smart accounts as a secondary option.  On the other hand, ZeroDev Wallet uses smart accounts *by default* through EIP-7702 and ERC-4337.
+- **Smart from the first transaction.** Users get a smart account the moment they sign in — no separate upgrade step, no migrating from an EOA later.
+- **App-like, one-click flows.** Sponsor gas and batch multiple onchain actions into a single tap, so users get flows that feel like a modern app instead of a string of wallet pop-ups, approvals, and gas prompts.
+- **One platform, not a stack to assemble.** Wallet onboarding, smart accounts, gas sponsorship, and session management all live behind a single SDK — nothing to stitch together across a separate wallet provider, signer, bundler, and paymaster, and no two systems to keep in sync.
+- **Everything gets easier at once.** One integration means unified billing, usage tracking, and maintenance, a single SDK and set of docs to learn, and one place to monitor what your users are doing.
+- **UX you fully control.** You own every step — auth, signing, transacting, and permissions — so you can design experiences native to your product rather than handing users off to a generic wallet.
 
-As a result, smart account features such as gas sponsorship, transaction batching, transaction automation, and chain abstraction are available as native APIs with ZeroDev Wallet, while other embedded wallets typically only support a subset of these features.
+### What's coming
 
-### Get the best of on-chain & off-chain
+ZeroDev Wallet combines the best of off-chain and on-chain infrastructure — secure hardware for key management and smart accounts for on-chain execution — which unlocks wallet features that are difficult or impossible with other solutions. We're building toward:
 
-ZeroDev Wallet combines the best of off-chain and on-chain tech: TEE (trusted execution environment) for off-chain key management, and smart accounts for on-chain account management.  This enables ZeroDev wallet to offer powerful wallet features that are difficult if not impossible with other solutions, including:
+- **Server Wallets** — developer-controlled wallets that make it easy to manage your own wallets for operations and fleet management, with session keys on smart accounts so your backend can perform delegated transactions on a user's behalf.
+- **Hybrid on-chain / off-chain policy engine** — pair off-chain rules with on-chain enforcement for fine-grained control over spending and permissions.
+- **Resource-lock chain abstraction** — let users spend a single balance across chains without bridging or holding gas on each network.
+- **An expanded UI Kit** — more prebuilt, data-driven components, including portfolio management, transaction history, chain-abstracted balances, and more.
 
-- A hybrid on-chain / off-chain policy engine
-- Resource-lock chain abstraction
-- Fully counterfactual session keys
+Interested in exploring these, or have another feature request? [Contact us](https://zerodev.app/contact).
 
-## ZeroDev Wallet vs ZeroDev SDK
+## ZeroDev SDK vs ZeroDev Wallet
 
-[ZeroDev SDK](https://docs.zerodev.app/) is a *smart account SDK* that can be used to create smart accounts from any key management system of your choice, including local private keys and other WaaS solutions such as Privy, Dynamic, and Turnkey.
+ZeroDev Wallet is built on ZeroDev's own smart account SDK. The signer, smart accounts, gas sponsorship, and everything in between come first-party from a single vendor.
 
-On the other hand, ZeroDev Wallet is a complete embedded wallet solution that bundles key management with smart accounts.
+That means you don't have to sign up for, pay for, and integrate a separate third-party signer or wallet provider just to onboard users — it's all one stack and one integration, maintained by the same team.
 
-## Getting Started
+It also makes working with [Kernel](/smart-accounts/use-plugins/overview), our modular smart account, much easier: the wallet and the smart account share one SDK, so permissions, modules, and gas sponsorship work together out of the box instead of being wired across separate vendors.
 
-Check out [the quickstart](/wallets/quickstart) to get started!
+## Pricing
+
+ZeroDev Wallet is included in every ZeroDev plan. It draws from your existing credit allotment — there's no separate subscription.
+
+| Action | Credits |
+| --- | --- |
+| Signature — off-chain (personal sign, typed data, etc.) | 10 |
+| Sending a transaction (user operation) | 20 |
+| Sign **and** send a transaction | 30 |
+
+- **Free plans:** if you run out of credits, signing pauses until your credits refresh the following month. Your users can always [export their keys](/wallets/export) to keep full control of their wallets.
+- **Paid plans:** you keep signing and transacting past your allotment and are billed for overage credits.
+- **Rate limits:** default per-user rate limits protect against spam draining your credits. They're flexible — [contact us](https://zerodev.app/contact) to adjust them for your app.
+
+## Get started
+
+- **[Quickstart](/wallets/quickstart)** — add ZeroDev Wallet to a React app in about 5 minutes.
+- **[Live demo](https://zerodev-signer-demo.vercel.app/)** — a self-custodial wallet powered by social logins and gas sponsorship.
