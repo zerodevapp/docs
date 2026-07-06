@@ -76,7 +76,7 @@ export const loadPendingMagicLink = async (): Promise<Pending | null> => {
 
 ### `google-oauth-flow.web.tsx`
 
-The web [`useAuthenticateOAuth`](/wallets/hooks/use-authenticate-oauth) runs a popup instead of a deep link. It returns to the same page that started auth, so it takes no arguments and does not need a dedicated `/oauth-callback` route on web:
+The web `useAuthenticateOAuth` hook runs a popup instead of a deep link. It returns to the same page that started auth, so it takes no arguments and does not need a dedicated `/oauth-callback` route on web:
 
 ```tsx
 import { OAUTH_PROVIDERS, useAuthenticateOAuth } from "@zerodev/wallet-react";
@@ -104,7 +104,7 @@ export function GoogleOauthFlow() {
 
 ### `wallet-export.web.tsx`
 
-Web export uses the [`useExportWallet`](/wallets/hooks/use-export-wallet) / [`useExportPrivateKey`](/wallets/hooks/use-export-private-key) hooks (in place of the native [`ZeroDevExportWebView`](/wallets/react-native/export-wallet)). They render the Turnkey iframe into a DOM node, which a `<View nativeID>` becomes under react-native-web:
+Web export uses the `useExportWallet` / `useExportPrivateKey` hooks (in place of the native [`ZeroDevExportWebView`](/wallets/react-native/export-wallet)). They render the Turnkey iframe into a DOM node, which a `<View nativeID>` becomes under react-native-web:
 
 ```tsx
 import { useExportPrivateKey, useExportWallet } from "@zerodev/wallet-react";

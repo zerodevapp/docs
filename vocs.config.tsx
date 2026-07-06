@@ -480,10 +480,6 @@ export default defineConfig({
                 link: "/wallets/auth/google-oauth",
               },
               {
-                text: "Get Login Methods",
-                link: "/wallets/hooks/use-authenticators",
-              },
-              {
                 text: "Session Management",
                 link: "/wallets/session-management",
               },
@@ -532,10 +528,6 @@ export default defineConfig({
                 link: "/wallets/react-native/google-oauth",
               },
               {
-                text: "Expo OAuth API",
-                link: "/wallets/hooks/use-authenticate-oauth-with-expo-web-browser",
-              },
-              {
                 text: "Domain Association",
                 link: "/wallets/react-native/domain-association",
               },
@@ -550,10 +542,6 @@ export default defineConfig({
               {
                 text: "Export Wallet",
                 link: "/wallets/react-native/export-wallet",
-              },
-              {
-                text: "Export WebView API",
-                link: "/wallets/hooks/export-web-view",
               },
               {
                 text: "React Native Web",

@@ -91,7 +91,7 @@ bunx expo install expo-secure-store
 
 ### createReactNativePasskeyStamper
 
-Creates the passkey stamper used by [`useRegisterPasskey`](/wallets/hooks/use-register-passkey) and [`useLoginPasskey`](/wallets/hooks/use-login-passkey). It wraps the native platform passkey APIs and requires the `rpId` to match a domain your app is associated with — see [Domain Association](/wallets/react-native/domain-association) and [Passkeys on React Native](/wallets/react-native/passkeys) for the full setup.
+Creates the passkey stamper used by `useRegisterPasskey` and `useLoginPasskey`. It wraps the native platform passkey APIs and requires the `rpId` to match a domain your app is associated with — see [Domain Association](/wallets/react-native/domain-association) and [Passkeys on React Native](/wallets/react-native/passkeys) for the full setup.
 
 ```ts
 import { createReactNativePasskeyStamper } from "@zerodev/wallet-core/react-native/stampers/passkey";
@@ -162,7 +162,7 @@ bunx expo install @react-native-async-storage/async-storage
 
 - **No platform defaults** — `rpId`, `apiKeyStamper`, and `sessionStorage` are required on React Native; on the web they have built-in defaults.
 - **Crypto polyfill** — import `react-native-get-random-values` at the very top of your app's entry file (see the [quickstart](/wallets/react-native/quickstart)).
-- **Wallet export is a component, not a hook** — [`useExportWallet`](/wallets/hooks/use-export-wallet) and [`useExportPrivateKey`](/wallets/hooks/use-export-private-key) are not available on React Native. Use [`ZeroDevExportWebView`](/wallets/react-native/export-wallet) instead.
-- **OAuth uses deep links** — instead of the web popup flow, use [`useAuthenticateOAuthWithExpoWebBrowser`](/wallets/hooks/use-authenticate-oauth-with-expo-web-browser).
+- **Wallet export is a component, not a hook** — `useExportWallet` and `useExportPrivateKey` are not available on React Native. Use [`ZeroDevExportWebView`](/wallets/react-native/export-wallet) instead.
+- **OAuth uses deep links** — instead of the web popup flow, use `useAuthenticateOAuthWithExpoWebBrowser`.
 
 Running the same Expo app on the web too? See [React Native Web](/wallets/react-native/web) — the web build auto-defaults the stampers and storage, so the connector is just `zeroDevWallet({ projectId, chains })`.

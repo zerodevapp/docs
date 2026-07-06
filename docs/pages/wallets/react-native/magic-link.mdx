@@ -1,6 +1,6 @@
 # Magic Link on React Native [Sign in with a link sent by email]
 
-The [`useSendMagicLink`](/wallets/hooks/use-send-magic-link) and [`useVerifyMagicLink`](/wallets/hooks/use-verify-magic-link) hooks work identically to [the web](/wallets/auth/magic-link) on React Native, but the redirect needs platform setup.
+The `useSendMagicLink` and `useVerifyMagicLink` hooks work identically to [the web](/wallets/auth/magic-link) on React Native, but the redirect needs platform setup.
 
 A magic link needs a verified `https` callback — an **App Link** on Android, a **Universal Link** on iOS — so that tapping the link in the email opens the app. Email clients (e.g. Gmail) don't render custom-scheme links, so a plain `https` link on your verified domain is required.
 

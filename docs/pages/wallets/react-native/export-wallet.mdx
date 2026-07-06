@@ -1,8 +1,8 @@
 # Export Wallet on React Native [Reveal the seed phrase or private key via WebView]
 
-The web export hooks ([`useExportWallet`](/wallets/hooks/use-export-wallet) and [`useExportPrivateKey`](/wallets/hooks/use-export-private-key)) are **not available on React Native**.
+The web export hooks, `useExportWallet` and `useExportPrivateKey`, are **not available on React Native**.
 
-Export can't go through a plain hook — the secret must never touch your JS. Use [`ZeroDevExportWebView`](/wallets/hooks/export-web-view) instead: it renders Turnkey's export iframe inside an isolated WebView, so the plaintext stays in the iframe's context.
+Export can't go through a plain hook — the secret must never touch your JS. Use `ZeroDevExportWebView` instead: it renders Turnkey's export iframe inside an isolated WebView, so the plaintext stays in the iframe's context.
 
 :::info
 This flow requires an [Expo development build](https://docs.expo.dev/develop/development-builds/expo-go-to-dev-build/) — see the [quickstart](/wallets/react-native/quickstart#5-switch-to-an-expo-development-build).
@@ -72,8 +72,6 @@ export function ExportWallet() {
 - `onError` captures the message → the `!error` guard unmounts the WebView and the red error line shows instead.
 - The loading message shows while mounted-but-not-yet-ready (`show && !ready && !error`).
 - Use `kind="privateKey"` to export the account's private key instead of the seed phrase.
-
-See the [`ZeroDevExportWebView` reference](/wallets/hooks/export-web-view) for the full props.
 
 ## How it stays secure
 
