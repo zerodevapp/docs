@@ -23,19 +23,19 @@ This guide uses Arbitrum Sepolia and email OTP. Replace the chain, chain RPC URL
 :::code-group
 
 ```bash [npm]
-npm i @zerodev/wallet-react-ui @zerodev/wallet-core @zerodev/wallet-react wagmi viem @wagmi/core @tanstack/react-query zustand
+npm i @zerodev/wallet-react-ui@0.0.2 @zerodev/react-ui@0.0.2 @zerodev/wallet-core@0.0.1 @zerodev/wallet-react@0.0.1 wagmi viem @wagmi/core @tanstack/react-query zustand
 ```
 
 ```bash [yarn]
-yarn add @zerodev/wallet-react-ui @zerodev/wallet-core @zerodev/wallet-react wagmi viem @wagmi/core @tanstack/react-query zustand
+yarn add @zerodev/wallet-react-ui@0.0.2 @zerodev/react-ui@0.0.2 @zerodev/wallet-core@0.0.1 @zerodev/wallet-react@0.0.1 wagmi viem @wagmi/core @tanstack/react-query zustand
 ```
 
 ```bash [pnpm]
-pnpm add @zerodev/wallet-react-ui @zerodev/wallet-core @zerodev/wallet-react wagmi viem @wagmi/core @tanstack/react-query zustand
+pnpm add @zerodev/wallet-react-ui@0.0.2 @zerodev/react-ui@0.0.2 @zerodev/wallet-core@0.0.1 @zerodev/wallet-react@0.0.1 wagmi viem @wagmi/core @tanstack/react-query zustand
 ```
 
 ```bash [bun]
-bun add @zerodev/wallet-react-ui @zerodev/wallet-core @zerodev/wallet-react wagmi viem @wagmi/core @tanstack/react-query zustand
+bun add @zerodev/wallet-react-ui@0.0.2 @zerodev/react-ui@0.0.2 @zerodev/wallet-core@0.0.1 @zerodev/wallet-react@0.0.1 wagmi viem @wagmi/core @tanstack/react-query zustand
 ```
 
 :::
@@ -160,7 +160,7 @@ function AuthPanel() {
 
 ## Place the login flow
 
-`AuthFlow` comes with the UI Kit's recommended fixed wallet size. Place it in the part of your app where the login flow should appear, such as a modal, drawer, or centered auth area.
+`AuthFlow` supports three fixed sizes: `sm`, `md`, and `lg`. Choose the size that fits the surface where the flow appears, then keep that size fixed across every auth step.
 
 ```tsx
 <div
@@ -170,11 +170,13 @@ function AuthPanel() {
     minHeight: '100vh',
   }}
 >
-  <AuthFlow onClose={() => setLoginOpen(false)} />
+  <AuthFlow size="md" onClose={() => setLoginOpen(false)} />
 </div>
 ```
 
 The `onClose` prop is optional. Use it when your app owns surrounding UI state, such as closing a modal after the user clicks the kit's close button.
+
+Use `sm` for compact surfaces, `md` for drawers and smaller modals, and `lg` when the flow has more room. Avoid switching sizes while the user is in the auth flow.
 
 ## Avoid global CSS conflicts
 

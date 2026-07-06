@@ -457,7 +457,7 @@ export default defineConfig({
           },
           {
             text: "Demo",
-            link: "https://zerodev-signer-demo.vercel.app/",
+            link: "https://smart-wallet-demo.zerodev.app/",
           },
           {
             text: "Authentication",
