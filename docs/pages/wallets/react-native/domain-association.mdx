@@ -1,0 +1,243 @@
+# Domain Association [Link your app to a domain you own]
+
+:::warning[Example setup — for development only]
+This guide continues from the Expo starter project set up in the [quickstart](/wallets/react-native/quickstart), and shows an example setup for development. The committed debug keystore and the throwaway Vercel deployment are not suitable for production — a production app signs with a securely managed release key (e.g. [EAS credentials](https://docs.expo.dev/app-signing/app-credentials/); with [Play App Signing](https://support.google.com/googleplay/android-developer/answer/9842756), `assetlinks.json` must list Google's app-signing certificate fingerprint, not your upload key) and serves the verification files from your real product domain.
+:::
+
+Some features require the OS to verify that your app and your domain belong together:
+
+- **Android** checks that the installed APK's signing-cert SHA-256 matches what the domain publishes in `/.well-known/assetlinks.json`. ([Expo guide](https://docs.expo.dev/linking/android-app-links/))
+- **iOS** checks that the app's Team ID + bundle identifier appear in the domain's `/.well-known/apple-app-site-association` (AASA) file, and that the app declares the domain in its **Associated Domains** entitlement. ([Expo guide](https://docs.expo.dev/linking/ios-universal-links/))
+
+Set this up once, and it unlocks:
+
+- [Passkeys](/wallets/react-native/passkeys) — WebAuthn requires the `rpId` domain to vouch for your app.
+- **Verified `https` redirects** — links on your domain that return into the app, used by [Magic Link](/wallets/react-native/magic-link) (App Links / Universal Links) and optionally by the [OAuth redirect](/wallets/react-native/google-oauth#using-a-verified-https-link-as-the-redirect).
+
+That means: a stable Android signing keystore, the Associated Domains entitlement on iOS, two hosted verification files, and an `rpId` pointing at the domain that serves them.
+
+## 1. Android: sign every build with the same keystore
+
+Android only trusts the association if the installed APK's signing cert matches the fingerprint your domain publishes. Two defaults get in the way:
+
+- Debug builds are signed with an auto-generated keystore that differs per machine — every contributor would have a different fingerprint, and at most one could match.
+- You can't fix it by editing `android/app/build.gradle`: Expo [regenerates the native project](https://docs.expo.dev/workflow/continuous-native-generation/) on every prebuild, wiping manual changes.
+
+The fix: commit one shared keystore, and apply it with a [config plugin](https://docs.expo.dev/config-plugins/introduction/) so every regeneration picks it up.
+
+### Create a debug keystore
+
+([source](https://coderwall.com/p/r09hoq/android-generate-release-debug-keystores))
+
+```sh
+keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey \
+  -keypass android -keyalg RSA -keysize 2048 -validity 10000
+```
+
+This creates a `debug.keystore` in your project root. Commit it so every build (and every contributor) signs with the same cert.
+
+### Apply it with a config plugin
+
+Create `withDebugKeystore.js` in the project root — it points the debug `signingConfig` at the committed keystore:
+
+```js
+const { withAppBuildGradle } = require("expo/config-plugins");
+
+/**
+ * Points Android's debug signingConfig at the committed keystore in the
+ * project root instead of the auto-generated one.
+ *
+ * Reason: Android passkeys (WebAuthn) require the installed APK's SHA-256
+ * to match what the RP publishes in `/.well-known/assetlinks.json`. If
+ * every contributor signs with `~/.android/debug.keystore` (different
+ * per machine), only one of them matches. Signing every build with the
+ * shared committed keystore makes the fingerprint stable across the team.
+ *
+ * Applied on every prebuild, so `pnpm android`, `npx expo run:android`,
+ * and `eas build` all produce APKs signed with the same cert.
+ */
+const STORE_FILE_LINE = "storeFile file('debug.keystore')";
+
+module.exports = function withDebugKeystore(config) {
+  return withAppBuildGradle(config, (config) => {
+    if (!config.modResults.contents.includes(STORE_FILE_LINE)) {
+      throw new Error(
+        `withDebugKeystore: did not find "${STORE_FILE_LINE}" in app/build.gradle — Expo prebuild template may have changed`,
+      );
+    }
+    config.modResults.contents = config.modResults.contents.replace(
+      STORE_FILE_LINE,
+      // The path is resolved from the `android/app` directory, so go up two
+      // levels to reach the project root where `debug.keystore` lives.
+      "storeFile file('../../debug.keystore')",
+    );
+    return config;
+  });
+};
+```
+
+Register it in `app.json` under `plugins`:
+
+```jsonc
+{
+  "expo": {
+    "plugins": [
+      "./withDebugKeystore",
+      // ...
+    ],
+  },
+}
+```
+
+> The plugin takes effect when the native project is regenerated — run `npx expo prebuild --clean`, or it happens automatically on the next `npx expo run:android` if the `android/` directory doesn't exist yet.
+
+### Extract the SHA-256 fingerprint
+
+```sh
+keytool -list -v \
+  -keystore ./debug.keystore \
+  -alias androiddebugkey -storepass android -keypass android
+```
+
+Copy the line under `Certificate fingerprints` starting with `SHA256:` — it goes into `assetlinks.json` below.
+
+## 2. iOS: add the Associated Domains entitlement
+
+:::warning[Paid Apple Developer account required]
+Associated Domains is a paid-tier entitlement — it only works with a paid [Apple Developer Program](https://developer.apple.com/programs/) membership. With a free personal team the app still builds and installs, but the entitlement is silently dropped from the provisioning profile, so the AASA file is never fetched and passkeys / Universal Links fail with opaque errors.
+:::
+
+Grab your **Team ID** from the [Apple Developer membership page](https://developer.apple.com/account), then declare it and the domain in `app.json`:
+
+```jsonc
+{
+  "expo": {
+    "ios": {
+      "bundleIdentifier": "<your bundle id>",
+      "appleTeamId": "<your team id>", // [!code ++]
+      "associatedDomains": [ // [!code ++]
+        "webcredentials:<your domain>", // [!code ++]
+        "applinks:<your domain>?mode=developer" // [!code ++]
+      ] // [!code ++]
+    },
+  },
+}
+```
+
+- `webcredentials:` is the entry [passkeys](/wallets/react-native/passkeys) check; `applinks:` is the one Universal Links ([Magic Link](/wallets/react-native/magic-link)) check.
+- `?mode=developer` makes development builds fetch the AASA file directly from your origin instead of Apple's CDN, which can cache a stale copy for up to ~24h after you deploy. App Store builds strip the flag, so production traffic still goes through the CDN.
+- `appleTeamId` sets the development team for code signing in the generated Xcode project, so `npx expo run:ios` can sign without opening Xcode.
+
+> Associated Domains is a **build-time** entitlement, not runtime config. After adding or changing an entry, regenerate the native project and rebuild — `npx expo prebuild --clean`, then `npx expo run:ios`. Re-running against an already-built binary won't pick it up.
+
+## 3. Create and host the verification files
+
+Create a folder for the two `/.well-known/` files:
+
+```sh
+mkdir -p assetlinks/public/.well-known
+```
+
+### `assetlinks.json` (Android)
+
+Create `assetlinks/public/.well-known/assetlinks.json` with your package name (from `app.json` → `android.package`) and the SHA-256 fingerprint extracted in step 1:
+
+```json
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.get_login_creds"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "<your app package name>",
+      "sha256_cert_fingerprints": ["<your sha256 fingerprint>"]
+    }
+  }
+]
+```
+
+### `apple-app-site-association` (iOS)
+
+Create `assetlinks/public/.well-known/apple-app-site-association` (no file extension) with your Team ID and bundle identifier:
+
+```json
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["<your team id>.<your bundle id>"],
+        "components": [{ "/": "/verify-email*" }]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": ["<your team id>.<your bundle id>"]
+  }
+}
+```
+
+- `webcredentials` is what passkeys check.
+- `applinks.details[].components` lists the `https` paths that should open your app — `/verify-email*` is the one the [Magic Link](/wallets/react-native/magic-link) guide uses (the trailing `*` also matches the `?code=...` query string). Don't claim paths your app doesn't handle: every Safari navigation to a claimed URL gets intercepted by your app.
+
+Apple requires the extension-less AASA file to be served as JSON, so pin its `Content-Type` with an `assetlinks/vercel.json`:
+
+```json
+{
+  "outputDirectory": "public",
+  "headers": [
+    {
+      "source": "/.well-known/apple-app-site-association",
+      "headers": [{ "key": "Content-Type", "value": "application/json" }]
+    }
+  ]
+}
+```
+
+### Host on Vercel
+
+:::code-group
+
+```bash [npm]
+cd ./assetlinks
+npx vercel
+```
+
+```bash [yarn]
+cd ./assetlinks
+yarn dlx vercel
+```
+
+```bash [pnpm]
+cd ./assetlinks
+pnpm dlx vercel
+```
+
+```bash [bun]
+cd ./assetlinks
+bunx vercel
+```
+
+:::
+
+Then verify both files deployed correctly:
+
+```sh
+curl -i https://<vercel_project_name>.vercel.app/.well-known/assetlinks.json
+curl -i https://<vercel_project_name>.vercel.app/.well-known/apple-app-site-association
+# expect 200 + application/json for both, with no redirects
+```
+
+iOS devices don't fetch the AASA from your origin — they go through **Apple's CDN** (unless the `?mode=developer` flag from step 2 is active). Check what the CDN sees:
+
+```sh
+curl https://app-site-association.cdn-apple.com/a/v1/<vercel_project_name>.vercel.app
+```
+
+If the CDN payload is stale after a deploy, development builds with `?mode=developer` bypass it; alternatively, toggle **Settings → Developer → Universal Links → Associated Domains Development** on the test device (the Developer menu appears once the device has been connected to Xcode).
+
+## 4. Point the SDK at the domain
+
+- Change `RP_ID` in `wagmi.config.ts` to the deployed domain (no scheme): `<vercel_project_name>.vercel.app`.
+- If you specify an Access Control List of whitelisted Origins on the [ZeroDev Dashboard](https://dashboard.zerodev.app/), add `https://<vercel_project_name>.vercel.app/` to the allowlist.
