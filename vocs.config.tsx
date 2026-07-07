@@ -17,8 +17,7 @@ export default defineConfig({
     dark: "/logo-white.svg",
     light: "/logo-black.svg",
   },
-  ogImageUrl:
-    "https://opengraph.b-cdn.net/production/images/50e96e41-57b2-498a-926d-5d4f7dc12ce9.jpg?token=gBUdkC6PEL62pNjHqzD5XrTo5vueTGU7yocJbzCuEvg&height=630&width=1200&expires=33273546185",
+  ogImageUrl: "/og-image.jpg",
   editLink: {
     pattern: "https://github.com/zerodevapp/docs/edit/main/docs/pages/:path",
     text: "Edit on GitHub",
