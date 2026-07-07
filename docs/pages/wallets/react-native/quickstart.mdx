@@ -83,24 +83,26 @@ bun add wagmi viem@2.x @tanstack/react-query
 
 :::
 
-Install the crypto polyfill:
+ZeroDev Wallet works with both Wagmi v2 and v3. Wagmi v3 still requires `viem@2.x`, so the pinned viem version above applies to either.
+
+Install the polyfills (`events` is a shim for a Node module that React Native doesn't ship):
 
 :::code-group
 
 ```bash [npm]
-npx expo install react-native-get-random-values
+npx expo install react-native-get-random-values events
 ```
 
 ```bash [yarn]
-yarn expo install react-native-get-random-values
+yarn expo install react-native-get-random-values events
 ```
 
 ```bash [pnpm]
-pnpm expo install react-native-get-random-values
+pnpm expo install react-native-get-random-values events
 ```
 
 ```bash [bun]
-bunx expo install react-native-get-random-values
+bunx expo install react-native-get-random-values events
 ```
 
 :::
