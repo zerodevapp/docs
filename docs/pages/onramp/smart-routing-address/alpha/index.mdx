@@ -1,0 +1,158 @@
+# Smart Routing Address v1 (Alpha)
+
+:::warning
+**v1 is a gated alpha release.** The API may still change before the stable release, and access is limited. [Get in touch](https://forms.gle/sxpsSKnmKuFatm8x8) if you'd like to try it.
+:::
+
+This page covers **what's new and what changed in v1**. For the core concepts and the existing API, see the [current Smart Routing Address docs](/onramp/smart-routing-address).
+
+## Installation
+
+:::code-group
+
+```bash [npm]
+npm i @zerodev/smart-routing-address@alpha
+```
+
+```bash [yarn]
+yarn add @zerodev/smart-routing-address@alpha
+```
+
+```bash [pnpm]
+pnpm i @zerodev/smart-routing-address@alpha
+```
+
+```bash [bun]
+bun add @zerodev/smart-routing-address@alpha
+```
+
+:::
+
+v1 requires you to pass a `version` when creating an address. Use the constant exported by the SDK:
+
+```tsx
+import { SMART_ROUTING_ADDRESS_V1_0_0_ALPHA_0 } from "@zerodev/smart-routing-address";
+```
+
+## What's new
+
+- **Direct mode** — bridge funds straight to a recipient address, with no custom logic on the destination chain. Cheaper than execute mode, and the simplest way to move funds. (See [Deposit Modes](#deposit-modes) below.)
+- **Same-chain deposits without sponsorship** — depositing when the source and destination chain are the same no longer requires fee sponsorship.
+- **More chains and tokens** — including USDG on Robinhood, USDC/USDT/USDM on MegaETH, and U on BNB Chain. See [Supported Chains & Tokens](/onramp/smart-routing-address/alpha/supported-chains).
+
+### Coming soon
+
+- **Stables to stables** — deposit USDC, receive USDT (or another stablecoin).
+- **Any token to any token** — deposit USDC, receive ETH.
+
+## What changed
+
+A quick summary — see the [Migration Guide](/onramp/smart-routing-address/alpha/migration-guide) for before/after code:
+
+- `version` is now **required**.
+- `projectId` is now a **required top-level parameter** (it replaces embedding your project ID in `config.baseUrl`).
+- `fallBack` has been **removed** from actions.
+- `actions` is now **optional** — omit it and pass a `recipient` to use direct mode.
+
+## Deposit Modes
+
+A smart routing address can deliver funds on the destination chain in one of two ways:
+
+| | Direct mode | Execute mode |
+| --- | --- | --- |
+| What you pass | `recipient` | `actions` |
+| Destination logic | none — funds are transferred to `recipient` | your calls run on arrival |
+| Gas cost | lower | higher (runs your calls) |
+| Use when | you just want funds delivered | you need to do something with the funds |
+
+### Direct mode
+
+Pass a `recipient` and skip `actions` entirely. Funds are bridged to `recipient` on the destination chain.
+
+```tsx
+import {
+  createSmartRoutingAddress,
+  SMART_ROUTING_ADDRESS_V1_0_0_ALPHA_0,
+} from "@zerodev/smart-routing-address";
+import { base, arbitrum, mainnet, optimism } from "viem/chains";
+
+const owner = "0xddED85de258cC7a33A61BC6215DD766E87a97070";
+
+const { smartRoutingAddress, estimatedFees } = await createSmartRoutingAddress({
+  owner,
+  projectId: "<YOUR_PROJECT_ID>",
+  destChain: base,
+  recipient: owner, // funds land here on Base
+  srcTokens: [
+    { tokenType: "ERC20", chain: arbitrum }, // any ERC20 on Arbitrum
+    { tokenType: "NATIVE", chain: mainnet }, // ETH on Ethereum
+    { tokenType: "USDC", chain: optimism }, // USDC on Optimism
+  ],
+  version: SMART_ROUTING_ADDRESS_V1_0_0_ALPHA_0,
+});
+```
+
+`recipient` and `owner` are often the same address, but they don't have to be — `owner` recovers stuck funds, while `recipient` receives routed funds.
+
+### Execute mode
+
+Pass an `actions` map instead of `recipient`. Each entry maps a received token to the calls that run on the destination chain when that token arrives. Build calls with `createCall`.
+
+```tsx
+import {
+  createSmartRoutingAddress,
+  createCall,
+  FLEX,
+  SMART_ROUTING_ADDRESS_V1_0_0_ALPHA_0,
+} from "@zerodev/smart-routing-address";
+import { erc20Abi } from "viem";
+import { base, arbitrum, mainnet, optimism } from "viem/chains";
+
+const owner = "0xddED85de258cC7a33A61BC6215DD766E87a97070";
+
+// Transfer whatever ERC20 arrives, in whatever amount, to `owner`.
+const erc20Call = createCall({
+  target: FLEX.TOKEN_ADDRESS,
+  value: 0n,
+  abi: erc20Abi,
+  functionName: "transfer",
+  args: [owner, FLEX.AMOUNT],
+});
+
+// Send whatever native amount arrives to `owner`.
+const nativeCall = createCall({
+  target: owner,
+  value: FLEX.NATIVE_AMOUNT,
+});
+
+const { smartRoutingAddress } = await createSmartRoutingAddress({
+  owner,
+  projectId: "<YOUR_PROJECT_ID>",
+  destChain: base,
+  actions: {
+    USDC: { action: [erc20Call] },
+    WRAPPED_NATIVE: { action: [erc20Call] },
+    NATIVE: { action: [nativeCall] },
+  },
+  srcTokens: [
+    { tokenType: "ERC20", chain: arbitrum },
+    { tokenType: "NATIVE", chain: mainnet },
+    { tokenType: "USDC", chain: optimism },
+  ],
+  version: SMART_ROUTING_ADDRESS_V1_0_0_ALPHA_0,
+});
+```
+
+#### FLEX placeholders
+
+Because the exact token and amount aren't known until a deposit lands, `createCall` lets you leave holes that the router fills in at execution time:
+
+- `FLEX.TOKEN_ADDRESS` — the address of the token that arrived.
+- `FLEX.AMOUNT` — the ERC20 amount that arrived (net of fees).
+- `FLEX.NATIVE_AMOUNT` — the native amount that arrived.
+
+Use these anywhere a token address or amount is expected — as a `target`, a `value`, or inside `args`.
+
+## Everything else is unchanged
+
+Fee sponsorship and fetching status work exactly as they do today — see the current docs for [Fee Sponsorship](/onramp/smart-routing-address/fee-sponsorship) and [Fetching Status](/onramp/smart-routing-address/fetching-status). The only difference is that you now pass `projectId` directly (see [What changed](#what-changed)).

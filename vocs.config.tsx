@@ -271,6 +271,24 @@ export default defineConfig({
             text: "Supported Chains & Tokens",
             link: "/onramp/smart-routing-address/supported-chains",
           },
+          {
+            text: "v1 (Alpha)",
+            collapsed: true,
+            items: [
+              {
+                text: "What's New",
+                link: "/onramp/smart-routing-address/alpha",
+              },
+              {
+                text: "Supported Chains & Tokens",
+                link: "/onramp/smart-routing-address/alpha/supported-chains",
+              },
+              {
+                text: "Migration Guide",
+                link: "/onramp/smart-routing-address/alpha/migration-guide",
+              },
+            ],
+          },
         ],
       },
     ],
