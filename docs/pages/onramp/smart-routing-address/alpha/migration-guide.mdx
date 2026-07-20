@@ -1,0 +1,148 @@
+# Migration Guide
+
+This guide covers what changed between the current version of `@zerodev/smart-routing-address` and **v1 alpha**, and how to update your code. Most integrations only need a few small edits.
+
+:::warning
+v1 is in alpha and its API may still change. This guide will be kept up to date through the stable release.
+:::
+
+Breaking changes:
+
+- [`version` is now required](#version-is-now-required)
+- [`projectId` is now a top-level parameter](#projectid-is-now-a-top-level-parameter)
+- [`fallBack` has been removed from actions](#fallback-has-been-removed-from-actions)
+- [`actions` is now optional (direct mode)](#actions-is-now-optional-direct-mode)
+
+New (non-breaking):
+
+- [Direct mode](#new-direct-mode)
+- [`allowPartialRoutes`](#new-allowpartialroutes)
+- [Same-chain deposits without sponsorship](#new-same-chain-deposits-without-sponsorship)
+- [More chains and tokens](#new-more-chains-and-tokens)
+
+---
+
+## Breaking changes
+
+### `version` is now required
+
+Pass the version constant exported by the SDK so your integration is pinned to a known behavior.
+
+```tsx
+import {
+  createSmartRoutingAddress,
+  SMART_ROUTING_ADDRESS_V1_0_0_ALPHA_0, // [!code ++]
+} from "@zerodev/smart-routing-address";
+
+const { smartRoutingAddress } = await createSmartRoutingAddress({
+  owner,
+  destChain,
+  srcTokens,
+  actions,
+  version: SMART_ROUTING_ADDRESS_V1_0_0_ALPHA_0, // [!code ++]
+});
+```
+
+### `projectId` is now a top-level parameter
+
+Previously you passed your project ID by hand-building `config.baseUrl` (and only for sponsorship). In v1, `projectId` is a required, first-class parameter, and the SDK builds the request URL for you. Grab your ID from the [dashboard](https://dashboard.zerodev.app/projects/smart-routing-address).
+
+```tsx
+// Before // [!code --]
+const { smartRoutingAddress } = await createSmartRoutingAddress({ // [!code --]
+  owner, // [!code --]
+  destChain, // [!code --]
+  actions, // [!code --]
+  srcTokens, // [!code --]
+  config: { // [!code --]
+    baseUrl: `${SMART_ROUTING_ADDRESS_SERVER_URL}/${ZERODEV_PROJECT_ID}`, // [!code --]
+  }, // [!code --]
+}); // [!code --]
+
+// After // [!code ++]
+const { smartRoutingAddress } = await createSmartRoutingAddress({ // [!code ++]
+  owner, // [!code ++]
+  projectId: ZERODEV_PROJECT_ID, // [!code ++]
+  destChain, // [!code ++]
+  actions, // [!code ++]
+  srcTokens, // [!code ++]
+  version: SMART_ROUTING_ADDRESS_V1_0_0_ALPHA_0, // [!code ++]
+}); // [!code ++]
+```
+
+Fee sponsorship otherwise works exactly as it does today — toggle sponsored tokens in the [dashboard](https://dashboard.zerodev.app/projects/smart-routing-address). See the current [Fee Sponsorship](/onramp/smart-routing-address/fee-sponsorship) docs for the full walkthrough.
+
+### `fallBack` has been removed from actions
+
+Actions no longer take a `fallBack` array. Each action is just `{ action: [...] }`.
+
+```tsx
+const { smartRoutingAddress } = await createSmartRoutingAddress({
+  owner,
+  projectId,
+  destChain,
+  actions: {
+    USDC: {
+      action: [erc20Call],
+      fallBack: [erc20Call], // [!code --]
+    },
+  },
+  srcTokens,
+  version: SMART_ROUTING_ADDRESS_V1_0_0_ALPHA_0,
+});
+```
+
+### `actions` is now optional (direct mode)
+
+`actions` used to be required. In v1 it's optional — omit it and pass a `recipient` to use the new [direct mode](#new-direct-mode). If you keep passing `actions` (execute mode), nothing changes other than dropping `fallBack`.
+
+---
+
+## What's new
+
+### New: Direct mode
+
+You no longer need to define `actions` just to move funds to an address. Pass a `recipient` and the SDK bridges funds straight there — cheaper, since there's no custom logic to run on the destination chain.
+
+```tsx
+const { smartRoutingAddress } = await createSmartRoutingAddress({
+  owner,
+  projectId,
+  destChain: base,
+  recipient: owner, // [!code ++]
+  srcTokens,
+  version: SMART_ROUTING_ADDRESS_V1_0_0_ALPHA_0,
+});
+```
+
+Keep using **execute mode** (`actions`) when you need to run logic on arrival. See [Deposit Modes](/onramp/smart-routing-address/alpha#deposit-modes) for the full comparison.
+
+### New: `allowPartialRoutes`
+
+When you list many source chains, one temporarily-unavailable route used to fail the whole call. Set `allowPartialRoutes: true` to create the address anyway and simply drop the routes that aren't available.
+
+```tsx
+const { smartRoutingAddress } = await createSmartRoutingAddress({
+  owner,
+  projectId,
+  destChain,
+  recipient: owner,
+  srcTokens,
+  allowPartialRoutes: true, // [!code ++]
+  version: SMART_ROUTING_ADDRESS_V1_0_0_ALPHA_0,
+});
+```
+
+### New: Same-chain deposits without sponsorship
+
+Depositing when the source chain and destination chain are the same no longer requires fee sponsorship. Same-chain flows now work out of the box, sponsored or not.
+
+### New: More chains and tokens
+
+v1 adds, among others:
+
+- **USDG** on Robinhood
+- **USDC**, **USDT**, and **USDM** on MegaETH
+- **U** on BNB Chain
+
+See the full list on [Supported Chains & Tokens](/onramp/smart-routing-address/alpha/supported-chains). Need a chain or token that isn't listed? [Get in touch](https://forms.gle/sxpsSKnmKuFatm8x8).
