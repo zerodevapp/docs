@@ -33,7 +33,7 @@ bun add @zerodev/smart-routing-address@alpha
 v1 requires you to pass a `version` when creating an address. Use the constant exported by the SDK:
 
 ```tsx
-import { SMART_ROUTING_ADDRESS_V1_0_0_ALPHA_0 } from "@zerodev/smart-routing-address";
+import { SMART_ROUTING_ADDRESS_V1_0_0_ALPHA_1 } from "@zerodev/smart-routing-address";
 ```
 
 ## What's new
@@ -74,7 +74,7 @@ Pass a `recipient` and skip `actions` entirely. Funds are bridged to `recipient`
 ```tsx
 import {
   createSmartRoutingAddress,
-  SMART_ROUTING_ADDRESS_V1_0_0_ALPHA_0,
+  SMART_ROUTING_ADDRESS_V1_0_0_ALPHA_1,
 } from "@zerodev/smart-routing-address";
 import { base, arbitrum, mainnet, optimism } from "viem/chains";
 
@@ -90,7 +90,7 @@ const { smartRoutingAddress, estimatedFees } = await createSmartRoutingAddress({
     { tokenType: "NATIVE", chain: mainnet }, // ETH on Ethereum
     { tokenType: "USDC", chain: optimism }, // USDC on Optimism
   ],
-  version: SMART_ROUTING_ADDRESS_V1_0_0_ALPHA_0,
+  version: SMART_ROUTING_ADDRESS_V1_0_0_ALPHA_1,
 });
 ```
 
@@ -105,7 +105,7 @@ import {
   createSmartRoutingAddress,
   createCall,
   FLEX,
-  SMART_ROUTING_ADDRESS_V1_0_0_ALPHA_0,
+  SMART_ROUTING_ADDRESS_V1_0_0_ALPHA_1,
 } from "@zerodev/smart-routing-address";
 import { erc20Abi } from "viem";
 import { base, arbitrum, mainnet, optimism } from "viem/chains";
@@ -141,7 +141,7 @@ const { smartRoutingAddress } = await createSmartRoutingAddress({
     { tokenType: "NATIVE", chain: mainnet },
     { tokenType: "USDC", chain: optimism },
   ],
-  version: SMART_ROUTING_ADDRESS_V1_0_0_ALPHA_0,
+  version: SMART_ROUTING_ADDRESS_V1_0_0_ALPHA_1,
 });
 ```
 
