@@ -31,7 +31,7 @@ Pass the version constant exported by the SDK so your integration is pinned to a
 ```tsx
 import {
   createSmartRoutingAddress,
-  SMART_ROUTING_ADDRESS_V1_0_0_ALPHA_0, // [!code ++]
+  SMART_ROUTING_ADDRESS_V1_0_0_ALPHA_1, // [!code ++]
 } from "@zerodev/smart-routing-address";
 
 const { smartRoutingAddress } = await createSmartRoutingAddress({
@@ -39,7 +39,7 @@ const { smartRoutingAddress } = await createSmartRoutingAddress({
   destChain,
   srcTokens,
   actions,
-  version: SMART_ROUTING_ADDRESS_V1_0_0_ALPHA_0, // [!code ++]
+  version: SMART_ROUTING_ADDRESS_V1_0_0_ALPHA_1, // [!code ++]
 });
 ```
 
@@ -66,7 +66,7 @@ const { smartRoutingAddress } = await createSmartRoutingAddress({ // [!code ++]
   destChain, // [!code ++]
   actions, // [!code ++]
   srcTokens, // [!code ++]
-  version: SMART_ROUTING_ADDRESS_V1_0_0_ALPHA_0, // [!code ++]
+  version: SMART_ROUTING_ADDRESS_V1_0_0_ALPHA_1, // [!code ++]
 }); // [!code ++]
 ```
 
@@ -88,7 +88,7 @@ const { smartRoutingAddress } = await createSmartRoutingAddress({
     },
   },
   srcTokens,
-  version: SMART_ROUTING_ADDRESS_V1_0_0_ALPHA_0,
+  version: SMART_ROUTING_ADDRESS_V1_0_0_ALPHA_1,
 });
 ```
 
@@ -111,7 +111,7 @@ const { smartRoutingAddress } = await createSmartRoutingAddress({
   destChain: base,
   recipient: owner, // [!code ++]
   srcTokens,
-  version: SMART_ROUTING_ADDRESS_V1_0_0_ALPHA_0,
+  version: SMART_ROUTING_ADDRESS_V1_0_0_ALPHA_1,
 });
 ```
 
@@ -129,7 +129,7 @@ const { smartRoutingAddress } = await createSmartRoutingAddress({
   recipient: owner,
   srcTokens,
   allowPartialRoutes: true, // [!code ++]
-  version: SMART_ROUTING_ADDRESS_V1_0_0_ALPHA_0,
+  version: SMART_ROUTING_ADDRESS_V1_0_0_ALPHA_1,
 });
 ```
 
