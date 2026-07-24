@@ -1,0 +1,162 @@
+# Integration Guide
+
+Build a complete earn feature: vault list, cross-chain deposit, progress tracking, and fund recovery. Most teams ship it in a day.
+
+The [demo app](https://github.com/zerodevapp/smart-recipes/tree/master/examples/demo) implements this exact flow in React. Use it as a reference.
+
+## 1. Set up the client
+
+Create one client for your whole app. There is no API key and no signer.
+
+```ts
+// client.ts
+import { createSmartRecipes } from "@zerodev/smart-recipes";
+
+export const sr = createSmartRecipes({
+  serverUrl: import.meta.env.VITE_SERVER_URL,
+  projectId: import.meta.env.VITE_ZD_PROJECT_ID,
+});
+```
+
+## 2. Show vaults
+
+`listVaults` returns live APY and TVL. Each result can route a deposit directly. A table row becomes a deposit with no extra lookups.
+
+```ts
+const { vaults } = await sr.listVaults({
+  chains: [8453, 42161],
+  minTvl: 1_000_000,
+});
+
+// render: vault.name, vault.protocol, vault.apy, vault.tvlUsd, vault.asset.symbol
+```
+
+Build your token selector from the server's registry:
+
+```ts
+const tokens = await sr.getTokens({ chainId: 8453 });
+```
+
+## 3. Quote
+
+The user picked a vault, a source chain, and an amount. Quote it:
+
+```ts
+const quote = await sr.morpho.deposit({
+  owner: userAddress,
+  amount: "100",
+  token: TOKENS.USDC,
+  srcChainId: 8453,
+  into: vault,              // the Vault object from listVaults
+  slippage: 100,            // 1%
+});
+```
+
+Show the quote before the user commits:
+
+- `quote.estimatedShares`: what they receive
+- `quote.vaultApy`: the APY snapshot
+- `quote.estimatedFees`: route fees, in token base units
+- `quote.expiresAt`: quotes live about 60 seconds
+
+A quote is free and read-only. Re-quote each time the user edits the form.
+
+## 4. Execute
+
+The quote carries two equivalent forms. Use the one that matches your wallet stack.
+
+For an EOA (wagmi, viem, ethers):
+
+```ts
+for (const call of quote.transaction.calls) {
+  await walletClient.sendTransaction({
+    to: call.to,
+    data: call.data,
+    value: BigInt(call.value),
+    chainId: quote.transaction.chainId,
+  });
+}
+```
+
+For a smart account (ERC-4337, EIP-7702), send one batched user op:
+
+```ts
+await kernelClient.sendUserOp({ callData: quote.userOp.callData });
+```
+
+The user signs this one step. The relayer runs the bridge and the vault deposit. No further signatures are needed.
+
+## 5. Track
+
+Drive your progress UI from `watchStatus`:
+
+```ts
+const watcher = sr.watchStatus(quote.sra, {
+  onStatusChange: (s) => {
+    // PENDING → BRIDGING → EXECUTING → COMPLETED
+    setPhase(s.state);
+  },
+  onError: (e) => setError(e),
+});
+await watcher.done;
+```
+
+`getDepositStatus` adds the vault balance:
+
+```ts
+const ds = await sr.getDepositStatus({
+  sra: quote.sra,
+  owner: userAddress,
+  destChainId: vault.chainId,
+  vaultId: vault.address,
+});
+// ds.phase: 'pending' | 'bridging' | 'deposited' | 'failed'
+// ds.vaultBalance: the user's balance in the vault
+```
+
+## 6. Handle failure and recovery
+
+Persist `quote.sra` before execution. Use local storage or your backend. It is the recovery handle. A reload, a revert, or a wrong token leaves funds in the SRA. Only the `owner` can drain it.
+
+```ts
+const { data } = await sr.getWithdrawCalls({
+  sra,
+  tokens: [{ chainId: 42161, token: usdcAddress }],
+});
+for (const { chainId, calls } of data) {
+  for (const call of calls) {
+    await walletClient.sendTransaction({ ...call, value: BigInt(call.value), chainId });
+  }
+}
+```
+
+You can also send users to the [SRA portal](https://smart-routing-address.zerodev.app/). It provides the same recovery with no code on your side.
+
+## 7. Handle errors
+
+Every rejection carries a typed code. Three cover most of your UI:
+
+```ts
+import { SmartRecipeError, QuoteExpiredError, VaultCapExceededError } from "@zerodev/smart-recipes";
+
+try {
+  await getQuote();
+} catch (e) {
+  if (e instanceof QuoteExpiredError) requote();
+  else if (e instanceof VaultCapExceededError) suggestSmallerAmount();
+  else if (e instanceof SmartRecipeError) showError(e.code, e.message);
+}
+```
+
+See [Errors](/onramp/smart-recipes/errors) for the full code table.
+
+## Checklist
+
+- [ ] Client created once, with `serverUrl` and `projectId`
+- [ ] Vault list from `listVaults`, token selector from `getTokens`
+- [ ] Quote display: shares, APY, fees, expiry countdown
+- [ ] Execute path for your wallet stack
+- [ ] Progress UI from `watchStatus`
+- [ ] `quote.sra` persisted before execution
+- [ ] Recovery via `getWithdrawCalls`
+- [ ] Error handling for `QUOTE_EXPIRED` and `VAULT_CAP_EXCEEDED`

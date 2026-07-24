@@ -14,13 +14,13 @@ type Quote = {
   srcTransactions?: { chainId: number; calls: OnChainCall[] }[]     // present when a src swap is needed
   estimatedFees: {                             // amounts in route-token base units, NOT USD
     totalFeeAmount: string                     // summed in totalFeeToken units; partial when denominations mix
-    totalFeeToken: Address | null              // null = mixed/none — render perChain instead
+    totalFeeToken: Address | null              // null = mixed/none - render perChain instead
     perChain: { chainId: number; feeAmount: string; feeToken: Address | null }[]
   }
   estimatedReceiveAmount: string               // base units on destChain
   estimatedShares?: string                     // vault recipes only
   vaultApy?: number                            // percent (2.57 = 2.57%)
-  swapMinOutput?: string                       // estimate — the server enforces the real floor
+  swapMinOutput?: string                       // estimate - the server enforces the real floor
   route?: {                                    // the resolved flow, for UI display
     bridgeTokenType: string | null             // the token the SRA is funded with
     requiresSrcSwap: boolean                   // owner-signed swap before funding

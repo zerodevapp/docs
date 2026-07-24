@@ -6,11 +6,11 @@ The server finds vaults for you. You can pass a result directly into a deposit. 
 
 ```ts
 const { vaults, nextPage } = await sr.listVaults({
-  asset: TOKENS.USDC,   // optional — filter by asset
-  chains: [42161],      // optional — filter by chain
-  protocol: "morpho",   // optional — filter by protocol
-  minTvl: 1_000_000,    // optional — USD TVL floor
-  minApy: 2,            // optional — percent
+  asset: TOKENS.USDC,   // optional - filter by asset
+  chains: [42161],      // optional - filter by chain
+  protocol: "morpho",   // optional - filter by protocol
+  minTvl: 1_000_000,    // optional - USD TVL floor
+  minApy: 2,            // optional - percent
   page: 0,              // zero-based; walk until nextPage is null
 });
 ```
@@ -25,7 +25,7 @@ The type is a union that discriminates on `category`. A vault contains the field
 
 ```ts
 type VaultCommon = {
-  id: string                   // server vault id — what `into` keys on
+  id: string                   // server vault id - what `into` keys on
   address: Address             // the vault contract (deposit target)
   chainId: number
   protocol: string             // 'aave' | 'morpho' | 'fluid' | 'yearn' | ...
@@ -70,10 +70,10 @@ const check = await sr.preflight({
   amount: "100",
 });
 if (check.depositsDisabled) {
-  // the vault accepts no deposits — select a different vault
+  // the vault accepts no deposits - select a different vault
 }
-// check.maxDeposit — remaining cap headroom (null when the vault kind has no per-owner cap)
-// check.route      — the bridge token, and whether a src or dest swap is required
+// check.maxDeposit - remaining cap headroom (null when the vault kind has no per-owner cap)
+// check.route      - the bridge token, and whether a src or dest swap is required
 ```
 
 ## Supported chains and tokens

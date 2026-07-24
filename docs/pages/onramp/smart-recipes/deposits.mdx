@@ -7,7 +7,7 @@ Each deposit routes through a Smart Routing Address and returns a [Quote](/onram
 Each facade binds its protocol. The server maps the protocol to an adapter. The adapter builds the deposit calls and verifies the target on-chain before it quotes. Example: you pass a Morpho-Blue market where a 4626 vault is expected. The call fails immediately with a typed error. No funds move.
 
 ```ts
-sr.aave.deposit(params)     // no `into` — the pool follows from token + destChainId
+sr.aave.deposit(params)     // no `into` - the pool follows from token + destChainId
 sr.morpho.deposit(params)   // `into` required
 sr.fluid.deposit(params)    // `into` required
 sr.yearn.deposit(params)    // `into` required
@@ -84,7 +84,7 @@ await sr.depositIntoVault({
   srcChainId: 42161,
   destChainId: 42161,
   into: "0xVAULT",
-  protocol: "erc4626",   // required — 'aave' | 'morpho' | 'fluid' | 'yearn' | 'erc4626'
+  protocol: "erc4626",   // required - 'aave' | 'morpho' | 'fluid' | 'yearn' | 'erc4626'
 });
 ```
 

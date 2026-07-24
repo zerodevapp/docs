@@ -58,10 +58,10 @@ const { vaults } = await sr.listVaults({ asset: TOKENS.USDC, chains: [42161] });
 // Quote a deposit: the user funds from Base, the vault is on Arbitrum
 const quote = await sr.morpho.deposit({
   owner: "0xUSER",          // funds + signs + receives shares
-  amount: "100",            // display units — the server scales by token decimals
+  amount: "100",            // display units - the server scales by token decimals
   token: TOKENS.USDC,       // symbol → canonical per-chain address
   srcChainId: 8453,         // Base
-  into: vaults[0],          // Vault object — destChainId derived from it
+  into: vaults[0],          // Vault object - destChainId derived from it
 });
 
 console.log(quote.sra);                    // the address the user funds

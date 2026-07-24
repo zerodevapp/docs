@@ -36,7 +36,7 @@ const watcher = sr.watchStatus(quote.sra, {
 });
 
 await watcher.done;   // resolves on terminal state / unsubscribe, rejects on persistent failure
-watcher.stop();       // or call watcher() — unsubscribe
+watcher.stop();       // or call watcher() - unsubscribe
 ```
 
 ## `getStatus`
@@ -45,9 +45,9 @@ Use `getStatus` for one read of the same data:
 
 ```ts
 const status = await sr.getStatus(sra);
-// status.state          — RecipeState
-// status.deposits       — per-deposit evidence: deposit tx, bridge tx, execution tx
-// status.failureReason  — the first deposit error when state === 'FAILED'
+// status.state          - RecipeState
+// status.deposits       - per-deposit evidence: deposit tx, bridge tx, execution tx
+// status.failureReason  - the first deposit error when state === 'FAILED'
 ```
 
 ## Recovering funds

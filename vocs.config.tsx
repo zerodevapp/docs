@@ -304,6 +304,14 @@ export default defineConfig({
             link: "/onramp/smart-recipes/quickstart",
           },
           {
+            text: "How It Works",
+            link: "/onramp/smart-recipes/how-it-works",
+          },
+          {
+            text: "Integration Guide",
+            link: "/onramp/smart-recipes/integration-guide",
+          },
+          {
             text: "Deposits",
             link: "/onramp/smart-recipes/deposits",
           },
@@ -326,6 +334,10 @@ export default defineConfig({
           {
             text: "Errors",
             link: "/onramp/smart-recipes/errors",
+          },
+          {
+            text: "API Reference",
+            link: "/onramp/smart-recipes/api-reference",
           },
         ],
       },
