@@ -1,0 +1,42 @@
+# Smart Recipes
+
+Smart Recipes turns a DeFi intent into one SDK call. Examples of intents: "deposit funds into Aave", "deposit funds into a Morpho vault", "bridge and swap to this token". The funds can come from a different chain.
+
+Each call returns a **Quote**. The Quote contains a [Smart Routing Address](/onramp/smart-routing-address) (SRA) and a source-chain transaction that is ready to sign. It also contains an equivalent ERC-4337 user operation. The user sends funds to the SRA. The ZeroDev relayer bridges the funds to the destination chain and runs the prepared calls there.
+
+Smart Recipes runs on the latest [SRA v1](/onramp/smart-routing-address/alpha). Each recipe executes through a v1 routing address. You do not create or manage the address yourself.
+
+You do not write bridge, swap, vault, or relayer code. The server does this work.
+
+## How it works
+
+```
+1. Quote     sr.morpho.deposit({...})  →  Quote { sra, transaction, userOp, ... }
+2. Fund      the user signs quote.transaction (or quote.userOp) — one transfer to the SRA
+3. Settle    the ZeroDev relayer bridges and runs the deposit on the destination chain
+4. Track     sr.watchStatus(quote.sra)  →  PENDING → BRIDGING → EXECUTING → COMPLETED
+```
+
+The SDK is a thin HTTP client with no runtime dependencies. It contains no signer and no bundler. You sign and send the prepared transaction with the wallet stack your app already has. The server creates the SRA, builds the calldata, finds the routes, lists the vaults, and calculates the fees. New vaults and protocols do not need an SDK update.
+
+## What you can build
+
+- Cross-chain yield deposits. A user holds USDC on Base and deposits into a Morpho vault on Arbitrum with one signature.
+- One-click earn flows. Find vaults with `listVaults` and pass a result directly into a deposit.
+- Chain-abstracted swaps. Bridge and swap to a target token on a different chain.
+
+## Protocols
+
+Each protocol has its own namespace:
+
+| Facade | Notes |
+|---|---|
+| `sr.aave.deposit` | The token and chain identify the pool. No vault is necessary. |
+| `sr.morpho.deposit` | A vault is required. |
+| `sr.fluid.deposit` | A vault is required. |
+| `sr.yearn.deposit` | A vault is required. |
+| `sr.erc4626.deposit` | Any unbranded ERC-4626 vault, by address. |
+
+Two generic engine methods are also available: `sr.depositIntoVault` (any protocol, passed explicitly) and `sr.bridgeAndSwap`.
+
+See the [Quickstart](/onramp/smart-recipes/quickstart) to start.

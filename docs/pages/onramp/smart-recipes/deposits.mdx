@@ -1,0 +1,95 @@
+# Deposits
+
+Each deposit routes through a Smart Routing Address and returns a [Quote](/onramp/smart-recipes/quotes). This applies to same-chain and cross-chain deposits. The route is same-chain when `srcChainId === destChainId`. You do not select the route yourself.
+
+## Protocol facades
+
+Each facade binds its protocol. The server maps the protocol to an adapter. The adapter builds the deposit calls and verifies the target on-chain before it quotes. Example: you pass a Morpho-Blue market where a 4626 vault is expected. The call fails immediately with a typed error. No funds move.
+
+```ts
+sr.aave.deposit(params)     // no `into` — the pool follows from token + destChainId
+sr.morpho.deposit(params)   // `into` required
+sr.fluid.deposit(params)    // `into` required
+sr.yearn.deposit(params)    // `into` required
+sr.erc4626.deposit(params)  // unbranded ERC-4626 vault by id/address
+```
+
+## Parameters
+
+Each deposit takes this core shape. Facades narrow it. Aave drops `into`. Morpho, Fluid, and Yearn require it.
+
+```ts
+type DepositParams = {
+  owner: Address               // funds + signs + receives shares + gets refunds (one role)
+  amount: number | string      // display units; the server scales by decimals (string math, no float)
+  token: TokenSymbol | Address // symbol → canonical per-chain address; address to disambiguate (USDC.e)
+  srcChainId: number           // the chain the user funds from
+  destChainId?: number         // the execution chain; equal to srcChainId ⇒ same-chain (no bridge).
+                               //   optional when `into` is a Vault (derived from vault.chainId);
+                               //   required for Aave or a string id/address `into`
+  into?: string | Vault        // multi-vault only: vault id/address, or a Vault from listVaults()
+  slippage?: number            // bps, default 100 (= 1%)
+}
+```
+
+- `owner` is one role: funder, signer, shares receiver, and refund recipient. There is no separate `beneficiary`.
+- `amount` is in display units. `"100"` means 100 USDC. Use a `string` for very large values or values with more than 15 significant figures.
+- `token` accepts a symbol or an address. `TOKENS` contains `USDC | USDT | DAI | WETH | WBTC | EURC | NATIVE`. A symbol resolves to the canonical per-chain address. Pass a raw address for a variant (USDC.e) or an arbitrary token.
+- `slippage` is an integer in bps. `50` means 0.5%. The server enforces the real floor. The quote's `swapMinOutput` is an estimate.
+
+### Chain discovery into deposits with `into`
+
+When `into` is a `Vault` object from [`listVaults()`](/onramp/smart-recipes/vault-discovery), you can omit `destChainId`. The vault contains its own `chainId`:
+
+```ts
+const { vaults } = await sr.listVaults({ asset: TOKENS.USDC, chains: [42161] });
+
+await sr.morpho.deposit({
+  owner,
+  amount: "100",
+  token: TOKENS.USDC,
+  srcChainId: 8453,
+  into: vaults[0],   // destChainId derived = vault.chainId
+});
+```
+
+## Aave
+
+Aave has one pool for each chain. The `token` and `destChainId` identify the target:
+
+```ts
+await sr.aave.deposit({
+  owner,
+  amount: "100",
+  token: TOKENS.USDC,
+  srcChainId: 8453,     // Base
+  destChainId: 42161,   // Arbitrum
+  slippage: 50,         // 0.5%
+});
+```
+
+The `owner` receives the canonical aToken position.
+
+`into` is optional for Aave. Omit it to supply the reserve of the funding token. Pass an Aave listing from `listVaults({ protocol: 'aave' })` to select a different reserve. The funding token then routes into that reserve.
+
+## Generic deposits with `depositIntoVault`
+
+Use `depositIntoVault` for a vault that has no facade. This includes ERC-4626 vaults that ZeroDev does not list. No facade binds the protocol here, so you must pass it:
+
+```ts
+await sr.depositIntoVault({
+  owner,
+  amount: "100",
+  token: TOKENS.USDC,
+  srcChainId: 42161,
+  destChainId: 42161,
+  into: "0xVAULT",
+  protocol: "erc4626",   // required — 'aave' | 'morpho' | 'fluid' | 'yearn' | 'erc4626'
+});
+```
+
+The server rejects an unknown protocol with `UNKNOWN_PROTOCOL`. Use a facade when one exists.
+
+## Failure behavior
+
+A destination action can revert after the bridge. In that case the funds stay in the SRA. ZeroDev does not hold the funds. Only the `owner` can recover them, with `getWithdrawCalls`. See [Tracking Status](/onramp/smart-recipes/tracking-status#recovering-funds).

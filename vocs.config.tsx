@@ -291,6 +291,44 @@ export default defineConfig({
           },
         ],
       },
+      {
+        text: "Smart Recipes",
+        collapsed: false,
+        items: [
+          {
+            text: "Introduction",
+            link: "/onramp/smart-recipes",
+          },
+          {
+            text: "Quickstart",
+            link: "/onramp/smart-recipes/quickstart",
+          },
+          {
+            text: "Deposits",
+            link: "/onramp/smart-recipes/deposits",
+          },
+          {
+            text: "Vault Discovery",
+            link: "/onramp/smart-recipes/vault-discovery",
+          },
+          {
+            text: "Bridge & Swap",
+            link: "/onramp/smart-recipes/bridge-and-swap",
+          },
+          {
+            text: "Quotes & Execution",
+            link: "/onramp/smart-recipes/quotes",
+          },
+          {
+            text: "Tracking Status",
+            link: "/onramp/smart-recipes/tracking-status",
+          },
+          {
+            text: "Errors",
+            link: "/onramp/smart-recipes/errors",
+          },
+        ],
+      },
     ],
     "/smart-accounts": [
       {

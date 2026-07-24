@@ -1,0 +1,66 @@
+# Quotes & Execution
+
+Each recipe returns a **Quote**. A quote prepares the transaction. It does not broadcast. You send it with your own wallet.
+
+## The `Quote` type
+
+```ts
+type Quote = {
+  quoteId: string
+  expiresAt: string                            // ISO-8601, typically now + 60s
+  sra: Address | null                          // the address to fund; always set for deposits
+  transaction: { chainId: number; calls: OnChainCall[] }            // EOA sends in order
+  userOp: { callData: Hex; calls: OnChainCall[]; chainId: number }  // kernel client fills the rest
+  srcTransactions?: { chainId: number; calls: OnChainCall[] }[]     // present when a src swap is needed
+  estimatedFees: {                             // amounts in route-token base units, NOT USD
+    totalFeeAmount: string                     // summed in totalFeeToken units; partial when denominations mix
+    totalFeeToken: Address | null              // null = mixed/none — render perChain instead
+    perChain: { chainId: number; feeAmount: string; feeToken: Address | null }[]
+  }
+  estimatedReceiveAmount: string               // base units on destChain
+  estimatedShares?: string                     // vault recipes only
+  vaultApy?: number                            // percent (2.57 = 2.57%)
+  swapMinOutput?: string                       // estimate — the server enforces the real floor
+  route?: {                                    // the resolved flow, for UI display
+    bridgeTokenType: string | null             // the token the SRA is funded with
+    requiresSrcSwap: boolean                   // owner-signed swap before funding
+    requiresDestSwap: boolean                  // server-synthesized swap before the deposit
+    sameChain: boolean                         // no bridge leg (still an SRA deposit)
+  }
+  recipeVersion: number
+}
+
+type OnChainCall = { to: Address; data: Hex; value: string }   // value is a decimal string
+```
+
+All wire amounts are base-10 strings, because JSON has no bigint. Parse them yourself: `BigInt(quote.estimatedReceiveAmount)`.
+
+## Execute a quote
+
+`transaction` and `userOp` have the same intent: send `amount` of `token` to the SRA. When the funding token is different from the route token, the calls start with owner-signed approve and swap calls.
+
+For an EOA, send `transaction.calls` in sequence:
+
+```ts
+for (const call of quote.transaction.calls) {
+  await wallet.sendTransaction({ ...call, value: BigInt(call.value) });
+}
+```
+
+For ERC-4337, send `userOp.callData` as one user operation. The server encodes a Kernel v3 / ERC-7579 `executeBatch(calls)`. Your kernel client supplies the sender, nonce, gas, and signature:
+
+```ts
+await kernelClient.sendUserOp({ callData: quote.userOp.callData });
+```
+
+The relayer runs the vault-side approve and deposit on the destination chain. Your user signs only the funding transaction.
+
+## Expiry
+
+A quote usually expires after 60 seconds. Send the funds promptly. A stale quote rejects with `QuoteExpiredError`. Request a new quote in that case.
+
+## Fees
+
+The `estimatedFees` amounts are in base units of the route token, not USD. When the fee tokens differ across chains, `totalFeeToken` is `null`. Show the `perChain` entries in that case.
+
+Sponsored fee entries are not included in the sums. Sponsorship follows the gas policy of your project, through your `projectId`. There is no per-quote flag.

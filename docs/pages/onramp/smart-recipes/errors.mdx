@@ -1,0 +1,53 @@
+# Errors
+
+Each rejection is a `SmartRecipeError`. It contains a `code`, a `message`, and a `requestId` (from the server's `x-request-id` header). Include the `requestId` in a bug report. Each code has a bound subclass, so you can branch with `instanceof`:
+
+```ts
+import { SmartRecipeError, QuoteExpiredError } from "@zerodev/smart-recipes";
+
+try {
+  await sr.aave.deposit({ /* … */ });
+} catch (e) {
+  if (e instanceof QuoteExpiredError) {
+    // request a new quote
+  } else if (e instanceof SmartRecipeError) {
+    console.error(`[${e.code}] ${e.message} (request ${e.requestId})`);
+  }
+}
+```
+
+## Error codes
+
+| HTTP | Code | When |
+|---|---|---|
+| 400 | `INVALID_REQUEST` | A parameter is missing or malformed |
+| 400 | `UNSUPPORTED_TOKEN` | The token does not resolve |
+| 400 | `UNKNOWN_PROTOCOL` | The `protocol` has no registered adapter |
+| 400 | `VAULT_TYPE_MISMATCH` | The target is not the expected vault kind (on-chain probe) |
+| 400 | `ASSET_MISMATCH` | The vault asset is not the expected token |
+| 400 | `CHAIN_NOT_SUPPORTED` | The chain is not configured on the server |
+| 400 | `VAULT_DEPOSITS_DISABLED` | The vault's on-chain `maxDeposit` is 0. It accepts no deposits. |
+| 403 | `SANCTIONED_ADDRESS` | The owner is on the OFAC SDN list |
+| 403 | `VAULT_BLOCKED` | The vault is on the server blocklist |
+| 403 | `FEATURE_DISABLED` | Swap-leg routes are disabled on the server |
+| 403 | `ACCESS_DENIED` | The origin or IP is not on the project's allowlist |
+| 409 | `VAULT_CAP_EXCEEDED` | The amount is over the vault's remaining capacity |
+| 410 | `QUOTE_EXPIRED` | The quote is past its TTL. Request a new quote. |
+| 413 | `PAYLOAD_TOO_LARGE` | The request body is over the size cap |
+| 422 | `INSUFFICIENT_AMOUNT` | The amount is below the vault minimum after fees |
+| 422 | `SWAP_ROUTE_NOT_FOUND` | No swap route was found |
+| 429 | `RATE_LIMITED` | Too many requests. Idempotent GETs retry with backoff. |
+| 500 | `INTERNAL_ERROR` | An unexpected server error |
+| 502 | `SRA_UNAVAILABLE` / `QUOTER_UNAVAILABLE` / `RPC_UNAVAILABLE` | An upstream service failed |
+
+## Codes that need special handling
+
+`VAULT_CAP_EXCEEDED` and `VAULT_DEPOSITS_DISABLED` are different conditions. For `VAULT_CAP_EXCEEDED`, try a smaller amount. For `VAULT_DEPOSITS_DISABLED`, the vault accepts no deposits at all. Select a different vault. [`preflight`](/onramp/smart-recipes/vault-discovery#preflight) shows both conditions before you quote.
+
+`FEATURE_DISABLED` means the route needs a swap leg, and the server has swaps disabled. Same-token routes are not affected. This includes same-chain deposits and plain cross-chain bridges. A retry with different parameters does not help.
+
+`QUOTE_EXPIRED` occurs because a quote lives for about 60 seconds. Request a new quote.
+
+## Retry behavior
+
+The SDK does not retry quote-building POST requests. Each POST can create a new SRA on the server. The SDK retries idempotent GET requests on 429, 502, 503, and network failures, with backoff, up to the client's `maxRetries`.

@@ -1,0 +1,31 @@
+# Bridge & Swap
+
+Bridge funds to a different chain and swap them into a target token, with one signature. The flow uses the same SRA as a deposit. The destination action is a swap. The `owner` receives the output.
+
+```ts
+const quote = await sr.bridgeAndSwap({
+  owner: "0xUSER",
+  amount: "100",
+  token: TOKENS.USDC,        // source funding token
+  srcChainId: 8453,          // Base
+  destChainId: 42161,        // Arbitrum
+  toToken: "0xTARGET",       // the token to receive on the destination chain
+  slippage: 100,             // bps, default 100 (= 1%)
+});
+```
+
+Execute and track the quote in the same way as a deposit:
+
+```ts
+for (const call of quote.transaction.calls) {
+  await wallet.sendTransaction({ ...call, value: BigInt(call.value) });
+}
+
+await sr.watchStatus(quote.sra, { onStatusChange: (s) => console.log(s.state) }).done;
+```
+
+The quote does not include the vault fields (`vaultApy`, `estimatedShares`). It includes `swapMinOutput`. This value is an estimate. The server derives the enforced minimum output from your `slippage` value.
+
+:::info
+The server can disable swap routes. A disabled route rejects with `FEATURE_DISABLED` (403). Same-token routes are not affected. This includes same-chain deposits and plain cross-chain bridges. See [Errors](/onramp/smart-recipes/errors).
+:::

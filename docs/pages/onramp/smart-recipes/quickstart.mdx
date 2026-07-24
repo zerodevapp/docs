@@ -1,0 +1,99 @@
+# Quickstart
+
+## Installation
+
+:::code-group
+
+```bash [npm]
+npm i @zerodev/smart-recipes
+```
+
+```bash [yarn]
+yarn add @zerodev/smart-recipes
+```
+
+```bash [pnpm]
+pnpm i @zerodev/smart-recipes
+```
+
+```bash [bun]
+bun add @zerodev/smart-recipes
+```
+
+:::
+
+The SDK needs Node 18 or later. It uses the global `fetch`. You can inject a different fetch. The package ships as ESM and CJS.
+
+## Create a client
+
+```ts
+import { createSmartRecipes, TOKENS } from "@zerodev/smart-recipes";
+
+const sr = createSmartRecipes({
+  serverUrl: "https://recipes.example.com",
+  projectId: "<your ZeroDev project ID>",
+});
+```
+
+`createSmartRecipes` is synchronous. All async work occurs when you call a method.
+
+| Param | Type | Required | Notes |
+|---|---|---|---|
+| `serverUrl` | `string` | yes | The Smart Recipes server base URL |
+| `projectId` | `string` | yes | Your ZeroDev project ID. Sent on every request. |
+| `fetch` | `typeof fetch` | no | An injectable fetch, for tests or non-browser environments |
+| `timeoutMs` | `number` | no | The abort timeout for each request. Default 30000. |
+| `maxRetries` | `number` | no | Retries on transient failures. Applies to idempotent GETs only. Default 2. |
+
+There is no API key. The server controls access with your `projectId` and a per-project allowlist of origins and IP addresses.
+
+## Get a quote
+
+Find a vault. Then deposit into it with one call:
+
+```ts
+// Find USDC vaults on Arbitrum
+const { vaults } = await sr.listVaults({ asset: TOKENS.USDC, chains: [42161] });
+
+// Quote a deposit: the user funds from Base, the vault is on Arbitrum
+const quote = await sr.morpho.deposit({
+  owner: "0xUSER",          // funds + signs + receives shares
+  amount: "100",            // display units — the server scales by token decimals
+  token: TOKENS.USDC,       // symbol → canonical per-chain address
+  srcChainId: 8453,         // Base
+  into: vaults[0],          // Vault object — destChainId derived from it
+});
+
+console.log(quote.sra);                    // the address the user funds
+console.log(quote.vaultApy);               // APY snapshot
+console.log(quote.estimatedShares);        // expected vault shares
+```
+
+A quote prepares the transaction. It does not broadcast. The SDK has no signer.
+
+## Execute
+
+Send the funding transaction with your own wallet:
+
+```ts
+// EOA: send the calls in order
+for (const call of quote.transaction.calls) {
+  await wallet.sendTransaction({ ...call, value: BigInt(call.value) });
+}
+
+// …or as one ERC-4337 user op with a kernel client
+await kernelClient.sendUserOp({ callData: quote.userOp.callData });
+```
+
+The two forms have the same intent: send `amount` of `token` to the SRA. The relayer runs the vault-side approve and deposit calls on the destination chain. Your user does not sign those calls.
+
+## Track
+
+```ts
+const watcher = sr.watchStatus(quote.sra, {
+  onStatusChange: (s) => console.log(s.state), // PENDING → BRIDGING → EXECUTING → COMPLETED
+});
+await watcher.done;
+```
+
+See [Tracking Status](/onramp/smart-recipes/tracking-status) for the full lifecycle. See [Deposits](/onramp/smart-recipes/deposits) for all protocols and parameters.
