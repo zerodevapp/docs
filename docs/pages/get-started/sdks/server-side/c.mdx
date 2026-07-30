@@ -49,7 +49,7 @@ aa_signer_t *signer;
 aa_signer_local(private_key, &signer);
 
 aa_account_t *account;
-aa_account_create(ctx, signer, AA_KERNEL_V3_3, 0 /* index */, &account);
+aa_account_create(ctx, signer, AA_KERNEL_V3_3, 0 /* index */, NULL /* address */, &account);
 ```
 
 ## Example — sponsored UserOp
@@ -69,7 +69,7 @@ int main(void) {
     aa_signer_local(private_key, &signer);
 
     aa_account_t *account;
-    aa_account_create(ctx, signer, AA_KERNEL_V3_3, 0, &account);
+    aa_account_create(ctx, signer, AA_KERNEL_V3_3, 0, NULL /* address */, &account);
 
     uint8_t recipient[20] = { /* ... */ };
     aa_call_t call = { 0 };

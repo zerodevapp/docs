@@ -38,7 +38,7 @@ let ctx = Context::new(
     PaymasterMiddleware::ZeroDev,
 )?;
 let signer = Signer::local(&private_key)?;
-let account = ctx.new_account(&signer, KernelVersion::V3_3, 0)?;
+let account = ctx.new_account(&signer, KernelVersion::V3_3, 0, None)?;
 ```
 
 `Signer::generate()` is useful for demos when you don't need to reuse a key. It requires a working OS CSPRNG; on hardened sandboxes where `getrandom(2)` is blocked the call returns an error rather than producing a weak key, so production paths in those environments should pass a real key via `Signer::local(&pk)`. All handles implement `Drop` — native resources are released automatically.
@@ -51,7 +51,7 @@ use zerodev_aa::{Context, Signer, Call, KernelVersion, GasMiddleware, PaymasterM
 let ctx = Context::new(project_id, "", "", 11155111,
     GasMiddleware::ZeroDev, PaymasterMiddleware::ZeroDev)?;
 let signer = Signer::local(&private_key)?;
-let account = ctx.new_account(&signer, KernelVersion::V3_3, 0)?;
+let account = ctx.new_account(&signer, KernelVersion::V3_3, 0, None)?;
 
 let recipient = /* 20-byte address */;
 let hash = account.send_user_op(&[Call {
