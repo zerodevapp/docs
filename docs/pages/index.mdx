@@ -1,29 +1,49 @@
-# ZeroDev Introduction
+import { Button } from "vocs/components";
+import { Card, Cards } from "@components/Cards";
 
-**ZeroDev is the most powerful smart account solution**, with support for both ERC-4337 and [EIP-7702](/get-started/eip-7702/quickstart).
+# ZeroDev Introduction [The most powerful smart account solution, with support for both ERC-4337 and EIP-7702.]
 
 ZeroDev improves Web3 UX by enabling:
 
-- Key abstraction
-    - Login with [passkeys](/onboarding/passkeys/overview) or [social accounts](/onboarding/auth-providers).
-    - [Recover user accounts](/advanced/account-recovery/sdk-recovery) if they lose their login.
+<Cards>
+  <Card icon="key" title="Key abstraction">
+    Login with [passkeys](/onboarding/passkeys/overview) or [social accounts](/onboarding/auth-providers), and [recover accounts](/advanced/account-recovery/sdk-recovery) if users lose their login.
+  </Card>
+  <Card icon="gas" title="Gas abstraction">
+    [Sponsor gas](/smart-accounts/sponsor-gas/evm) for your users, or let them [pay gas with ERC-20 tokens](/smart-accounts/pay-gas-with-erc20s).
+  </Card>
+  <Card icon="transaction" title="Transaction abstraction">
+    [Batch multiple transactions](/smart-accounts/batch-transactions) into one — no more tedious approvals. [Automate transactions](/smart-accounts/permissions/intro) with session keys, great for AI agents.
+  </Card>
+  <Card icon="chain" title="Chain abstraction">
+    [Spend tokens on any chain](/smart-accounts/chain-abstraction/overview) without bridging, and [on/offramp with any exchange](/onramp/smart-routing-address), even on L2s.
+  </Card>
+</Cards>
 
-- Gas abstraction
-    - [Sponsor gas](/smart-accounts/sponsor-gas/evm) for users.
-    - Let users [pay gas with ERC20 tokens](/smart-accounts/pay-gas-with-erc20s).
+ZeroDev can be used as a standalone embedded smart account, or alongside WaaS solutions such as Privy and Dynamic.
 
-- Transaction abstraction
-    - [Batch multiple transactions](/smart-accounts/batch-transactions) into one.  No more tedious approvals.
-    - [Automate transactions](/smart-accounts/permissions/intro) with session keys.  Great for AI agents.
+ZeroDev is the most trusted solution in account abstraction:
 
-- Chain abstraction
-    - [Spend tokens on any chain](/smart-accounts/chain-abstraction/overview), without bridging.
-    - [On/offramp with any exchanges](/onramp/smart-routing-address), even on L2s.
-
-ZeroDev can be used as a standalone embedded smart account, or used alongside WaaS solutions such as Privy and Dynamic.
-
-ZeroDev is the most trusted solution in AA, powering more than 6 million smart accounts on 50+ networks for 200+ teams.
+<div className="zd-stats">
+  <div className="zd-stat">
+    <span className="zd-stat_value">6M+</span>
+    <span className="zd-stat_label">smart accounts</span>
+  </div>
+  <div className="zd-stat">
+    <span className="zd-stat_value">50+</span>
+    <span className="zd-stat_label">networks</span>
+  </div>
+  <div className="zd-stat">
+    <span className="zd-stat_value">200+</span>
+    <span className="zd-stat_label">teams</span>
+  </div>
+</div>
 
 ## Getting Started
 
-To start coding with ZeroDev, check out [the quickstart](/get-started/quickstart) or [the tutorial](/get-started/sdks/setup-project).
+Start with the quickstart to send your first gasless transaction, follow the tutorial for a guided walkthrough, or jump straight to smart EOAs with [EIP-7702](/get-started/eip-7702/quickstart).
+
+<div className="zd-actions">
+  <Button href="/get-started/quickstart" variant="accent">Quickstart</Button>
+  <Button href="/get-started/sdks/setup-project">Tutorial</Button>
+</div>

@@ -1,6 +1,6 @@
-# Chain abstraction
+import { Card, Cards } from "@components/Cards";
 
-ZeroDev is the first smart account solution to support *cross-chain transactions,* also sometimes known as "chain abstraction."
+# Chain abstraction [ZeroDev is the first smart account solution to support cross-chain transactions, also sometimes known as "chain abstraction."]
 
 More specifically, a ZeroDev smart account can use its tokens from one chain on another chain, without bridging.  Some examples are:
 
@@ -10,21 +10,20 @@ More specifically, a ZeroDev smart account can use its tokens from one chain on 
 
 ## Features
 
-### Compatible with EIP-7702
-
-Unlike other chain abstraction solutions, ZeroDev Chain Abstraction supports not just regular smart accounts (ERC-4337), but also smart EOAs (EIP-7702).
-
-### Cross-chain without bridging
-
-Don't ask your users to visit a bridge.  With ZeroDev, your users can make cross-chain transactions just like how they make normal transactions, without ever leaving your app.
-
-### Unparalleled speed
-
-Cross-chain transactions with ZeroDev are very fast, thanks to *intents* -- solvers compete on the destination chain to fill your intents as quickly as possible.
-
-### Deep liquidity
-
-Most "chain abstraction" solutions on the market are toys that fail under any real amount of traffic.  ZeroDev's cross-chain transactions network is built on top of protocols with the deepest liquidity, such as Relay and Across.
+<Cards>
+  <Card icon="key" title="Compatible with EIP-7702">
+    Unlike other chain abstraction solutions, ZeroDev Chain Abstraction supports not just regular smart accounts (ERC-4337), but also smart EOAs (EIP-7702).
+  </Card>
+  <Card icon="chain" title="Cross-chain without bridging">
+    Don't ask your users to visit a bridge.  With ZeroDev, your users can make cross-chain transactions just like how they make normal transactions, without ever leaving your app.
+  </Card>
+  <Card icon="send" title="Unparalleled speed">
+    Cross-chain transactions with ZeroDev are very fast, thanks to *intents* -- solvers compete on the destination chain to fill your intents as quickly as possible.
+  </Card>
+  <Card icon="vault" title="Deep liquidity">
+    Most "chain abstraction" solutions on the market are toys that fail under any real amount of traffic.  ZeroDev's cross-chain transactions network is built on top of protocols with the deepest liquidity, such as Relay and Across.
+  </Card>
+</Cards>
 
 ## Code example
 

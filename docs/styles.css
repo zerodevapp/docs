@@ -1,0 +1,303 @@
+/* ZeroDev docs global styles. Vocs auto-imports this file (docs/styles.css).
+   Color values come from the theme variables in vocs.config.tsx — use
+   var(--vocs-*) here instead of hardcoding colors so light/dark stay in sync. */
+
+/* ——— Links: base text color with an accent underline ———
+   The class is doubled to out-rank Vocs's own `text-decoration: underline`
+   shorthand, which would otherwise reset the decoration color to
+   currentColor regardless of stylesheet order. */
+
+.vocs_Anchor.vocs_Anchor {
+  text-decoration-line: underline;
+  text-decoration-color: var(--vocs-color_borderAccent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+.vocs_Anchor.vocs_Anchor:hover {
+  text-decoration-color: currentColor;
+}
+
+/* Heading self-links keep their plain look. */
+.vocs_Autolink.vocs_Autolink {
+  text-decoration: none;
+}
+
+/* Inside color-coded callouts (warning, danger, success, tip), links are
+   tinted by the callout type, so the underline follows the link color
+   instead of the accent. Note/info callouts are neutral and keep the
+   standard accent underline. */
+.vocs_Callout_warning .vocs_Anchor.vocs_Anchor,
+.vocs_Callout_danger .vocs_Anchor.vocs_Anchor,
+.vocs_Callout_success .vocs_Anchor.vocs_Anchor,
+.vocs_Callout_tip .vocs_Anchor.vocs_Anchor {
+  text-decoration-color: currentColor;
+}
+
+/* Accent icon on the neutral note/info callouts. */
+.vocs_Callout_note .vocs_Callout_icon,
+.vocs_Callout_info .vocs_Callout_icon {
+  color: var(--vocs-color_textAccent);
+}
+
+/* ——— Steps: accent-tinted counters, matching the landing card icons ——— */
+
+.vocs_Step_title.vocs_Step_title::before {
+  background-color: color-mix(in srgb, var(--vocs-color_backgroundAccent) 14%, var(--vocs-color_background));
+  color: var(--vocs-color_textAccent);
+  font-weight: 500;
+}
+
+/* ——— Headings ——— */
+
+.vocs_H1 {
+  letter-spacing: -0.02em;
+}
+
+/* Pages with a subtitle (`# Title [Subtitle]`) get a larger hero heading. */
+.vocs_Header .vocs_H1 {
+  font-size: 2.5rem;
+}
+
+/* Vocs defaults the subtitle to `text-wrap: balance`, which evens out line
+   lengths and can break awkwardly mid-sentence. Use `pretty` so it fills each
+   line naturally while still avoiding a short orphan word on the last line.
+   The class is doubled to out-rank Vocs's own single-class rule regardless of
+   stylesheet order. */
+.vocs_Subtitle.vocs_Subtitle {
+  text-wrap: pretty;
+}
+
+/* ——— Sidebar: tinted pill on the active item ——— */
+
+.vocs_Sidebar_item {
+  padding: 4px 8px;
+  margin-left: -8px;
+  border-radius: 6px;
+}
+
+.vocs_Sidebar_item[data-active="true"] {
+  background: color-mix(in srgb, var(--vocs-color_backgroundAccent) 12%, transparent);
+}
+
+/* ——— Details / FAQ accordions (:::details) ———
+   Styled like the landing cards: bordered box, collapsed by default, with a
+   chevron that flips when open. Selectors are stacked to out-rank Vocs's
+   own doubled Summary rules. */
+
+.vocs_Details {
+  border: 1px solid var(--vocs-color_border);
+  border-radius: 10px;
+  background: var(--vocs-color_background2);
+  padding: 14px 18px;
+  margin-bottom: 12px;
+  transition: border-color 0.15s;
+}
+
+.vocs_Details:hover {
+  border-color: color-mix(in srgb, var(--vocs-color_borderAccent) 50%, var(--vocs-color_border));
+}
+
+.vocs_Details > *:last-child {
+  margin-bottom: 0;
+}
+
+.vocs_Summary.vocs_Summary.vocs_Summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-weight: 500;
+  color: var(--vocs-color_heading);
+  list-style: none;
+  margin-bottom: 0;
+}
+
+.vocs_Summary.vocs_Summary.vocs_Summary:hover {
+  text-decoration: none;
+}
+
+.vocs_Summary::-webkit-details-marker {
+  display: none;
+}
+
+.vocs_Summary.vocs_Summary.vocs_Summary::after {
+  content: "";
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  background-color: var(--vocs-color_text3);
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / contain no-repeat;
+  transition: transform 0.15s;
+}
+
+.vocs_Details[open] > .vocs_Summary.vocs_Summary.vocs_Summary {
+  margin-bottom: 12px;
+}
+
+.vocs_Details[open] > .vocs_Summary.vocs_Summary.vocs_Summary::after {
+  transform: rotate(180deg);
+}
+
+/* ——— Landing cards ——— */
+
+.zd-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin: 28px 0;
+}
+
+@media (max-width: 720px) {
+  .zd-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+.zd-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  border: 1px solid var(--vocs-color_border);
+  border-radius: 10px;
+  background: var(--vocs-color_background2);
+  transition: border-color 0.15s;
+}
+
+.zd-card:hover {
+  border-color: color-mix(in srgb, var(--vocs-color_borderAccent) 50%, var(--vocs-color_border));
+}
+
+.zd-card_header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.zd-card_icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  color: var(--vocs-color_textAccent);
+  background: color-mix(in srgb, var(--vocs-color_backgroundAccent) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--vocs-color_borderAccent) 30%, transparent);
+}
+
+.zd-card_icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.zd-card_title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--vocs-color_heading);
+}
+
+.zd-card_body {
+  color: var(--vocs-color_text2);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.zd-card_body > * {
+  margin: 0;
+}
+
+.zd-card_body .vocs_Paragraph {
+  color: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+/* ——— Landing stats row ——— */
+
+.zd-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 48px;
+  margin: 32px 0;
+}
+
+.zd-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.zd-stat_value {
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--vocs-color_heading);
+}
+
+.zd-stat_label {
+  font-size: 0.875rem;
+  color: var(--vocs-color_text3);
+}
+
+/* ——— Button rows ——— */
+
+.zd-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+/* ——— Language / platform cards ——— */
+
+.zd-cards_lang {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 900px) {
+  .zd-cards_lang {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .zd-cards_lang {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Card as a link: strip anchor styling and never draw the accent underline. */
+.zd-lang-card.zd-lang-card {
+  text-decoration: none;
+  color: inherit;
+}
+
+.zd-lang-card .zd-card_title {
+  color: var(--vocs-color_text);
+  transition: color 0.15s;
+}
+
+.zd-lang-card:hover .zd-card_title {
+  color: var(--vocs-color_textAccent);
+}
+
+/* Brand logos keep their native colors — no accent tint, no bordered tile. */
+.zd-lang-card_logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  /* Fallback color for monochrome brand marks (e.g. Rust) that render in
+     currentColor; theme-colored logos set their own fill and ignore this. */
+  color: var(--vocs-color_text);
+}
+
+.zd-lang-card_logo svg {
+  width: 28px;
+  height: 28px;
+}

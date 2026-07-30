@@ -23,7 +23,9 @@ The quickstart already gives you the native OTP flow. To make the same Expo app 
 - move tabs under a root `Stack` so `app/verify-email.tsx` can mount
 - type-check `.web` files separately and allowlist your web origin on the Dashboard
 
-## 1. Add web variants of the native-only files
+::::steps
+
+## Add web variants of the native-only files
 
 The `@zerodev/wallet-core/react-native/*` and `@zerodev/wallet-react/react-native/*` subpaths resolve to throw-on-use stubs on web. If a universal file calls one of those helpers during startup — for example, `wagmi.config.ts` creating native stampers at module load — the app fails before React renders. The fix is Metro's platform resolution: a `foo.web.tsx` file is used on web, `foo.tsx` everywhere else (the starter already does this for `animated-icon` and `app-tabs`). Add a `.web` sibling for each file that touches an RN-only module; the base file stays native.
 
@@ -147,7 +149,7 @@ Components with no RN-only imports — `passkey-flow.tsx` and `magic-link-flow.t
 // Web: https://app.example.com/verify-email
 ```
 
-## 2. Route only the callbacks that still matter on web
+## Route only the callbacks that still matter on web
 
 - **Web OAuth** uses a popup and returns to the same page that started auth. No dedicated `app/oauth-callback.tsx` route is required for the web flow.
 - **Magic link** still needs a real `app/verify-email.tsx` screen on both web and native, because the emailed link lands there with `?code=...`.
@@ -202,7 +204,7 @@ export default function TabsLayout() {
 
 The route files themselves don't change. This restructure is what makes magic link work on **both** web and native, while still leaving room for `app/oauth-callback.tsx` in the native flow.
 
-## 3. Type-check the web files
+## Type-check the web files
 
 Expo's base tsconfig sets `customConditions: ["react-native"]`, so `tsc` resolves the **native** typings of `@zerodev/*` for every file — including `.web` ones, where the web-only hooks and connector shape won't match (even though Metro bundles the right build at runtime). Check the two sets of files in separate passes.
 
@@ -242,12 +244,14 @@ Add a script that runs both passes, and use it instead of a bare `tsc`:
 
 > A bare `tsc` (and Expo's default) only runs the native config, which *excludes* the `.web` files — so they'd go unchecked. Editor types still resolve correctly, since each file is included by exactly one config.
 
-## 4. Allowlist your web origin
+## Allowlist your web origin
 
 Redirect and origin allowlists are origin-specific, so add your web origins next to the native entries on the [ZeroDev Dashboard](https://dashboard.zerodev.app/):
 
 - **OAuth** — allowlist the web origin (dev `http://localhost:8081`, plus any deployed URL).
 - **Magic link** — allowlist `<web-origin>/verify-email` as a redirect URL.
+
+::::
 
 ## Optional troubleshooting
 

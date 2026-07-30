@@ -34,6 +34,8 @@ bun add @zerodev/sdk @zerodev/ecdsa-validator
 
 ## API
 
+::::steps
+
 ### Picking an EntryPoint
 
 Currently there are two versions of ERC-4337 that are used in production.  They are referred to as "EntryPoint 0.6" and "EntryPoint 0.7", where "EntryPoint" refers to the singleton ERC-4337 contract.
@@ -158,15 +160,19 @@ Note that:
 
 Now you are ready to do things with your smart account, like [sending UserOps](/smart-accounts/send-transactions)!
 
+::::
+
 ## FAQs
 
-### When I create an account, is it deployed on-chain?
+:::details[When I create an account, is it deployed on-chain?]
 
 No.  If your account hasn't been deployed yet, we simply use [`CREATE2`](https://eips.ethereum.org/EIPS/eip-1014) to compute the address that the account *would* be deployed to.  Your account is deployed automatically with the first UserOp it sends.
 
 In other words, "creating" accounts with the SDK is free -- you can create an infinite number of such account objects without paying any gas.  It's only when you send the first UserOp that the account is deployed automatically.
 
-### Can I create multiple accounts from the same EOA signer?
+:::
+
+:::details[Can I create multiple accounts from the same EOA signer?]
 
 Yes, you can do so by providing an `index` when you create the account object.
 
@@ -181,7 +187,9 @@ const account = createKernelAccount(publicClient, {
 })
 ```
 
-### How do I get the smart account address from the EOA signer address?
+:::
+
+:::details[How do I get the smart account address from the EOA signer address?]
 
 Sometimes you only know the address of the EOA signer but you don't have the signer itself.  In that case, you can still compute the address of the smart account with this helper function:
 
@@ -192,7 +200,9 @@ import { getKernelAddressFromECDSA } from "@zerodev/ecdsa-validator"
 const smartAccountAddress = await getKernelAddressFromECDSA(publicClient, eoaAddress, index)
 ```
 
-### How do I get the EOA signer address from the smart account address?
+:::
+
+:::details[How do I get the EOA signer address from the smart account address?]
 
 You can query it on-chain like this:
 
@@ -218,7 +228,9 @@ const owner = await ecdsaValidatorContract.read.ecdsaValidatorStorage([
 ])
 ```
 
-### How do I create a Kernel account object with a specific address?
+:::
+
+:::details[How do I create a Kernel account object with a specific address?]
 
 Normally, you don't need to manually specify an address because the smart account address is computed from your signer data.  However, if you have changed the signer, then you may need to manually specify the smart account address.
 
@@ -230,3 +242,5 @@ const account = await createKernelAccount(publicClient, {
   // ...other args
 })
 ```
+
+:::

@@ -1,6 +1,6 @@
-# Gas Policies
+import { Card, Cards } from "@components/Cards";
 
-You can configure **gas policies** for ZeroDev paymaster to have fine-grained control over what you sponsor, and how much.
+# Gas Policies [You can configure gas policies for ZeroDev paymaster to have fine-grained control over what you sponsor, and how much.]
 
 Paymaster policies can be configured through either [the dashboard](https://dashboard.zerodev.app/paymasters) or [the API](/api-and-toolings/infrastructure/api).
 
@@ -8,10 +8,20 @@ Paymaster policies can be configured through either [the dashboard](https://dash
 
 There are four types of gas policies on ZeroDev:
 
-- Project policies: policies that apply to the entire project. 
-- Contract policies: policies that apply to specific contracts.
-- Wallet policies: policies that apply to specific wallet addresses.
-- [Custom policies](/api-and-toolings/infrastructure/custom-gas-policies): if none of the policies above meet your needs, you can program totally custom policies via a webhook.
+<Cards>
+  <Card icon="key" title="Project policies">
+    Policies that apply to the entire project.
+  </Card>
+  <Card icon="transaction" title="Contract policies">
+    Policies that apply to specific contracts.
+  </Card>
+  <Card icon="vault" title="Wallet policies">
+    Policies that apply to specific wallet addresses.
+  </Card>
+  <Card icon="gas" title="Custom policies">
+    If none of the policies above meet your needs, you can program totally [custom policies](/api-and-toolings/infrastructure/custom-gas-policies) via a webhook.
+  </Card>
+</Cards>
 
 ## Rate Limit Types
 
@@ -19,10 +29,20 @@ When you create a new policy, you set up one or more *rate limits*.
 
 There are four types of rate limits:
 
-- Amount: limit by the amount of gas
-- Request: limit by the number of requests
-- Gas Price: limit by the current gas price
-- Amount per txn: limit by the amount of gas per transaction
+<Cards>
+  <Card icon="gas" title="Amount">
+    Limit by the amount of gas.
+  </Card>
+  <Card icon="send" title="Request">
+    Limit by the number of requests.
+  </Card>
+  <Card icon="creditCard" title="Gas Price">
+    Limit by the current gas price.
+  </Card>
+  <Card icon="transaction" title="Amount per txn">
+    Limit by the amount of gas per transaction.
+  </Card>
+</Cards>
 
 ## Policy examples
 

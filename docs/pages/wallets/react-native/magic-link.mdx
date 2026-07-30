@@ -56,7 +56,9 @@ On the [ZeroDev Dashboard](https://dashboard.zerodev.app/), add `https://<your d
 
 ## Magic link flow
 
-### 1. Persist the send result
+::::steps
+
+### Persist the send result
 
 The emailed link only carries `code`; verification also needs the `otpId` and `otpEncryptionTargetBundle` returned by the send step. Persist them in AsyncStorage so the flow survives backgrounding and cold start (the user may not return until after the OS killed the app).
 
@@ -77,7 +79,7 @@ export const loadPendingMagicLink = async (): Promise<Pending | null> => {
 };
 ```
 
-### 2. Add the send panel with `useSendMagicLink`
+### Add the send panel with `useSendMagicLink`
 
 ```tsx
 import { useSendMagicLink } from "@zerodev/wallet-react";
@@ -115,7 +117,7 @@ export function MagicLinkFlow() {
 - The Magic Link Redirect URL configured in the dashboard must match the intent-filter host and route path exactly; the emailed link adds the `code` query parameter.
 - The mutation's response is exactly what the saver takes, so `onSuccess: savePendingMagicLink` passes it directly. TanStack Query awaits async `onSuccess` callbacks before flipping `isSuccess`, so "Check your email" can't appear before the bundle is persisted.
 
-### 3. Add the `verify-email` route
+### Add the `verify-email` route
 
 `app/verify-email.tsx` — must match the path in the link, or Expo Router shows "Unmatched Route":
 
@@ -151,3 +153,5 @@ export default function VerifyEmail() {
 - `useLocalSearchParams` reads `code` from the inbound link — search params belong to the route that received the deep link.
 - The `started` ref guards against double-firing: the code is single-use, so the effect must run exactly once.
 - `verifyMagicLink` auto-connects the wallet on success — the `status === "connected"` check is the success signal and redirects home.
+
+::::

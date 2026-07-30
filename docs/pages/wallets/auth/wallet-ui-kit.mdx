@@ -23,19 +23,19 @@ This guide uses Arbitrum Sepolia and email OTP. Replace the chain, chain RPC URL
 :::code-group
 
 ```bash [npm]
-npm i @zerodev/wallet-react-ui@0.0.2 @zerodev/react-ui@0.0.2 @zerodev/wallet-core@0.0.1 @zerodev/wallet-react@0.0.1 wagmi viem @wagmi/core @tanstack/react-query zustand
+npm i @zerodev/wallet-react-ui @zerodev/react-ui @zerodev/wallet-core @zerodev/wallet-react wagmi viem @wagmi/core @tanstack/react-query zustand
 ```
 
 ```bash [yarn]
-yarn add @zerodev/wallet-react-ui@0.0.2 @zerodev/react-ui@0.0.2 @zerodev/wallet-core@0.0.1 @zerodev/wallet-react@0.0.1 wagmi viem @wagmi/core @tanstack/react-query zustand
+yarn add @zerodev/wallet-react-ui @zerodev/react-ui @zerodev/wallet-core @zerodev/wallet-react wagmi viem @wagmi/core @tanstack/react-query zustand
 ```
 
 ```bash [pnpm]
-pnpm add @zerodev/wallet-react-ui@0.0.2 @zerodev/react-ui@0.0.2 @zerodev/wallet-core@0.0.1 @zerodev/wallet-react@0.0.1 wagmi viem @wagmi/core @tanstack/react-query zustand
+pnpm add @zerodev/wallet-react-ui @zerodev/react-ui @zerodev/wallet-core @zerodev/wallet-react wagmi viem @wagmi/core @tanstack/react-query zustand
 ```
 
 ```bash [bun]
-bun add @zerodev/wallet-react-ui@0.0.2 @zerodev/react-ui@0.0.2 @zerodev/wallet-core@0.0.1 @zerodev/wallet-react@0.0.1 wagmi viem @wagmi/core @tanstack/react-query zustand
+bun add @zerodev/wallet-react-ui @zerodev/react-ui @zerodev/wallet-core @zerodev/wallet-react wagmi viem @wagmi/core @tanstack/react-query zustand
 ```
 
 :::
@@ -49,16 +49,11 @@ import { zeroDevWallet } from '@zerodev/wallet-react-ui'
 import { createConfig, http } from 'wagmi'
 import { arbitrumSepolia } from 'wagmi/chains'
 
-const projectId = '<your-project-id>'
-const aaHost = 'https://rpc.zerodev.app'
-const chainRpcUrl = 'https://sepolia-rollup.arbitrum.io/rpc'
-
 export const config = createConfig({
   chains: [arbitrumSepolia],
   connectors: [
     zeroDevWallet({
-      projectId,
-      aaHost,
+      projectId: '<your-project-id>',
       chains: [arbitrumSepolia],
       mode: '7702',
       config: {
@@ -70,7 +65,7 @@ export const config = createConfig({
     }),
   ],
   transports: {
-    [arbitrumSepolia.id]: http(chainRpcUrl),
+    [arbitrumSepolia.id]: http('https://sepolia-rollup.arbitrum.io/rpc'),
   },
 })
 ```
@@ -79,108 +74,53 @@ Only include auth methods that are enabled for your project. This example uses O
 
 ## Add providers and styles
 
-Import the kit stylesheet once at your app entry, then wrap your app with Wagmi and TanStack Query providers.
+Import the kit stylesheet once at your app entry, then wrap your app with Wagmi and TanStack Query providers. If your app has broad global element styles, scope them to your own app shell so they don't override the kit.
 
 ```tsx
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import '@zerodev/wallet-react-ui/styles.css'
-import type { ReactNode } from 'react'
 import { WagmiProvider } from 'wagmi'
 import { config } from './wagmi'
 
 const queryClient = new QueryClient()
 
-export function WalletProviders({ children }: { children: ReactNode }) {
-  return (
-    <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
-        {children}
-      </QueryClientProvider>
-    </WagmiProvider>
-  )
-}
+<WagmiProvider config={config}>
+  <QueryClientProvider client={queryClient}>
+    {/* your app */}
+  </QueryClientProvider>
+</WagmiProvider>
 ```
 
 ## Render the login flow
 
-Call Wagmi's `connect` with the ZeroDev connector to start login. Render `<AuthFlow />` in the same provider tree; it displays the active auth screen while the connector waits for the user to finish authentication.
+Find the ZeroDev connector by its `id`, call Wagmi's `connect` to start login, and render `<AuthFlow />` in the same provider tree — it displays the active auth screen while the connector waits for the user to finish authentication.
 
 ```tsx
 import { AuthFlow } from '@zerodev/wallet-react-ui'
-import { useAccount, useConnect, useDisconnect } from 'wagmi'
+import { useConnect } from 'wagmi'
 
 export function WalletLogin() {
-  const { address, isConnected } = useAccount()
-  const { connect, connectors, isPending } = useConnect()
-  const { disconnect } = useDisconnect()
-  const zeroDevConnector = connectors.find(
-    (connector) => connector.id === 'zerodev-wallet',
-  )
+  const { connect, connectors } = useConnect()
+  const zeroDevConnector = connectors.find((c) => c.id === 'zerodev-wallet')
 
   return (
-    <div>
-      {isConnected ? (
-        <div>
-          <p>Connected: {address}</p>
-          <button type="button" onClick={() => disconnect()}>
-            Disconnect
-          </button>
-        </div>
-      ) : (
-        <button
-          type="button"
-          disabled={!zeroDevConnector || isPending}
-          onClick={() =>
-            zeroDevConnector && connect({ connector: zeroDevConnector })
-          }
-        >
-          {isPending ? 'Opening login...' : 'Connect wallet'}
-        </button>
-      )}
-
-      <AuthPanel />
-    </div>
-  )
-}
-
-function AuthPanel() {
-  return (
-    <div
-      style={{
-        display: 'grid',
-        placeItems: 'center',
-        minHeight: '100vh',
-      }}
-    >
-      <AuthFlow />
-    </div>
+    <>
+      <button onClick={() => connect({ connector: zeroDevConnector! })}>
+        Connect wallet
+      </button>
+      <AuthFlow size="md" />
+    </>
   )
 }
 ```
 
-## Place the login flow
+Once the user finishes authentication, `useAccount` returns the connected address — see the [quickstart](/wallets/quickstart) for a full login component.
 
-`AuthFlow` supports three fixed sizes: `sm`, `md`, and `lg`. Choose the size that fits the surface where the flow appears, then keep that size fixed across every auth step.
+`AuthFlow` supports three fixed sizes: `sm` for compact surfaces, `md` for drawers and smaller modals, and `lg` when the flow has more room. Keep the size fixed across every auth step. The optional `onClose` prop fires when the user clicks the kit's close button — use it when your app owns surrounding UI state, such as closing a modal:
 
 ```tsx
-<div
-  style={{
-    display: 'grid',
-    placeItems: 'center',
-    minHeight: '100vh',
-  }}
->
-  <AuthFlow size="md" onClose={() => setLoginOpen(false)} />
-</div>
+<AuthFlow size="md" onClose={() => setLoginOpen(false)} />
 ```
-
-The `onClose` prop is optional. Use it when your app owns surrounding UI state, such as closing a modal after the user clicks the kit's close button.
-
-Use `sm` for compact surfaces, `md` for drawers and smaller modals, and `lg` when the flow has more room. Avoid switching sizes while the user is in the auth flow.
-
-## Avoid global CSS conflicts
-
-Import the kit stylesheet once. If your app has broad global element styles, scope them to your own app shell so the Wallet UI Kit can keep its intended styling.
 
 ## Signing and transactions
 

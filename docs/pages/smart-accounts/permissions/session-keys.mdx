@@ -408,10 +408,14 @@ await sessionKeyAccountClient.sendTransaction({
 
 ## FAQs
 
-### Does creating session keys cost gas?
+:::details[Does creating session keys cost gas?]
 
 No.  Creating a session key entails simply signing a message, which is done off-chain and doesn't involve any gas cost.
 
-### Is it possible to use session keys with a not-yet-deployed account?
+:::
+
+:::details[Is it possible to use session keys with a not-yet-deployed account?]
 
 Yes.  If you do so, the first UserOp sent with the session key will deploy the account.
+
+:::

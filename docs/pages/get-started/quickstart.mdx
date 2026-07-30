@@ -1,6 +1,6 @@
 # Quickstart
 
-Create a new project with `npm` (or whatever package manager you use):
+Create a new project:
 
 ```bash
 mkdir zerodev
@@ -10,15 +10,47 @@ npm init -y
 
 Install the ZeroDev SDK and a plugin:
 
-```bash
+:::code-group
+
+```bash [npm]
 npm i @zerodev/sdk @zerodev/ecdsa-validator
 ```
 
+```bash [yarn]
+yarn add @zerodev/sdk @zerodev/ecdsa-validator
+```
+
+```bash [pnpm]
+pnpm add @zerodev/sdk @zerodev/ecdsa-validator
+```
+
+```bash [bun]
+bun add @zerodev/sdk @zerodev/ecdsa-validator
+```
+
+:::
+
 Install dev packages for TypeScript:
 
-```bash
-npm i --save-dev @types/node tslib
+:::code-group
+
+```bash [npm]
+npm i -D @types/node tslib
 ```
+
+```bash [yarn]
+yarn add -D @types/node tslib
+```
+
+```bash [pnpm]
+pnpm add -D @types/node tslib
+```
+
+```bash [bun]
+bun add -d @types/node tslib
+```
+
+:::
 
 Create the following `tsconfig.json` (TypeScript config):
 

@@ -12,13 +12,31 @@ Here's [the complete code example](https://github.com/zerodevapp/zerodev-example
 
 You can run the example with `npx ts-node 7702/7702.ts` after you [set up the repo](https://github.com/zerodevapp/zerodev-examples?tab=readme-ov-file#zerodev-examples).
 
+::::steps
+
 ## Install packages
 
 You will be using the following packages:
 
-```bash
+:::code-group
+
+```bash [npm]
 npm i @zerodev/sdk viem
 ```
+
+```bash [yarn]
+yarn add @zerodev/sdk viem
+```
+
+```bash [pnpm]
+pnpm add @zerodev/sdk viem
+```
+
+```bash [bun]
+bun add @zerodev/sdk viem
+```
+
+:::
 
 ## Create a project for a 7702-compatible network
 
@@ -135,3 +153,5 @@ console.log("UserOp completed")
 Congratulations!  You just sent your first gasless, batched transaction using a EOA.  You can see it by looking up your account on [the Sepolia explorer](https://sepolia.etherscan.io/).  Note that you may need to look under "Internal Transactions" because UserOps do not appear as regular transactions.
 
 Easy, right?  Now try some of the more advanced [examples](https://7702.zerodev.app/) for building with 7702, or explore the rest of the ZeroDev docs!
+
+::::
