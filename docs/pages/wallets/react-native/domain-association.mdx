@@ -16,7 +16,9 @@ Set this up once, and it unlocks:
 
 That means: a stable Android signing keystore, the Associated Domains entitlement on iOS, two hosted verification files, and an `rpId` pointing at the domain that serves them.
 
-## 1. Android: sign every build with the same keystore
+::::steps
+
+## Android: sign every build with the same keystore
 
 Android only trusts the association if the installed APK's signing cert matches the fingerprint your domain publishes. Two defaults get in the way:
 
@@ -101,7 +103,7 @@ keytool -list -v \
 
 Copy the line under `Certificate fingerprints` starting with `SHA256:` — it goes into `assetlinks.json` below.
 
-## 2. iOS: add the Associated Domains entitlement
+## iOS: add the Associated Domains entitlement
 
 :::warning[Paid Apple Developer account required]
 Associated Domains is a paid-tier entitlement — it only works with a paid [Apple Developer Program](https://developer.apple.com/programs/) membership. With a free personal team the app still builds and installs, but the entitlement is silently dropped from the provisioning profile, so the AASA file is never fetched and passkeys / Universal Links fail with opaque errors.
@@ -130,7 +132,7 @@ Grab your **Team ID** from the [Apple Developer membership page](https://develop
 
 > Associated Domains is a **build-time** entitlement, not runtime config. After adding or changing an entry, regenerate the native project and rebuild — `npx expo prebuild --clean`, then `npx expo run:ios`. Re-running against an already-built binary won't pick it up.
 
-## 3. Create and host the verification files
+## Create and host the verification files
 
 Create a folder for the two `/.well-known/` files:
 
@@ -237,7 +239,9 @@ curl https://app-site-association.cdn-apple.com/a/v1/<vercel_project_name>.verce
 
 If the CDN payload is stale after a deploy, development builds with `?mode=developer` bypass it; alternatively, toggle **Settings → Developer → Universal Links → Associated Domains Development** on the test device (the Developer menu appears once the device has been connected to Xcode).
 
-## 4. Point the SDK at the domain
+## Point the SDK at the domain
 
 - Change `RP_ID` in `wagmi.config.ts` to the deployed domain (no scheme): `<vercel_project_name>.vercel.app`.
 - If you specify an Access Control List of whitelisted Origins on the [ZeroDev Dashboard](https://dashboard.zerodev.app/), add `https://<vercel_project_name>.vercel.app/` to the allowlist.
+
+::::

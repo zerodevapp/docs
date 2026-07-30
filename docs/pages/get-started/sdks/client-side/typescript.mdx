@@ -17,9 +17,25 @@ Before you start, [set up a ZeroDev project](/get-started/sdks/setup-project) so
 
 Clone the [ZeroDev examples repo](https://github.com/zerodevapp/zerodev-examples).  Then, inside the directory, install all dependencies:
 
-```bash
+:::code-group
+
+```bash [npm]
 npm install
 ```
+
+```bash [yarn]
+yarn
+```
+
+```bash [pnpm]
+pnpm install
+```
+
+```bash [bun]
+bun install
+```
+
+:::
 
 Create a `.env` file with the following line, using the RPC URL from your ZeroDev project:
 
@@ -34,6 +50,8 @@ npx ts-node tutorial/completed.ts
 ```
 
 Now open the [`tutorial/template.ts`](https://github.com/zerodevapp/zerodev-examples/blob/main/tutorial/template.ts) file in your editor.  This will be the template where you will write your code.  You can always refer to [`tutorial/completed.ts`](https://github.com/zerodevapp/zerodev-examples/blob/main/tutorial/completed.ts) to see the completed tutorial code.
+
+::::steps
 
 ### Create a signer
 
@@ -200,6 +218,8 @@ const main = async () => {
 ```
 
 Run the script again.  You should see that it prints `NFT balance: 1`, confirming that you have minted an NFT! 
+
+::::
 
 ## Next steps
 

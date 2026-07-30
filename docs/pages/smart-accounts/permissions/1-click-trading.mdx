@@ -1,6 +1,4 @@
-# Tutorial -- Transaction Automation
-
-In this tutorial, you will learn how to enable 1-click trading for your app using session keys.
+# Tutorial -- Transaction Automation [In this tutorial, you will learn how to enable 1-click trading for your app using session keys.]
 
 Refer to [this code example](https://github.com/zerodevapp/zerodev-examples/blob/main/session-keys/1-click-trading.ts) while you follow along the tutorial.  You can run the example by following instructions of [the examples repo](https://github.com/zerodevapp/zerodev-examples).
 
@@ -50,6 +48,8 @@ With a permissions validator, you are putting together:
 - One signer
 - Any number of policies
 - (optionally) one action
+
+::::steps
 
 ### Creating a signer
 
@@ -129,6 +129,8 @@ const account = await createKernelAccount(publicClient, {
 Now you can [set up a Kernel client](/onboarding/create-a-smart-account#create-an-account-client) using this account, and start minting NFTs with this session key -- but only up to once a month!
 
 Try running [this script](https://github.com/zerodevapp/zerodev-examples/blob/main/permissions/main.ts) and see for yourself.
+
+::::
 
 ## Storing Session Keys
 

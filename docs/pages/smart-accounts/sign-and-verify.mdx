@@ -1,6 +1,6 @@
-# Signing and Verifying Messages
+# Signing and Verifying Messages [Signing and verifying messages for smart accounts is different than with EOAs.]
 
-Signing and verifying messages for smart accounts is different than with EOAs.  There are a few reasons why:
+There are a few reasons why:
 
 - With an EOA, the address is effectively the public key of the private key used for signing.  Therefore, verifying a EOA signature is as simple as [recovering](https://soliditydeveloper.com/ecrecover) the signature and compare the recovered public key with the address.
   - With a smart account, the address is the address of a smart contract that has no cryptographic link to the signing private key.  Therefore, you must use [ERC-1271](https://eips.ethereum.org/EIPS/eip-1271) to validate the message.

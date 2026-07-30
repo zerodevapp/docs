@@ -1,12 +1,19 @@
+import { Card, Cards } from "@components/Cards";
+
 # Recovery
 
 With Kernel's [permissions system](/smart-accounts/permissions/intro), it's possible to set up a guardian (or multiple guardians) for a smart account, so that if the owner loses their key, the guardian(s) can recover the key for the owner.
 
 There are two typical types of recovery:
 
-- **Self-recovery**: your user can set up recovery for their account with another auth factor they own, such as a passkey or another wallet they own.
-
-- **DApp-assisted recovery**: your user might set you (the DApp) as their guardian.  When they lose their account, they would contact you and you would recover the account for them.
+<Cards>
+  <Card icon="key" title="Self-recovery">
+    Your user can set up recovery for their account with another auth factor they own, such as a passkey or another wallet they own.
+  </Card>
+  <Card icon="vault" title="DApp-assisted recovery">
+    Your user might set you (the DApp) as their guardian.  When they lose their account, they would contact you and you would recover the account for them.
+  </Card>
+</Cards>
 
 There are two ways to use recovery: through a pre-built recovery flow or build a totally custom flow using the Kernel recovery plugin.
 
@@ -17,6 +24,8 @@ Impatient?  Check out [complete examples here](https://github.com/zerodevapp/zer
 :::
 
 Here we go through the process of using the recovery plugin:
+
+::::steps
 
 ### Setting up the guardian validator
 
@@ -93,3 +102,5 @@ const account = await createKernelAccount(publicClient, {
   // ...other options
 })
 ```
+
+::::

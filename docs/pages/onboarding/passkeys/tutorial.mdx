@@ -2,6 +2,8 @@
 
 In this tutorial, we will be building a Next.js app where your users can create smart accounts and send UserOps with [passkeys](/onboarding/passkeys/overview).
 
+::::steps
+
 ## Clone the template
 
 We have prepared a [Next.js template](https://github.com/zerodevapp/passkey-tutorial) for you:
@@ -14,10 +16,29 @@ If you ever want to check out the completed code, you can checkout [the `complet
 
 Run the app in development mode:
 
-```bash
+:::code-group
+
+```bash [npm]
 npm i
 npm run dev
 ```
+
+```bash [yarn]
+yarn
+yarn dev
+```
+
+```bash [pnpm]
+pnpm install
+pnpm dev
+```
+
+```bash [bun]
+bun install
+bun run dev
+```
+
+:::
 
 Open `app/page.tsx`.  We will be working on this file for the rest of the tutorial.
 
@@ -169,6 +190,8 @@ const handleSendUserOp = async () => {
 Now try sending some UserOps!
 
 Also, the UserOps are sponsored thanks to paymasters -- that's why you are able to send UserOps from an account with no ETH.
+
+::::
 
 ## Next Steps
 

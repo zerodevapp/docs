@@ -1,6 +1,14 @@
+import { resolve } from "node:path";
 import { defineConfig } from "vocs";
 import dotenv from "dotenv";
 import { redirects } from "./redirects.config.js";
+
+// Absolute path to docs/components, used as the `@components` Vite alias below
+// so MDX pages can import shared components with a single stable specifier
+// regardless of how deeply they're nested. Resolved from cwd (the repo root,
+// where `vocs dev` runs) because vocs bundles this config with esbuild, where
+// import.meta.url is not defined.
+const componentsDir = resolve(process.cwd(), "docs/components");
 
 dotenv.config();
 
@@ -25,18 +33,59 @@ export default defineConfig({
   theme: {
     variables: {
       color: {
-        textAccent: {
-          light: "#5753c6",
-          dark: "#b1a9ff",
+        // ZeroDev orange accent.
+        backgroundAccent: { light: "#E76000", dark: "#E76000" },
+        backgroundAccentHover: { light: "#CF5600", dark: "#FF6D0F" },
+        backgroundAccentText: { light: "#FFFFFF", dark: "#FFFFFF" },
+        borderAccent: { light: "#E76000", dark: "#E76000" },
+        textAccent: { light: "#CB5400", dark: "#FF8534" },
+        textAccentHover: { light: "#A84500", dark: "#FFA05C" },
+        // Full-black dark palette. Only `dark` values are set so light mode
+        // keeps the Vocs defaults.
+        background: { dark: "#000000" },
+        background2: { dark: "#0A0A0A" },
+        background3: { dark: "#111111" },
+        background4: { dark: "#181818" },
+        background5: { dark: "#212121" },
+        backgroundDark: { dark: "#050505" },
+        border: { dark: "#1F1F1F" },
+        border2: { dark: "#2B2B2B" },
+        heading: { dark: "#FFFFFF" },
+        title: { dark: "#FFFFFF" },
+        text: { dark: "#EDEDED" },
+        text2: { dark: "#A6A6A6" },
+        text3: { dark: "#8C8C8C" },
+        textHover: { dark: "#FFFFFF" },
+        // Links render in the base text color; the accent lives in the
+        // underline (see docs/styles.css).
+        link: { light: "#111111", dark: "#FFFFFF" },
+        linkHover: { light: "#CB5400", dark: "#FF8534" },
+        // Surfaces that read better slightly off-black.
+        codeBlockBackground: { dark: "#0A0A0A" },
+        codeTitleBackground: { dark: "#111111" },
+        codeInlineBackground: { dark: "#161616" },
+        tableHeaderBackground: { dark: "#0E0E0E" },
+        // Neutral note/info callouts (CodeRabbit-style boxes); the icon gets
+        // the accent color via docs/styles.css. Warning/danger/success keep
+        // their semantic colors.
+        noteBackground: { light: "#FAFAFA", dark: "#0A0A0A" },
+        noteBorder: { light: "#ECECEC", dark: "#1F1F1F" },
+        noteText: { light: "#4C4C4C", dark: "#D6D6D6" },
+        infoBackground: { light: "#FAFAFA", dark: "#0A0A0A" },
+        infoBorder: { light: "#ECECEC", dark: "#1F1F1F" },
+        infoText: { light: "#4C4C4C", dark: "#D6D6D6" },
+        infoTextHover: { light: "#CB5400", dark: "#FF8534" },
+        // Tip callouts pick up the accent.
+        tipBackground: {
+          light: "rgba(231, 96, 0, 0.06)",
+          dark: "rgba(231, 96, 0, 0.08)",
         },
-        textAccentHover: {
-          light: "#272962",
-          dark: "#6e6ade",
+        tipBorder: {
+          light: "rgba(231, 96, 0, 0.35)",
+          dark: "rgba(231, 96, 0, 0.35)",
         },
-        link: {
-          light: "#5753c6",
-          dark: "#b1a9ff",
-        },
+        tipText: { light: "#CB5400", dark: "#FF8534" },
+        tipTextHover: { light: "#A84500", dark: "#FFA05C" },
       },
     },
   },
@@ -81,7 +130,7 @@ export default defineConfig({
           { text: "Quickstart", link: "/get-started/quickstart" },
           {
             text: "EIP-7702",
-            collapsed: false,
+            collapsed: true,
             items: [
               {
                 text: "Quickstart",
@@ -95,7 +144,7 @@ export default defineConfig({
           },
           {
             text: "SDKs",
-            collapsed: false,
+            collapsed: true,
             items: [
               { text: "Overview", link: "/get-started/sdks/overview" },
               {
@@ -104,7 +153,7 @@ export default defineConfig({
               },
               {
                 text: "Client-side",
-                collapsed: false,
+                collapsed: true,
                 items: [
                   {
                     text: "TypeScript / JavaScript",
@@ -122,7 +171,7 @@ export default defineConfig({
               },
               {
                 text: "Server-side",
-                collapsed: false,
+                collapsed: true,
                 items: [
                   {
                     text: "Node.js / TypeScript",
@@ -171,7 +220,7 @@ export default defineConfig({
           {
             text: "Passkeys",
             link: "/onboarding/passkeys/overview",
-            collapsed: false,
+            collapsed: true,
             items: [
               {
                 text: "Code Example: Tutorial",
@@ -307,7 +356,7 @@ export default defineConfig({
           },
           {
             text: "Sponsor Gas",
-            collapsed: false,
+            collapsed: true,
             items: [
               { text: "EVM", link: "/smart-accounts/sponsor-gas/evm" },
               { text: "Solana", link: "/smart-accounts/sponsor-gas/solana" },
@@ -626,7 +675,7 @@ export default defineConfig({
         items: [
           {
             text: "Infrastructure",
-            collapsed: false,
+            collapsed: true,
             items: [
               {
                 text: "Gas Policies",
@@ -644,7 +693,7 @@ export default defineConfig({
           },
           {
             text: "Tools",
-            collapsed: false,
+            collapsed: true,
             items: [
               { text: "UserOp Debugger", link: "https://debug.zerodev.app/" },
               {
@@ -827,7 +876,7 @@ export default defineConfig({
           },
           {
             text: "Signers",
-            collapsed: false,
+            collapsed: true,
             items: [
               {
                 text: "ECDSA",
@@ -849,7 +898,7 @@ export default defineConfig({
           },
           {
             text: "Policies",
-            collapsed: false,
+            collapsed: true,
             items: [
               {
                 text: "Sudo policy",
@@ -964,6 +1013,11 @@ export default defineConfig({
     ],
   },
   vite: {
+    resolve: {
+      alias: {
+        "@components": componentsDir,
+      },
+    },
     plugins: [
       {
         name: "ia-revamp-redirects",
@@ -1056,7 +1110,7 @@ export default defineConfig({
   }
   .zd-pillar-bar a[aria-current="page"] {
     color: var(--vocs-color_textAccent);
-    background: var(--vocs-color_backgroundIrisTint);
+    background: color-mix(in srgb, var(--vocs-color_backgroundAccent) 14%, transparent);
   }
 
   /* On narrow viewports Vocs makes the top nav position:initial (in normal flow)

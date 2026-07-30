@@ -1,17 +1,21 @@
-# Sending Transactions
+import { Card, Cards } from "@components/Cards";
+
+# Sending Transactions [In ERC-4337, a transaction is known as a "UserOp"—a regular transaction with extra AA-specific information, such as whether it should be sponsored.]
 
 :::info
 Impatient?  Check out [complete examples here](https://github.com/zerodevapp/zerodev-examples/tree/main/send-transactions).
 :::
 
-In ERC-4337, a transaction is known as a "UserOp."  A UserOp looks mostly like a regular transaction, but it contains some extra information specific to AA, such as whether the UserOp should be sponsored.
-
 There are two ways to send UserOps:
 
-- Sending raw UserOps
-- Sending regular transactions through the Viem API, which ZeroDev then "translates" into UserOps
-
-The former enables the highest degree of flexibility, whereas the latter is more interoperable with existing libraries like Viem that deal only with transactions and not UserOps.
+<Cards>
+  <Card icon="transaction" title="Viem API">
+    Send regular transactions through the Viem API, which ZeroDev then "translates" into UserOps. More interoperable with existing libraries like Viem that deal only with transactions and not UserOps.
+  </Card>
+  <Card icon="send" title="Raw UserOps">
+    Send raw UserOps directly for the highest degree of flexibility.
+  </Card>
+</Cards>
 
 We will now describe both approaches.  We assume that you have already [created a Kernel account](/onboarding/create-a-smart-account).
 

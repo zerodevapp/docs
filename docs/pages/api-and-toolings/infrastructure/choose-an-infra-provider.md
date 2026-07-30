@@ -1,6 +1,6 @@
-# Choosing an infra provider
+# Choosing an infra provider [ZeroDev is compatible with any account abstraction infra provider.]
 
-ZeroDev is compatible with any account abstraction infra provider. Check out these guides for integrating with a specific provider:
+Check out these guides for integrating with a specific provider:
 
 - [ZeroDev](/api-and-toolings/infrastructure/intro)
 - [Pimlico](/api-and-toolings/infrastructure/pimlico)
