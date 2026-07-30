@@ -45,7 +45,7 @@ signer, err := aa.LocalSigner(privateKey)
 if err != nil { panic(err) }
 defer signer.Close()
 
-account, err := ctx.NewAccount(signer, aa.KernelV3_3, 0)
+account, err := ctx.NewAccount(signer, aa.KernelV3_3, 0, nil)
 if err != nil { panic(err) }
 defer account.Close()
 ```
@@ -74,7 +74,7 @@ func main() {
     signer, _ := aa.LocalSigner(privateKey)
     defer signer.Close()
 
-    account, _ := ctx.NewAccount(signer, aa.KernelV3_3, 0)
+    account, _ := ctx.NewAccount(signer, aa.KernelV3_3, 0, nil)
     defer account.Close()
 
     recipient := [20]byte{ /* ... */ }
