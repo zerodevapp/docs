@@ -1,0 +1,89 @@
+# ConnectWallet
+
+`<ConnectWallet />` renders the current authentication step (sign-up, email verification, OTP, and so on) inside the kit's card. Render it in the Wagmi provider tree; it shows the active screen while the connector waits for the user to finish.
+
+Out of the box it renders the canonical sign-up page — passkey, Google, and email — so the bare component is all you need to ship a login:
+
+```tsx
+<ConnectWallet />
+```
+
+## Props
+
+| Prop | Type | Description |
+| --- | --- | --- |
+| `size` | `'sm' \| 'md' \| 'lg'` | Card size. `sm` for compact surfaces, `md` for drawers and smaller modals, `lg` when the flow has more room. Keep it fixed across every auth step. |
+| `logo` | `ReactNode` | Brand mark shown in the top nav on the sign-up page. When omitted, no logo is shown. |
+| `renderSignUp` | `() => ReactNode` | Replace the default sign-up page with your own `SignUp` composition (see below). |
+| `onClose` | `() => void` | Fires when the user clicks the kit's close button. Use it when your app owns surrounding UI state, such as closing a modal. |
+
+```tsx
+<ConnectWallet
+  size="md"
+  logo={<YourLogo />}
+  onClose={() => setLoginOpen(false)}
+/>
+```
+
+## Choosing the email flow
+
+The email method sends either a one-time code (`otp`) or a magic link (`magicLink`, the default). To keep the default page but change the email flow, render `SignUp.Default` — the canonical page — through `renderSignUp` and set `emailAuthMethod`:
+
+```tsx
+import { ConnectWallet, SignUp } from '@zerodev/wallet-react-ui'
+
+<ConnectWallet
+  renderSignUp={() => <SignUp.Default emailAuthMethod="otp" />}
+/>
+```
+
+`SignUp.Default` accepts the sign-up page's options:
+
+| Prop | Type | Description |
+| --- | --- | --- |
+| `emailAuthMethod` | `'magicLink' \| 'otp'` | Email verification flow. Defaults to `magicLink`. |
+| `termsAndConditionsUrl` | `string` | When set, a consent checkbox appears in the footer and every method is blocked until the user agrees. |
+| `privacyPolicyUrl` | `string` | Adds a privacy policy link to the footer. Also enables the consent gate. |
+
+```tsx
+<ConnectWallet
+  renderSignUp={() => (
+    <SignUp.Default
+      emailAuthMethod="otp"
+      termsAndConditionsUrl="https://example.com/terms"
+      privacyPolicyUrl="https://example.com/privacy"
+    />
+  )}
+/>
+```
+
+## Rearranging the sign-up page
+
+For full control over which methods appear and in what order, compose the page yourself from the `SignUp.*` units inside `renderSignUp`. Options that apply to the whole page — `emailAuthMethod`, `termsAndConditionsUrl`, `privacyPolicyUrl` — go on the `SignUp` root:
+
+```tsx
+import { ConnectWallet, SignUp } from '@zerodev/wallet-react-ui'
+
+<ConnectWallet
+  renderSignUp={() => (
+    <SignUp emailAuthMethod="otp" termsAndConditionsUrl="https://example.com/terms">
+      <SignUp.Google />
+      <SignUp.Divider />
+      <SignUp.Email />
+    </SignUp>
+  )}
+/>
+```
+
+Available units:
+
+| Unit | Renders |
+| --- | --- |
+| `SignUp.Passkey` | Create-a-passkey and log-in-with-passkey buttons. |
+| `SignUp.Google` | Google OAuth row. |
+| `SignUp.Email` | Email input that runs the flow set by `emailAuthMethod`. |
+| `SignUp.Divider` | A labelled divider (`or` by default; pass `label` to change it). |
+
+While one method's authentication is in flight, the other units disable themselves so two flows can't run at once. Include only the units for the methods enabled on your project.
+
+Authentication success and failure surface through Wagmi — `await` the `connect` call, or watch `useAccount()`.

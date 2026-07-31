@@ -1,0 +1,42 @@
+# Wallet UI Kit
+
+The Wallet UI Kit gives you prebuilt React UI for ZeroDev Wallet. Use it when you want a ready-made login flow instead of building every authentication screen yourself.
+
+The kit uses a Wagmi-compatible ZeroDev connector, so after the user signs in you can use standard Wagmi hooks such as `useAccount`, `useSignMessage`, and `useSendTransaction`.
+
+For a fully custom UI, use the hook-based authentication pages instead: [Passkeys](/wallets/auth/passkeys), [Email OTP](/wallets/auth/email-otp), [Magic Link](/wallets/auth/magic-link), or [Google OAuth](/wallets/auth/google-oauth). To drive the kit's flow yourself, use the `useAuth` hook from `@zerodev/wallet-react-ui` to read and control the auth state.
+
+## Getting started
+
+`<ConnectWallet />` renders the active authentication screen. Connecting through the `zeroDevWallet` connector is what opens the flow, so a minimal login is a connect button plus the component in the same provider tree:
+
+```tsx
+import { ConnectWallet } from '@zerodev/wallet-react-ui'
+import { useConnect } from 'wagmi'
+
+export function WalletLogin() {
+  const { connect, connectors } = useConnect()
+  const zeroDevConnector = connectors.find((c) => c.id === 'zerodev-wallet')
+
+  return (
+    <>
+      <button onClick={() => connect({ connector: zeroDevConnector! })}>
+        Connect wallet
+      </button>
+      <ConnectWallet size="md" />
+    </>
+  )
+}
+```
+
+Once the user finishes authentication, `useAccount` returns the connected address — see the [quickstart](/wallets/quickstart) for a full login component.
+
+## Before you start
+
+Open the [ZeroDev Dashboard](https://dashboard.zerodev.app/) and make sure your project has:
+
+- The app origin on the project's ACL allowlist, such as `http://localhost:3000` for local development.
+- The auth methods you plan to show configured for the project.
+- At least one enabled network.
+
+Next, [install the kit and configure Wagmi](/wallets/auth/wallet-ui-kit/installation).

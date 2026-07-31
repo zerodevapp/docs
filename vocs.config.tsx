@@ -575,7 +575,25 @@ export default defineConfig({
           },
           {
             text: "Wallet UI Kit",
-            link: "/wallets/auth/wallet-ui-kit",
+            collapsed: true,
+            items: [
+              {
+                text: "Getting Started",
+                link: "/wallets/auth/wallet-ui-kit/getting-started",
+              },
+              {
+                text: "Installation",
+                link: "/wallets/auth/wallet-ui-kit/installation",
+              },
+              {
+                text: "ConnectWallet",
+                link: "/wallets/auth/wallet-ui-kit/connect-wallet",
+              },
+              {
+                text: "Coming Soon",
+                link: "/wallets/auth/wallet-ui-kit/coming-soon",
+              },
+            ],
           },
           {
             text: "React Native",
