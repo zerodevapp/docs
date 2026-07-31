@@ -1,0 +1,70 @@
+# Installation
+
+Install the Wallet UI Kit and its peer dependencies, then add the connector and providers.
+
+## Install packages
+
+:::code-group
+
+```bash [npm]
+npm i @zerodev/wallet-react-ui @zerodev/react-ui @zerodev/wallet-core @zerodev/wallet-react wagmi viem @wagmi/core @tanstack/react-query zustand
+```
+
+```bash [yarn]
+yarn add @zerodev/wallet-react-ui @zerodev/react-ui @zerodev/wallet-core @zerodev/wallet-react wagmi viem @wagmi/core @tanstack/react-query zustand
+```
+
+```bash [pnpm]
+pnpm add @zerodev/wallet-react-ui @zerodev/react-ui @zerodev/wallet-core @zerodev/wallet-react wagmi viem @wagmi/core @tanstack/react-query zustand
+```
+
+```bash [bun]
+bun add @zerodev/wallet-react-ui @zerodev/react-ui @zerodev/wallet-core @zerodev/wallet-react wagmi viem @wagmi/core @tanstack/react-query zustand
+```
+
+:::
+
+## Configure Wagmi
+
+Import `zeroDevWallet` from `@zerodev/wallet-react-ui` and add it as a connector. It wraps the base ZeroDev Wallet connector and drives the kit's auth UI.
+
+```tsx
+import { zeroDevWallet } from '@zerodev/wallet-react-ui'
+import { createConfig, http } from 'wagmi'
+import { arbitrumSepolia } from 'wagmi/chains'
+
+export const config = createConfig({
+  chains: [arbitrumSepolia],
+  connectors: [
+    zeroDevWallet({
+      projectId: '<your-project-id>',
+      chains: [arbitrumSepolia],
+      mode: '7702',
+    }),
+  ],
+  transports: {
+    [arbitrumSepolia.id]: http('https://sepolia-rollup.arbitrum.io/rpc'),
+  },
+})
+```
+
+## Add providers and styles
+
+Import the kit stylesheet once at your app entry, then wrap your app with the Wagmi and TanStack Query providers. If your app has broad global element styles, scope them to your own app shell so they don't override the kit.
+
+```tsx
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import '@zerodev/wallet-react-ui/styles.css'
+import { WagmiProvider } from 'wagmi'
+import { config } from './wagmi'
+
+const queryClient = new QueryClient()
+
+<WagmiProvider config={config}>
+  <QueryClientProvider client={queryClient}>
+    {/* your app */}
+  </QueryClientProvider>
+</WagmiProvider>
+```
+
+With the connector and providers in place, render the login flow with [`ConnectWallet`](/wallets/auth/wallet-ui-kit/connect-wallet).
