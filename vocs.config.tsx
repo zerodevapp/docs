@@ -304,40 +304,16 @@ export default defineConfig({
             link: "/onramp/smart-recipes/quickstart",
           },
           {
+            text: "Recipes",
+            link: "/onramp/smart-recipes/recipes",
+          },
+          {
             text: "How It Works",
             link: "/onramp/smart-recipes/how-it-works",
           },
           {
-            text: "Integration Guide",
-            link: "/onramp/smart-recipes/integration-guide",
-          },
-          {
-            text: "Deposits",
-            link: "/onramp/smart-recipes/deposits",
-          },
-          {
-            text: "Vault Discovery",
-            link: "/onramp/smart-recipes/vault-discovery",
-          },
-          {
-            text: "Bridge & Swap",
-            link: "/onramp/smart-recipes/bridge-and-swap",
-          },
-          {
-            text: "Quotes & Execution",
-            link: "/onramp/smart-recipes/quotes",
-          },
-          {
-            text: "Tracking Status",
-            link: "/onramp/smart-recipes/tracking-status",
-          },
-          {
-            text: "Errors",
-            link: "/onramp/smart-recipes/errors",
-          },
-          {
-            text: "API Reference",
-            link: "/onramp/smart-recipes/api-reference",
+            text: "Reference",
+            link: "/onramp/smart-recipes/reference",
           },
         ],
       },

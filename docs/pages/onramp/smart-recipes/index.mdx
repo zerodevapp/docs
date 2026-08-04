@@ -1,6 +1,6 @@
 # Smart Recipes
 
-**Cross-chain DeFi deposits in one call.** Your user holds USDC on Base. Your app deposits it into a vault on Arbitrum. One quote, one signature. You write no bridge, swap, vault, or relayer code.
+**Cross-chain DeFi deposits in one call.** Your user holds USDC on Base. Your app deposits it into a vault on Arbitrum. One quote, one signature. You write no bridge, vault, or relayer code.
 
 ```ts
 const quote = await sr.morpho.deposit({
@@ -10,56 +10,34 @@ const quote = await sr.morpho.deposit({
   srcChainId: 8453,      // funds on Base
   into: vault,           // vault on Arbitrum
 });
-// user signs one transfer → funds arrive in the vault
+// user signs one transfer, funds arrive in the vault
 ```
 
-## The problem it removes
+Without it you would build a bridge integration, per-protocol deposit calldata, a relayer to execute on the destination chain, cross-chain status tracking, and a recovery path for each failure. Smart Recipes replaces all of it: the server quotes the route, a [Smart Routing Address](/onramp/smart-routing-address) (SRA) executes it, your user signs a single transfer.
 
-A cross-chain deposit normally requires all of this:
+Three things worth knowing up front:
 
-- a bridge integration, with its failure modes
-- a swap integration on one or both chains
-- deposit calldata and ABIs for each protocol
-- a relayer to execute on the destination chain
-- status tracking across two chains
-- a recovery path for failed steps
+- **Non-custodial.** Funds move through permissionless contracts. ZeroDev never holds them, and only the `owner` can recover a failed deposit.
+- **No protocol maintenance.** Vault lists, routes, and calldata live server-side. A new vault needs no SDK update.
+- **Any wallet stack.** Each quote carries both a plain transaction batch and an ERC-4337 user operation. The SDK has no signer and no runtime dependencies.
 
-Smart Recipes replaces all of it with one SDK call. The server quotes the route. The latest [Smart Routing Address](/onramp/smart-routing-address) (SRA v1) executes it. Your user signs a single transfer.
+## Recipes
 
-## Why teams choose it
+There are two, and one of them is currently off:
 
-**One signature for the user.** The user sends one transfer to a deposit address. The bridge, the swap, and the vault deposit happen behind it. No chain switching. No multi-step approval flows.
+| Recipe | Call it with | Status |
+|---|---|---|
+| Deposit into a vault | `sr.aave.deposit`, `sr.morpho.deposit`, `sr.fluid.deposit`, `sr.yearn.deposit`, `sr.erc4626.deposit`, or `sr.depositIntoVault` | Available |
+| Withdraw from a vault | `sr.withdrawFromVault` | Available, same-chain only |
+| Bridge and swap | `sr.bridgeAndSwap` | Disabled, always rejects |
 
-**Zero protocol maintenance.** Vault lists, routes, calldata, and fees live on the server. A new vault or protocol needs no SDK update and no redeploy.
+The five deposit facades are one recipe with the protocol pre-bound. `sr.depositIntoVault` is the same engine with `protocol` passed explicitly. Everything else in the SDK is discovery, status, and recovery around those calls.
 
-**Non-custodial by construction.** Funds move through permissionless smart contracts. ZeroDev never holds them. Failed funds rest in the user's own routing address. Only the `owner` can recover them.
+Smart Recipes performs no swaps of its own. A deposit whose funding token differs from the vault asset still works: SRA converts on delivery as part of its own route. See [Recipes](/onramp/smart-recipes/recipes).
 
-**Fails fast, not expensively.** The server verifies each deposit target on-chain before it quotes. A wrong vault address returns a typed error in milliseconds. You do not learn about it from a failed bridge.
-
-**Works with any wallet stack.** Each quote carries a plain transaction batch and an ERC-4337 user operation. The SDK has no signer and no runtime dependencies.
-
-**Gas sponsorship built in.** Your project's gas policy applies to each deposit automatically. Sponsor your users' fees from the dashboard. No code change is necessary.
-
-## What you can build
-
-- **Earn features.** Show vaults with live APY and TVL. Deposit from the chain the user's funds are on.
-- **Cross-chain onboarding.** Accept deposits from any chain, or from a CEX.
-- **Chain-abstracted swaps.** Bridge and swap to a target token in one signature.
-
-## Supported protocols
-
-| Facade | Notes |
-|---|---|
-| `sr.aave.deposit` | The token and chain identify the pool. No vault is necessary. |
-| `sr.morpho.deposit` | A vault is required. |
-| `sr.fluid.deposit` | A vault is required. |
-| `sr.yearn.deposit` | A vault is required. |
-| `sr.erc4626.deposit` | Any ERC-4626 vault, by address. Your own vaults included. |
-
-New protocols land server-side. Your integration does not change.
-
-## Try it
+## Next
 
 - [Quickstart](/onramp/smart-recipes/quickstart): a first deposit in about 20 lines
-- [Live demo](https://github.com/zerodevapp/smart-recipes): vault picker, quote, execute, track
+- [Recipes](/onramp/smart-recipes/recipes): every parameter, deposits through recovery
 - [How it works](/onramp/smart-recipes/how-it-works): the flow, the custody model, failure behavior
+- [Reference](/onramp/smart-recipes/reference): the `Quote` type, every method, every error code

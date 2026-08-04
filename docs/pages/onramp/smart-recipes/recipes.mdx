@@ -1,0 +1,199 @@
+# Recipes
+
+Everything you call, in the order you need it: deposit, discover, track, exit.
+
+## Deposits
+
+Every deposit routes through a Smart Routing Address and returns a [`Quote`](/onramp/smart-recipes/reference#quote), same-chain and cross-chain alike. The route is same-chain when `srcChainId === destChainId`. You do not select it.
+
+```ts
+type DepositParams = {
+  owner: Address               // funds, signs, receives shares, receives refunds
+  amount: number | string      // display units; the server scales by decimals
+  token: TokenSymbol | Address // the funding token, symbol or address
+  srcChainId: number           // the chain the user funds from
+  destChainId?: number         // the execution chain; optional when `into` is a Vault
+  into?: string | Vault        // vault id/address, or a Vault from listVaults()
+  slippage?: number            // bps, 1 to 5000, default 100 (= 1%)
+}
+```
+
+- `owner` is one role: funder, signer, share recipient, and refund recipient. There is no separate beneficiary.
+- `amount` is display units, so `"100"` means 100 USDC. Use a string for values above 15 significant figures.
+- `token` takes a symbol or a raw address. `TOKENS` covers `USDC | USDT | DAI | WETH | WBTC | EURC | NATIVE`. Pass an address for a variant like USDC.e.
+- `destChainId` can be omitted when `into` is a `Vault` object, which carries its own `chainId`. Passing both with different values is rejected as a caller bug. It is required for Aave, or when `into` is a string.
+- `slippage` bounds SRA's route. A cross-chain quote whose slippage cannot cover the route fees is rejected with `SLIPPAGE_TOO_LOW`, and `details.minSlippageBps` tells you what to retry with. Same-chain quotes are not floor-gated.
+
+### Protocol facades
+
+Each facade binds its protocol so the server picks the right adapter. The adapter verifies the target on-chain before quoting, so pointing a 4626 facade at a Morpho-Blue market fails immediately with a typed error and no funds move.
+
+```ts
+sr.aave.deposit(params)     // `into` optional: the pool follows from token + destChainId
+sr.morpho.deposit(params)   // `into` required
+sr.fluid.deposit(params)    // `into` required
+sr.yearn.deposit(params)    // `into` required
+sr.erc4626.deposit(params)  // any ERC-4626 vault by address, listed or not
+```
+
+Aave has one pool per chain, so `token` and `destChainId` identify the target:
+
+```ts
+await sr.aave.deposit({
+  owner,
+  amount: "100",
+  token: TOKENS.USDC,
+  srcChainId: 8453,     // Base
+  destChainId: 42161,   // Arbitrum
+  slippage: 50,         // 0.5%
+});
+```
+
+The `owner` receives the canonical aToken position. Pass `into` (an Aave listing from `listVaults({ protocol: 'aave' })`) to supply a different reserve than the funding token's own.
+
+For a vault with no facade, use the generic engine and name the protocol yourself:
+
+```ts
+await sr.depositIntoVault({
+  owner,
+  amount: "100",
+  token: TOKENS.USDC,
+  srcChainId: 42161,
+  destChainId: 42161,
+  into: "0xVAULT",
+  protocol: "erc4626",   // 'aave' | 'morpho' | 'fluid' | 'yearn' | 'erc4626'
+});
+```
+
+An unknown protocol is rejected with `UNKNOWN_PROTOCOL`. Prefer a facade when one exists.
+
+### Funding token vs vault asset
+
+Smart Recipes performs no swaps. A deposit whose funding token differs from the vault asset still works, because SRA's own cross-token route converts on delivery. `quote.route.bridgeTokenDest` tells you what actually lands on the destination chain: the route token, or the vault asset when SRA converts. There is nothing for you to branch on.
+
+## Discovery
+
+`listVaults` returns live APY and TVL, and each result can route a deposit with no further lookups.
+
+```ts
+const { vaults, nextPage } = await sr.listVaults({
+  asset: TOKENS.USDC,   // optional, filter by asset
+  chains: [42161],      // optional, filter by chain
+  protocol: "morpho",   // optional, filter by protocol
+  minTvl: 1_000_000,    // optional, USD floor
+  minApy: 2,            // optional, percent
+  page: 0,              // zero-based; walk until nextPage is null
+});
+```
+
+:::info
+Omitting `minTvl` applies a default floor of $100,000. Pass `minTvl: 0` to include smaller vaults.
+:::
+
+`Vault` is a union discriminated on `category`, so `maturity` is reachable only after narrowing:
+
+```ts
+type VaultCommon = {
+  id: string                   // what `into` keys on
+  address: Address             // the vault contract
+  chainId: number
+  protocol: string
+  asset: { symbol: string; address: Address; decimals: number }
+  apy: number | null           // percent (2.57 = 2.57%)
+  tvlUsd: number | null
+  name?: string
+}
+
+type Vault =
+  | (VaultCommon & { category: "lend" })
+  | (VaultCommon & { category: "liquid-staking" })
+  | (VaultCommon & { category: "fixed-yield"; maturity: string })
+```
+
+`getVault(vaultId, chainId?)` returns the same shape plus `apyBreakdown`, `apy7day`, `apy30day`, and `description`. Pass `chainId` when you know it to use the direct lookup instead of a list scan. The result is still valid as `into`.
+
+Build selectors from the server registry with `sr.getChains()` and `sr.getTokens({ chainId })`.
+
+### preflight
+
+`preflight` reads vault state without creating a quote. Its one unique signal is `depositsDisabled`: the vault's on-chain `maxDeposit` is 0, so it accepts nothing. Vault listings cannot see this, only the on-chain read can.
+
+```ts
+const check = await sr.preflight({
+  owner: "0xUSER",
+  vaultId: vault.address,
+  destChainId: vault.chainId,
+  amount: "100",
+});
+// check.depositsDisabled  the vault accepts no deposits; pick another
+// check.maxDeposit        remaining headroom, null when the kind has no per-owner cap
+// check.route             { bridgeTokenType, bridgeTokenDest } or null
+```
+
+## Tracking
+
+Status is derived from on-chain evidence at the SRA: deposits seen, bridges sent, executions settled. The server never asserts a state it cannot prove, so the status stays correct when funds arrive late or a step is retried.
+
+```
+PENDING -> BRIDGING -> EXECUTING -> COMPLETED
+                                 -> FAILED
+PENDING (no funds within 1h)     -> ABANDONED
+```
+
+`ABANDONED` is not a lock. Funds arriving later still execute, and a fresh `watchStatus` picks the recipe back up from live evidence.
+
+```ts
+const watcher = sr.watchStatus(quote.sra, {
+  interval: 4000,          // ms, default 4000
+  timeout: 600_000,        // total watch bound, default 10 min; 0 = poll forever
+  maxRetries: 5,           // consecutive poll failures tolerated, default 5
+  onStatusChange: (s) => setPhase(s.state),
+  onError: (e) => setError(e),
+});
+
+await watcher.done;   // resolves on a terminal state, rejects on persistent failure
+watcher.stop();       // or call watcher() to unsubscribe
+```
+
+Polling backs off on failure and stops on `COMPLETED`, `FAILED`, or `ABANDONED`. A persistent failure both calls `onError` and rejects `done`, so the error is always observable.
+
+Use `sr.getStatus(sra)` for a single read of the same data (`state`, `deposits`, `failureReason`), or `sr.getDepositStatus({ sra, owner, destChainId, vaultId })` to also get `vaultBalance`.
+
+## Withdraw
+
+`withdrawFromVault` builds the owner-signed calls that exit a position. It is same-chain and immediate: no SRA, no bridge, and no quote to expire.
+
+```ts
+const exit = await sr.withdrawFromVault({
+  owner,
+  vaultId: vault.id,
+  chainId: vault.chainId,
+  max: true,              // or amount: "50"; pass neither for a preview
+});
+
+for (const call of exit.calls) {
+  await wallet.sendTransaction({ ...call, value: BigInt(call.value), chainId: exit.chainId });
+}
+```
+
+- Pass `amount` **or** `max`, not both. Pass neither for a preview: same on-chain reads, reports `available` with no calls, which is how a UI shows a position before the user picks an amount.
+- `exitAll: true` means the calls name no amount and use the protocol's own full-exit form, so interest accruing before the signature cannot leave dust behind. `false` means a protocol cap (health factor, liquidity, vault limit) held the exit below the position, and the calls carry an exact amount.
+- `available` is the ceiling the amount was checked against, which is not always the position size. On Aave a supply backing a borrow reports only what can leave with the health factor intact.
+
+## Recovering a failed deposit
+
+There is no on-chain refund fallback. If the destination action reverts, or the user sends a token outside the route, the funds rest in the SRA. Only the `owner` can move them.
+
+```ts
+const { data } = await sr.getWithdrawCalls({
+  sra,
+  tokens: [{ chainId: 42161, token: usdcAddress }],
+});
+for (const { chainId, calls } of data) {
+  for (const call of calls) {
+    await wallet.sendTransaction({ ...call, value: BigInt(call.value), chainId });
+  }
+}
+```
+
+You can also send users to the [SRA portal](https://smart-routing-address.zerodev.app/), which offers the same recovery with no code on your side.
