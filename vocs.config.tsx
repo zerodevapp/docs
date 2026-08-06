@@ -309,6 +309,10 @@ export default defineConfig({
             link: "/onramp/smart-routing-address/quickstart",
           },
           {
+            text: "React UI",
+            link: "/onramp/smart-routing-address/react-ui",
+          },
+          {
             text: "Fetching Status",
             link: "/onramp/smart-routing-address/fetching-status",
           },
