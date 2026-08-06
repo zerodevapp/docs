@@ -19,7 +19,6 @@ Out of the box it renders the canonical sign-up page — passkey, Google, and em
 
 ```tsx
 <ConnectWallet
-  size="md"
   logo={<YourLogo />}
   onClose={() => setLoginOpen(false)}
 />
@@ -57,7 +56,20 @@ import { ConnectWallet, SignUp } from '@zerodev/wallet-react-ui'
 />
 ```
 
-## Rearranging the sign-up page
+:::info
+With `magicLink`, the email link returns the user to your app with a verification code in the URL. Mount `<ConnectWallet />` on the page that link opens — on mount it detects the code, shows the verifying screen, and completes the sign-in on its own:
+
+```tsx
+// The page your magic link redirects to
+import { ConnectWallet } from '@zerodev/wallet-react-ui'
+
+export default function VerifyPage() {
+  return <ConnectWallet />
+}
+```
+:::
+
+## Customizing the sign-up page
 
 For full control over which methods appear and in what order, compose the page yourself from the `SignUp.*` units inside `renderSignUp`. Options that apply to the whole page — `emailAuthMethod`, `termsAndConditionsUrl`, `privacyPolicyUrl` — go on the `SignUp` root:
 
@@ -82,8 +94,61 @@ Available units:
 | `SignUp.Passkey` | Create-a-passkey and log-in-with-passkey buttons. |
 | `SignUp.Google` | Google OAuth row. |
 | `SignUp.Email` | Email input that runs the flow set by `emailAuthMethod`. |
+| `SignUp.Wallet` | One pinned external wallet as its own row. |
+| `SignUp.InstalledWallets` | A row per wallet extension detected in the browser. |
+| `SignUp.MoreWallets` | A row that opens the full wallet grid in an overlay sheet. |
 | `SignUp.Divider` | A labelled divider (`or` by default; pass `label` to change it). |
 
 While one method's authentication is in flight, the other units disable themselves so two flows can't run at once. Include only the units for the methods enabled on your project.
 
 Authentication success and failure surface through Wagmi — `await` the `connect` call, or watch `useAccount()`.
+
+## External wallets
+
+The sign-up page can offer external wallets — MetaMask, Rabby, Coinbase Wallet, and so on — alongside the embedded-wallet methods. The user picks a wallet, approves in the wallet itself, and that wallet becomes the active Wagmi connection; no embedded wallet is created.
+
+External wallets come from your Wagmi config and the browser:
+
+- **Announced extensions.** Installed browser extensions announce themselves through EIP-6963 and appear automatically — nothing to configure.
+- **Configured connectors.** Any wallet connector you add to the Wagmi config (for example the MetaMask SDK connector) claims its wallet, so its row connects even without an announcement.
+
+Three `SignUp` units render external wallets. Compose them like any other unit:
+
+```tsx
+import { ConnectWallet, SignUp } from '@zerodev/wallet-react-ui'
+
+<ConnectWallet
+  renderSignUp={() => (
+    <SignUp>
+      <SignUp.Wallet walletId="metamask" />
+      <SignUp.InstalledWallets />
+      <SignUp.MoreWallets />
+    </SignUp>
+  )}
+/>
+```
+
+### SignUp.Wallet
+
+Pins one wallet as its own row. When a live connector claims the wallet, the row connects it; otherwise the row is a link to the vendor's download page.
+
+| Prop | Type | Description |
+| --- | --- | --- |
+| `walletId` | `WalletId` | Which wallet to pin. One of `'metamask'`, `'trust'`, `'coinbase'`, `'rainbow'`, `'rabby'`, `'okx'`, `'zerion'`, `'uniswap'`, `'ledger'`, `'binance'`. |
+
+### SignUp.InstalledWallets
+
+Renders one badged row per announced browser extension, and nothing when no wallet is installed.
+
+| Prop | Type | Description |
+| --- | --- | --- |
+| `excludeWalletIds` | `string[]` | Wallets to hide, by wallet id (such as `'metamask'`) or EIP-6963 rdns (such as `'io.metamask'`). Wallets pinned with `SignUp.Wallet` are excluded automatically. |
+| `maxWallets` | `number` | Cap on the number of rows. Defaults to `4`. Known wallets rank first, so the cut drops unrecognized extensions before recognized ones. |
+
+### SignUp.MoreWallets
+
+Renders a row that opens an overlay sheet with the full wallet grid: every wallet the kit knows, plus any other live connector from your Wagmi config. Installed wallets connect; the rest link to their vendor's download page.
+
+| Prop | Type | Description |
+| --- | --- | --- |
+| `title` | `string` | Row label. Defaults to `More wallets`. |
