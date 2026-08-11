@@ -1,0 +1,128 @@
+# Smart Routing Address React UI
+
+`@zerodev/smart-routing-address-react-ui` is a drop-in deposit UI for
+[Smart Routing Address](/onramp/smart-routing-address): a provider that creates
+and caches the routing address, a prebuilt deposit screen, and hooks that
+connect the screen to your app. To build your own deposit UI instead, use the
+[SDK](/onramp/smart-routing-address/quickstart).
+
+## Installation
+
+Install the package alongside its peer dependencies:
+
+:::code-group
+
+```bash [npm]
+npm i @zerodev/smart-routing-address-react-ui viem
+```
+
+```bash [yarn]
+yarn add @zerodev/smart-routing-address-react-ui viem
+```
+
+```bash [pnpm]
+pnpm add @zerodev/smart-routing-address-react-ui viem
+```
+
+```bash [bun]
+bun add @zerodev/smart-routing-address-react-ui viem
+```
+
+:::
+
+`@zerodev/smart-routing-address` ships with the package — add it as a direct
+dependency only if you import from it, such as `createCall` for custom
+`actions`.
+
+Import the stylesheet once at your app entry:
+
+```tsx
+import '@zerodev/smart-routing-address-react-ui/styles.css'
+```
+
+## Usage
+
+Wrap the subtree with `SmartRoutingAddressProvider` and render
+`<SmartRoutingAddress />` where the deposit UI should appear. On mount it
+creates the routing address for `recipient` and shows the deposit screen —
+the address with a QR code, the supported source tokens with fee estimates,
+and the deposits as they arrive. Past deposits and per-deposit transaction
+details are built-in steps.
+
+```tsx
+import {
+  SmartRoutingAddress,
+  SmartRoutingAddressProvider,
+} from '@zerodev/smart-routing-address-react-ui'
+import { arbitrum } from 'viem/chains'
+
+function DepositModal({ userAddress, onClose }) {
+  return (
+    <SmartRoutingAddressProvider config={{ targetChainId: arbitrum.id }}>
+      <SmartRoutingAddress recipient={userAddress} onClose={onClose} />
+    </SmartRoutingAddressProvider>
+  )
+}
+```
+
+The provider holds the config and the lazily created address; the screen is
+rendered inline by you, so it fits any surface — a modal, a drawer, or a page.
+
+## Config
+
+`SmartRoutingAddressProvider` takes a single `config`:
+
+| Option | Type | Description |
+| --- | --- | --- |
+| `targetChainId` | `number` | Chain id where funds settle. Required. |
+| `projectId` | `string` | ZeroDev project id; when non-empty it is appended to the server URL for every request. |
+| `version` | `SmartRoutingAddressVersion` | Smart routing address version. Defaults to the latest stable. |
+| `actions` | `CreateSmartRoutingAddressParams['actions']` | Destination actions per token type. When omitted, funds are simply transferred to the recipient. |
+| `slippage` | `number` | Max slippage in basis points (`50` = 0.5%). |
+| `baseUrl` | `string` | Override the smart routing address server root URL; the `projectId` is appended to it. |
+
+## Props
+
+| Prop | Type | Description |
+| --- | --- | --- |
+| `recipient` | `Address` | Recipient the routing address is created for. Required. |
+| `onClose` | `() => void` | Called when the top-right × button is clicked. Required. |
+| `size` | `'sm' \| 'md' \| 'lg'` | Card size. |
+| `className` | `string` | Extra classes for the card. |
+
+## Hooks
+
+The hooks connect your app to the prebuilt screen: read the state it shows,
+or create the address before it opens. Both read from
+`SmartRoutingAddressProvider`. For a fully custom deposit UI, use the
+[SDK](/onramp/smart-routing-address/quickstart) directly instead.
+
+### useSmartRoutingAddress
+
+Read the screen's state from anywhere inside the provider:
+
+```tsx
+const { addressState, activeRoute } = useSmartRoutingAddress()
+```
+
+- `addressState` — `idle`, `loading`, `success` (with the `address` and fee
+  estimates), or `error`.
+- `activeRoute` — the source token, chain, and estimated fee the deposit UI
+  currently shows; `null` until a selection exists. The screen's token picker
+  owns the selection — use `activeRoute` to mirror it elsewhere, such as
+  analytics.
+
+### useCreateSmartRoutingAddress
+
+Get the deposit address, creating it when it doesn't exist yet — call it
+early, before the deposit UI is opened, and the screen opens with the
+address already there:
+
+```tsx
+const { getOrCreateAddress } = useCreateSmartRoutingAddress()
+const address = await getOrCreateAddress(recipient)
+```
+
+Repeat and concurrent calls for the same recipient share one request, so
+calling it on hover or on page entry is safe. The promise rejects when
+creation fails; the same failure also lands in `addressState`.
