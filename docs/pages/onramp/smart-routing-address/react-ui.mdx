@@ -75,11 +75,11 @@ rendered inline by you, so it fits any surface — a modal, a drawer, or a page.
 | Option | Type | Description |
 | --- | --- | --- |
 | `targetChainId` | `number` | Chain id where funds settle. Required. |
-| `projectId` | `string` | ZeroDev project id; when non-empty it is appended to the server URL for every request. |
-| `version` | `SmartRoutingAddressVersion` | Smart routing address version. Defaults to the latest stable. |
-| `actions` | `CreateSmartRoutingAddressParams['actions']` | Destination actions per token type. When omitted, funds are simply transferred to the recipient. |
-| `slippage` | `number` | Max slippage in basis points (`50` = 0.5%). |
-| `baseUrl` | `string` | Override the smart routing address server root URL; the `projectId` is appended to it. |
+| `projectId` | `string` | ZeroDev project id; when non-empty it is appended to the server URL for every request. Optional. |
+| `version` | `SmartRoutingAddressVersion` | Smart routing address version. Defaults to the latest stable. Optional. |
+| `actions` | `CreateSmartRoutingAddressParams['actions']` | Destination actions per token type. When omitted, funds are simply transferred to the recipient. Optional. |
+| `slippage` | `number` | Max slippage in basis points (`50` = 0.5%). Optional. |
+| `baseUrl` | `string` | Override the smart routing address server root URL; the `projectId` is appended to it. Optional. |
 
 ## Props
 
@@ -87,8 +87,8 @@ rendered inline by you, so it fits any surface — a modal, a drawer, or a page.
 | --- | --- | --- |
 | `recipient` | `Address` | Recipient the routing address is created for. Required. |
 | `onClose` | `() => void` | Called when the top-right × button is clicked. Required. |
-| `size` | `'sm' \| 'md' \| 'lg'` | Card size. |
-| `className` | `string` | Extra classes for the card. |
+| `size` | `'sm' \| 'md' \| 'lg'` | Card size. Optional. |
+| `className` | `string` | Extra classes for the card. Optional. |
 
 ## Hooks
 
@@ -102,15 +102,11 @@ or create the address before it opens. Both read from
 Read the screen's state from anywhere inside the provider:
 
 ```tsx
-const { addressState, activeRoute } = useSmartRoutingAddress()
+const { addressState } = useSmartRoutingAddress()
 ```
 
-- `addressState` — `idle`, `loading`, `success` (with the `address` and fee
-  estimates), or `error`.
-- `activeRoute` — the source token, chain, and estimated fee the deposit UI
-  currently shows; `null` until a selection exists. The screen's token picker
-  owns the selection — use `activeRoute` to mirror it elsewhere, such as
-  analytics.
+`addressState` is `idle`, `loading`, `success` (with the `address` and fee
+estimates), or `error`.
 
 ### useCreateSmartRoutingAddress
 
