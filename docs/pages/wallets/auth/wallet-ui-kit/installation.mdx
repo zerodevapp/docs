@@ -48,6 +48,10 @@ export const config = createConfig({
 })
 ```
 
+:::info
+If your sign-up page won't offer [external wallets](/wallets/auth/wallet-ui-kit/connect-wallet#external-wallets), add `multiInjectedProviderDiscovery: false` to `createConfig`. The kit only needs Wagmi's browser-extension discovery for external wallet rows, and with discovery off an [unresponsive extension](/wallets/auth/wallet-ui-kit/known-issues/unresponsive-wallet-extensions) can never stall your app's boot.
+:::
+
 ## Add providers and styles
 
 Import the kit stylesheet once at your app entry, then wrap your app with the Wagmi and TanStack Query providers. If your app has broad global element styles, scope them to your own app shell so they don't override the kit.

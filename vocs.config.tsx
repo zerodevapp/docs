@@ -594,6 +594,16 @@ export default defineConfig({
                 link: "/wallets/auth/wallet-ui-kit/connect-wallet",
               },
               {
+                text: "Known Issues",
+                collapsed: true,
+                items: [
+                  {
+                    text: "Unresponsive wallet extensions",
+                    link: "/wallets/auth/wallet-ui-kit/known-issues/unresponsive-wallet-extensions",
+                  },
+                ],
+              },
+              {
                 text: "Coming Soon",
                 link: "/wallets/auth/wallet-ui-kit/coming-soon",
               },
