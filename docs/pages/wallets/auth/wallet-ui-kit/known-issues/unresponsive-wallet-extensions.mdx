@@ -1,0 +1,47 @@
+# Unresponsive wallet extensions
+
+A broken wallet extension can announce itself over EIP-6963 yet never answer requests: the extension's in-page script keeps announcing while its background process is dead, so calls to the wallet stay pending forever instead of failing. Wagmi's mount-time reconnect (`reconnectOnMount`, on by default) queries every announced extension with no timeout, so one such extension pins `useAccount().status` at `'connecting'` or `'reconnecting'` forever, and any UI waiting for Wagmi to settle never unlocks. It hits apps whose sign-up page shows no wallet units and users who never connected the wallet — extension discovery is also on by default. Wagmi [considers this a wallet bug](https://github.com/wevm/wagmi/pull/4042); restarting the browser or reinstalling the broken extension clears it.
+
+## Add a deadline
+
+Force a boot that hasn't settled within five seconds into `'disconnected'` — the state Wagmi's reconnect produces when no connector is authorized. The watchdog disarms once boot settles, so a slow user-initiated connect is never cut off:
+
+```tsx
+// Alongside your Wagmi providers
+import { useEffect } from 'react'
+import { config } from './wagmi'
+
+export function useReconnectDeadline() {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const { status } = config.state
+      if (status !== 'connecting' && status !== 'reconnecting') return
+      config.setState((state) => ({
+        ...state,
+        connections: new Map(),
+        current: null,
+        status: 'disconnected',
+      }))
+    }, 5_000)
+    const unsubscribe = config.subscribe(
+      (state) => state.status,
+      (status) => {
+        if (status === 'connected' || status === 'disconnected') {
+          clearTimeout(timer)
+          unsubscribe()
+        }
+      },
+    )
+    return () => {
+      clearTimeout(timer)
+      unsubscribe()
+    }
+  }, [])
+}
+```
+
+Call it once in any component that mounts at boot — the one that renders `WagmiProvider` works. Sign-in then proceeds normally; recover with `connect()`, not `reconnect()` (a no-op while a reconnect is already running).
+
+:::info
+Apps without external wallets can instead set `multiInjectedProviderDiscovery: false` in `createConfig` — no extension is ever queried. The [external wallet units](/wallets/auth/wallet-ui-kit/connect-wallet#external-wallets) depend on discovery.
+:::
