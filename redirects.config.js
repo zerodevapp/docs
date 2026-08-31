@@ -254,4 +254,31 @@ export const redirects = [
   { from: "/resources/faqs/use-with-ethers", to: "/api-and-toolings/faqs/use-with-ethers" },
   { from: "/resources/faqs/use-with-gelato", to: "/api-and-toolings/faqs/use-with-gelato" },
   { from: "/resources/faqs/use-with-react-native", to: "/api-and-toolings/faqs/use-with-react-native" },
+
+  // Blog posts moved to the marketing site under different slugs. Matched by
+  // title and date; each target returns 200. Two posts (/blog/3074-governance,
+  // /blog/introducing-orchestra-multichain-deployment-made-easy) are not on the
+  // marketing site yet and stay here, so /blog itself is deliberately not mapped.
+  { from: "/blog/3074-pitfalls", to: "https://www.zerodev.app/blogs/the-pitfalls-of-eip-3074-and-how-to-avoid-them" },
+  { from: "/blog/4337-and-3074-disagreements", to: "https://www.zerodev.app/blogs/why-4337-and-3074-authors-are-disagreeing-and-who-got-it-right" },
+  { from: "/blog/7702-adoption", to: "https://www.zerodev.app/blogs/what-does-eip-7702-mean-for-you-part-1-the-adoption-cycle-of-7702" },
+  { from: "/blog/7702-for-dapps", to: "https://www.zerodev.app/blogs/blog-7702-for-dapps" },
+  { from: "/blog/erc-4337-misconceptions-and-valid-concerns", to: "https://www.zerodev.app/blogs/erc-4337-misconceptions-and-valid-concerns" },
+  { from: "/blog/erc-6492-and-why-its-important-for-aa", to: "https://www.zerodev.app/blogs/what-is-erc-6492-and-why-it-s-important-for-account-abstraction" },
+  { from: "/blog/gas-sponsorship-paradox", to: "https://www.zerodev.app/blogs/blog-gas-sponsorship-paradox" },
+  { from: "/blog/gemini", to: "https://www.zerodev.app/blogs/blog-gemini" },
+  { from: "/blog/go-native-account-abstraction", to: "https://www.zerodev.app/blogs/blog-go-native-account-abstraction" },
+  { from: "/blog/hello-capabilities", to: "https://www.zerodev.app/blogs/sdks-are-dead-long-live-capabilities" },
+  { from: "/blog/kernel-minimal-extensible-account-for-aa-wallets", to: "https://www.zerodev.app/blogs/introducing-kernel-minimal-and-extensible-smart-contract-account-for-erc-4337-wallets" },
+  { from: "/blog/kernel-v2-and-the-lessons-we-learned", to: "https://www.zerodev.app/blogs/kernel-v2-and-the-lessons-we-learned" },
+  { from: "/blog/pricing-update", to: "https://www.zerodev.app/blogs/blog-pricing-update" },
+  { from: "/blog/session-keys-are-the-jwts-of-web3", to: "https://www.zerodev.app/blogs/session-keys-are-the-jwts-of-web3" },
+  { from: "/blog/towards-the-most-optimized-aa-wallet", to: "https://www.zerodev.app/blogs/towards-the-most-optimized-aa-wallet" },
+  { from: "/blog/ultrarelay", to: "https://www.zerodev.app/blogs/account-abstraction-beyond-erc-4337-how-intents-erc-7683-can-make-aa-cheaper-and-faster" },
+  { from: "/blog/what-can-you-do-with-account-abstraction", to: "https://www.zerodev.app/blogs/what-can-you-do-with-account-abstraction" },
+  { from: "/blog/who-when-what", to: "https://www.zerodev.app/blogs/who-when-what-a-framework-for-thinking-about-plugins-and-7579-vs-6900" },
+  { from: "/blog/why-7579-over-6900", to: "https://www.zerodev.app/blogs/why-we-are-building-kernel-on-erc-7579-and-not-erc-6900" },
+  { from: "/blog/zerodev-acquired", to: "https://www.zerodev.app/blogs/blog-zerodev-acquired" },
+  { from: "/blog/zerodev-glider", to: "https://www.zerodev.app/blogs/blog-zerodev-glider" },
+  { from: "/blog/zerodev-litprotocol", to: "https://www.zerodev.app/blogs/blog-zerodev-litprotocol" },
 ];

@@ -16,7 +16,6 @@ const DIR = join(fileURLToPath(new URL(".", import.meta.url)), "docs", "dist");
 const EXACT = new Map(redirects.map((r) => [r.from, r.to]));
 const PREFIX = [
   ["/magic-account", "/smart-accounts/chain-abstraction/overview"],
-  ["/blog", "https://www.zerodev.app/blog"],
 ];
 const SPA_FALLBACK = ["/sdk", "/meta-infra", "/recovery-flow", "/react", "/smart-wallet"];
 

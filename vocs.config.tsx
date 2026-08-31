@@ -113,7 +113,7 @@ export default defineConfig({
   topNav: [
     { text: "API Reference", link: "https://zerodev-api.readme.io" },
     { text: "Dashboard", link: "https://dashboard.zerodev.app/" },
-    { text: "Blog", link: "/blog", match: "/blog" },
+    { text: "Blog", link: "https://www.zerodev.app/blog" },
   ],
   socials: [
     { icon: "github", link: "https://github.com/zerodevapp" },
