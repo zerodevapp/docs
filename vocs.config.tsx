@@ -113,26 +113,25 @@ export default defineConfig({
   title: "ZeroDev",
   titleTemplate: "%s – ZeroDev",
   description: "The most powerful smart account.",
+  // Must stay a function. Vocs tests `typeof head === "object"` before it
+  // tests for an element, and a JSX element is an object, so it took the
+  // "map of path prefix to element" branch, found no key matching the route
+  // and rendered nothing. The og:type, og:title and og:description that used
+  // to sit here never reached a single page; vocs emits its own, per page,
+  // from `title` and `description` above. Only the tags vocs does not emit
+  // belong here.
   head({ path }) {
     const canonical = ORIGIN + canonicalPath(path);
     return (
       <>
-        <meta property="og:type" content="website" />
-        <meta
-          property="og:title"
-          content="ZeroDev -- Simple & Powerful Account Abstraction"
-        />
-        {/* Was a fixed https://zerodev.app on all 249 pages, which told every
-            crawler and every share preview that the whole site was one URL. */}
-        <meta property="og:url" content={canonical} />
         <link rel="canonical" href={canonical} />
+        {/* Vocs only emits og:url when `baseUrl` is set, and setting that also
+            emits a <base> tag that would change how every relative link
+            resolves. Cheaper to write the tag directly. */}
+        <meta property="og:url" content={canonical} />
         {isUnmaintained(path) && (
           <meta name="robots" content="noindex, follow" />
         )}
-        <meta
-          property="og:description"
-          content="Build a Web3 experience that feels like Web2, using account abstraction through ZeroDev.  Say goodbye to gas, seed phrases, transaction prompts, and more."
-        />
       </>
     );
   },

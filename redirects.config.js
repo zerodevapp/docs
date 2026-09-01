@@ -125,6 +125,13 @@ export const redirects = [
   { from: "/recovery-flow/portal", to: "/advanced/account-recovery/portal" },
 
   // Smart Routing Address (and global-address duplicate)
+  //
+  // /global-address never reaches this server: a Cloudflare rule answers it
+  // first with a 301 to /smart-routing-address, which this table then sends on,
+  // so a reader takes two hops. The rule below is the target we want, and it
+  // takes effect the moment that Cloudflare rule is removed (DES-24). Confirmed
+  // on production: that response carries no `x-render-origin-server` header,
+  // while every rule we own does.
   { from: "/smart-routing-address", to: "/onramp/smart-routing-address/quickstart" },
   { from: "/global-address", to: "/onramp/smart-routing-address/quickstart" },
 
