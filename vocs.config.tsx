@@ -1,7 +1,7 @@
 import { resolve } from "node:path";
 import { defineConfig } from "vocs";
 import dotenv from "dotenv";
-import { redirects } from "./redirects.config.js";
+import { resolveRedirect } from "./resolve-redirect.js";
 
 // Absolute path to docs/components, used as the `@components` Vite alias below
 // so MDX pages can import shared components with a single stable specifier
@@ -11,13 +11,6 @@ import { redirects } from "./redirects.config.js";
 const componentsDir = resolve(process.cwd(), "docs/components");
 
 dotenv.config();
-
-// Lookup table for the dev-server redirect middleware below. The redirect list
-// lives in redirects.config.js (single source of truth); in production the same
-// list is applied by server.mjs (the Render web service).
-const REDIRECT_MAP: Record<string, string> = Object.fromEntries(
-  redirects.map((r) => [r.from, r.to]),
-);
 
 export default defineConfig({
   iconUrl: "/favicon.ico",
@@ -1053,11 +1046,12 @@ export default defineConfig({
     plugins: [
       {
         name: "ia-revamp-redirects",
+        // 307 not 301: browsers cache a 301 forever, painful while editing.
         configureServer(server) {
           server.middlewares.use((req, res, next) => {
             if (!req.url) return next();
             const url = new URL(req.url, "http://localhost");
-            const target = REDIRECT_MAP[url.pathname];
+            const target = resolveRedirect(url.pathname);
             if (target) {
               res.statusCode = 307;
               res.setHeader("Location", target + url.search);
