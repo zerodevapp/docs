@@ -1,6 +1,6 @@
-// npm run check:redirects — fails on a dead target, a chain, a duplicate
-// source, a rule that shadows a page that still exists, or a target no sidebar
-// links to.
+// npm run check:redirects — an audit, run it by hand. Reports a dead target, a
+// chain, a duplicate source, a rule (exact or prefix) that shadows a page that
+// still exists, or a target no sidebar links to.
 
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
@@ -57,6 +57,10 @@ const ROUTES = routes();
 const errors = [];
 const seen = new Map();
 
+// Fail loudly rather than skipping the reachability check: if the sidebar is
+// reformatted or renamed, silence here would read as a pass.
+if (!SIDEBAR) errors.push("cannot parse the sidebar block in vocs.config.tsx, so target reachability went unchecked");
+
 for (const { from, to } of redirects) {
   if (seen.has(from)) errors.push(`duplicate source ${from} (${seen.get(from)} and ${to})`);
   seen.set(from, to);
@@ -81,6 +85,12 @@ for (const { from, to } of redirects) {
 for (const [prefix, target] of PREFIX) {
   if (!ROUTES.has(stripTrailingSlash(target))) {
     errors.push(`prefix ${prefix} -> ${target} (no such page)`);
+  }
+  // A page added under the prefix is unreachable: the redirect answers first.
+  for (const route of ROUTES) {
+    if (route === prefix || route.startsWith(prefix + "/")) {
+      if (!seen.has(route)) errors.push(`prefix ${prefix} shadows ${route}, which still exists`);
+    }
   }
 }
 
