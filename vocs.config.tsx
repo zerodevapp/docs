@@ -13,54 +13,37 @@ const componentsDir = resolve(process.cwd(), "docs/components");
 
 dotenv.config();
 
-// Every page declares one address, and the host is always docs.zerodev.app.
-// The same content is also served on new-docs.zerodev.app; an absolute
-// canonical makes that copy credit this site instead of competing with it. A
-// path-only canonical would resolve against whichever host served the page,
-// which is no fix at all.
+// Absolute, so the copy served on new-docs.zerodev.app credits this host
+// instead of competing with it. A path-only canonical would resolve against
+// whichever host served the page.
 const ORIGIN = "https://docs.zerodev.app";
 
-// The v5.3.x set stays live for readers still on that SDK, but each page
-// credits its current equivalent so the two versions stop competing.
-//
-// The mapping is derived, not hand-written: /sdk/v5_3_x/x is the old version of
-// /sdk/x, and every /sdk/x already has a target in the redirect table that was
-// checked page by page. Deriving it means the two can never drift apart.
-// check:redirects fails if a page stops mapping.
+// /sdk/v5_3_x/x is the old version of /sdk/x, which already has a vetted
+// redirect target, so the old set credits the current pages without a
+// hand-written map. check:redirects fails if a page stops mapping.
 function canonicalPath(path: string) {
   if (!path.startsWith("/sdk/v5_3_x")) return path;
   const current = resolveRedirect(path.replace("/sdk/v5_3_x", "/sdk"));
-  // An off-site target cannot be a canonical, and the set's index page has no
-  // equivalent. Both fall back to crediting themselves.
+  // Off-site targets and the set's index have no equivalent: credit itself.
   return current?.startsWith("/") ? current : path;
 }
 
-// @zerodev/waas has had no release in about two years. The pages stay so old
-// links still resolve, but they must not compete in search or teach an
-// interface with no future.
+// @zerodev/waas, no release in about two years. Kept so old links resolve,
+// hidden so it stops competing with the current docs.
 const isUnmaintained = (path: string) =>
   path.startsWith("/advanced/react-hooks/");
 
-// The copy that sat in the dead og:description tag below. It never reached a
-// page, so this is the first time it ships.
 const SITE_DESCRIPTION =
   "Build a Web3 experience that feels like Web2, using account abstraction through ZeroDev.  Say goodbye to gas, seed phrases, transaction prompts, and more.";
 
-// Vocs emits a description only when the page's own frontmatter carries one,
-// and 72 of the 135 indexable pages do not, so they ship with no description
-// and no og:description at all. Google then writes its own snippet, and a
-// shared link previews bare.
-//
-// This is a stopgap, not a fix: one description repeated across 72 pages is
-// weak, and Google may still write its own. Each page needs its own (DES-24).
-// Collect the routes that already have one, so the fallback never doubles up
-// with the tag vocs emits.
+// Stopgap. Vocs emits a description only where the page supplies one, and most
+// do not, so they ship bare. Collect the ones that already have their own so
+// the fallback never doubles up.
 const PAGES_DIR = resolve(process.cwd(), "docs/pages");
 
-// Vocs reads a description from two places: `description:` in the frontmatter,
-// or a bracketed suffix on the H1, as in `# Social Login [Social login lets
-// users sign in with...]`. Miss the second and a page gets two descriptions.
-// The trailing-bracket test excludes a markdown link, which is `[text](url)`.
+// Either frontmatter `description:` or a bracketed suffix on the H1, as in
+// `# Social Login [Social login lets users...]`. The trailing-bracket test
+// excludes a markdown link, which is `[text](url)`.
 function hasDescription(src: string) {
   const close = src.startsWith("---") ? src.indexOf("\n---", 3) : -1;
   if (close > 0 && /^description:\s*\S/m.test(src.slice(3, close))) return true;
@@ -162,21 +145,15 @@ export default defineConfig({
   title: "ZeroDev",
   titleTemplate: "%s – ZeroDev",
   description: "The most powerful smart account.",
-  // Must stay a function. Vocs tests `typeof head === "object"` before it
-  // tests for an element, and a JSX element is an object, so it took the
-  // "map of path prefix to element" branch, found no key matching the route
-  // and rendered nothing. The og:type, og:title and og:description that used
-  // to sit here never reached a single page; vocs emits its own, per page,
-  // from `title` and `description` above. Only the tags vocs does not emit
-  // belong here.
+  // Must stay a function: vocs tests `typeof head === "object"` before it tests
+  // for an element, so a JSX element here takes the path-prefix-map branch,
+  // matches nothing and renders nothing. Only tags vocs does not already emit
+  // belong here, or pages get two of each.
   head({ path }) {
     const canonical = ORIGIN + canonicalPath(path);
     return (
       <>
         <link rel="canonical" href={canonical} />
-        {/* Vocs only emits og:url when `baseUrl` is set, and setting that also
-            emits a <base> tag that would change how every relative link
-            resolves. Cheaper to write the tag directly. */}
         <meta property="og:url" content={canonical} />
         {!HAS_DESCRIPTION.has(path) && (
           <>

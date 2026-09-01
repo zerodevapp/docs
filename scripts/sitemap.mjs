@@ -1,10 +1,8 @@
 // Writes docs/dist/sitemap.xml after `vocs build`.
 //
-// The list is derived from the built HTML rather than from the page sources, so
-// the sitemap can never disagree with what the pages themselves declare. A page
-// is listed only when it asks to be indexed: no noindex, and a canonical tag
-// pointing at itself. Everything else is a duplicate or a dead end, and Google
-// treats a sitemap entry that contradicts the page as an error.
+// Read from the built HTML, not the page sources, so the sitemap cannot
+// contradict what a page declares. Listed only if the page asks to be indexed:
+// no noindex, and a canonical pointing at itself.
 
 import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -24,7 +22,8 @@ function pages(dir, prefix = "") {
   const out = [];
   for (const entry of readdirSync(dir)) {
     const full = join(dir, entry);
-    if (statSync(full).isDirectory()) out.push(...pages(full, `${prefix}/${entry}`));
+    if (statSync(full).isDirectory())
+      out.push(...pages(full, `${prefix}/${entry}`));
     else if (entry === "index.html") out.push([prefix || "/", full]);
   }
   return out;
@@ -42,6 +41,7 @@ const tag = (html, re) => html.match(re)?.[1] ?? null;
 export function sitemapEntries() {
   const skipped = { redirected: 0, noindex: 0, duplicate: 0, empty: 0 };
   const urls = [];
+  const uncanonical = [];
 
   for (const [route, file] of pages(DIST)) {
     // .vocs holds the search index, not pages.
@@ -59,8 +59,18 @@ export function sitemapEntries() {
       continue;
     }
 
-    const canonical = tag(html, /<link[^>]+rel=["']canonical["'][^>]+href=["']([^"']+)["']/i);
-    if (canonical && stripTrailingSlash(canonical) !== stripTrailingSlash(ORIGIN + route)) {
+    // No canonical means the head config stopped rendering, which vocs does
+    // silently. Collect and fail rather than listing the page: a sitemap that
+    // keeps working while the tags vanish hides the regression.
+    const canonical = tag(
+      html,
+      /<link[^>]+rel=["']canonical["'][^>]+href=["']([^"']+)["']/i,
+    );
+    if (!canonical) {
+      uncanonical.push(route);
+      continue;
+    }
+    if (stripTrailingSlash(canonical) !== stripTrailingSlash(ORIGIN + route)) {
       skipped.duplicate++;
       continue;
     }
@@ -73,11 +83,21 @@ export function sitemapEntries() {
     urls.push(route === "/" ? `${ORIGIN}/` : ORIGIN + route);
   }
 
-  return { urls: urls.sort(), skipped };
+  return { urls: urls.sort(), skipped, uncanonical };
 }
 
 function main() {
-  const { urls, skipped } = sitemapEntries();
+  const { urls, skipped, uncanonical } = sitemapEntries();
+
+  if (uncanonical.length) {
+    console.error(`${uncanonical.length} built page(s) have no canonical tag:`);
+    for (const r of uncanonical.slice(0, 10)) console.error(`  ${r}`);
+    if (uncanonical.length > 10) {
+      console.error(`  ...${uncanonical.length - 10} more`);
+    }
+    console.error("check the head() function in vocs.config.tsx");
+    process.exit(1);
+  }
 
   const xml = [
     '<?xml version="1.0" encoding="UTF-8"?>',
@@ -93,7 +113,9 @@ function main() {
     .filter(([, n]) => n)
     .map(([k, n]) => `${n} ${k}`)
     .join(", ");
-  console.log(`sitemap.xml: ${urls.length} urls${dropped ? ` (skipped ${dropped})` : ""}`);
+  console.log(
+    `sitemap.xml: ${urls.length} urls${dropped ? ` (skipped ${dropped})` : ""}`,
+  );
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) main();
