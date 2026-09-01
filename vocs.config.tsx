@@ -1046,9 +1046,7 @@ export default defineConfig({
     plugins: [
       {
         name: "ia-revamp-redirects",
-        // Uses the same resolver as server.mjs so dev and production agree on
-        // trailing slashes and on the /magic-account prefix rule. 307 not 301:
-        // a browser caches a 301 forever, which is painful while editing.
+        // 307 not 301: browsers cache a 301 forever, painful while editing.
         configureServer(server) {
           server.middlewares.use((req, res, next) => {
             if (!req.url) return next();

@@ -283,23 +283,15 @@ export const redirects = [
   { from: "/blog/zerodev-glider", to: "https://www.zerodev.app/blogs/blog-zerodev-glider" },
   { from: "/blog/zerodev-litprotocol", to: "https://www.zerodev.app/blogs/blog-zerodev-litprotocol" },
 
-  // 2026-06 IA revamp fallout: every URL below was live in a past build and is
-  // dead today. Each target was picked by comparing the deleted page against the
-  // live tree, and each one resolves to a page that exists.
+  // 2026-06 IA revamp fallout. Sources found with
+  // `git log --first-parent --full-history origin/main`, never `--all`: a page
+  // that only ever lived on a feature branch was never deployed, and a rule for
+  // one would 301 those pages away if the branch later merged.
   //
-  // Sources come from `git log --first-parent --full-history origin/main`, NOT
-  // from `--all`. Only main ever deployed, so a page that lived solely on a
-  // feature branch was never reachable and never indexed. Adding a rule for one
-  // is worse than useless: if that branch later merges, the rule 301s the brand
-  // new pages away on their first day. An earlier pass of this list used --all
-  // and picked up 96 such paths from smart-recipes-docs, omar/react-kit-docs,
-  // chain-abstracted-smart-account, zerodev-wallet and others; they are gone.
-  //
-  // /modules/offramp and /smart-wallet/offramp are deliberately absent: both were
-  // one-line stubs with no successor, so they 404 rather than send a reader
-  // somewhere unrelated.
+  // /modules/offramp and /smart-wallet/offramp are absent on purpose. Both were
+  // one-line stubs with no successor, so they 404.
 
-  // Legacy /sdk/* tree (deleted in the 2026-06 IA revamp) (61)
+  // Legacy /sdk/*
   { from: "/sdk/advanced/magic-address", to: "/onramp/smart-routing-address" },
   { from: "/sdk/core-api/intro", to: "/onboarding/create-a-smart-account" },
   { from: "/sdk/core-api/pay-gas-in-erc20s", to: "/smart-accounts/pay-gas-with-erc20s" },
@@ -320,7 +312,7 @@ export const redirects = [
   { from: "/sdk/plugins/session-keys", to: "/smart-accounts/permissions/session-keys" },
   { from: "/sdk/plugins/weighted-ecdsa", to: "/advanced/multisig" },
 
-  // kerneljs.com docs merged into this site (34)
+  // kerneljs.com docs, merged into this site
   { from: "/kerneljs/core-api/batch-transactions", to: "/smart-accounts/batch-transactions" },
   { from: "/kerneljs/core-api/create-account", to: "/onboarding/create-a-smart-account" },
   { from: "/kerneljs/core-api/delegatecall", to: "/smart-accounts/delegatecall" },
@@ -356,7 +348,7 @@ export const redirects = [
   { from: "/kerneljs/signers/turnkey", to: "/onboarding/turnkey" },
   { from: "/kerneljs/signers/web3auth", to: "/onboarding/web3auth" },
 
-  // /wallets/* pages moved or renamed (29)
+  // /wallets/* moved or renamed
   { from: "/wallets/auth/wallet-ui-kit", to: "/wallets/auth/wallet-ui-kit/getting-started" },
   { from: "/wallets/hooks/use-authenticate-oauth", to: "/wallets/auth/google-oauth" },
   { from: "/wallets/hooks/use-export-private-key", to: "/wallets/export" },
@@ -373,7 +365,7 @@ export const redirects = [
   { from: "/wallets/shared/query-result", to: "/wallets/quickstart" },
   { from: "/wallets/wallet-api/sign-typed-message", to: "/wallets/wallet-api/sign-message" },
 
-  // /smart-accounts/embedded-wallet/* moved to /wallets/* (24)
+  // /smart-accounts/embedded-wallet/* -> /wallets/*
   { from: "/smart-accounts/embedded-wallet", to: "/wallets" },
   { from: "/smart-accounts/embedded-wallet/auth/email-otp", to: "/wallets/auth/email-otp" },
   { from: "/smart-accounts/embedded-wallet/auth/google-oauth", to: "/wallets/auth/google-oauth" },
@@ -399,7 +391,7 @@ export const redirects = [
   { from: "/smart-accounts/embedded-wallet/wallet-api/sign-message", to: "/wallets/wallet-api/sign-message" },
   { from: "/smart-accounts/embedded-wallet/wallet-api/sign-typed-message", to: "/wallets/wallet-api/sign-message" },
 
-  // Magic Account subpaths with a closer home than the overview (19)
+  // Magic Account subpaths with a closer home than the overview
   { from: "/magic-account/knowledge-base/capabilities", to: "https://www.zerodev.app/blogs/sdks-are-dead-long-live-capabilities" },
   { from: "/magic-account/knowledge-base/chain-abstraction", to: "/smart-accounts/chain-abstraction/overview" },
   { from: "/magic-account/knowledge-base/permissions", to: "/smart-accounts/permissions/intro" },
@@ -420,7 +412,7 @@ export const redirects = [
   { from: "/magic-account/why-chain-abstraction", to: "/smart-accounts/chain-abstraction/overview" },
   { from: "/magic-account/yi-vs-others", to: "/smart-accounts/chain-abstraction/overview" },
 
-  // /modules/* (7579 modules) folded into /smart-accounts/* (10)
+  // /modules/* (7579 modules) -> /smart-accounts/*
   { from: "/modules", to: "/get-started/sdks/overview" },
   { from: "/modules/account-recovery", to: "/advanced/account-recovery/sdk-recovery" },
   { from: "/modules/batching", to: "/smart-accounts/batch-transactions" },
@@ -432,7 +424,7 @@ export const redirects = [
   { from: "/modules/signin", to: "/onboarding/auth-providers" },
   { from: "/modules/transaction-automation", to: "/smart-accounts/permissions/transaction-automation" },
 
-  // remaining orphan /smart-wallet/* paths (6)
+  // orphan /smart-wallet/*
   { from: "/smart-wallet/batching", to: "/smart-accounts/batch-transactions" },
   { from: "/smart-wallet/gas", to: "/smart-accounts/sponsor-gas/evm" },
   { from: "/smart-wallet/intro", to: "/onboarding/create-a-smart-account" },
@@ -440,9 +432,9 @@ export const redirects = [
   { from: "/smart-wallet/setup", to: "/onboarding/create-a-smart-account" },
   { from: "/smart-wallet/signin", to: "/onboarding/auth-providers" },
 
-  // /kernel/* contract docs (1)
+  // /kernel/* contract docs
   { from: "/kernel/intro", to: "/" },
 
-  // versioned SDK path (1)
+  // versioned SDK path
   { from: "/sdk/v5_3_x/faqs/why-chain-abstraction", to: "/sdk/v5_3_x/advanced/chain-abstraction" },
 ];
