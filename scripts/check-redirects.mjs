@@ -48,10 +48,8 @@ function sidebarLinks() {
     .map((m) => stripTrailingSlash(m[1])));
 }
 
-// Orphaned on purpose. The React hooks tree documents @zerodev/waas, which is
-// unmaintained: DES-21 settled on keeping the pages for old links but hiding
-// them from crawlers, so they stay out of the sidebar. New orphan targets
-// outside these must not be added.
+// Orphaned on purpose: the react-hooks tree is unmaintained and stays hidden,
+// the rest is a known gap. Do not add new orphan targets outside these.
 const ORPHAN_OK = ["/advanced/react-hooks/", "/api-and-toolings/", "/smart-accounts/permissions/1-click-trading"];
 
 const SIDEBAR = sidebarLinks();
@@ -81,6 +79,17 @@ for (const { from, to } of redirects) {
 
   if (SIDEBAR && target !== "/" && !SIDEBAR.has(target) && !ORPHAN_OK.some((p) => target.startsWith(p))) {
     errors.push(`${from} -> ${to} (no sidebar links to this page)`);
+  }
+}
+
+// The v5.3.x canonical tags are derived from this table (see vocs.config.tsx).
+// A page that stops mapping falls back to crediting itself and quietly competes
+// again. The set's index has no equivalent and is excluded.
+for (const route of ROUTES) {
+  if (!route.startsWith("/sdk/v5_3_x/")) continue;
+  const current = resolveRedirect(route.replace("/sdk/v5_3_x", "/sdk"));
+  if (!current?.startsWith("/")) {
+    errors.push(`${route} has no current page to credit, so its canonical falls back to itself`);
   }
 }
 

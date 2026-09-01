@@ -125,6 +125,10 @@ export const redirects = [
   { from: "/recovery-flow/portal", to: "/advanced/account-recovery/portal" },
 
   // Smart Routing Address (and global-address duplicate)
+  //
+  // /global-address never reaches this server: a Cloudflare rule 301s it to
+  // /smart-routing-address first, so a reader takes two hops. The rule below is
+  // the target we want and takes effect once that Cloudflare rule is gone.
   { from: "/smart-routing-address", to: "/onramp/smart-routing-address/quickstart" },
   { from: "/global-address", to: "/onramp/smart-routing-address/quickstart" },
 

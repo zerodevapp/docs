@@ -1,4 +1,5 @@
-import { resolve } from "node:path";
+import { readFileSync, readdirSync } from "node:fs";
+import { join, resolve } from "node:path";
 import { defineConfig } from "vocs";
 import dotenv from "dotenv";
 import { resolveRedirect } from "./resolve-redirect.js";
@@ -11,6 +12,65 @@ import { resolveRedirect } from "./resolve-redirect.js";
 const componentsDir = resolve(process.cwd(), "docs/components");
 
 dotenv.config();
+
+// Absolute, so the copy served on new-docs.zerodev.app credits this host
+// instead of competing with it. A path-only canonical would resolve against
+// whichever host served the page.
+const ORIGIN = "https://docs.zerodev.app";
+
+// /sdk/v5_3_x/x is the old version of /sdk/x, which already has a vetted
+// redirect target, so the old set credits the current pages without a
+// hand-written map. check:redirects fails if a page stops mapping.
+function canonicalPath(path: string) {
+  if (!path.startsWith("/sdk/v5_3_x")) return path;
+  const current = resolveRedirect(path.replace("/sdk/v5_3_x", "/sdk"));
+  // Off-site targets and the set's index have no equivalent: credit itself.
+  return current?.startsWith("/") ? current : path;
+}
+
+// @zerodev/waas, no release in about two years. Kept so old links resolve,
+// hidden so it stops competing with the current docs.
+const isUnmaintained = (path: string) =>
+  path.startsWith("/advanced/react-hooks/");
+
+const SITE_DESCRIPTION =
+  "Build a Web3 experience that feels like Web2, using account abstraction through ZeroDev.  Say goodbye to gas, seed phrases, transaction prompts, and more.";
+
+// Stopgap. Vocs emits a description only where the page supplies one, and most
+// do not, so they ship bare. Collect the ones that already have their own so
+// the fallback never doubles up.
+const PAGES_DIR = resolve(process.cwd(), "docs/pages");
+
+// Either frontmatter `description:` or a bracketed suffix on the H1, as in
+// `# Social Login [Social login lets users...]`. The trailing-bracket test
+// excludes a markdown link, which is `[text](url)`.
+function hasDescription(src: string) {
+  const close = src.startsWith("---") ? src.indexOf("\n---", 3) : -1;
+  if (close > 0 && /^description:\s*\S/m.test(src.slice(3, close))) return true;
+  const h1 = src.match(/^#[^#\n].*$/m)?.[0];
+  return Boolean(h1 && /\[[^\]]+\]\s*$/.test(h1));
+}
+
+function routesWithDescription(dir = PAGES_DIR, prefix = "") {
+  const out = new Set<string>();
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const full = join(dir, entry.name);
+    if (entry.isDirectory()) {
+      for (const r of routesWithDescription(full, `${prefix}/${entry.name}`)) {
+        out.add(r);
+      }
+      continue;
+    }
+    if (!/\.mdx?$/.test(entry.name)) continue;
+    const src = readFileSync(full, "utf8");
+    if (!hasDescription(src)) continue;
+    const name = entry.name.replace(/\.mdx?$/, "");
+    out.add(name === "index" ? prefix || "/" : `${prefix}/${name}`);
+  }
+  return out;
+}
+
+const HAS_DESCRIPTION = routesWithDescription();
 
 export default defineConfig({
   iconUrl: "/favicon.ico",
@@ -85,20 +145,28 @@ export default defineConfig({
   title: "ZeroDev",
   titleTemplate: "%s – ZeroDev",
   description: "The most powerful smart account.",
-  head: (
-    <>
-      <meta property="og:type" content="website" />
-      <meta
-        property="og:title"
-        content="ZeroDev -- Simple & Powerful Account Abstraction"
-      />
-      <meta property="og:url" content="https://zerodev.app" />
-      <meta
-        property="og:description"
-        content="Build a Web3 experience that feels like Web2, using account abstraction through ZeroDev.  Say goodbye to gas, seed phrases, transaction prompts, and more."
-      />
-    </>
-  ),
+  // Must stay a function: vocs tests `typeof head === "object"` before it tests
+  // for an element, so a JSX element here takes the path-prefix-map branch,
+  // matches nothing and renders nothing. Only tags vocs does not already emit
+  // belong here, or pages get two of each.
+  head({ path }) {
+    const canonical = ORIGIN + canonicalPath(path);
+    return (
+      <>
+        <link rel="canonical" href={canonical} />
+        <meta property="og:url" content={canonical} />
+        {!HAS_DESCRIPTION.has(path) && (
+          <>
+            <meta name="description" content={SITE_DESCRIPTION} />
+            <meta property="og:description" content={SITE_DESCRIPTION} />
+          </>
+        )}
+        {isUnmaintained(path) && (
+          <meta name="robots" content="noindex, follow" />
+        )}
+      </>
+    );
+  },
   // Pillars (Getting Started, Onboarding, Onramp, Smart Account, Advanced,
   // API & Tooling) are rendered by the `inject-pillar-bar` Vite plugin
   // below as a separate horizontal bar BELOW this top nav. Only utility links
