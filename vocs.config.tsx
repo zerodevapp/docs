@@ -1,4 +1,5 @@
-import { resolve } from "node:path";
+import { readFileSync, readdirSync } from "node:fs";
+import { join, resolve } from "node:path";
 import { defineConfig } from "vocs";
 import dotenv from "dotenv";
 import { resolveRedirect } from "./resolve-redirect.js";
@@ -39,6 +40,54 @@ function canonicalPath(path: string) {
 // interface with no future.
 const isUnmaintained = (path: string) =>
   path.startsWith("/advanced/react-hooks/");
+
+// The copy that sat in the dead og:description tag below. It never reached a
+// page, so this is the first time it ships.
+const SITE_DESCRIPTION =
+  "Build a Web3 experience that feels like Web2, using account abstraction through ZeroDev.  Say goodbye to gas, seed phrases, transaction prompts, and more.";
+
+// Vocs emits a description only when the page's own frontmatter carries one,
+// and 72 of the 135 indexable pages do not, so they ship with no description
+// and no og:description at all. Google then writes its own snippet, and a
+// shared link previews bare.
+//
+// This is a stopgap, not a fix: one description repeated across 72 pages is
+// weak, and Google may still write its own. Each page needs its own (DES-25).
+// Collect the routes that already have one, so the fallback never doubles up
+// with the tag vocs emits.
+const PAGES_DIR = resolve(process.cwd(), "docs/pages");
+
+// Vocs reads a description from two places: `description:` in the frontmatter,
+// or a bracketed suffix on the H1, as in `# Social Login [Social login lets
+// users sign in with...]`. Miss the second and a page gets two descriptions.
+// The trailing-bracket test excludes a markdown link, which is `[text](url)`.
+function hasDescription(src: string) {
+  const close = src.startsWith("---") ? src.indexOf("\n---", 3) : -1;
+  if (close > 0 && /^description:\s*\S/m.test(src.slice(3, close))) return true;
+  const h1 = src.match(/^#[^#\n].*$/m)?.[0];
+  return Boolean(h1 && /\[[^\]]+\]\s*$/.test(h1));
+}
+
+function routesWithDescription(dir = PAGES_DIR, prefix = "") {
+  const out = new Set<string>();
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const full = join(dir, entry.name);
+    if (entry.isDirectory()) {
+      for (const r of routesWithDescription(full, `${prefix}/${entry.name}`)) {
+        out.add(r);
+      }
+      continue;
+    }
+    if (!/\.mdx?$/.test(entry.name)) continue;
+    const src = readFileSync(full, "utf8");
+    if (!hasDescription(src)) continue;
+    const name = entry.name.replace(/\.mdx?$/, "");
+    out.add(name === "index" ? prefix || "/" : `${prefix}/${name}`);
+  }
+  return out;
+}
+
+const HAS_DESCRIPTION = routesWithDescription();
 
 export default defineConfig({
   iconUrl: "/favicon.ico",
@@ -129,6 +178,12 @@ export default defineConfig({
             emits a <base> tag that would change how every relative link
             resolves. Cheaper to write the tag directly. */}
         <meta property="og:url" content={canonical} />
+        {!HAS_DESCRIPTION.has(path) && (
+          <>
+            <meta name="description" content={SITE_DESCRIPTION} />
+            <meta property="og:description" content={SITE_DESCRIPTION} />
+          </>
+        )}
         {isUnmaintained(path) && (
           <meta name="robots" content="noindex, follow" />
         )}
