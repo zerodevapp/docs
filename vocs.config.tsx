@@ -12,6 +12,34 @@ const componentsDir = resolve(process.cwd(), "docs/components");
 
 dotenv.config();
 
+// Every page declares one address, and the host is always docs.zerodev.app.
+// The same content is also served on new-docs.zerodev.app; an absolute
+// canonical makes that copy credit this site instead of competing with it. A
+// path-only canonical would resolve against whichever host served the page,
+// which is no fix at all.
+const ORIGIN = "https://docs.zerodev.app";
+
+// The v5.3.x set stays live for readers still on that SDK, but each page
+// credits its current equivalent so the two versions stop competing.
+//
+// The mapping is derived, not hand-written: /sdk/v5_3_x/x is the old version of
+// /sdk/x, and every /sdk/x already has a target in the redirect table that was
+// checked page by page. Deriving it means the two can never drift apart.
+// check:redirects fails if a page stops mapping.
+function canonicalPath(path: string) {
+  if (!path.startsWith("/sdk/v5_3_x")) return path;
+  const current = resolveRedirect(path.replace("/sdk/v5_3_x", "/sdk"));
+  // An off-site target cannot be a canonical, and the set's index page has no
+  // equivalent. Both fall back to crediting themselves.
+  return current?.startsWith("/") ? current : path;
+}
+
+// @zerodev/waas has had no release in about two years. The pages stay so old
+// links still resolve, but they must not compete in search or teach an
+// interface with no future.
+const isUnmaintained = (path: string) =>
+  path.startsWith("/advanced/react-hooks/");
+
 export default defineConfig({
   iconUrl: "/favicon.ico",
   logoUrl: {
@@ -85,20 +113,29 @@ export default defineConfig({
   title: "ZeroDev",
   titleTemplate: "%s – ZeroDev",
   description: "The most powerful smart account.",
-  head: (
-    <>
-      <meta property="og:type" content="website" />
-      <meta
-        property="og:title"
-        content="ZeroDev -- Simple & Powerful Account Abstraction"
-      />
-      <meta property="og:url" content="https://zerodev.app" />
-      <meta
-        property="og:description"
-        content="Build a Web3 experience that feels like Web2, using account abstraction through ZeroDev.  Say goodbye to gas, seed phrases, transaction prompts, and more."
-      />
-    </>
-  ),
+  head({ path }) {
+    const canonical = ORIGIN + canonicalPath(path);
+    return (
+      <>
+        <meta property="og:type" content="website" />
+        <meta
+          property="og:title"
+          content="ZeroDev -- Simple & Powerful Account Abstraction"
+        />
+        {/* Was a fixed https://zerodev.app on all 249 pages, which told every
+            crawler and every share preview that the whole site was one URL. */}
+        <meta property="og:url" content={canonical} />
+        <link rel="canonical" href={canonical} />
+        {isUnmaintained(path) && (
+          <meta name="robots" content="noindex, follow" />
+        )}
+        <meta
+          property="og:description"
+          content="Build a Web3 experience that feels like Web2, using account abstraction through ZeroDev.  Say goodbye to gas, seed phrases, transaction prompts, and more."
+        />
+      </>
+    );
+  },
   // Pillars (Getting Started, Onboarding, Onramp, Smart Account, Advanced,
   // API & Tooling) are rendered by the `inject-pillar-bar` Vite plugin
   // below as a separate horizontal bar BELOW this top nav. Only utility links

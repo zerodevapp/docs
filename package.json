@@ -3,7 +3,7 @@
   "type": "module",
   "scripts": {
     "dev": "vocs dev",
-    "build": "vocs build",
+    "build": "vocs build && node scripts/sitemap.mjs",
     "start": "node server.mjs",
     "preview": "vocs preview",
     "check:redirects": "node scripts/check-redirects.mjs",

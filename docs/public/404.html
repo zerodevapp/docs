@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Page not found – ZeroDev</title>
+    <link rel="icon" href="/favicon.ico" />
+    <style>
+      /* Standalone on purpose: server.mjs serves this file for any unmatched
+         path, so it must render without the app bundle. Palette mirrors
+         vocs.config.tsx. */
+      :root {
+        --bg: #ffffff;
+        --text: #111111;
+        --muted: #6b6b6b;
+        --accent: #cb5400;
+        --border: #e6e6e6;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #000000;
+          --text: #ededed;
+          --muted: #a6a6a6;
+          --accent: #ff8534;
+          --border: #1f1f1f;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          Inter,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Helvetica,
+          Arial,
+          sans-serif;
+        line-height: 1.6;
+      }
+      main {
+        max-width: 34rem;
+      }
+      .code {
+        font-size: 0.8125rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 0 0 12px;
+      }
+      h1 {
+        font-size: 1.75rem;
+        line-height: 1.25;
+        margin: 0 0 12px;
+        font-weight: 600;
+      }
+      p {
+        margin: 0 0 24px;
+        color: var(--muted);
+      }
+      ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 12px;
+      }
+      a {
+        color: var(--text);
+        text-decoration: none;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 8px 14px;
+        display: inline-block;
+      }
+      a:hover,
+      a:focus-visible {
+        color: var(--accent);
+        border-color: var(--accent);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="code">404</p>
+      <h1>That page has moved or no longer exists.</h1>
+      <p>
+        The documentation was reorganised. Most old links redirect
+        automatically, so this one points at a page that was retired without a
+        replacement.
+      </p>
+      <ul>
+        <li><a href="/">Introduction</a></li>
+        <li><a href="/get-started/quickstart">Quickstart</a></li>
+        <li><a href="/onboarding/create-a-smart-account">Create an account</a></li>
+        <li><a href="https://discord.gg/KS9MRaTSjx">Ask on Discord</a></li>
+      </ul>
+    </main>
+  </body>
+</html>

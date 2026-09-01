@@ -84,6 +84,18 @@ for (const { from, to } of redirects) {
   }
 }
 
+// The v5.3.x canonical tags are derived from this table: /sdk/v5_3_x/x credits
+// whatever /sdk/x redirects to. A page that stops mapping falls back to
+// crediting itself, and quietly competes with its current equivalent again.
+// The set's index page has no equivalent and is excluded on purpose.
+for (const route of ROUTES) {
+  if (!route.startsWith("/sdk/v5_3_x/")) continue;
+  const current = resolveRedirect(route.replace("/sdk/v5_3_x", "/sdk"));
+  if (!current?.startsWith("/")) {
+    errors.push(`${route} has no current page to credit, so its canonical falls back to itself`);
+  }
+}
+
 for (const [prefix, target] of PREFIX) {
   if (!ROUTES.has(stripTrailingSlash(target))) {
     errors.push(`prefix ${prefix} -> ${target} (no such page)`);
