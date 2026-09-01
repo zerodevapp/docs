@@ -6,6 +6,7 @@
     "build": "vocs build",
     "start": "node server.mjs",
     "preview": "vocs preview",
+    "check:redirects": "node scripts/check-redirects.mjs",
     "format": "prettier --write ."
   },
   "dependencies": {
