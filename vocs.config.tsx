@@ -52,7 +52,7 @@ const SITE_DESCRIPTION =
 // shared link previews bare.
 //
 // This is a stopgap, not a fix: one description repeated across 72 pages is
-// weak, and Google may still write its own. Each page needs its own (DES-25).
+// weak, and Google may still write its own. Each page needs its own (DES-24).
 // Collect the routes that already have one, so the fallback never doubles up
 // with the tag vocs emits.
 const PAGES_DIR = resolve(process.cwd(), "docs/pages");
