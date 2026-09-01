@@ -125,8 +125,8 @@ export const redirects = [
   { from: "/recovery-flow/portal", to: "/advanced/account-recovery/portal" },
 
   // Smart Routing Address (and global-address duplicate)
-  { from: "/smart-routing-address", to: "/onramp/smart-routing-address" },
-  { from: "/global-address", to: "/onramp/smart-routing-address" },
+  { from: "/smart-routing-address", to: "/onramp/smart-routing-address/quickstart" },
+  { from: "/global-address", to: "/onramp/smart-routing-address/quickstart" },
 
   // Magic Account (legacy) → Chain Abstraction. Was a manual Render redirect to
   // /sdk/advanced/chain-abstraction, itself now legacy; collapse the hop straight
@@ -136,7 +136,9 @@ export const redirects = [
 
   // Embedded Wallet docs live at /wallets/* (alpha — unlisted in sidebars).
 
-  // React WaaS hooks → Advanced › React Hooks (legacy)
+  // React WaaS hooks → Advanced › React Hooks. @zerodev/waas is legacy and
+  // unmaintained, so only these 1:1 page moves point here; anything else that
+  // merely used waas goes to the current wallet SDK instead.
   { from: "/react/getting-started", to: "/advanced/react-hooks/getting-started" },
   { from: "/react/use-balance", to: "/advanced/react-hooks/use-balance" },
   { from: "/react/use-chainid", to: "/advanced/react-hooks/use-chainid" },
@@ -159,13 +161,13 @@ export const redirects = [
   { from: "/react/use-wallet-connect", to: "/advanced/react-hooks/use-wallet-connect" },
 
   // Orphan /smart-wallet/* (deleted) → canonical homes in the new tree
-  { from: "/smart-wallet/which-sdk", to: "/onboarding/create-a-smart-account" },
+  { from: "/smart-wallet/which-sdk", to: "/get-started/sdks/overview" },
   { from: "/smart-wallet/quickstart-core", to: "/get-started/quickstart" },
-  { from: "/smart-wallet/quickstart-react", to: "/get-started/quickstart" },
-  { from: "/smart-wallet/quickstart-capabilities", to: "/get-started/quickstart" },
-  { from: "/smart-wallet/creating-wallets", to: "/onboarding/create-a-smart-account" },
-  { from: "/smart-wallet/setting-up-zerodev-projects", to: "/" },
-  { from: "/smart-wallet/sending-transactions", to: "/smart-accounts/send-transactions" },
+  { from: "/smart-wallet/quickstart-react", to: "/wallets/quickstart" },
+  { from: "/smart-wallet/quickstart-capabilities", to: "/wallets/quickstart" },
+  { from: "/smart-wallet/creating-wallets", to: "/wallets/quickstart" },
+  { from: "/smart-wallet/setting-up-zerodev-projects", to: "/get-started/sdks/setup-project" },
+  { from: "/smart-wallet/sending-transactions", to: "/wallets/wallet-api/send-transaction" },
   { from: "/smart-wallet/batching-transactions", to: "/smart-accounts/batch-transactions" },
   { from: "/smart-wallet/pay-gas-in-erc20s", to: "/smart-accounts/pay-gas-with-erc20s" },
   { from: "/smart-wallet/sponsoring-gas", to: "/smart-accounts/sponsor-gas/evm" },
@@ -174,7 +176,7 @@ export const redirects = [
   { from: "/smart-wallet/account-recovery", to: "/advanced/account-recovery/sdk-recovery" },
   { from: "/smart-wallet/importing-assets", to: "/onboarding/create-a-smart-account" },
   { from: "/smart-wallet/defi-integrations", to: "/smart-accounts/defi" },
-  { from: "/smart-wallet/one-click-trading", to: "/smart-accounts/permissions/transaction-automation" },
+  { from: "/smart-wallet/one-click-trading", to: "/smart-accounts/permissions/1-click-trading" },
   { from: "/smart-wallet/parallel-transactions", to: "/smart-accounts/parallel-transactions" },
   { from: "/smart-wallet/transaction-automation", to: "/smart-accounts/permissions/transaction-automation" },
   { from: "/smart-wallet/wallet-connect", to: "/advanced/wallet-connect" },
@@ -224,7 +226,7 @@ export const redirects = [
   { from: "/smart-accounts/account-recovery/flow-setup", to: "/advanced/account-recovery/flow-setup" },
   { from: "/smart-accounts/account-recovery/portal", to: "/advanced/account-recovery/portal" },
   { from: "/smart-accounts/eip-7702/quickstart", to: "/get-started/eip-7702/quickstart" },
-  { from: "/cross-chain/smart-routing-address", to: "/onramp/smart-routing-address" },
+  { from: "/cross-chain/smart-routing-address", to: "/onramp/smart-routing-address/quickstart" },
   { from: "/cross-chain/chain-abstraction/overview", to: "/smart-accounts/chain-abstraction/overview" },
   { from: "/cross-chain/chain-abstraction/supported-base-tokens", to: "/smart-accounts/chain-abstraction/supported-base-tokens" },
   { from: "/cross-chain/chain-abstraction/supported-defi-tokens", to: "/smart-accounts/chain-abstraction/supported-defi-tokens" },
@@ -292,7 +294,7 @@ export const redirects = [
   // one-line stubs with no successor, so they 404.
 
   // Legacy /sdk/*
-  { from: "/sdk/advanced/magic-address", to: "/onramp/smart-routing-address" },
+  { from: "/sdk/advanced/magic-address", to: "/onramp/smart-routing-address/quickstart" },
   { from: "/sdk/core-api/intro", to: "/onboarding/create-a-smart-account" },
   { from: "/sdk/core-api/pay-gas-in-erc20s", to: "/smart-accounts/pay-gas-with-erc20s" },
   { from: "/sdk/core-api/sign-and-validate-messages", to: "/smart-accounts/sign-and-verify" },
@@ -413,15 +415,15 @@ export const redirects = [
   { from: "/magic-account/yi-vs-others", to: "/smart-accounts/chain-abstraction/overview" },
 
   // /modules/* (7579 modules) -> /smart-accounts/*
-  { from: "/modules", to: "/get-started/sdks/overview" },
+  { from: "/modules", to: "/" },
   { from: "/modules/account-recovery", to: "/advanced/account-recovery/sdk-recovery" },
   { from: "/modules/batching", to: "/smart-accounts/batch-transactions" },
   { from: "/modules/defi-integrations", to: "/smart-accounts/defi" },
   { from: "/modules/gas", to: "/smart-accounts/sponsor-gas/evm" },
-  { from: "/modules/importing-assets", to: "/onboarding/create-a-smart-account" },
+  { from: "/modules/importing-assets", to: "/smart-accounts/chain-abstraction/overview" },
   { from: "/modules/one-click-trading", to: "/smart-accounts/permissions/transaction-automation" },
   { from: "/modules/onramp", to: "/onramp/smart-routing-address" },
-  { from: "/modules/signin", to: "/onboarding/auth-providers" },
+  { from: "/modules/signin", to: "/onboarding/create-a-smart-account" },
   { from: "/modules/transaction-automation", to: "/smart-accounts/permissions/transaction-automation" },
 
   // orphan /smart-wallet/*
@@ -430,7 +432,7 @@ export const redirects = [
   { from: "/smart-wallet/intro", to: "/onboarding/create-a-smart-account" },
   { from: "/smart-wallet/onramp", to: "/onramp/smart-routing-address" },
   { from: "/smart-wallet/setup", to: "/onboarding/create-a-smart-account" },
-  { from: "/smart-wallet/signin", to: "/onboarding/auth-providers" },
+  { from: "/smart-wallet/signin", to: "/onboarding/create-a-smart-account" },
 
   // /kernel/* contract docs
   { from: "/kernel/intro", to: "/" },
