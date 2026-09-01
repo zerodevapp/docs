@@ -284,30 +284,32 @@ export const redirects = [
   { from: "/blog/zerodev-litprotocol", to: "https://www.zerodev.app/blogs/blog-zerodev-litprotocol" },
 
   // 2026-06 IA revamp fallout: every URL below was live in a past build and is
-  // dead today. Recovered by walking the Git history of docs/pages; each target
-  // was picked by comparing the deleted page against the live tree and each one
-  // resolves to a page that exists. /modules/offramp and /smart-wallet/offramp
-  // are deliberately absent: both were one-line stubs with no successor, so they
-  // 404 rather than send a reader somewhere unrelated.
+  // dead today. Each target was picked by comparing the deleted page against the
+  // live tree, and each one resolves to a page that exists.
+  //
+  // Sources come from `git log --first-parent --full-history origin/main`, NOT
+  // from `--all`. Only main ever deployed, so a page that lived solely on a
+  // feature branch was never reachable and never indexed. Adding a rule for one
+  // is worse than useless: if that branch later merges, the rule 301s the brand
+  // new pages away on their first day. An earlier pass of this list used --all
+  // and picked up 96 such paths from smart-recipes-docs, omar/react-kit-docs,
+  // chain-abstracted-smart-account, zerodev-wallet and others; they are gone.
+  //
+  // /modules/offramp and /smart-wallet/offramp are deliberately absent: both were
+  // one-line stubs with no successor, so they 404 rather than send a reader
+  // somewhere unrelated.
 
   // Legacy /sdk/* tree (deleted in the 2026-06 IA revamp) (61)
-  { from: "/sdk", to: "/get-started/sdks/overview" },
   { from: "/sdk/advanced/magic-address", to: "/onramp/smart-routing-address" },
   { from: "/sdk/core-api/intro", to: "/onboarding/create-a-smart-account" },
   { from: "/sdk/core-api/pay-gas-in-erc20s", to: "/smart-accounts/pay-gas-with-erc20s" },
-  { from: "/sdk/core-api/session-keys", to: "/smart-accounts/permissions/session-keys" },
   { from: "/sdk/core-api/sign-and-validate-messages", to: "/smart-accounts/sign-and-verify" },
   { from: "/sdk/core-api/wallet-connect", to: "/advanced/wallet-connect" },
   { from: "/sdk/faqs/why-chain-abstraction", to: "/smart-accounts/chain-abstraction/overview" },
   { from: "/sdk/getting-started/wallet-connect", to: "/advanced/wallet-connect" },
   { from: "/sdk/infra/stackup", to: "/api-and-toolings/infrastructure/choose-an-infra-provider" },
   { from: "/sdk/intro", to: "/" },
-  { from: "/sdk/knowledge-base/capabilities", to: "https://www.zerodev.app/blogs/sdks-are-dead-long-live-capabilities" },
-  { from: "/sdk/knowledge-base/chain-abstraction", to: "/smart-accounts/chain-abstraction/overview" },
-  { from: "/sdk/knowledge-base/permissions", to: "/smart-accounts/permissions/intro" },
-  { from: "/sdk/knowledge-base/smart-account", to: "/onboarding/create-a-smart-account" },
   { from: "/sdk/permissions/getting-started", to: "/smart-accounts/permissions/1-click-trading" },
-  { from: "/sdk/permissions/signers/intro", to: "/smart-accounts/permissions/intro" },
   { from: "/sdk/plugins/ecdsa", to: "/smart-accounts/permissions/signers/ecdsa" },
   { from: "/sdk/plugins/guardians", to: "/advanced/account-recovery/sdk-recovery" },
   { from: "/sdk/plugins/intro", to: "/smart-accounts/use-plugins/overview" },
@@ -317,41 +319,6 @@ export const redirects = [
   { from: "/sdk/plugins/recovery", to: "/advanced/account-recovery/sdk-recovery" },
   { from: "/sdk/plugins/session-keys", to: "/smart-accounts/permissions/session-keys" },
   { from: "/sdk/plugins/weighted-ecdsa", to: "/advanced/multisig" },
-  { from: "/sdk/quickstart", to: "/get-started/quickstart" },
-  { from: "/sdk/setting-up-yi", to: "/onboarding/create-a-smart-account" },
-  { from: "/sdk/setting-up-yi/auth/eoa", to: "/onboarding/eoa" },
-  { from: "/sdk/setting-up-yi/auth/passkeys", to: "/onboarding/passkeys/overview" },
-  { from: "/sdk/setting-up-yi/auth/social", to: "/onboarding/social-login" },
-  { from: "/sdk/setting-up-yi/auth/third-party-signers", to: "/onboarding/auth-providers" },
-  { from: "/sdk/setting-up-yi/chain-abstraction", to: "/smart-accounts/chain-abstraction/overview" },
-  { from: "/sdk/setting-up-yi/eoa", to: "/onboarding/eoa" },
-  { from: "/sdk/setting-up-yi/passkeys", to: "/onboarding/passkeys/overview" },
-  { from: "/sdk/setting-up-yi/social", to: "/onboarding/social-login" },
-  { from: "/sdk/setting-up-yi/third-party-signers", to: "/onboarding/auth-providers" },
-  { from: "/sdk/setup", to: "/onboarding/create-a-smart-account" },
-  { from: "/sdk/setup/eoa", to: "/onboarding/eoa" },
-  { from: "/sdk/setup/passkeys", to: "/onboarding/passkeys/overview" },
-  { from: "/sdk/setup/social", to: "/onboarding/social-login" },
-  { from: "/sdk/setup/third-party-signers", to: "/onboarding/auth-providers" },
-  { from: "/sdk/shared/mutation-result", to: "/advanced/react-hooks/getting-started" },
-  { from: "/sdk/shared/query-result", to: "/advanced/react-hooks/getting-started" },
-  { from: "/sdk/signers/comparison", to: "/onboarding/auth-providers" },
-  { from: "/sdk/usage", to: "/smart-accounts/send-transactions" },
-  { from: "/sdk/usage/automating-transactions", to: "/smart-accounts/permissions/transaction-automation" },
-  { from: "/sdk/usage/batching-transactions", to: "/smart-accounts/batch-transactions" },
-  { from: "/sdk/usage/chain-abstraction", to: "/smart-accounts/chain-abstraction/overview" },
-  { from: "/sdk/usage/one-click-trading", to: "/smart-accounts/permissions/1-click-trading" },
-  { from: "/sdk/usage/paying-gas-with-erc20", to: "/smart-accounts/pay-gas-with-erc20s" },
-  { from: "/sdk/usage/sponsoring-gas", to: "/smart-accounts/sponsor-gas/evm" },
-  { from: "/sdk/using-yi/automating-transactions", to: "/smart-accounts/permissions/transaction-automation" },
-  { from: "/sdk/using-yi/basic-usage", to: "/smart-accounts/send-transactions" },
-  { from: "/sdk/using-yi/batching-transactions", to: "/smart-accounts/batch-transactions" },
-  { from: "/sdk/using-yi/chain-abstraction", to: "/smart-accounts/chain-abstraction/overview" },
-  { from: "/sdk/using-yi/one-click-trading", to: "/smart-accounts/permissions/1-click-trading" },
-  { from: "/sdk/using-yi/paying-gas-with-erc20", to: "/smart-accounts/pay-gas-with-erc20s" },
-  { from: "/sdk/using-yi/sponsoring-gas", to: "/smart-accounts/sponsor-gas/evm" },
-  { from: "/sdk/why-chain-abstraction", to: "/smart-accounts/chain-abstraction/overview" },
-  { from: "/sdk/yi-vs-others", to: "/smart-accounts/chain-abstraction/overview" },
 
   // kerneljs.com docs merged into this site (34)
   { from: "/kerneljs/core-api/batch-transactions", to: "/smart-accounts/batch-transactions" },
@@ -390,13 +357,8 @@ export const redirects = [
   { from: "/kerneljs/signers/web3auth", to: "/onboarding/web3auth" },
 
   // /wallets/* pages moved or renamed (29)
-  { from: "/wallets/api-reference", to: "/wallets/wallet-api/send-transaction" },
-  { from: "/wallets/auth", to: "/wallets/auth/email-otp" },
   { from: "/wallets/auth/wallet-ui-kit", to: "/wallets/auth/wallet-ui-kit/getting-started" },
-  { from: "/wallets/hooks/export-web-view", to: "/wallets/react-native/web" },
   { from: "/wallets/hooks/use-authenticate-oauth", to: "/wallets/auth/google-oauth" },
-  { from: "/wallets/hooks/use-authenticate-oauth-with-expo-web-browser", to: "/wallets/react-native/google-oauth" },
-  { from: "/wallets/hooks/use-authenticators", to: "/wallets/quickstart" },
   { from: "/wallets/hooks/use-export-private-key", to: "/wallets/export" },
   { from: "/wallets/hooks/use-export-wallet", to: "/wallets/export" },
   { from: "/wallets/hooks/use-get-user-email", to: "/wallets/quickstart" },
@@ -407,17 +369,8 @@ export const redirects = [
   { from: "/wallets/hooks/use-send-otp", to: "/wallets/auth/email-otp" },
   { from: "/wallets/hooks/use-verify-magic-link", to: "/wallets/auth/magic-link" },
   { from: "/wallets/hooks/use-verify-otp", to: "/wallets/auth/email-otp" },
-  { from: "/wallets/overview", to: "/wallets" },
-  { from: "/wallets/react-kit/configuration", to: "/wallets/auth/wallet-ui-kit/installation" },
-  { from: "/wallets/react-kit/features/authentication", to: "/wallets/auth/wallet-ui-kit/connect-wallet" },
-  { from: "/wallets/react-kit/features/transaction-signing", to: "/wallets/wallet-api/send-transaction" },
-  { from: "/wallets/react-kit/getting-started", to: "/wallets/auth/wallet-ui-kit/getting-started" },
-  { from: "/wallets/react-kit/hooks/use-auth", to: "/wallets/auth/wallet-ui-kit/getting-started" },
-  { from: "/wallets/react-kit/hooks/use-pending-request", to: "/wallets/auth/wallet-ui-kit/coming-soon" },
-  { from: "/wallets/sdk-reference", to: "/wallets/quickstart" },
   { from: "/wallets/shared/mutation-result", to: "/wallets/quickstart" },
   { from: "/wallets/shared/query-result", to: "/wallets/quickstart" },
-  { from: "/wallets/wallet-api", to: "/wallets/wallet-api/send-transaction" },
   { from: "/wallets/wallet-api/sign-typed-message", to: "/wallets/wallet-api/sign-message" },
 
   // /smart-accounts/embedded-wallet/* moved to /wallets/* (24)
@@ -467,35 +420,6 @@ export const redirects = [
   { from: "/magic-account/why-chain-abstraction", to: "/smart-accounts/chain-abstraction/overview" },
   { from: "/magic-account/yi-vs-others", to: "/smart-accounts/chain-abstraction/overview" },
 
-  // /smart-recipes/* folded into the main tree (13)
-  { from: "/onramp/smart-recipes", to: "/onramp/smart-routing-address" },
-  { from: "/onramp/smart-recipes/api-reference", to: "/onramp/smart-routing-address" },
-  { from: "/onramp/smart-recipes/bridge-and-swap", to: "/onramp/smart-routing-address" },
-  { from: "/onramp/smart-recipes/deposits", to: "/onramp/smart-routing-address" },
-  { from: "/onramp/smart-recipes/errors", to: "/onramp/smart-routing-address" },
-  { from: "/onramp/smart-recipes/how-it-works", to: "/onramp/smart-routing-address" },
-  { from: "/onramp/smart-recipes/integration-guide", to: "/onramp/smart-routing-address/quickstart" },
-  { from: "/onramp/smart-recipes/quickstart", to: "/onramp/smart-routing-address/quickstart" },
-  { from: "/onramp/smart-recipes/quotes", to: "/onramp/smart-routing-address" },
-  { from: "/onramp/smart-recipes/recipes", to: "/onramp/smart-routing-address" },
-  { from: "/onramp/smart-recipes/reference", to: "/onramp/smart-routing-address" },
-  { from: "/onramp/smart-recipes/tracking-status", to: "/onramp/smart-routing-address/fetching-status" },
-  { from: "/onramp/smart-recipes/vault-discovery", to: "/onramp/smart-routing-address" },
-
-  // React WaaS SDK pages (12)
-  { from: "/sdk/waas/use-balance", to: "/advanced/react-hooks/use-balance" },
-  { from: "/sdk/waas/use-create-basic-session", to: "/advanced/react-hooks/use-create-basic-session" },
-  { from: "/sdk/waas/use-create-kernelclient-eoa", to: "/advanced/react-hooks/use-create-kernelclient-eoa" },
-  { from: "/sdk/waas/use-create-kernelclient-passkey", to: "/advanced/react-hooks/use-create-kernelclient-passkey" },
-  { from: "/sdk/waas/use-create-session", to: "/advanced/react-hooks/use-create-session" },
-  { from: "/sdk/waas/use-disconnect-kernelclient", to: "/advanced/react-hooks/use-disconnect-kernelclient" },
-  { from: "/sdk/waas/use-kernelclient", to: "/advanced/react-hooks/use-kernelclient" },
-  { from: "/sdk/waas/use-send-useroperation", to: "/advanced/react-hooks/use-send-useroperation" },
-  { from: "/sdk/waas/use-send-useroperation-with-session", to: "/advanced/react-hooks/use-send-useroperation-with-session" },
-  { from: "/sdk/waas/use-session-kernelclient", to: "/advanced/react-hooks/use-session-kernelclient" },
-  { from: "/sdk/waas/use-sessions", to: "/advanced/react-hooks/use-sessions" },
-  { from: "/sdk/waas/use-set-kernelclient", to: "/advanced/react-hooks/use-set-kernelclient" },
-
   // /modules/* (7579 modules) folded into /smart-accounts/* (10)
   { from: "/modules", to: "/get-started/sdks/overview" },
   { from: "/modules/account-recovery", to: "/advanced/account-recovery/sdk-recovery" },
@@ -507,25 +431,6 @@ export const redirects = [
   { from: "/modules/onramp", to: "/onramp/smart-routing-address" },
   { from: "/modules/signin", to: "/onboarding/auth-providers" },
   { from: "/modules/transaction-automation", to: "/smart-accounts/permissions/transaction-automation" },
-
-  // /wallet/* early Wallet UI paths (9)
-  { from: "/wallet", to: "/wallets" },
-  { from: "/wallet/authentication/email-otp", to: "/wallets/auth/email-otp" },
-  { from: "/wallet/authentication/google-oauth", to: "/wallets/auth/google-oauth" },
-  { from: "/wallet/authentication/passkey-webauthn", to: "/wallets/auth/passkeys" },
-  { from: "/wallet/getting-started/quickstart", to: "/wallets/quickstart" },
-  { from: "/wallet/wallet-api/export-wallet-seed-phrase", to: "/wallets/export" },
-  { from: "/wallet/wallet-api/send-transaction", to: "/wallets/wallet-api/send-transaction" },
-  { from: "/wallet/wallet-api/sign-message", to: "/wallets/wallet-api/sign-message" },
-  { from: "/wallet/wallet-api/sign-typed-message", to: "/wallets/wallet-api/sign-message" },
-
-  // /dapp/* early dapp-integration paths (6)
-  { from: "/dapp", to: "/get-started/quickstart" },
-  { from: "/dapp/knowledge/7702", to: "/get-started/eip-7702/quickstart" },
-  { from: "/dapp/knowledge/capabilities", to: "https://www.zerodev.app/blogs/sdks-are-dead-long-live-capabilities" },
-  { from: "/dapp/onboarding/yi-connector-setup", to: "/onboarding/create-a-smart-account" },
-  { from: "/dapp/onboarding/yi-connector-styling", to: "/onboarding/create-a-smart-account" },
-  { from: "/dapp/using-your-app/chain-abstraction", to: "/smart-accounts/chain-abstraction/overview" },
 
   // remaining orphan /smart-wallet/* paths (6)
   { from: "/smart-wallet/batching", to: "/smart-accounts/batch-transactions" },
