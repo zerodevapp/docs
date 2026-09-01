@@ -1,7 +1,8 @@
 // npm run check:redirects — fails on a dead target, a chain, a duplicate
-// source, or a rule that shadows a page that still exists.
+// source, a rule that shadows a page that still exists, or a target no sidebar
+// links to.
 
-import { existsSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -31,6 +32,27 @@ if (!existsSync(PAGES)) {
   process.exit(1);
 }
 
+// Routes the sidebar links to. A redirect that lands anywhere else drops the
+// reader on a page with no navigation around it.
+function sidebarLinks() {
+  const cfg = readFileSync(join(ROOT, "vocs.config.tsx"), "utf8");
+  const start = cfg.indexOf("  sidebar: {");
+  if (start < 0) return null;
+  let depth = 0, end = -1;
+  for (let i = cfg.indexOf("{", start); i < cfg.length; i++) {
+    if (cfg[i] === "{") depth++;
+    else if (cfg[i] === "}" && --depth === 0) { end = i; break; }
+  }
+  if (end < 0) return null;
+  return new Set([...cfg.slice(start, end).matchAll(/link:\s*["'](\/[^"']*)["']/g)]
+    .map((m) => stripTrailingSlash(m[1])));
+}
+
+// Trees that are already orphaned and tracked elsewhere (DES-21 owns the React
+// hooks tree). New orphan targets outside these must not be added.
+const ORPHAN_OK = ["/advanced/react-hooks/", "/api-and-toolings/", "/smart-accounts/permissions/1-click-trading"];
+
+const SIDEBAR = sidebarLinks();
 const ROUTES = routes();
 const errors = [];
 const seen = new Map();
@@ -50,6 +72,10 @@ for (const { from, to } of redirects) {
   const target = stripTrailingSlash(to.split(/[?#]/)[0]);
   if (!ROUTES.has(target)) errors.push(`${from} -> ${to} (no such page)`);
   if (resolveRedirect(target)) errors.push(`${from} -> ${to} -> ${resolveRedirect(target)} (chain)`);
+
+  if (SIDEBAR && target !== "/" && !SIDEBAR.has(target) && !ORPHAN_OK.some((p) => target.startsWith(p))) {
+    errors.push(`${from} -> ${to} (no sidebar links to this page)`);
+  }
 }
 
 for (const [prefix, target] of PREFIX) {
