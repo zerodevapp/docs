@@ -48,8 +48,10 @@ function sidebarLinks() {
     .map((m) => stripTrailingSlash(m[1])));
 }
 
-// Trees that are already orphaned and tracked elsewhere (DES-21 owns the React
-// hooks tree). New orphan targets outside these must not be added.
+// Orphaned on purpose. The React hooks tree documents @zerodev/waas, which is
+// unmaintained: DES-21 settled on keeping the pages for old links but hiding
+// them from crawlers, so they stay out of the sidebar. New orphan targets
+// outside these must not be added.
 const ORPHAN_OK = ["/advanced/react-hooks/", "/api-and-toolings/", "/smart-accounts/permissions/1-click-trading"];
 
 const SIDEBAR = sidebarLinks();
