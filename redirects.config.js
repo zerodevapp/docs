@@ -443,4 +443,59 @@ export const redirects = [
 
   // versioned SDK path
   { from: "/sdk/v5_3_x/faqs/why-chain-abstraction", to: "/sdk/v5_3_x/advanced/chain-abstraction" },
+
+  // Docs platform that predates this repo. Found in the Search Console
+  // not-found report, still crawled between 2026-03 and 2026-08.
+  //
+  // None of these ever existed as a file here, on any branch: `main` begins at
+  // 59d0b0f "Move docs over to this repo" (2024-01-22), and that commit's only
+  // page folders are kernel, kerneljs, meta-infra and recovery-flow. The old
+  // content is gone, so each target is the nearest current page by subject
+  // rather than a verified 1:1 move.
+
+  // create wallets → onboarding
+  { from: "/create-wallets/api", to: "/onboarding/create-a-smart-account" },
+  { from: "/create-wallets/wallets-as-a-service/privy", to: "/onboarding/privy" },
+  { from: "/create-wallets/wallets-as-a-service/magic", to: "/onboarding/magic" },
+  { from: "/create-wallets/wallets-as-a-service/portal", to: "/onboarding/portal" },
+  { from: "/create-wallets/wallets-as-a-service/dynamic", to: "/onboarding/dynamic" },
+  { from: "/create-wallets/custodial-wallet-apis/turnkey", to: "/onboarding/turnkey" },
+  { from: "/create-wallets/custodial-wallet-apis/fireblocks", to: "/onboarding/fireblocks" },
+  { from: "/create-wallets/custom-keys/custom-key-providers", to: "/onboarding/custom-signer" },
+  // Auth0 has no page of its own. auth-providers is the hub for a service with
+  // no native integration, and it points on to the EOA and custom-signer guides.
+  { from: "/create-wallets/web2-auth/auth0", to: "/onboarding/auth-providers" },
+  // Three connect-wallet UIs for an external EOA. /onboarding/eoa is the guide
+  // for exactly that, and no page covers any of the three on its own.
+  { from: "/create-wallets/web2-auth/oauth/web3modal", to: "/onboarding/eoa" },
+  { from: "/create-wallets/web2-auth/oauth/rainbowkit", to: "/onboarding/eoa" },
+  { from: "/create-wallets/web2-auth/oauth/custom-connect-wallet", to: "/onboarding/eoa" },
+
+  // use wallets → smart account
+  { from: "/use-wallets/overview", to: "/smart-accounts/send-transactions" },
+  { from: "/use-wallets/batch-transactions", to: "/smart-accounts/batch-transactions" },
+  { from: "/use-wallets/use-session-keys", to: "/smart-accounts/permissions/session-keys" },
+  { from: "/use-wallets/pay-gas-in-erc20", to: "/smart-accounts/pay-gas-with-erc20s" },
+  { from: "/use-wallets/pay-gas-with-erc20-tokens", to: "/smart-accounts/pay-gas-with-erc20s" },
+  { from: "/use-wallets/pay-gas-for-users", to: "/smart-accounts/sponsor-gas/evm" },
+  { from: "/use-wallets/improve-gas-experience/pay-gas-for-users", to: "/smart-accounts/sponsor-gas/evm" },
+  // Sweeping every asset out of an account is a batch of transfers.
+  { from: "/use-wallets/transfer-all-assets", to: "/smart-accounts/batch-transactions" },
+  { from: "/use-wallets/recovery", to: "/advanced/account-recovery/sdk-recovery" },
+  // Changing the owner is what the recovery flow does.
+  { from: "/use-wallets/advanced/update-wallet-owner", to: "/advanced/account-recovery/sdk-recovery" },
+
+  // extend wallets → plugins
+  { from: "/extend-wallets/overview", to: "/smart-accounts/use-plugins/overview" },
+  { from: "/extend-wallets/bring-your-own-account", to: "/smart-accounts/use-plugins/overview" },
+
+  // standalone pages
+  { from: "/getting-started", to: "/get-started/quickstart" },
+  { from: "/session-keys", to: "/smart-accounts/permissions/session-keys" },
+  { from: "/security", to: "/api-and-toolings/faqs/audits" },
+  { from: "/common-issues", to: "/api-and-toolings/faqs/debug-userop" },
+  { from: "/production", to: "/get-started/sdks/setup-project" },
+  // The home page is the introduction, so it is the nearest equivalent here,
+  // not a fallback. Same reasoning as /kernel/intro above.
+  { from: "/introduction/why-account-abstraction", to: "/" },
 ];
