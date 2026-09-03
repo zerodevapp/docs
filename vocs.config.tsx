@@ -405,6 +405,32 @@ export default defineConfig({
           },
         ],
       },
+      {
+        text: "Smart Recipes",
+        collapsed: false,
+        items: [
+          {
+            text: "Introduction",
+            link: "/onramp/smart-recipes",
+          },
+          {
+            text: "Quickstart",
+            link: "/onramp/smart-recipes/quickstart",
+          },
+          {
+            text: "Recipes",
+            link: "/onramp/smart-recipes/recipes",
+          },
+          {
+            text: "How It Works",
+            link: "/onramp/smart-recipes/how-it-works",
+          },
+          {
+            text: "Reference",
+            link: "/onramp/smart-recipes/reference",
+          },
+        ],
+      },
     ],
     "/smart-accounts": [
       {

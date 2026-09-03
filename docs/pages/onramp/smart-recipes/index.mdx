@@ -1,0 +1,43 @@
+# Smart Recipes
+
+**Cross-chain DeFi deposits in one call.** Your user holds USDC on Base. Your app deposits it into a vault on Arbitrum. One quote, one signature. You write no bridge, vault, or relayer code.
+
+```ts
+const quote = await sr.morpho.deposit({
+  owner: user,
+  amount: "100",
+  token: TOKENS.USDC,
+  srcChainId: 8453,      // funds on Base
+  into: vault,           // vault on Arbitrum
+});
+// user signs one transfer, funds arrive in the vault
+```
+
+Without it you would build a bridge integration, per-protocol deposit calldata, a relayer to execute on the destination chain, cross-chain status tracking, and a recovery path for each failure. Smart Recipes replaces all of it: the server quotes the route, a [Smart Routing Address](/onramp/smart-routing-address) (SRA) executes it, your user signs a single transfer.
+
+Three things worth knowing up front:
+
+- **Non-custodial.** Funds move through permissionless contracts. ZeroDev never holds them, and only the `owner` can recover a failed deposit.
+- **No protocol maintenance.** Vault lists, routes, and calldata live server-side. A new vault needs no SDK update.
+- **Any wallet stack.** Each quote carries both a plain transaction batch and an ERC-4337 user operation. The SDK has no signer and no runtime dependencies.
+
+## Recipes
+
+There are two, and one of them is currently off:
+
+| Recipe | Call it with | Status |
+|---|---|---|
+| Deposit into a vault | `sr.aave.deposit`, `sr.morpho.deposit`, `sr.fluid.deposit`, `sr.yearn.deposit`, `sr.erc4626.deposit`, or `sr.depositIntoVault` | Available |
+| Withdraw from a vault | `sr.withdrawFromVault` | Available, same-chain only |
+| Bridge and swap | `sr.bridgeAndSwap` | Disabled, always rejects |
+
+The five deposit facades are one recipe with the protocol pre-bound. `sr.depositIntoVault` is the same engine with `protocol` passed explicitly. Everything else in the SDK is discovery, status, and recovery around those calls.
+
+Smart Recipes performs no swaps of its own. A deposit whose funding token differs from the vault asset still works: SRA converts on delivery as part of its own route. See [Recipes](/onramp/smart-recipes/recipes).
+
+## Next
+
+- [Quickstart](/onramp/smart-recipes/quickstart): a first deposit in about 20 lines
+- [Recipes](/onramp/smart-recipes/recipes): every parameter, deposits through recovery
+- [How it works](/onramp/smart-recipes/how-it-works): the flow, the custody model, failure behavior
+- [Reference](/onramp/smart-recipes/reference): the `Quote` type, every method, every error code

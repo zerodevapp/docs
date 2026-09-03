@@ -1,0 +1,60 @@
+# How It Works
+
+Where the funds are at each moment, and what happens when a step fails. Read this to evaluate the trust model.
+
+## The flow
+
+```
+your app          sr.morpho.deposit(...)          1. quote
+user              signs one transfer to the SRA   2. fund
+ZeroDev relayer   bridges to the destination      3. bridge (cross-chain only)
+ZeroDev relayer   runs the stored deposit calls   4. execute
+your app          sr.watchStatus(sra)             5. track
+```
+
+**1. Quote.** The server takes your intent and does four things: verifies the target on-chain (`asset()` for an ERC-4626 vault, the reserve list for Aave), reads live vault state (`maxDeposit` headroom, deposit minimum, `previewDeposit` for expected shares), creates a [Smart Routing Address](/onramp/smart-routing-address) with the deposit actions stored at creation, and returns the quote. A wrong target fails here, typed, before any funds move. The stored actions cannot be changed afterwards.
+
+**2. Fund.** The user signs one transfer of `amount` `token` to the SRA. That is the only signature in the flow.
+
+**3. Bridge.** The relayer bridges the funds to the SRA on the destination chain. Same-chain deposits skip this.
+
+**4. Execute.** The relayer runs the actions stored in the SRA: approve the vault, deposit, credit the shares to the `owner`. The calls take the full arrived amount, so no dust is stranded by a locked-in figure.
+
+**5. Track.** Status comes from on-chain evidence at the SRA, never from an assertion the server cannot prove.
+
+## Where the funds are
+
+| Moment | Funds are |
+|---|---|
+| Before funding | In the user's wallet |
+| After funding, before bridge | In the user's SRA |
+| In the bridge | In the bridge protocol, addressed to the SRA |
+| After bridge, before execution | In the user's SRA on the destination chain |
+| After execution | Vault shares, credited to the `owner` |
+
+ZeroDev operates the relayer and never has custody. The SRA is a permissionless contract, and funds leave it in exactly two ways: the stored actions, or an owner withdrawal.
+
+## When something fails
+
+| Failure | What happens |
+|---|---|
+| Wrong target vault | Caught by the on-chain probe at quote time. `VAULT_TYPE_MISMATCH` or `ASSET_MISMATCH` in milliseconds, no funds moved. |
+| Vault fills up after the quote | The deposit call reverts. Funds stay in the SRA, recoverable by the `owner`. |
+| User sends the wrong token | Tokens outside the route rest in the SRA. Same recovery path. |
+| User never sends funds | The recipe reports `ABANDONED` after one hour. Nothing is lost, and late funds still execute. |
+
+No failure mode hands the funds to ZeroDev or to a third party. See [recovering a failed deposit](/onramp/smart-recipes/recipes#recovering-a-failed-deposit).
+
+## Quote expiry
+
+`expiresAt` is stamped about 60 seconds out, and it is **advisory**. The server does not reject a late funding transaction, and the SRA stays valid: funds sent after `expiresAt` still execute.
+
+What goes stale is the numbers. `estimatedFees`, `estimatedShares`, and `vaultApy` drift, and vault headroom can disappear, which turns into a revert at execution rather than an error at quote time. So re-quote to keep a UI honest, and re-quote whenever the user edits the form. A quote is free and read-only.
+
+## Slippage
+
+You set `slippage` in bps at quote time, and SRA enforces the minimum-output floor on-chain at execution. A quoted estimate cannot be front-run below your floor. If the slippage you ask for cannot cover the route's own fees, the quote is rejected up front with `SLIPPAGE_TOO_LOW` rather than stranding the deposit at fill time.
+
+## Why the server builds the route
+
+Routes, vault lists, calldata, and compliance screening change weekly, so they live server-side. The result: a new vault or protocol reaches your users with no SDK update, a bad vault can be blocklisted globally at once, and every quote screens the owner against the OFAC SDN list. The SDK stays a thin, dependency-free HTTP client that you rarely need to upgrade.

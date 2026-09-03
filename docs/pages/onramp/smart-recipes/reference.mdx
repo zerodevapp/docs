@@ -1,0 +1,172 @@
+# Reference
+
+Every method, the `Quote` type, and every error code. All methods are async and all rejections are typed `SmartRecipeError`s.
+
+## Quote
+
+Every recipe returns the same `Quote`. A quote prepares the transaction and does not broadcast.
+
+```ts
+type Quote = {
+  quoteId: string
+  expiresAt: string                    // ISO-8601, ~60s out, advisory (see How It Works)
+  sra: Address | null                  // the address to fund; always set for deposits
+  transaction: { chainId: number; calls: OnChainCall[] }            // the whole src batch, in order
+  userOp: { callData: Hex; calls: OnChainCall[]; chainId: number }
+  estimatedFees: {                     // route-token base units, NOT USD
+    totalFeeAmount: string | null      // null when chains mix denominations; use perChain
+    totalFeeToken: Address | null      // null whenever totalFeeAmount is
+    perChain: { chainId: number; feeAmount: string | null; feeToken: Address | null }[]
+  }
+  estimatedReceiveAmount: string       // base units on the dest chain
+  estimatedShares?: string             // vault recipes only
+  vaultApy?: number                    // percent (2.57 = 2.57%)
+  route?: {
+    bridgeTokenType: string | null     // the token the SRA is funded with
+    bridgeTokenSrc?: Address
+    bridgeTokenDest?: Address          // route token, or the vault asset when SRA converts
+    sameChain: boolean                 // no bridge leg (still an SRA deposit)
+  }
+}
+
+type OnChainCall = { to: Address; data: Hex; value: string }   // value is a decimal string
+```
+
+Every amount on the wire is a base-10 string, because JSON has no bigint. Parse it yourself: `BigInt(quote.estimatedReceiveAmount)`.
+
+### Executing a quote
+
+`transaction` and `userOp` carry the same intent: send `amount` of `token` to the SRA. `transaction` is the **complete** src-chain batch, in order. There is no `destTransaction`, because the relayer runs the dest-chain actions stored in the SRA. That is the point of the product: the owner signs once, on one chain.
+
+```ts
+// EOA
+for (const call of quote.transaction.calls) {
+  await wallet.sendTransaction({ ...call, value: BigInt(call.value) });
+}
+
+// ERC-4337: the server encoded a Kernel v3 / ERC-7579 executeBatch(calls)
+await kernelClient.sendUserOp({ callData: quote.userOp.callData });
+```
+
+Your kernel client supplies the sender, nonce, gas, and signature. `userOp.calls` ships alongside `callData`, so a non-Kernel account (Safe, Biconomy) can re-encode the same batch in its own format.
+
+### Fees
+
+Fee amounts are base units of the route token, not USD. The server has no USD oracle, and base units only add within one denomination, so both `totalFeeAmount` and `totalFeeToken` are `null` when the chains disagree. They are always null together: a non-null amount is complete for its named token. Render the `perChain` rows in the null case, and note that a single chain can be `null` too for the same reason.
+
+Sponsored fees are excluded from every sum, since they are notional and never charged. Sponsorship follows your project's gas policy through `projectId`. There is no per-quote flag.
+
+## Methods
+
+### Deposits
+
+All return a [`Quote`](#quote) and share `owner`, `amount`, `token`, `srcChainId`, `destChainId?`, `slippage?`. See [Recipes](/onramp/smart-recipes/recipes#deposits).
+
+| Method | Extra params | Notes |
+|---|---|---|
+| `sr.aave.deposit(p)` | `destChainId` required, `into` optional | Omit `into` for the funding token's own reserve |
+| `sr.morpho.deposit(p)` | `into` required | Vault id, address, or a `Vault` object |
+| `sr.fluid.deposit(p)` | `into` required | |
+| `sr.yearn.deposit(p)` | `into` required | |
+| `sr.erc4626.deposit(p)` | `into` required | Any ERC-4626 vault, listed or not |
+| `sr.depositIntoVault(p)` | `into` + `protocol` required | The generic engine behind all five facades |
+
+### Withdraw
+
+| Method | Params | Returns |
+|---|---|---|
+| `sr.withdrawFromVault(p)` | `owner`, `vaultId`, `chainId`, and `amount` **or** `max` (neither = preview) | Owner-signed exit `calls`, plus `available`, `exitAll`, `amount`, `asset` |
+| `sr.getWithdrawCalls(p)` | `sra`, `tokens: [{ chainId, token }]` | Per-chain recovery calls for funds stuck in an SRA |
+
+### Discovery
+
+| Method | Params | Returns |
+|---|---|---|
+| `sr.listVaults(p?)` | `asset?`, `chains?`, `protocol?`, `minTvl?`, `minApy?`, `page?` | `{ vaults: Vault[]; nextPage: number \| null }` |
+| `sr.getVault(vaultId, chainId?)` | Pass `chainId` for a direct lookup | `VaultDetails` |
+| `sr.getChains()` | none | `ChainInfo[]` |
+| `sr.getTokens(p?)` | `chainId?` | `TokenInfo[]` |
+| `sr.preflight(p)` | `owner`, `vaultId`, `destChainId`, `amount`, `srcChainId?`, `srcToken?` | `maxDeposit`, `depositsDisabled`, `route`, `vaultEntry` |
+
+Omitting `minTvl` applies a $100,000 default floor. Pass `minTvl: 0` to include smaller vaults.
+
+### Status
+
+| Method | Params | Returns |
+|---|---|---|
+| `sr.getStatus(sra)` | The SRA address | `RecipeStatus`: `state`, `deposits`, `failureReason?` |
+| `sr.watchStatus(sra, opts)` | `interval?` (4000), `timeout?` (10 min, `0` = forever), `maxRetries?` (5), `onStatusChange`, `onError?` | `Watcher`: callable unsubscribe, with `.stop()` and `.done` |
+| `sr.getDepositStatus(p)` | `sra`, `owner`, `destChainId`, `vaultId` | `phase`, `deposits`, `vaultBalance` |
+| `sr.getSraInfo(p)` | `sra` | Stored routing config: owner, actions, src tokens, slippage |
+| `sr.getSraFeeEstimates(p)` | `sra` | Per-chain fee estimates with `isSponsored` flags |
+
+```ts
+type RecipeState = "PENDING" | "BRIDGING" | "EXECUTING" | "COMPLETED" | "FAILED" | "ABANDONED";
+```
+
+### Disabled
+
+`sr.bridgeAndSwap(p)` always rejects with `FEATURE_DISABLED`, locally and without a request. Smart Recipes performs no swaps: routing and token conversion belong to SRA. Use a deposit recipe, or route the conversion through SRA directly.
+
+## Errors
+
+Each rejection carries a `code`, a `message`, and a `requestId` (from the server's `x-request-id` header). Quote the `requestId` in a bug report. Every code has a bound subclass, so you can branch with `instanceof`:
+
+```ts
+import { SmartRecipeError, VaultCapExceededError } from "@zerodev/smart-recipes";
+
+try {
+  await sr.morpho.deposit({ /* ... */ });
+} catch (e) {
+  if (e instanceof VaultCapExceededError) suggestSmallerAmount();
+  else if (e instanceof SmartRecipeError) showError(e.code, e.message);
+}
+```
+
+| HTTP | Code | When |
+|---|---|---|
+| 400 | `INVALID_REQUEST` | A parameter is missing or malformed |
+| 400 | `UNSUPPORTED_TOKEN` | The token does not resolve |
+| 400 | `UNKNOWN_PROTOCOL` | The `protocol` has no registered adapter |
+| 400 | `VAULT_TYPE_MISMATCH` | The target is not the expected vault kind (on-chain probe) |
+| 400 | `VAULT_NOT_ALLOWLISTED` | The vault is not allowlisted on that chain |
+| 400 | `CHAIN_NOT_SUPPORTED` | The chain is not configured on the server |
+| 400 | `VAULT_CAP_EXCEEDED` | The amount is over the vault's remaining capacity; retry smaller |
+| 400 | `VAULT_DEPOSITS_DISABLED` | The vault's on-chain `maxDeposit` is 0; pick another vault |
+| 403 | `SANCTIONED_ADDRESS` | The owner is on the OFAC SDN list |
+| 403 | `VAULT_BLOCKED` | The vault is on the server blocklist |
+| 403 | `ACCESS_DENIED` | The origin or IP is not on the project's allowlist |
+| 403 | `FEATURE_DISABLED` | The requested flow is switched off (see `bridgeAndSwap`) |
+| 404 | `SRA_NOT_FOUND` | No SRA at that address |
+| 409 | `IDEMPOTENCY_KEY_CONFLICT` | An `Idempotency-Key` was reused with a different body |
+| 413 | `PAYLOAD_TOO_LARGE` | The request body is over the size cap |
+| 422 | `INSUFFICIENT_AMOUNT` | The amount is below the vault or bridge minimum after fees |
+| 422 | `SLIPPAGE_TOO_LOW` | Slippage cannot cover route fees; `details.minSlippageBps` is the retry value |
+| 422 | `SWAP_ROUTE_NOT_FOUND` | No route was found for the pair |
+| 429 | `RATE_LIMITED` | Too many requests; idempotent GETs retry with backoff |
+| 500 | `ASSET_MISMATCH` | The vault asset is not the expected token |
+| 500 | `INTERNAL_ERROR` | An unexpected server error |
+| 502 | `SRA_UNAVAILABLE` / `QUOTER_UNAVAILABLE` / `RPC_UNAVAILABLE` | An upstream service failed |
+| 503 | `SERVICE_UNAVAILABLE` | Access control or another dependency is temporarily down |
+
+`WATCH_TIMEOUT` (`WatchTimeoutError`) is client-only. `watchStatus` raises it when a recipe stays non-terminal past `timeout`. The recipe may still complete, so raise `timeout` or set it to `0` to poll indefinitely.
+
+### Retries
+
+The SDK retries idempotent GETs on 429, 502, 503, and network failures, with backoff, up to `maxRetries`. Quote-building POSTs are **never** retried: each one can create a new SRA server-side, so a transient failure must not duplicate it.
+
+## Exports
+
+```ts
+import {
+  createSmartRecipes,
+  DEFAULT_SERVER_URL,        // ZeroDev's hosted server, used when serverUrl is omitted
+  TOKENS,                    // USDC | USDT | DAI | WETH | WBTC | EURC | NATIVE
+  SmartRecipeError,          // base error, plus one subclass per code above
+  VaultCapExceededError,
+  SlippageTooLowError,
+  WatchTimeoutError,
+} from "@zerodev/smart-recipes";
+```
+
+Types: `Quote`, `Vault`, `VaultDetails`, `DepositParams`, `VaultWithdrawParams`, `VaultWithdrawResult`, `RecipeStatus`, `RecipeState`, `Watcher`, and the params and result types of every method above.
