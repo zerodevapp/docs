@@ -76,6 +76,7 @@ Add the following code to create the ECDSA validator:
 
 ```typescript
 import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator"
+import { KERNEL_V3_1 } from "@zerodev/sdk/constants"
 
 const main = async () => {
   // other code...
@@ -83,6 +84,7 @@ const main = async () => {
   const ecdsaValidator = await signerToEcdsaValidator(publicClient, { // [!code focus]
     signer,  // [!code focus]
     entryPoint,  // [!code focus]
+    kernelVersion: KERNEL_V3_1,  // [!code focus]
   })  // [!code focus]
 }
 ```
@@ -102,6 +104,7 @@ const main = async () => {
       sudo: ecdsaValidator,  // [!code focus]
     },  // [!code focus]
     entryPoint,  // [!code focus]
+    kernelVersion: KERNEL_V3_1,  // [!code focus]
   })  // [!code focus]
 }
 ```
